@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical-compatible #-}
+-- {-# OPTIONS --cubical-compatible #-}
 
 module Logic where
 
@@ -45,6 +45,17 @@ case : ∀ {A B C : Set} → (A → C) → (B → C) → A ⊔ B → C
 case f g (in1 x) = f x
 case f g (in2 y) = g y
 
+-- ¬ is \lnot
+¬_ : Set → Set
+¬_ A = A → ⊥
+
+¬¬_ : Set → Set
+¬¬_ A = ¬ (¬ A)
+
+-- ↔ is \<->
+_↔_ : Set → Set → Set
+A ↔ B = (A → B) × (B → A)
+
 -- EQUALITY
 -- ≡ is \== or \equiv
 data _≡_ {A : Set} (a : A) : A → Set where
@@ -55,6 +66,12 @@ data _≡_ {A : Set} (a : A) : A → Set where
 
 _!_ : ∀ {A : Set} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
 refl ! bc = bc
+
+_!~_ : ∀ {A : Set} {x y z : A} → x ≡ y → z ≡ y → x ≡ z
+p !~ q = p ! ~ q
+
+_~!_ : ∀ {A : Set} {x y z : A} → y ≡ x → y ≡ z → x ≡ z
+p ~! q = ~ p ! q
 
 transp : ∀ {A : Set} (B : A → Set) {a1 a2 : A} → a1 ≡ a2 → B a1 → B a2
 transp B refl = I
@@ -82,11 +99,22 @@ symm≅ fg x = ~ (fg x)
 tran≅ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
 tran≅ fg gh x = (fg x) ! (gh x)
 
+infix 10 _↔_
 infix 14 _⊔_
 infix 15 _×_
 infix 18 _≡_
 infix 18 _≅_
 infix 22 _!_
 infix 25 _∘_
+infix 10 _,_
+infix 17 ¬_
+
+-- SIGMA TYPE
+open import Agda.Builtin.Sigma 
+
+Σ-syntax : (A : Set) → (A → Set) → Set
+Σ-syntax = Σ
+
+syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
 
 -- THE END
