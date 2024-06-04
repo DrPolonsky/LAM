@@ -2,7 +2,7 @@ module Relations where
 
 open import Logic
 open import Predicates
-
+open import Agda.Builtin.Sigma renaming (_,_ to _,,_)
 Rel : Set → Set → Set₁
 Rel A B = A → B → Set
 
@@ -19,7 +19,22 @@ _∘R_ {B = B} R S = λ x z → Σ[ y ∈ B ] (R x y × S y z)
 _R∘_ : ∀ {A B C} → Rel B C → Rel A B → Rel A C
 S R∘ R = R ∘R S
 
--- ~≡is≡ : ∀ {A} → ~
+Graph : ∀ {A B} → (A → B) → Rel A B
+Graph f = λ a b → f a ≡ b
+
+-- isTotal : ∀ {A B} → Rel A B → Set
+-- isTotal {A} {B} R = ∀ x → Σ[ y ∈ B ] R x y
+--
+-- total→Fun : ∀ {A B} (R : Rel A B) → isTotal R → (A → B)
+-- total→Fun R totR x with totR x
+-- ... | t1 ,, t2 = t1
+
+
+-- data Graph {A B : Set} (f : A → B) : Rel A B where
+--   gra : ∀ x → Graph f x (f x)
+
+
+
 
 -- Logical operators on relations.
 module LogicOps₂ {A B : Set} where
@@ -60,6 +75,12 @@ module LogicOps₂ {A B : Set} where
 
 open LogicOps₂ public
 
+law1 : ∀ {A B} (R : Rel A B) → ≡R ∘R R ⇔₂ R
+law2 : ∀ {A B} (R : Rel A B) → R ∘R ≡R ⇔₂ R
+law3 : ∀ {A} → ~R (≡R {A}) ⇔₂ ≡R
+law4 : ∀ {A B C} (R : Rel A B) (S : Rel B C) → ~R (R ∘R S) ⇔₂ (~R S) ∘R (~R R)
+
+
 𝓡 : Set → Set₁
 𝓡 A = Rel A A
 
@@ -99,6 +120,7 @@ module RelationProperties {U : Set} (R : 𝓡 U) where
       isRefl : reflR
       isTran : tranR
 
+
   -- data WF {A : Set} (R : Rel A) : A → Set where -- written to provide strongly normal
   --   isNF : ∀ {x : A} → normal x R → WF R x -- is normal form
   --   indF : ∀ {x : A} → (∀ y → R x y → WF R y) → WF R x
@@ -122,29 +144,81 @@ isWFseq {A} R = ∀ (s : ℕ → A) → ¬ (is R -decreasing s)
 DeMorgan∀∃ : Set → Set₁
 DeMorgan∀∃ A = ∀ (P : 𝓟 A) → ¬ (∀ x → P x) → Σ[ x ∈ A ] (¬ P x)
 
-¬ind→step : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → DeMorgan∀∃ A
-             → ∀ x → ¬ φ x → Σ[ y ∈ A ] (¬ φ y × R y x)
-¬ind→step R φ φ-ind DeMorg x ¬φx with DeMorg (λ y → φ y × R y x) {!   !} --  (λ ∀φ → ¬φx (∀φ x))
-... | y ,, p = {!   !}
+-- Question: Does DeMorgan∀∃ A imply that every predicate on A is decidable?
+-- Question: Do we need it to be this general?
 
-¬ind→seq : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → DeMorgan∀∃ A → ∀ x → ¬ φ x → ℕ → A
-¬ind→seq R φ φ-ind DeMorg x ¬φx zero = x
-¬ind→seq R φ φ-ind DeMorg x ¬φx (succ n) with ¬ind→step R φ φ-ind DeMorg x ¬φx
-... | y ,, p = y
+DeMorgan∀∃rel : ∀ {A} (B : 𝓟 A) → 𝓟 A → Set
+DeMorgan∀∃rel {A} B P = ¬ (B ⊆ P) → Σ[ x ∈ A ] (B x × ¬ P x)
 
-¬ind→seqWF : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) (φ-ind : is R -inductive φ) (DeMorg : DeMorgan∀∃ A)
-             → ∀ x (¬φx : ¬ φ x) → is R -decreasing (¬ind→seq R φ φ-ind DeMorg x ¬φx)
-¬ind→seqWF R φ φ-ind DeMorg x ¬φx zero = {!   !}
-¬ind→seqWF R φ φ-ind DeMorg x ¬φx (succ n) = {!   !}
+DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
+DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
 
-¬ind→seqΣ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → DeMorgan∀∃ A → ∀ x → ¬ φ x
-              → Σ[ s ∈ (ℕ → A) ] (is R -decreasing s)
-¬ind→seqΣ {A} R φ φ-ind DeMorg x ¬φx = (s ,, s<) where
-  s : ℕ → A
-  s< : is R -decreasing s
-  s zero = x
-  s (succ n) = Σ.fst (¬ind→step R φ φ-ind DeMorg (s n) λ φsn → {!   !} )
-  s< n = {!   !}
+¬ind→step : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ
+             → (∀ x → DeMorgan∀∃rel (~R R x) φ)
+             → ∀ x → ¬ φ x → Σ[ y ∈ A ] (~R R x y × ¬ φ y)
+¬ind→step R φ φ-ind DeMorg x ¬φx = DeMorg x (λ ↓x⊆φ → ¬φx (φ-ind x ↓x⊆φ ) )
+
+¬ind→seq1 : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → (∀ x → DeMorgan∀∃rel (~R R x) φ) → ∀ x → ¬ φ x
+              → ℕ → A
+¬ind→seq2 : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) (φ-ind : is R -inductive φ) (DeMorg : ∀ x → DeMorgan∀∃rel (~R R x) φ) x (¬φx : ¬ φ x)
+              → (∀ n → ¬ φ (¬ind→seq1 {A} R φ φ-ind DeMorg x ¬φx n))
+¬ind→seq3 : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) (φ-ind : is R -inductive φ) (DeMorg : ∀ x → DeMorgan∀∃rel (~R R x) φ) x (¬φx : ¬ φ x)
+              → is R -decreasing (¬ind→seq1 R φ φ-ind DeMorg x ¬φx)
+
+¬ind→seq1 R φ φ-ind DeMorg x ¬φx zero = x
+¬ind→seq1 R φ φ-ind DeMorg x ¬φx (succ n) = fst (¬ind→step R φ φ-ind DeMorg (¬ind→seq1 R φ φ-ind DeMorg x ¬φx n) (¬ind→seq2 R φ φ-ind DeMorg x ¬φx n))
+
+¬ind→seq2 R φ φ-ind DeMorg x ¬φx  zero = ¬φx
+¬ind→seq2 R φ φ-ind DeMorg x ¬φx (succ n) = pr2 (snd (¬ind→step R φ φ-ind DeMorg (¬ind→seq1 R φ φ-ind DeMorg x ¬φx n) (¬ind→seq2 R φ φ-ind DeMorg x ¬φx n)))
+
+-- Not mutually recursive with seq1 and seq2
+¬ind→seq3 R φ φ-ind DeMorg x ¬φx n = pr1 (snd (¬ind→step R φ φ-ind DeMorg (¬ind→seq1 R φ φ-ind DeMorg x ¬φx n) (¬ind→seq2 R φ φ-ind DeMorg x ¬φx n)))
+
+¬¬Closed : ∀ {A} → 𝓟 A → Set
+¬¬Closed P = ∀ x → ¬¬ P x → P x
+
+-- ¬ind→seq = ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → (∀ x → DeMorgan∀∃rel (~R R x) φ) →
+
+WFisWFseq- : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → isWFseq R → is R -inductive φ → (¬¬Closed φ)
+                → (∀ x → DeMorgan∀∃rel (~R R x) φ) → ∀ x → φ x
+WFisWFseq- R φ RisWFseq φ-ind DNEφ DeMorg x = DNEφ x
+  (λ ¬φx → RisWFseq (¬ind→seq1 R φ φ-ind DeMorg x ¬φx)
+                    (¬ind→seq3 R φ φ-ind DeMorg x ¬φx) )
+
+-- Question: Does DeMorgan∀∃ → DeMorgan∀∃rel (or vice versa?)
+-- Question: Does either of them imply ¬¬Closed φ (possibly using φ is R-inductive)
+
+-- ¬ind→seq : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → (∀ x → DeMorgan∀∃rel (~R R x) φ)
+--                  → ∀ x → ¬ φ x → Σ[ s ∈ (ℕ → A) ] (∀ n → ~R R (s n) (s (succ n)) × ¬ φ (s n))
+-- ¬ind→seq {A} R φ φ-ind DeMorg x ¬φx = (s ,, sP) where
+--   s  : ℕ → A
+--   sP : ∀ n → (~R R (s n) (s (succ n)) × ¬ φ (s n))
+--   s zero = x
+--   s (succ n) = fst (¬ind→step R φ φ-ind DeMorg (s n) (pr2 (sP n)))
+--   sP zero = (p , ¬φx) where -- p : ~R R x (fst (¬ind→step R φ φ-ind DeMorg x ¬φx))
+--   -- ~R R x (fst (¬ind→step R φ φ-ind DeMorg x ¬φx))
+--     p = {! pr1 (snd (¬ind→step R φ φ-ind DeMorg x ¬φx))   !} --  pr1 (snd (¬ind→step R φ φ-ind DeMorg x ¬φx))
+--   sP (succ n) =  {!   !} --  with sP n
+--   -- ... | sPn = {! snd (¬ind→step R φ φ-ind DeMorg (s n) (pr2 (sP n)))  !}
+
+
+-- ¬ind→seq R φ φ-ind DeMorg x ¬φx zero = x
+-- ¬ind→seq R φ φ-ind DeMorg x ¬φx (succ n) with ¬ind→step R φ φ-ind ? x ¬φx
+-- ... | y ,, p = y
+--
+-- ¬ind→seqWF : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) (φ-ind : is R -inductive φ) (DeMorg : DeMorgan∀∃ A)
+--              → ∀ x (¬φx : ¬ φ x) → is R -decreasing (¬ind→seq R φ φ-ind DeMorg x ¬φx)
+-- ¬ind→seqWF R φ φ-ind DeMorg x ¬φx zero = {!   !}
+-- ¬ind→seqWF R φ φ-ind DeMorg x ¬φx (succ n) = {!   !}
+--
+-- ¬ind→seqΣ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → DeMorgan∀∃ A → ∀ x → ¬ φ x
+--               → Σ[ s ∈ (ℕ → A) ] (is R -decreasing s)
+-- ¬ind→seqΣ {A} R φ φ-ind DeMorg x ¬φx = (s ,, s<) where
+--   s : ℕ → A
+--   s< : is R -decreasing s
+--   s zero = x
+--   s (succ n) = Σ.fst (¬ind→step R φ φ-ind DeMorg (s n) λ φsn → {!   !} )
+--   s< n = {!   !}
 
 
 WFisWFseq+ : ∀ {A} (R : 𝓡 A) → isWF R → isWFseq R
@@ -156,12 +230,12 @@ WFisWFseq+ {A} R RisWF s sIsR-Dec =
             (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
    in RisWF φ φ-ind (s zero) zero refl
 
-¬¬Closed : ∀ {A} → 𝓟 A → Set
-¬¬Closed P = ∀ x → ¬¬ P x → P x
-
-WFisWFseq- : ∀ {A} (R : 𝓡 A) → isWFseq R →
-                 ∀ (φ : 𝓟 A) → is R -inductive φ → ¬¬Closed φ → ∀ x → φ x
-WFisWFseq- R RisWFseq φ φIsR-Ind DNEφ x = DNEφ x (λ ¬φx → {!   !} )
+-- ¬¬Closed : ∀ {A} → 𝓟 A → Set
+-- ¬¬Closed P = ∀ x → ¬¬ P x → P x
+--
+-- WFisWFseq- : ∀ {A} (R : 𝓡 A) → isWFseq R →
+--                  ∀ (φ : 𝓟 A) → is R -inductive φ → ¬¬Closed φ → ∀ x → φ x
+-- WFisWFseq- R RisWFseq φ φIsR-Ind DNEφ x = DNEφ x (λ ¬φx → {!   !} )
 
 
 
