@@ -240,7 +240,7 @@ WFisWFseq- R φ RisWFseq φ-ind DNEφ DeMorg x = DNEφ x
 -- Question: Does either of them imply ¬¬Closed φ (possibly using φ is R-inductive)
 DeMorgan∀∃rel→¬¬Closed : ∀ {A} → (B P : 𝓟 A) → DeMorgan∀∃rel B P → ¬¬Closed B
 DeMorgan∀∃rel→¬¬Closed B P DeMorgRel x ¬¬Bx with DeMorgRel (λ B⊆P → ¬¬Bx λ Bx → {!   !})  
-... | y ,, By , ¬Py = {!   !}
+... | y ,, By , ¬Py = {!   !} 
 
 DeMorg→¬¬Closed : ∀ {A} {B : 𝓟 A} → DeMorgan∀∃ A → ¬¬Closed B 
 DeMorg→¬¬Closed {A}{B} DeMorg x ¬¬Bx with DeMorg B (λ x→Bx → ¬¬Bx (λ Bx → {!   !})) 
