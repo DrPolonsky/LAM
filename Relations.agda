@@ -83,11 +83,11 @@ law4 : ∀ {A B C} (R : Rel A B) (S : Rel B C) → ~R (R ∘R S) ⇔₂ (~R S) �
 pr1 (law1 R) x y (.x ,, refl , Rxy) = Rxy
 pr2 (law1 R) x y Rxy = x ,, (refl , Rxy)
 
-pr1 (law2 R) x y (.y ,, Rxy , refl) = Rxy 
+pr1 (law2 R) x y (.y ,, Rxy , refl) = Rxy
 pr2 (law2 R) x y Rxy = y ,, Rxy , refl
 
 pr1 law3 x .x refl = refl
-pr2 law3 x .x refl = refl 
+pr2 law3 x .x refl = refl
 
 pr1 (law4 R S) x y (z ,, Ryx , Szx) = z ,, Szx , Ryx
 pr2 (law4 R S) x y (z ,, Szx , Ryz) = z ,, Ryz , Szx
@@ -131,40 +131,40 @@ module RelationProperties {U : Set} (R : 𝓡 U) where
     field
       isRefl : reflR
       isTran : tranR
-  
+
   -- Transitive closure
-  data R⁺ : 𝓡 U   where 
-    _⇉_ : ∀ x y z → R x y → R⁺ y z → R⁺ x z 
-  
-  -- record acyclic : Set where 
+  data R⁺ : 𝓡 U   where
+    _⇉_ : ∀ x y z → R x y → R⁺ y z → R⁺ x z
+
+  -- record acyclic : Set where
   --   field
   --     isR⁺ : R⁺ R
-  --     isIrrefl : irreflR 
-  -- acyclic : Set 
-  -- acyclic = ∀ x → R⁺ R × irreflR 
-  
+  --     isIrrefl : irreflR
+  -- acyclic : Set
+  -- acyclic = ∀ x → R⁺ R × irreflR
+
   -- symmetric closure
-  data Rˢ : 𝓡 U where 
-    _⇄_ : ∀ x y → R x y → Rˢ y x 
-  
-  --reflexive closure 
+  data Rˢ : 𝓡 U where
+    _⇄_ : ∀ x y → R x y → Rˢ y x
+
+  --reflexive closure
   data R⁼ : 𝓡 U where
-    _⊸_ : ∀ x → R⁼ x x 
+    _⊸_ : ∀ x → R⁼ x x
 
   -- reflexive transitive closure
   data R* : 𝓡 U where
-    _⇉_ : ∀ x y z → R x y → R* y z → R* x z 
-    _⊸_ : ∀ x → R* x x 
-  
+    _⇉_ : ∀ x y z → R x y → R* y z → R* x z
+    _⊸_ : ∀ x → R* x x
+
   -- equivalence relation
-  data =ᵣ : 𝓡 U where 
-    _⇉_ : ∀ x y z → R x y → =ᵣ y z → =ᵣ x z 
+  data =ᵣ : 𝓡 U where
+    _⇉_ : ∀ x y z → R x y → =ᵣ y z → =ᵣ x z
     _⊸_ : ∀ x → =ᵣ x x
     _⇄_ : ∀ x y → R x y → =ᵣ y x
 
-  -- Know I'm getting something not quite right here... 
- 
- 
+  -- Know I'm getting something not quite right here...
+
+
 
   -- data WF {A : Set} (R : Rel A) : A → Set where -- written to provide strongly normal
   --   isNF : ∀ {x : A} → normal x R → WF R x -- is normal form
@@ -198,11 +198,26 @@ DeMorgan∀∃rel {A} B P = ¬ (B ⊆ P) → Σ[ x ∈ A ] (B x × ¬ P x)
 DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
 DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
 
+¬¬∃→¬∀¬ : ∀ {A} (P : 𝓟 A) → ¬¬ (Σ[ x ∈ A ] P x) → ¬ (∀ x → ¬ P x)
+¬¬∃→¬∀¬ P = {!   !}
+
+¬∀¬→¬¬∃ : ∀ {A} (P : 𝓟 A) → ¬ (∀ x → ¬ P x) → ¬¬ (Σ[ x ∈ A ] P x)
+¬∀¬→¬¬∃ P = {!   !}
+
+MP : ∀ {A} (P : 𝓟 A) → Set
+MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A ] P x
+
+MPrel : ∀ {A} (B P : 𝓟 A) → Set
+MPrel {A} B P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
+
+MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → DeMorgan∀∃rel B P
+MPrel→DMrel B P MPBP = {!   !}
+
 
 -- Question: Does DeMorgan∀∃ → DeMorgan∀∃rel (or vice versa?)
-DeMorgan∀∃→DeMorgan∀∃rel : {A : Set} → (B P : 𝓟 A) → DeMorgan∀∃ A → DeMorgan∀∃rel B P 
-DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg P (λ x→Px → ¬B⊆P (λ x x∈B → x→Px x)) 
-... | x ,, ¬Px = x ,, (∅ (¬B⊆P {!   !}) , ¬Px)  
+DeMorgan∀∃→DeMorgan∀∃rel : {A : Set} → (B P : 𝓟 A) → DeMorgan∀∃ A → DeMorgan∀∃rel B P
+DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg P (λ x→Px → ¬B⊆P (λ x x∈B → x→Px x))
+... | x ,, ¬Px = x ,, ( {!   !} , ¬Px) -- (∅ (¬B⊆P {!   !}) , ¬Px)
 
 ¬ind→step : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ
              → (∀ x → DeMorgan∀∃rel (~R R x) φ)
@@ -238,14 +253,27 @@ WFisWFseq- R φ RisWFseq φ-ind DNEφ DeMorg x = DNEφ x
 
 -- Question: Does DeMorgan∀∃ → DeMorgan∀∃rel (or vice versa?)
 -- Question: Does either of them imply ¬¬Closed φ (possibly using φ is R-inductive)
+-- NOT PROVABLE!
 DeMorgan∀∃rel→¬¬Closed : ∀ {A} → (B P : 𝓟 A) → DeMorgan∀∃rel B P → ¬¬Closed B
-DeMorgan∀∃rel→¬¬Closed B P DeMorgRel x ¬¬Bx with DeMorgRel (λ B⊆P → ¬¬Bx λ Bx → {!   !})  
-... | y ,, By , ¬Py = {!   !} 
+DeMorgan∀∃rel→¬¬Closed B P DeMorgRel x ¬¬Bx with DeMorgRel (λ B⊆P →  ¬¬Bx λ Bx → {!   !})
+... | y ,, By , ¬Py = {!   !}
 
-DeMorg→¬¬Closed : ∀ {A} {B : 𝓟 A} → DeMorgan∀∃ A → ¬¬Closed B 
-DeMorg→¬¬Closed {A}{B} DeMorg x ¬¬Bx with DeMorg B (λ x→Bx → ¬¬Bx (λ Bx → {!   !})) 
-...| z  = {!   !}
+DeMorgan∀∃rel→¬¬Closed2 : ∀ {A} → (B : 𝓟 A) → (H : ∀ (P : 𝓟 A) → DeMorgan∀∃rel B P) → ¬¬Closed B
+DeMorgan∀∃rel→¬¬Closed2 = {!   !}
 
+¬¬Lemma : ∀ X → ¬¬ (¬¬ X → X)
+¬¬Lemma X = λ ¬¬X→X → ¬¬X→X (λ ¬¬X → ∅ (¬¬X λ x → ¬¬X→X (K x)))
+
+DeMorg→¬¬Closed : ∀ {A} {B : 𝓟 A} → DeMorgan∀∃ A → ¬ (¬¬Closed B) → ⊥
+DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x) ¬nnC
+... | y ,, yP = ∅ (¬¬Lemma (B y) yP)
+
+-- DeMorg→¬¬Closed {A}{B} DeMorg x ¬¬Bx with DeMorg (λ x → ¬¬ (B x) → B x) (λ H → ¬¬Bx (λ Bx → {!   !} ))
+-- ... | y ,, yP = ∅ (¬¬Lemma (B y) yP)
+
+-- DeMorg→¬¬Closed {A}{B} DeMorg x ¬¬Bx with DeMorg B (λ x→Bx → ¬¬Bx (λ Bx → {!   !}))
+
+-- Question: If φ is decidable, does the implication WF→WFseq follow automatically.
 
 -- ¬ind→seq : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → (∀ x → DeMorgan∀∃rel (~R R x) φ)
 --                  → ∀ x → ¬ φ x → Σ[ s ∈ (ℕ → A) ] (∀ n → ~R R (s n) (s (succ n)) × ¬ φ (s n))
@@ -307,4 +335,3 @@ WFisWFseq+ {A} R RisWF s sIsR-Dec =
 
 
 -- The End
-  
