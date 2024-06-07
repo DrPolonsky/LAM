@@ -1,4 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Relations where
 
@@ -102,11 +103,12 @@ pr2 (law4 R S) x y (z ,, Szx , Ryz) = z ,, Ryz , Szx
 module ClosureOperators {U : Set} where
   --reflexive closure
   data _⁼ (R : 𝓡 U) : 𝓡 U where
-    ε⁼ : ∀ {x} → (R ⁼) x x
+    ax⁼ : ∀ {x y : U} → R x y → (R ⁼) x y
+    ε⁼  : ∀ {x} → (R ⁼) x x
 
   -- Transitive closure
   data _⁺ (R : 𝓡 U) : 𝓡 U   where
-    ax⁺  : ∀ {x y z : U} → R x y → (R ⁺) x y
+    ax⁺  : ∀ {x y : U}   → R x y → (R ⁺) x y
     _,⁺_ : ∀ {x y z : U} → R x y → (R ⁺) y z → (R ⁺) x z
 
   -- symmetric closure
@@ -117,7 +119,8 @@ module ClosureOperators {U : Set} where
   -- reflexive transitive closure
   -- ⋆ is \*
   data _⋆ (R : 𝓡 U) : 𝓡 U where
-    ε⋆ :  ∀ {x} → (R ⋆) x x
+    ax⋆ : ∀ {x y : U} → R x y → (R ⋆) x y
+    ε⋆  :  ∀ {x} → (R ⋆) x x
     _,⋆_ : ∀ {x y z} → R x y → (R ⋆) y z → (R ⋆) x z
 
   EQ : 𝓡 U → 𝓡 U

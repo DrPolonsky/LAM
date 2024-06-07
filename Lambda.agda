@@ -6,10 +6,10 @@ open import Lifting
 -- Lambda terms as a type constructor
 -- For a set X, Λ X = terms whose free variables come from the set X
 -- Λ is \GL
-data Λ (A : Set) : Set where
-  var : A → Λ A
-  app : Λ A → Λ A → Λ A
-  abs : Λ (↑ A) → Λ A
+data Λ (V : Set) : Set where
+  var : V → Λ V
+  app : Λ V → Λ V → Λ V
+  abs : Λ (↑ V) → Λ V
 
 -- Terms over a finite set of variables, Λₙ n = Λ {x1, ..., xn}
 -- ₙ is \_n
