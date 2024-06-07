@@ -38,7 +38,7 @@ io f b o = b
 ↑→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → h ≅ g ∘ f → ↑→ h ≅ ↑→ g ∘ ↑→ f
 ↑→≅∘ f g h≅g∘f = tran≅ (↑→≅ h≅g∘f) (↑→∘ f g)
 
--- Naturality of the i constructor 
+-- Naturality of the i constructor
 i-nat : ∀ {A B : Set} → (f : A → B) → i ∘ f ≅ ↑→ f ∘ i
 i-nat f x = refl
 
@@ -51,3 +51,7 @@ data ℕ : Set where
 Fin : ℕ → Set
 Fin zero = ⊥
 Fin (succ n) = ↑ (Fin n)
+
+∘^ : ∀ {A : Set} → ℕ → (A → A) → (A → A)
+∘^ zero f = I
+∘^ (succ n) f = f ∘ (∘^ n f)

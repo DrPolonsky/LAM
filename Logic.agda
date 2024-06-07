@@ -3,13 +3,13 @@
 module Logic where
 
 -- BASIC COMBINATORS
-I : ∀ {A : Set} → A → A
+I : ∀ {l} {A : Set l} → A → A
 I x = x
 
-K : ∀ {A B : Set} → A → B → A
+K : ∀ {l k} {A : Set l} {B : Set k} → A → B → A
 K x y = x
 
-KI : ∀ {A B : Set} → A → B → B
+KI : ∀ {l k} {A : Set l} {B : Set k} → A → B → B
 KI = K I
 
 -- ∘ is \o
@@ -46,7 +46,7 @@ case f g (in1 x) = f x
 case f g (in2 y) = g y
 
 -- ¬ is \lnot
-¬_ : Set → Set
+¬_ : ∀ {l} → Set l → Set l
 ¬_ A = A → ⊥
 
 ¬¬_ : Set → Set
@@ -110,7 +110,7 @@ infix 10 _,_
 infix 17 ¬_
 
 -- SIGMA TYPE
-open import Agda.Builtin.Sigma 
+open import Agda.Builtin.Sigma
 
 Σ-syntax : (A : Set) → (A → Set) → Set
 Σ-syntax = Σ
