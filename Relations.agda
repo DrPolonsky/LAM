@@ -199,10 +199,10 @@ DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
 DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
 
 ¬¬∃→¬∀¬ : ∀ {A} (P : 𝓟 A) → ¬¬ (Σ[ x ∈ A ] P x) → ¬ (∀ x → ¬ P x)
-¬¬∃→¬∀¬ P = {!   !}
+¬¬∃→¬∀¬ P h x→¬Px = h λ x → {! x  !} 
 
 ¬∀¬→¬¬∃ : ∀ {A} (P : 𝓟 A) → ¬ (∀ x → ¬ P x) → ¬¬ (Σ[ x ∈ A ] P x)
-¬∀¬→¬¬∃ P = {!   !}
+¬∀¬→¬¬∃ P x x₁ = {!   !}
 
 MP : ∀ {A} (P : 𝓟 A) → Set
 MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A ] P x
@@ -335,3 +335,4 @@ WFisWFseq+ {A} R RisWF s sIsR-Dec =
 
 
 -- The End
+ 
