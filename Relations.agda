@@ -123,6 +123,18 @@ module ClosureOperators {U : Set} where
     ε⋆  :  ∀ {x} → (R ⋆) x x
     _,⋆_ : ∀ {x y z} → R x y → (R ⋆) y z → (R ⋆) x z
 
+  TCisTran : ∀ (R : 𝓡 U) {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
+  TCisTran R (ax⋆ x) R*yz = x ,⋆ R*yz
+  TCisTran R ε⋆ R*yz = R*yz
+  TCisTran R (x ,⋆ R*xy) R*yz = x ,⋆ (TCisTran R R*xy R*yz)
+
+  TCisSym : ∀ (R : 𝓡 U) {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
+  TCisSym R (ax⋆ (axˢ+ x)) = ax⋆ ((axˢ- x))
+  TCisSym R (ax⋆ (axˢ- x)) = ax⋆ ((axˢ+ x))
+  TCisSym R ε⋆ = ε⋆
+  TCisSym R (axˢ+ x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym R rxy) (axˢ- x ,⋆ ε⋆ )
+  TCisSym R (axˢ- x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym R rxy) (axˢ+ x ,⋆ ε⋆ )
+
   EQ : 𝓡 U → 𝓡 U
   EQ R = (R ˢ) ⋆
 
