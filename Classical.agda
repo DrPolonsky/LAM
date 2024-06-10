@@ -11,7 +11,7 @@ WEM A = ¬ A ⊔ ¬¬ A
 
 DNE : Set → Set
 DNE A = ¬¬ A → A
-
+ 
 EM→WEM×DNE : ∀ A → EM A → WEM A × DNE A
 pr1 (EM→WEM×DNE A (in1 x)) = in2 λ ¬x → ¬x x
 pr1 (EM→WEM×DNE A (in2 ¬x)) = in1 ¬x
