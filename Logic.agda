@@ -1,4 +1,5 @@
--- {-# OPTIONS --cubical-compatible #-}
+-- {-# OPTIONS --cubical-compatible --without-K #-}
+{-# OPTIONS --without-K #-}
 
 module Logic where
 

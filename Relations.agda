@@ -191,29 +191,41 @@ is R -inductive φ = ∀ x → (∀ y → R y x → φ y) → φ x
 isWF : ∀ {A} → 𝓡 A → Set₁
 isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
 
-¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → ¬ (isWF (R ⁼))
-¬WF⁼ {A} R isWFR⁼ = isWFR⁼ (λ x → {!   !}) {!   !} {!   !} 
+isInhabited : Set → Set
+isInhabited A = A
 
--- = let 
---                     x : A 
+¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → isInhabited A → ¬ (isWF (R ⁼))
+¬WF⁼ {A} R isWFR⁼ = {!   !} -- isWFR⁼ (λ x → {!   !}) {!   !} {!   !}
+{-
+Two approaches:
+1. Find φ that is definitely NOT always true.  Then prove that this φ is inductive.
+2. Prove that (R ⁼) is not sequentially well-founded; followed by the
+(constructive!) prove that WF→WFseq
+-}
+
+-- = let
+--                     x : A
 --                     x = {!   !}
---                     φ : 𝓟 A 
+--                     φ : 𝓟 A
 --                     φ a = {! ⊥ !}
 --                     in isWFR⁼ φ (λ x x₁ → {!   !}) x
 
 WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
-WF⁺+ R iswfR φ φisR⁺ind x = iswfR φ (λ y h → φisR⁺ind y λ {z (ax⁺ Rzy) → h z Rzy
-                                                         ; z (Rzy₁ ,⁺ R⁺y₁y) → h z {!   !}}) x
+WF⁺+ {A} R iswfR φ φisR⁺ind x = φisR⁺ind x g where
+  g : (y : A) → (R ⁺) y x → φ y
+  g y R+yx = {!   !}
+-- WF⁺+ R iswfR φ φisR⁺ind x = iswfR φ (λ y h → φisR⁺ind y λ {z (ax⁺ Rzy) → h z Rzy
+--                                                          ; z (Rzy₁ ,⁺ R⁺y₁y) → h z {!   !}}) x
 
 WF⁺- : ∀ {A} (R : 𝓡 A) → isWF (R ⁺) → isWF R
 WF⁺- R isWFR⁺ φ φisRind x = isWFR⁺ φ (λ y h → φisRind y λ z Rzy → h z (ax⁺ Rzy)) x
 
-lemma⋆→⁺ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⋆) x y →  (R ⁺) x y 
+lemma⋆→⁺ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⋆) x y →  (R ⁺) x y
 lemma⋆→⁺ R (ax⋆ x) = ax⁺ x
 lemma⋆→⁺ R ε⋆ = {!   !}
-lemma⋆→⁺ R (Rx₁y ,⋆ R⋆yy₁) = Rx₁y ,⁺ lemma⋆→⁺ R R⋆yy₁ 
+lemma⋆→⁺ R (Rx₁y ,⋆ R⋆yy₁) = Rx₁y ,⁺ lemma⋆→⁺ R R⋆yy₁
 
-lemma⁺→⋆ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⁺) x y →  (R ⋆) x y 
+lemma⁺→⋆ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⁺) x y →  (R ⋆) x y
 lemma⁺→⋆ R (ax⁺ Rxy) = ax⋆ Rxy
 lemma⁺→⋆ R (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺yy₁
 
@@ -222,7 +234,8 @@ TransitiveClosure R = TC+ , TC- where
   TC+ : (R ⋆) ⊆₂ (R ⁺) ∪₂ (R ⁼)
   TC+ x y (ax⋆ Rxy) = in1 (ax⁺ Rxy)
   TC+ x .x ε⋆ = in2 ε⁼
-  TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = in1 (Rxy₁ ,⁺ lemma⋆→⁺ R R⋆y₁y) 
+  TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = {!   !} -- should recurse on R⋆y₁y
+  -- TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = in1 (Rxy₁ ,⁺ lemma⋆→⁺ R R⋆y₁y)
   TC- : (R ⁺) ∪₂ (R ⁼) ⊆₂ (R ⋆)
   TC- x y (in1 (ax⁺ Rxy)) = ax⋆ Rxy
   TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺y₁y
@@ -239,7 +252,7 @@ isWFseq : ∀ {A} → 𝓡 A → Set
 isWFseq {A} R = ∀ (s : ℕ → A) → ¬ (is R -decreasing s)
 
 WFisWFseq+ : ∀ {A} (R : 𝓡 A) → isWF R → isWFseq R
-WFisWFseq+ {A} R RisWF s sIsR-Dec = 
+WFisWFseq+ {A} R RisWF s sIsR-Dec =
   let φ : 𝓟 A
       φ a = ∀ n → ¬ a ≡ s n -- a ∉ Im [ s ]
       φ-ind : is R -inductive φ
@@ -277,8 +290,8 @@ MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ 
 open import Classical
 
 MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → EM A →  DeMorgan∀∃rel B P
-MPrel→DMrel {A} B P MPBP EM ¬B⊆P = {!   !}   
--- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}  
+MPrel→DMrel {A} B P MPBP EM ¬B⊆P = {!   !}
+-- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}
 -- ... | y ,, By , Py = y ,, By , λ Py → ¬B⊆P λ x Bx → {!   !}
 
 
@@ -343,13 +356,25 @@ DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x
 
 -- Question: If φ is decidable, does the implication WF→WFseq follow automatically.
 
-R-minimal : ∀ {A : Set} (R : 𝓡 A) → Set
-R-minimal {A} R = ∀ x →  ¬  Σ[ y ∈ A  ] (R y x ) 
+-- is_-minimal_ : ∀ {S : Set} (R : 𝓡 S) → 𝓟 S
+-- -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
+-- is R -minimal {S} x = ∀ y → R y x → ⊥
 
-A18→ : ∀ {A : Set} (R : 𝓡 A) → isWF R → R-minimal R 
-A18→ R WFR x (y ,, Ryx) = WFR (λ x₁ → ⊥) (λ x₁ h → h y {!   !}) x
+-- weaklyBounded : ∀ {S : Set} (R : 𝓡 S) → 𝓟 S → Set
+-- weaklyBounded R A = Σ[ a ∈ A ] → is R -minimal a
 
+is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
+-- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
+is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 
+A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (a : S) → a ∈ A
+         → Σ[ x ∈ S ] is R - A -minimal x
+A18→ R WFR A a a∈A = {!   !}
+  -- Hint. Use WFT with φ x := x ∈ A → Σ[ y ∈ A ] (is R - A -minimal y)
+  -- Try to prove this φ is R-inductive.
+  -- Otherwise, try φ x := x ∈ A × Σ[ y ∈ A ] (is R - A -minimal y)
+-- A18→ R WFR x y Ryx = WFR (λ x₁ → ⊥) (λ x₁ h → h y {!   !}) x
+
+-- For the converse, try to prove "Every non-empty A contains a R-minimal element" → "isWFseq R"
 
 -- The End
-  
