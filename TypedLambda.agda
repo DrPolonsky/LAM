@@ -33,6 +33,16 @@ So, "Γ : Cxt V" should mean:
     App : ∀ {Γ A B M N}  →  Γ ⊢ M ∶ (A ⇒ B) → Γ ⊢ N ∶ A  → Γ ⊢ app M N ∶ B
     Abs : ∀ {Γ M A B}    →  io Γ A ⊢ M ∶ B               → Γ ⊢ abs M ∶ (A ⇒ B)
 
+  -- Prop 1B.5 in [BDS 2010]
+  SubLemma⊢ : ∀ {V : Set} {Γ : Cxt V} {M : Λ (↑ V)} {N : Λ V} {A B : 𝕋}
+              → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ₒ ∶ B
+  SubLemma⊢ (Var x) n = {!   !}
+  SubLemma⊢ (App m1 m2) n = {!   !}
+  SubLemma⊢ (Abs m0) n = {!   !}
+
+
+
+
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
   --   App : ∀ {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}
