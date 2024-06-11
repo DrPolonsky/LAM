@@ -192,20 +192,42 @@ isWF : ∀ {A} → 𝓡 A → Set₁
 isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
 
 ¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → ¬ (isWF (R ⁼))
-¬WF⁼ R = {!   !}
+¬WF⁼ {A} R isWFR⁼ = isWFR⁼ (λ x → {!   !}) {!   !} {!   !} 
+
+-- = let 
+--                     x : A 
+--                     x = {!   !}
+--                     φ : 𝓟 A 
+--                     φ a = {! ⊥ !}
+--                     in isWFR⁼ φ (λ x x₁ → {!   !}) x
 
 WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
-WF⁺+ R = {!   !}
+WF⁺+ R iswfR φ φisR⁺ind x = iswfR φ (λ y h → φisR⁺ind y λ {z (ax⁺ Rzy) → h z Rzy
+                                                         ; z (Rzy₁ ,⁺ R⁺y₁y) → h z {!   !}}) x
 
 WF⁺- : ∀ {A} (R : 𝓡 A) → isWF (R ⁺) → isWF R
-WF⁺- R = {!   !}
+WF⁺- R isWFR⁺ φ φisRind x = isWFR⁺ φ (λ y h → φisRind y λ z Rzy → h z (ax⁺ Rzy)) x
+
+lemma⋆→⁺ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⋆) x y →  (R ⁺) x y 
+lemma⋆→⁺ R (ax⋆ x) = ax⁺ x
+lemma⋆→⁺ R ε⋆ = {!   !}
+lemma⋆→⁺ R (Rx₁y ,⋆ R⋆yy₁) = Rx₁y ,⁺ lemma⋆→⁺ R R⋆yy₁ 
+
+lemma⁺→⋆ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⁺) x y →  (R ⋆) x y 
+lemma⁺→⋆ R (ax⁺ Rxy) = ax⋆ Rxy
+lemma⁺→⋆ R (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺yy₁
 
 TransitiveClosure : ∀ {A : Set} (R : 𝓡 A) → R ⋆ ⇔₂ (R ⁺ ∪₂ R ⁼)
 TransitiveClosure R = TC+ , TC- where
   TC+ : (R ⋆) ⊆₂ (R ⁺) ∪₂ (R ⁼)
-  TC+ = {!   !}
+  TC+ x y (ax⋆ Rxy) = in1 (ax⁺ Rxy)
+  TC+ x .x ε⋆ = in2 ε⁼
+  TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = in1 (Rxy₁ ,⁺ lemma⋆→⁺ R R⋆y₁y) 
   TC- : (R ⁺) ∪₂ (R ⁼) ⊆₂ (R ⋆)
-  TC- = {!   !}
+  TC- x y (in1 (ax⁺ Rxy)) = ax⋆ Rxy
+  TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺y₁y
+  TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
+  TC- x .x (in2 ε⁼) = ε⋆
 
 open import Agda.Builtin.Sigma renaming (_,_ to _,,_)
 open import Lifting using (ℕ; zero; succ)
@@ -217,7 +239,7 @@ isWFseq : ∀ {A} → 𝓡 A → Set
 isWFseq {A} R = ∀ (s : ℕ → A) → ¬ (is R -decreasing s)
 
 WFisWFseq+ : ∀ {A} (R : 𝓡 A) → isWF R → isWFseq R
-WFisWFseq+ {A} R RisWF s sIsR-Dec =
+WFisWFseq+ {A} R RisWF s sIsR-Dec = 
   let φ : 𝓟 A
       φ a = ∀ n → ¬ a ≡ s n -- a ∉ Im [ s ]
       φ-ind : is R -inductive φ
@@ -240,10 +262,10 @@ DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
 DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
 
 ¬¬∃→¬∀¬ : ∀ {A} (P : 𝓟 A) → ¬¬ (Σ[ x ∈ A ] P x) → ¬ (∀ x → ¬ P x)
-¬¬∃→¬∀¬ P h x→¬Px = h λ { (y ,, yP) → {!   !} }
+¬¬∃→¬∀¬ P h x→¬Px = h λ { (y ,, yP) → x→¬Px y yP }
 
 ¬∀¬→¬¬∃ : ∀ {A} (P : 𝓟 A) → ¬ (∀ x → ¬ P x) → ¬¬ (Σ[ x ∈ A ] P x)
-¬∀¬→¬¬∃ P ¬∀¬ ¬∃ = {!   !}
+¬∀¬→¬¬∃ P ¬∀¬ ¬∃ = ¬∀¬ λ x Px → ¬∃ (x ,, Px)
 
 MP : ∀ {A} (P : 𝓟 A) → Set
 MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A ] P x
@@ -252,13 +274,17 @@ MPrel : ∀ {A} (B P : 𝓟 A) → Set
 MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
 
 -- Not provable unless an assumption is added, find the assumption!
-MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → DeMorgan∀∃rel B P
-MPrel→DMrel B P MPBP = {!   !}
+open import Classical
+
+MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → EM A →  DeMorgan∀∃rel B P
+MPrel→DMrel {A} B P MPBP EM ¬B⊆P = {!   !}   
+-- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}  
+-- ... | y ,, By , Py = y ,, By , λ Py → ¬B⊆P λ x Bx → {!   !}
 
 
 -- Question: Does DeMorgan∀∃ → DeMorgan∀∃rel (or vice versa?)
 DeMorgan∀∃→DeMorgan∀∃rel : {A : Set} → (B P : 𝓟 A) → DeMorgan∀∃ A → DeMorgan∀∃rel B P
-DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg P (λ x→Px → ¬B⊆P (λ x x∈B → x→Px x))
+DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg {!   !} (λ x→Px → ¬B⊆P (λ x x∈B → x→Px x))
 ... | x ,, ¬Px = x ,, ( {!   !} , ¬Px) -- (∅ (¬B⊆P {!   !}) , ¬Px)
 
 ¬ind→step : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ
@@ -317,8 +343,13 @@ DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x
 
 -- Question: If φ is decidable, does the implication WF→WFseq follow automatically.
 
+R-minimal : ∀ {A : Set} (R : 𝓡 A) → Set
+R-minimal {A} R = ∀ x →  ¬  Σ[ y ∈ A  ] (R y x ) 
 
+A18→ : ∀ {A : Set} (R : 𝓡 A) → isWF R → R-minimal R 
+A18→ R WFR x (y ,, Ryx) = WFR (λ x₁ → ⊥) (λ x₁ h → h y {!   !}) x
 
 
 
 -- The End
+  
