@@ -70,8 +70,9 @@ abs r   [ f ] = abs (r [ lift f ])
 _[_]ₙ : ∀ {m n : ℕ} → Λₙ m → (Fin m → Λₙ n) → Λₙ n
 _[_]ₙ = _[_]
 
--- A special case where M ∈ Λ(x1,..,xk+1), N ∈ Λ(x1,..,xk)
--- M[xk+1 := N] = M [ σ ], where σ (xi) = var xi if i < k+1, σ xk+1 = N
+-- The special case M[y:=N] should be thought of as
+--  M ∈ Λ(x1,..,xk,y), N ∈ Λ(x1,..,xk)
+--  M[y:=N] = M[σ], where σ(xi) = var xi, σ(y) = N
 
 _[_]ₒ : ∀ {A : Set} → Λ (↑ A) → Λ A → Λ A
 M [ N ]ₒ = M [ io var N ]
