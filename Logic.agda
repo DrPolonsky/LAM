@@ -110,7 +110,7 @@ infix 10 _,_
 infix 17 ¬_
 
 -- SIGMA TYPE
-open import Agda.Builtin.Sigma 
+open import Agda.Builtin.Sigma
 
 Σ-syntax : (A : Set) → (A → Set) → Set
 Σ-syntax = Σ

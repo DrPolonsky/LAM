@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 module Lambda where
 
 open import Logic
@@ -60,6 +61,10 @@ data Λ (A : Set) : Set where
 lift : ∀ {A B : Set} → (A → Λ B) → ↑ A → Λ (↑ B)
 lift f = io (Λ→i ∘ f) (var o)
 
+lift≅ : ∀ {A B : Set} {f g : A → Λ B} → f ≅ g → lift f ≅ lift g
+lift≅ f≅g (i x) = cong (Λ→ i) (f≅g x)
+lift≅ f≅g o = refl
+
 -- Substitution is the monadic bind for Λ (Haskell's >>=)
 _[_] : ∀ {A B : Set} → Λ A → (A → Λ B) → Λ B
 var x   [ f ] = f x
@@ -69,6 +74,48 @@ abs r   [ f ] = abs (r [ lift f ])
 -- A special case of the above for finitely many variables
 _[_]ₙ : ∀ {m n : ℕ} → Λₙ m → (Fin m → Λₙ n) → Λₙ n
 _[_]ₙ = _[_]
+
+_[_]ₒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
+M [ N ]ₒ = M [ io var N ]
+
+bind : ∀ {A B : Set} → (A → Λ B) → Λ A → Λ B
+bind f t = t [ f ]
+
+bind≅ : ∀ {A B : Set} {f g : A → Λ B} → f ≅ g → bind f ≅ bind g
+bind≅ f≅g (var x) = f≅g x
+bind≅ f≅g (app t1 t2) = cong2 app (bind≅ f≅g t1 ) (bind≅ f≅g t2)
+bind≅ f≅g (abs t0) = cong abs (bind≅ (lift≅ f≅g) t0)
+
+bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
+               → bind g ∘ bind f ≅ bind (bind g ∘ f)
+bind-assoc {A} {B} {C} {f} {g} (var x) = refl
+bind-assoc {A} {B} {C} {f} {g} (app t1 t2) = cong2 app (bind-assoc t1) (bind-assoc t2)
+bind-assoc {A} {B} {C} {f} {g} (abs t0)
+  = cong abs {! bind-assoc t0   !}
+
+bind-nat : ∀ {X Y : Set} (g : X → Λ Y) → Λ→ i ∘ bind g ≅ bind (lift g) ∘ Λ→ i
+bind-nat g (var x) = refl
+bind-nat g (app t1 t2) = cong2 app (bind-nat g t1) (bind-nat g t2)
+bind-nat g (abs t0) = cong abs {! bind-nat (lift g) t0  !}
+
+bind-assoc≅ : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} {h : A → Λ C}
+               → (bind g ∘ f) ≅ h → bind g ∘ bind f ≅ bind h
+bind-assoc≅ bg∘f≅h (var x) = bg∘f≅h x
+bind-assoc≅ bg∘f≅h (app t1 t2) = cong2 app (bind-assoc≅ bg∘f≅h t1) (bind-assoc≅ bg∘f≅h t2)
+bind-assoc≅ {f = f} {g} bg∘f≅h (abs t0) = cong abs (bind-assoc≅ eq t0)
+  where eq : _ -- bind (lift g) ∘ lift f ≅ lift h
+        eq (i x) = ~ (bind-nat g (f x)) ! (cong (Λ→ i) (bg∘f≅h x))
+        eq o = refl
+
+
+
+
+
+
+
+
+
+
 
 
 
