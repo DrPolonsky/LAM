@@ -1,72 +1,102 @@
 module Predicates where
 
+-- open import LogicLevels
 open import Logic
+open import Lifting
+open import Lambda
 
--- The type of predicates on a given set A, AKA the powerset of A
--- (Note that the output A → Set is a type in a bigger universe Set₁)
+module Pred (A : Set) where
+  -- The type of n-ary predicates on A
+  𝓟^ : ℕ → Set₁
+  𝓟^ zero     = Set
+  𝓟^ (succ n) = A → 𝓟^ n
 
-𝓟 : Set → Set₁
-𝓟 A = A → Set
+  -- The type of (unary) predicates on A, AKA the powerset of A
+  𝓟 : Set₁
+  𝓟 = 𝓟^ 1
 
--- Membership relation
--- ∈ is \in
-_∈_ : ∀ {A : Set} → A → 𝓟 A → Set
-a ∈ P = P a
-infix 18 _∈_
+  -- The type of binary relations on A
+  𝓡 : Set₁
+  𝓡 = 𝓟^ 2
 
--- ∉ is \inn
-_∉_ : ∀ {A : Set} → A → 𝓟 A → Set
-a ∉ P = ¬ a ∈ P
+open Pred public
 
--- Subset relation
--- ⊆ is \sub=
-_⊆_ : ∀ {A : Set} → 𝓟 A → 𝓟 A → Set
-A ⊆ B = ∀ x → x ∈ A → x ∈ B
-infix 16 _⊆_
+-- The functorial action of 𝓟^
+𝓟^← : ∀ {n : ℕ} {A B : Set} → (A → B) → 𝓟^ B n → 𝓟^ A n
+𝓟^← {zero}   f P = P
+𝓟^← {succ n} f P = λ a → 𝓟^← f (P (f a))
 
--- Creating a new module to lighten up the notation
-module LogicOps {U : Set} where
+module LogicOps {A : Set} where
+  K⊤ : ∀ {n} → 𝓟^ A n
+  K⊤ {zero}   = ⊤
+  K⊤ {succ n} = λ _ → K⊤
 
-  -- The empty subset ∅ ⊆ U.
-  -- Corresponds to the constantly-false predicate.
-  K⊥ : 𝓟 U
-  K⊥ _ = ⊥
+  K⊥ : ∀ {n} → 𝓟^ A n
+  K⊥ {zero}   = ⊥
+  K⊥ {succ n} = λ _ → K⊥
 
-  -- The full subset U ⊆ U.
-  -- Corresponds to the constantly-true predicate.
-  K⊤ : 𝓟 U
-  K⊤ _ = ⊤
+  _∩_ : ∀ {n} → 𝓟^ A n → 𝓟^ A n → 𝓟^ A n
+  _∩_ {zero}   P Q =          P × Q
+  _∩_ {succ n} P Q = λ a → (P a ∩ Q a)
 
-  -- Logical operators on subsets
-  -- ∩ is \cap
-  _∩_ : 𝓟 U → 𝓟 U → 𝓟 U
-  A ∩ B = λ x  →  x ∈ A  ×  x ∈ B
-  infix 17 _∩_
+  _∪_ : ∀ {n} → 𝓟^ A n → 𝓟^ A n → 𝓟^ A n
+  _∪_ {zero}   P Q =          P ⊔ Q
+  _∪_ {succ n} P Q = λ a → (P a ∪ Q a)
 
-  -- Union.  Corresponds to disjunction.
-  -- ∪ is \cup
-  _∪_ : 𝓟 U → 𝓟 U → 𝓟 U
-  A ∪ B = λ x  →  x ∈ A  ⊔  x ∈ B
-  infix 17 _∪_
+  ∁_ : ∀ {n} → 𝓟^ A n → 𝓟^ A n
+  ∁_ {zero}   P = ¬ P
+  ∁_ {succ n} P = λ x → ∁ (P x)
 
-  -- Complement. Corresponds to negation.
-  -- ∁ is \C
-  ∁_ : 𝓟 U → 𝓟 U
-  ∁ A = λ x → x ∉ A
-  infix 19 ∁_
+  -- Subset relation
+  _⊆_ : ∀ {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ A n → Set
+  _⊆_ {zero}   P Q = P → Q
+  _⊆_ {succ n} P Q = ∀ x → P x ⊆ Q x
 
-  -- Extensional equivalence of predicates.
-  -- ⇔ is \<=>
-  _⇔_ : 𝓟 U → 𝓟 U → Set
+  -- Extensional equivalence of predicates
+  _⇔_ : ∀ {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ A n → Set
   A ⇔ B = A ⊆ B × B ⊆ A
 
   infix 15 _⇔_
-
-  predEq : ∀ {A B : 𝓟 U} →   A ⇔ B   ↔   ∀ x → x ∈ A ↔ x ∈ B
-  predEq = ( (λ A≃B → λ x → (λ ax → pr1 A≃B x ax ) , (λ bx → pr2 A≃B x bx ) )
-           , (λ AB → (λ x xa → pr1 (AB x) xa) , (λ x xb → pr2 (AB x) xb)) )
-
+  infix 16 _⊆_
+  infix 17 _∩_
+  infix 17 _∪_
+  infix 19 ∁_
 open LogicOps public
 
--- dec : ∀ {A} → 𝓟 A → Set
--- dec P = ∀ x → EM (P x) -- P x ∨ ¬ P x
+module Lifting^ where
+  o^ : ∀ {n : ℕ} {A : Set} → 𝓟^ (↑ A) n
+  o^ {zero}         = ⊤
+  o^ {succ n} (i x) = K⊥
+  o^ {succ n} o     = o^
+
+  i^ : ∀ {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ (↑ A) n
+  i^ {zero}   P       = P
+  i^ {succ n} P (i x) = i^ (P x)
+  i^ {succ n} P o     = K⊥
+
+  ↑^ : ∀  {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ (↑ A) n
+  ↑^ P = i^ P ∪ o^
+open Lifting^ public
+
+module Lambda^ where
+  var^ : ∀ {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ (Λ A) n
+  var^ {zero}   P         = P
+  var^ {succ n} P (var x) = var^ (P x)
+  var^ {succ n} P _       = K⊥
+
+  app^ : ∀ {n : ℕ} {A : Set} → 𝓟^ (Λ A) n → 𝓟^ (Λ A) n → 𝓟^ (Λ A) n
+  app^ {zero}   P Q             = P × Q
+  app^ {succ n} P Q (app t1 t2) = app^ (P t1) (Q t2)
+  app^ {succ n} P Q _           = K⊥
+
+  abs^ : ∀ {n : ℕ} {A : Set} → 𝓟^ (Λ (↑ A)) n → 𝓟^ (Λ A) n
+  abs^ {zero}   P         = P
+  abs^ {succ n} P (abs t) = abs^ (P t)
+  abs^ {succ n} P _       = K⊥
+
+  Λ^ : ∀  {n : ℕ} {A : Set} → 𝓟^ A n → 𝓟^ (Λ A) n
+  Λ^ {zero}   {A} P             = P
+  Λ^ {succ n} {A} P (var x)     = var^ (P x)
+  Λ^ {succ n} {A} P (app t1 t2) = app^ (Λ^ P t1) (Λ^ P t2)
+  Λ^ {succ n} {A} P (abs t0)    = abs^ (Λ^ (↑^ P) t0)
+open Lambda^ public
