@@ -35,7 +35,7 @@ io f b o = b
 ↑→∘ f g o = refl
 
 -- Combination of the two properties above
-↑→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → h ≅ g ∘ f → ↑→ h ≅ ↑→ g ∘ ↑→ f
+↑→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → (h ≅ g ∘ f) → (↑→ h ≅ ↑→ g ∘ ↑→ f)
 ↑→≅∘ f g h≅g∘f = tran≅ (↑→≅ h≅g∘f) (↑→∘ f g)
 
 -- Naturality of the i constructor
@@ -52,3 +52,7 @@ data ℕ : Set where
 Fin : ℕ → Set
 Fin zero = ⊥
 Fin (succ n) = ↑ (Fin n)
+
+∘^ : ∀ {A : Set} → ℕ → (A → A) → (A → A)
+∘^ zero f = I
+∘^ (succ n) f = f ∘ (∘^ n f)
