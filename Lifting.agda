@@ -14,6 +14,10 @@ io : ∀ {A B : Set} → (A → B) → B → ↑ A → B
 io f b (i x) = f x
 io f b o = b
 
+io≅ : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {b1 b2} → b1 ≡ b2 → io f b1 ≅ io g b2
+io≅ fg b12 (i x) = fg x
+io≅ fg b12 o = b12
+
 -- The map function AKA functorial action
 ↑→ : ∀ {A B : Set} → (A → B) → ↑ A → ↑ B
 ↑→ f (i x) = i (f x)
