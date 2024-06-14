@@ -194,8 +194,14 @@ isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
 isInhabited : Set → Set
 isInhabited A = A
 
-¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → isInhabited A → ¬ (isWF (R ⁼))
-¬WF⁼ {A} R isWFR⁼ = {!   !} -- isWFR⁼ (λ x → {!   !}) {!   !} {!   !}
+¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → isInhabited A → ¬ (isWF (R ⁼))    -- Would be useful to talk through this one. 
+¬WF⁼ {A} R inhabitedA WFR⁼ = WFR⁼ alwaysFalse isR⁼-inductivealwaysFalse (WFR⁼ (λ _ → A) (λ x _ → x) (inhabitedA)) where
+                            alwaysFalse : 𝓟 A 
+                            alwaysFalse = λ _ → ⊥
+                            isR⁼-inductivealwaysFalse : is (R ⁼) -inductive alwaysFalse 
+                            isR⁼-inductivealwaysFalse x h = h x ε⁼
+
+                            
 {-
 Two approaches:
 1. Find φ that is definitely NOT always true.  Then prove that this φ is inductive.
@@ -203,38 +209,48 @@ Two approaches:
 (constructive!) prove that WF→WFseq
 -}
 
--- = let
---                     x : A
---                     x = {!   !}
---                     φ : 𝓟 A
---                     φ a = {! ⊥ !}
---                     in isWFR⁼ φ (λ x x₁ → {!   !}) x
+lemmaReverseTransitivity : ∀ {A} {R : 𝓡 A} {x y z : A} → (R ⁺) x y → R y z → (R ⁺) x z
+lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
+lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
 
 WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
 WF⁺+ {A} R iswfR φ φisR⁺ind x = φisR⁺ind x g where
   g : (y : A) → (R ⁺) y x → φ y
-  g y R+yx = {!   !}
+  g y (ax⁺ Ryx) = φisR⁺ind y λ z R⁺zy → g z {!   !} -- φisR⁺ind y (λ z R⁺zy → g z (lemmaReverseTransitivity R⁺zy Ryx))
+  g y (Ryy₁ ,⁺ R⁺y₁x) = {!   !} -- WF⁺+ R iswfR {!   !} {!   !} {!   !}
+
+
 -- WF⁺+ R iswfR φ φisR⁺ind x = iswfR φ (λ y h → φisR⁺ind y λ {z (ax⁺ Rzy) → h z Rzy
 --                                                          ; z (Rzy₁ ,⁺ R⁺y₁y) → h z {!   !}}) x
 
 WF⁺- : ∀ {A} (R : 𝓡 A) → isWF (R ⁺) → isWF R
 WF⁺- R isWFR⁺ φ φisRind x = isWFR⁺ φ (λ y h → φisRind y λ z Rzy → h z (ax⁺ Rzy)) x
 
-lemma⋆→⁺ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⋆) x y →  (R ⁺) x y
-lemma⋆→⁺ R (ax⋆ x) = ax⁺ x
-lemma⋆→⁺ R ε⋆ = {!   !}
-lemma⋆→⁺ R (Rx₁y ,⋆ R⋆yy₁) = Rx₁y ,⁺ lemma⋆→⁺ R R⋆yy₁
+lemma⋆→⁺ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⋆) x y →  (R ⁺ ∪₂ R ⁼ ) x y 
+lemma⋆→⁺ R (ax⋆ Rxy) = in1 (ax⁺ Rxy)
+lemma⋆→⁺ R ε⋆ = in2 ε⁼
+lemma⋆→⁺ R (Rxy₁ ,⋆ R⋆y₁y) = in1 (Rxy₁ ,⁺ {!  (lemma⋆→⁺ R R⋆y₁y)  !})  --  R (ax⋆ x) = ax⁺ x
+-- lemma⋆→⁺ R ε⋆ = {!   !}
+-- lemma⋆→⁺ R (Rx₁y ,⋆ R⋆yy₁) = Rx₁y ,⁺ lemma⋆→⁺ R R⋆yy₁
 
 lemma⁺→⋆ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⁺) x y →  (R ⋆) x y
 lemma⁺→⋆ R (ax⁺ Rxy) = ax⋆ Rxy
 lemma⁺→⋆ R (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺yy₁
+
 
 TransitiveClosure : ∀ {A : Set} (R : 𝓡 A) → R ⋆ ⇔₂ (R ⁺ ∪₂ R ⁼)
 TransitiveClosure R = TC+ , TC- where
   TC+ : (R ⋆) ⊆₂ (R ⁺) ∪₂ (R ⁼)
   TC+ x y (ax⋆ Rxy) = in1 (ax⁺ Rxy)
   TC+ x .x ε⋆ = in2 ε⁼
-  TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = {!   !} -- should recurse on R⋆y₁y
+  TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = combineTC x y _  {!   !} (TC+ y _ {!   !}) where 
+
+    -- Auxiliary function to handle the combination
+    combineTC : ∀ {A : Set} {R : 𝓡 A} (x y y₁ : A) → R x y₁ → (R ⁺ ∪₂ R ⁼) y₁ y → (R ⁺ ∪₂ R ⁼) x y
+    combineTC x y y₁ Rxy₁ (in1 R⁺y₁y) = in1 (Rxy₁ ,⁺ R⁺y₁y)
+    combineTC x y y₁ Rxy₁ (in2 R⁼y₁y) = in2 {!   !}
+
+  -- TC+ x y  (Rxy₁ ,⋆ R⋆y₁y) = TC+ {!   !} {!   !} {!  R⋆y₁y !}  --(Rxy₁ ,⋆ R⋆y₁y) -- should recurse on R⋆y₁y
   -- TC+ x y (Rxy₁ ,⋆ R⋆y₁y) = in1 (Rxy₁ ,⁺ lemma⋆→⁺ R R⋆y₁y)
   TC- : (R ⁺) ∪₂ (R ⁼) ⊆₂ (R ⋆)
   TC- x y (in1 (ax⁺ Rxy)) = ax⋆ Rxy
@@ -367,14 +383,39 @@ is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
 -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
 is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 
+lemmaA18φ : ∀ {S : Set} {R : 𝓡 S} {A : 𝓟 S}  → S → Set
+lemmaA18φ {S} {R} {A} x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y) 
+
+lemmaA18 : ∀ {S : Set} {R : 𝓡 S} {A : 𝓟 S} {x : S} → is R -inductive lemmaA18φ  -- (λ _ → Σ S (is R - A -minimal_)) -- this is quite messy. don't really understand what I have
+lemmaA18 x H = {!   !} 
+-- lemmaA18 {S} R {A} x H with H x {!   !}
+-- ... | y ,, Ay , H2 = y ,, Ay , H2
+
+
+-- A.1.8
 A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (a : S) → a ∈ A
          → Σ[ x ∈ S ] is R - A -minimal x
-A18→ R WFR A a a∈A = {!   !}
-  -- Hint. Use WFT with φ x := x ∈ A → Σ[ y ∈ A ] (is R - A -minimal y)
+A18→ {S} R WFR A a a∈A =
+  let φ : S → Set
+      φ x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
+      φ-ind : is R -inductive φ
+      φ-ind x H = {!   !} 
+      WFRφ = WFR φ φ-ind a
+   in pr2 WFRφ
+-- A18→ {S} R WFR A a a∈A = pr2 (WFR φ {!   !} a ) where 
+--               φ : S → Set 
+--               φ x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
+
+
+-- A18→ {S} R WFR A a a∈A = WFR φ (lemmaA18 R) a where   -- (λ _ → Σ S (is_-_-minimal_ R A))
+--                         φ : (x : S) → Set
+--                         φ = λ _ → Σ S (is R - A -minimal_ )
+  -- Hint. Use WFR with φ x := x ∈ A → Σ[ y ∈ A ] (is R - A -minimal y)
   -- Try to prove this φ is R-inductive.
   -- Otherwise, try φ x := x ∈ A × Σ[ y ∈ A ] (is R - A -minimal y)
 -- A18→ R WFR x y Ryx = WFR (λ x₁ → ⊥) (λ x₁ h → h y {!   !}) x
 
 -- For the converse, try to prove "Every non-empty A contains a R-minimal element" → "isWFseq R"
-
+ 
 -- The End
+       
