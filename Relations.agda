@@ -5,7 +5,6 @@ module Relations where
 
 open import Logic
 open import Predicates
-open import Agda.Builtin.Sigma renaming (_,_ to _,,_)
 
 Rel : Set → Set → Set₁
 Rel A B = A → B → Set
