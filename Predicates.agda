@@ -18,6 +18,17 @@ open import Lambda
 𝓡 : Set → Set₁
 𝓡 = 𝓟^ 2
 
+-- Membership relation
+-- ∈ is \in
+_∈_ : ∀ {A : Set} → A → 𝓟 A → Set
+a ∈ P = P a
+
+-- ∉ is \inn
+_∉_ : ∀ {A : Set} → A → 𝓟 A → Set
+a ∉ P = ¬ a ∈ P
+infix 18 _∈_
+infix 18 _∉_
+
 -- The functorial action of 𝓟^
 𝓟^← : ∀ {n : ℕ} {A B : Set} → (A → B) → 𝓟^ n B → 𝓟^ n A
 𝓟^← {zero}   f P = P
@@ -50,12 +61,12 @@ module LogicOps {A : Set} where
   ∁_ {succ n} P = λ x → ∁ (P x)
 
   -- Subset relation
-  _⊆_ : ∀ {n : ℕ} {A : Set} → 𝓟^ n A → 𝓟^ n A → Set
+  _⊆_ : ∀ {n : ℕ} → 𝓟^ n A → 𝓟^ n A → Set
   _⊆_ {zero}   P Q = P → Q
   _⊆_ {succ n} P Q = ∀ x → P x ⊆ Q x
 
   -- Extensional equivalence of predicates
-  _⇔_ : ∀ {n : ℕ} {A : Set} → 𝓟^ n A → 𝓟^ n A → Set
+  _⇔_ : ∀ {n : ℕ} → 𝓟^ n A → 𝓟^ n A → Set
   A ⇔ B = A ⊆ B × B ⊆ A
 
   infix 15 _⇔_
