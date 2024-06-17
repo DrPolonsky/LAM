@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+-- {-# OPTIONS --allow-unsolved-metas #-}
 module Lambda where
 
 open import Logic
@@ -52,10 +52,19 @@ data Λ (V : Set) : Set where
 
 -- Preservation of composition modulo pointwise equality
 -- (This lemma looks more complicated, but its proof is simpler than the above)
-Λ→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → h ≅ g ∘ f → Λ→ h ≅ Λ→ g ∘ Λ→ f
-Λ→≅∘ f g h≅g∘f (var x)   = cong  var (h≅g∘f x)
-Λ→≅∘ f g h≅g∘f (app s t) = cong2 app (Λ→≅∘ f g h≅g∘f s) (Λ→≅∘ f g h≅g∘f t)
-Λ→≅∘ f g h≅g∘f (abs r)   = cong  abs (Λ→≅∘ (↑→ f) (↑→ g) (↑→≅∘ f g h≅g∘f) r )
+Λ→∘≅ : ∀ {A B C} (f : A → B) (g : B → C) {h} → Λ→ g ∘ Λ→ f ≅ h → Λ→ (g ∘ f) ≅ h
+-- Λ→∘≅ f g ΛgΛf≅h = Λ→∘ f g ≅!≅ ΛgΛf≅h
+Λ→∘≅ f g ΛgΛf≅h (var x) = ΛgΛf≅h (var x)
+Λ→∘≅ f g ΛgΛf≅h (app t1 t2) = {! Λ→∘≅ f g ΛgΛf≅h t1  !} -- cong2 app {!   !} {!   !} ! (ΛgΛf≅h (app t1 t2))
+Λ→∘≅ f g ΛgΛf≅h (abs t0) = {!   !}
+-- -- Preservation of composition modulo pointwise equality
+-- -- The Original Version
+-- -- (This lemma looks more complicated, but its proof is simpler than the above)
+-- Λ→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → h ≅ g ∘ f → Λ→ h ≅ Λ→ g ∘ Λ→ f
+-- -- Λ→≅∘ f g h≅g∘f = tran≅ (Λ→≅ h≅g∘f) (Λ→∘ _ _)
+-- Λ→≅∘ f g h≅g∘f (var x)   = cong  var (h≅g∘f x)
+-- Λ→≅∘ f g h≅g∘f (app s t) = cong2 app (Λ→≅∘ f g h≅g∘f s) (Λ→≅∘ f g h≅g∘f t)
+-- Λ→≅∘ f g h≅g∘f (abs r)   = cong  abs (Λ→≅∘ (↑→ f) (↑→ g) (↑→≅∘ f g h≅g∘f) r )
 
 -- Lifting a function over the type of terms
 lift : ∀ {A B : Set} → (A → Λ B) → ↑ A → Λ (↑ B)
@@ -86,25 +95,36 @@ bind≅ f≅g (var x) = f≅g x
 bind≅ f≅g (app t1 t2) = cong2 app (bind≅ f≅g t1 ) (bind≅ f≅g t2)
 bind≅ f≅g (abs t0) = cong abs (bind≅ (lift≅ f≅g) t0)
 
-bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
-               → bind g ∘ bind f ≅ bind (bind g ∘ f)
-bind-assoc {A} {B} {C} {f} {g} (var x) = refl
-bind-assoc {A} {B} {C} {f} {g} (app t1 t2) = cong2 app (bind-assoc t1) (bind-assoc t2)
-bind-assoc {A} {B} {C} {f} {g} (abs t0)
-  = cong abs {! bind-assoc t0   !}
-
 bind-nat : ∀ {X Y : Set} (g : X → Λ Y) → Λ→ i ∘ bind g ≅ bind (lift g) ∘ Λ→ i
 bind-nat g (var x) = refl
 bind-nat g (app t1 t2) = cong2 app (bind-nat g t1) (bind-nat g t2)
 bind-nat g (abs t0) = cong abs {! bind-nat (lift g) t0  !}
 
+io-ind : ∀ {X} (B : ↑ X → Set) → (∀ x → B (i x)) → B o → ∀ y → B y
+io-ind B ih oh (i x) = ih x
+io-ind B ih oh o     = oh
+
 bind-assoc≅ : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} {h : A → Λ C}
-               → (bind g ∘ f) ≅ h → bind g ∘ bind f ≅ bind h
-bind-assoc≅ bg∘f≅h (var x) = bg∘f≅h x
+               → h ≅ bind g ∘ f → bind h ≅ bind g ∘ bind f
+bind-assoc≅ bg∘f≅h (var x)     = bg∘f≅h x
 bind-assoc≅ bg∘f≅h (app t1 t2) = cong2 app (bind-assoc≅ bg∘f≅h t1) (bind-assoc≅ bg∘f≅h t2)
-bind-assoc≅ {f = f} {g} bg∘f≅h (abs t0) = cong abs (bind-assoc≅ eq t0)
-  where eq : _ -- bind (lift g) ∘ lift f ≅ lift h
-        eq (i x) = ~ (bind-nat g (f x)) ! (cong (Λ→ i) (bg∘f≅h x))
-        eq o = refl
+bind-assoc≅ {f = f} {g} {h} bg∘f≅h (abs t0)    = cong abs (bind-assoc≅ eq t0) where
+  eq = {!   !} -- tran≅ (lift≅ bg∘f≅h) {!   !}
+  -- eq = λ { (i x) → {!   !} ; o → refl }
+  -- ih = {!   !} -- λ x → {! Λ→≅∘ _ _ (symm≅ bg∘f≅h) x    !}
+  -- eq = io-ind (λ a → bind (lift g) (lift f a) ≡ lift h a) ih refl
+-- bind-assoc≅ {f = f} {g} bg∘f≅h (abs t0) = cong abs (bind-assoc≅ eq t0)
+--   where eq : _ -- bind (lift g) ∘ lift f ≅ lift h
+--         eq (i x) = ~ (bind-nat g (f x)) ! (cong (Λ→ i) (bg∘f≅h x))
+--         eq o = refl
+
+bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
+               → bind (bind g ∘ f) ≅ bind g ∘ bind f
+bind-assoc {f = f} {g} = bind-assoc≅ refl≅
+-- bind-assoc {A} {B} {C} {f} {g} (var x) = refl
+-- bind-assoc {A} {B} {C} {f} {g} (app t1 t2) = cong2 app (bind-assoc t1) (bind-assoc t2)
+-- bind-assoc {A} {B} {C} {f} {g} (abs t0)
+--   = cong abs {! bind-assoc t0   !}
+
 
 -- The End

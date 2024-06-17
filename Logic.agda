@@ -100,6 +100,19 @@ symm≅ fg x = ~ (fg x)
 tran≅ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
 tran≅ fg gh x = (fg x) ! (gh x)
 
+!≅! : ∀ {A B : Set} {f : A → B} → f ≅ f
+!≅! = refl≅
+~≅_ : ∀ {A B : Set} {f g : A → B} → f ≅ g → g ≅ f
+~≅_ = symm≅
+_≅!≅_ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
+_≅!≅_ = tran≅
+_~!≅_ : ∀ {A B : Set} {f g h : A → B} → g ≅ f → g ≅ h → f ≅ h
+p ~!≅ q = (~≅ p) ≅!≅ q
+_≅!~_ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → h ≅ g → f ≅ h
+p ≅!~ q = p ≅!≅ (~≅ q)
+_≅~≅_ : ∀ {A B : Set} {f g h : A → B} → g ≅ f → h ≅ g → f ≅ h
+p ≅~≅ q = (~≅ p) ≅!≅ (~≅ q)
+
 infix 10 _↔_
 infix 14 _⊔_
 infix 15 _×_
@@ -109,6 +122,12 @@ infix 22 _!_
 infix 25 _∘_
 infix 10 _,_
 infix 17 ¬_
+infix 25 ~≅_
+infix 23 _≅!≅_
+infix 23 _~!≅_
+infix 23 _≅!~_
+-- infix 23 _≅~≅_
+-- infix 23 _~≅~_
 
 -- SIGMA TYPE
 open import Agda.Builtin.Sigma renaming (_,_ to _,,_) public
