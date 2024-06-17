@@ -182,11 +182,11 @@ acyclic R = irreflR (R ⁺)
   -- data WF {A : Set} (R : Rel A) : A → Set where -- written to provide strongly normal
   --   isNF : ∀ {x : A} → normal x R → WF R x -- is normal form
   --   indF : ∀ {x : A} → (∀ y → R x y → WF R y) → WF R x
-
+    
 
 is_-inductive_ : ∀ {A : Set} → 𝓡 A → 𝓟 A → Set
 is R -inductive φ = ∀ x → (∀ y → R y x → φ y) → φ x
-
+  
 isWF : ∀ {A} → 𝓡 A → Set₁
 isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
 
@@ -203,7 +203,9 @@ lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
 lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
 
 WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
-WF⁺+ {A} R iswfR φ φisR⁺ind x = {!   !} -- Try to directly use iswfR,
+WF⁺+ {A} R iswfR φ φisR⁺ind x = iswfR φ φisRind x where -- Try to directly use iswfR,
+                                φisRind : is R -inductive φ 
+                                φisRind y H = φisR⁺ind y λ z R⁺zy → iswfR φ {! φisRind  !} z   -- This feels really close. But leads to a termination error.  
   -- by providing it with a proof that φ is R -inductive.
 -- WF⁺+ {A} R iswfR φ φisR⁺ind x = φisR⁺ind x g where
 --   g : (y : A) → (R ⁺) y x → φ y
@@ -284,7 +286,8 @@ MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ 
 open import Classical
 
 MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → EM A →  DeMorgan∀∃rel B P
-MPrel→DMrel {A} B P MPBP EM ¬B⊆P = {!   !}
+MPrel→DMrel {A} B P MPBP (in1 x) ¬B⊆P  = {!   !}
+MPrel→DMrel {A} B P MPBP (in2 ¬x) ¬B⊆P = {!   !}
 -- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}
 -- ... | y ,, By , Py = y ,, By , λ Py → ¬B⊆P λ x Bx → {!   !}
 
@@ -361,20 +364,27 @@ is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
 -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
 is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 
--- module A18Constructive where
---
---   lemmaA18φ : ∀ (S : Set) → 𝓡 S → 𝓟 S → 𝓟 S
---   lemmaA18φ S R A x = (x ∈ A) → Σ[ y ∈ S ] (is R - A -minimal y)
---
---   -- lemmaA18φ S R A x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
---
---   A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (x : S) → x ∈ A
---            → ¬¬ Σ[ y ∈ S ] is R - A -minimal y
---   A18→ {S} R WFR A x x∈A ¬miny =
---     let φ    = λ y → y ∈ A → ∀ z → z ∈ A → ¬¬ R z y
---         WFRφ : is R -inductive φ
---         WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, y∈A , λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A z z∈A (λ Rzy1 → H y1 Ry1y y1∈A z z∈A {!   !} ) )
---      in  WFR φ WFRφ x x∈A x x∈A (WFR (λ z → (x : R z z) → ⊥) (λ x z x₁ → z x x₁ x₁) x)
+module A18Constructive where
+  
+  lemmaA18φ : ∀ (S : Set) → 𝓡 S → 𝓟 S → 𝓟 S
+  lemmaA18φ S R A x = (x ∈ A) → Σ[ y ∈ S ] (is R - A -minimal y)
+
+  -- lemmaA18φ S R A x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
+
+  A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (x : S) → x ∈ A
+           → ¬¬ Σ[ y ∈ S ] is R - A -minimal y
+  A18→ {S} R WFR A x x∈A ¬miny =
+    let φ    = λ y → y ∈ A → ∀ z → z ∈ A → ¬¬ R z y
+        φ₂ : 𝓟 S 
+        φ₂ = λ z → (R z z) → ⊥
+        WFRφ : is R -inductive φ
+        WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, (y∈A , (λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A y1 y1∈A 
+                                                              λ _ →  H y1 Ry1y y1∈A y1 y1∈A
+                                                              (WFR (λ z → (x : R z z) → ⊥) (λ w H₂ Rww → H₂ w Rww Rww) y1)))) 
+        -- WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, y∈A , λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A z z∈A (λ Rzy1 → H y1 Ry1y y1∈A z z∈A {!     !} ) )
+        WFRφ₂ : is R -inductive φ₂ 
+        WFRφ₂ y H Rxx = H y Rxx Rxx   
+     in  WFR φ WFRφ x x∈A x x∈A (WFR (λ z → (x : R z z) → ⊥) (λ x z x₁ → z x x₁ x₁) x)
 
 -- ↓R-dec : ∀ (S : Set) (R : 𝓡 S) → 𝓟 S
 -- ↓R-dec S R x = ¬ (∀ y → ¬ R y x) → Σ[ y ∈ S ] R y x
@@ -407,3 +417,4 @@ is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 -- For the converse, try to prove "Every non-empty A contains a R-minimal element" → "isWFseq R"
 
 -- The End
+   
