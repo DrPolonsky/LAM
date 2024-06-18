@@ -113,6 +113,12 @@ p ≅!~ q = p ≅!≅ (~≅ q)
 _≅~≅_ : ∀ {A B : Set} {f g h : A → B} → g ≅ f → h ≅ g → f ≅ h
 p ≅~≅ q = (~≅ p) ≅!≅ (~≅ q)
 
+_≅∘_ : ∀ {A B C} {f g : B → C} → f ≅ g → ∀ (h : A → B) → f ∘ h ≅ g ∘ h
+fg ≅∘ h = λ a → fg (h a)
+
+_∘≅_ : ∀ {A B C} (f : B → C) {g h : A → B} → g ≅ h → f ∘ g ≅ f ∘ h
+f ∘≅ gh = λ a → cong f (gh a)
+
 infix 10 _↔_
 infix 14 _⊔_
 infix 15 _×_

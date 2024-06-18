@@ -14,6 +14,7 @@ io : ∀ {A B : Set} → (A → B) → B → ↑ A → B
 io f b (i x) = f x
 io f b o = b
 
+-- The lifting eliminator preserves pointwise equality
 io≅ : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {b1 b2} → b1 ≡ b2 → io f b1 ≅ io g b2
 io≅ fg b12 (i x) = fg x
 io≅ fg b12 o = b12
@@ -40,7 +41,11 @@ io≅ fg b12 o = b12
 
 -- Combination of the two properties above
 ↑→≅∘ : ∀ {A B C} (f : A → B) (g : B → C) {h} → (h ≅ g ∘ f) → (↑→ h ≅ ↑→ g ∘ ↑→ f)
-↑→≅∘ f g h≅g∘f = tran≅ (↑→≅ h≅g∘f) (↑→∘ f g)
+↑→≅∘ f g h≅g∘f = (↑→≅ h≅g∘f) ≅!≅ (↑→∘ f g)
+
+-- A symmetric version of the above
+↑→∘≅ : ∀ {A B C} (f : A → B) (g : B → C) {h} → (g ∘ f ≅ h) → (↑→ g ∘ ↑→ f ≅ ↑→ h)
+↑→∘≅ f g g∘f≅h = (↑→∘ f g) ~!≅ (↑→≅ g∘f≅h)
 
 -- Naturality of the i constructor
 i-nat : ∀ {A B : Set} → (f : A → B) → i ∘ f ≅ ↑→ f ∘ i
