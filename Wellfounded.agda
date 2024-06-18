@@ -4,6 +4,9 @@ open import Logic
 open import Predicates
 open import Relations
 
+inductive⁺ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is (R ⁺) -inductive φ → is R -inductive φ
+inductive⁺ R φ φ-ind = {!   !} 
+
 -- is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
 -- is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)

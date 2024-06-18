@@ -3,15 +3,25 @@ module TypedLambda (𝔸 : Set) where
 open import Logic
 open import Lifting
 open import Lambda
+open import Predicates
 
 -- term2 = "λxλy.y(λz.z(λa.ax)y)x"
 term2 : Λ₀
 term2 = abs (abs (app (app (var o ) (abs (app (app (var o)
   (abs (app (var o) (var (i (i (i o))))))) (var (i o))))) (var (i o))))
 
+
+
+
+
+
+
 data 𝕋 : Set where
   atom : 𝔸 → 𝕋
   _⇒_  : 𝕋 → 𝕋 → 𝕋
+
+Cxt : Set → Set
+Cxt V = V → 𝕋
 
 module Curry where
 
@@ -24,9 +34,6 @@ So, "Γ : Cxt V" should mean:
   1. dom(Γ) = V, and
   2. for each x : V, Γ provides a type A=Γ(x) : 𝕋
 -}
-  Cxt : Set → Set
-  Cxt V = V → 𝕋
-
   -- ⊢ is \|- or \vdash, ∶ is \:
   data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
     Var : ∀ {Γ A} {x}    →  Γ x ≡ A                      → Γ ⊢ var x ∶ A
@@ -42,15 +49,15 @@ So, "Γ : Cxt V" should mean:
   ioNat f g d (i x) = refl
   ioNat f g d o = refl
 
+  -- make B explicit!!
   weak⊢ : ∀ {V W} {Δ : Cxt W} {N : Λ V} {A B : 𝕋} (f : V → W) → (Δ ∘ f) ⊢ N ∶ A → Δ ⊢ Λ→ f N ∶ A
   weak⊢ f (Var d) = Var d
   weak⊢ f (App {A = A} {B} d1 d2) = App (weak⊢ {B = A ⇒ B} f d1) (weak⊢ {B = A} f d2)
-  weak⊢ {Δ = Δ} f (Abs {A = A} d0) = Abs (weak⊢ (↑→ f) (_≅⊢_∶_ (ioNat Δ f A ) d0 ) )
+  weak⊢ {Δ = Δ} f (Abs {A = A} {B} d0) = Abs (weak⊢ {B = A} (↑→ f) (_≅⊢_∶_ (ioNat Δ f A ) d0 ) )
 
   lift⊢ : ∀ {V W : Set} {Γ : Cxt V} {Δ : Cxt W} {Ns : V → Λ W} {B : 𝕋}
           → (∀ v → Δ ⊢ Ns v ∶ Γ v) → ∀ (v : ↑ V) → io Δ B ⊢ lift Ns v ∶ io Γ B v
-  lift⊢ {V} {W} {Γ} {Δ} {Ns} {B} ν (i x)
-    = weak⊢ i (ν x)
+  lift⊢ {V} {W} {Γ} {Δ} {Ns} {B} ν (i x) = weak⊢ {B = B} i (ν x)
     -- _≅⊢_∶_ {!   !} (weak⊢ i (ν x) ) -- weak⊢ (ν x)
   -- ν x has type       Δ ⊢ Ns x ∶ Γ x
   -- Goal is       io Δ B ⊢ Λ→ i (Ns x) ∶ Γ x
@@ -88,6 +95,48 @@ So, "Γ : Cxt V" should mean:
       νs (i x) = Var refl
       νs o = ν
 
+open Curry
+
+module Church where
+  data ΛCh {V : Set} : (Cxt V) → 𝕋 → Set where
+    varCh : ∀ {Γ} x {A} → Γ x ≡ A → ΛCh Γ A
+    appCh : ∀ {Γ} {A B}   → ΛCh Γ (A ⇒ B) → ΛCh Γ A → ΛCh Γ B
+    absCh : ∀ {Γ} {A B}   → ΛCh (io Γ A) (B)        → ΛCh Γ (A ⇒ B)
+
+  erase : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → Λ V
+  erase (varCh x e) = var x
+  erase (appCh M1 M2) = app (erase M1) (erase M2)
+  erase (absCh M0) = abs (erase M0)
+
+  prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
+  prop1B19i M = {!   !}
+
+  embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
+  embellish M d = {!   !}
+
+  prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
+               → erase (embellish M d) ≡ M
+  prop1B19ii M d = {!   !}
+
+  ΛCh≃ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
+  ΛCh≃ g=d (varCh x e) = varCh x (g=d x ~! e)
+  ΛCh≃ g=d (appCh t1 t2) = appCh (ΛCh≃ g=d  t1) (ΛCh≃ g=d t2)
+  ΛCh≃ g=d (absCh t0) = absCh (ΛCh≃ (io≅ g=d refl) t0)
+
+  -- ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh Γ A → ΛCh (Γ ∘ f) A
+  ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh (Γ ∘ f) A → ΛCh Γ A
+  ΛCh→ f (varCh x e) = varCh (f x) e
+  ΛCh→ f (appCh M1 M2) = appCh (ΛCh→ f M1) (ΛCh→ f M2)
+  ΛCh→ f (absCh M0) = absCh (ΛCh→ (↑→ f) (ΛCh≃ (λ {  (i x) → refl ; o → refl }) M0 ) )
+
+  _[_]Ch : ∀ {V W : Set} {Γ : Cxt V} {Δ : Cxt W} {A} → ΛCh Γ A → (N : ∀ (x : V) → ΛCh Δ (Γ x))
+            → ΛCh Δ A
+  varCh x e [ N ]Ch = transp (ΛCh _) e (N x)
+  appCh M1 M2     [ N ]Ch = appCh (M1 [ N ]Ch) (M2 [ N ]Ch)
+  absCh M0        [ N ]Ch = absCh (M0 [ N' ]Ch) where
+    N' : _ -- ∀ (x : ↑ V) → ΛCh (io Δ A) (io Γ A x)
+    N' (i x) = ΛCh→ i (N x)
+    N' o     = varCh o refl
 
 
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
@@ -96,13 +145,3 @@ So, "Γ : Cxt V" should mean:
   --           → Γ ⊢ M ∶ (A ⇒ B)  →  Γ ⊢ N ∶ A  →  Γ ⊢ app M N ∶ B
   --   Abs : ∀ {Γ : Cxt V} {M : Λ (↑ V)} {A B : 𝕋}
   --           → io Γ A ⊢ M ∶ B  →  Γ ⊢ abs M ∶ (A ⇒ B)
-
-module Church where
-
-  -- 𝑽ᵀ : Set
-  -- 𝑽ᵀ = 𝑽 ∧ 𝕋
-
-  -- data ΛCh : 𝕋 → Set where
-  --   var : ∀ {A : 𝕋} → 𝑽 → Λ A
-  --   app : ∀ {A B : 𝕋} → Λ (A ⇒ B) → Λ A → Λ B
-  --   abs : ∀ {A B : 𝕋} → 𝑽 → Λ (B) → Λ (A ⇒ B)
