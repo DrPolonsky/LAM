@@ -4,6 +4,7 @@
 module Relations where
 
 open import Logic
+open import Lifting using (ℕ; zero; succ)
 open import Predicates
 
 Rel : Set → Set → Set₁
@@ -105,6 +106,11 @@ module ClosureOperators {U : Set} where
     ax⁺  : ∀ {x y : U}   → R x y → (R ⁺) x y
     _,⁺_ : ∀ {x y z : U} → R x y → (R ⁺) y z → (R ⁺) x z
 
+  -- Transitive closure, starting from the tail
+  data _₊ (R : 𝓡 U) : 𝓡 U   where
+    ax₊  : ∀ {x y : U}   → R x y → (R ₊) x y
+    _₊,_ : ∀ {x y z : U} → (R ₊) x y → R y z → (R ₊) x z
+
   -- symmetric closure
   data _ˢ (R : 𝓡 U) : 𝓡 U where
     axˢ+ : ∀ {x y} → R x y → (R ˢ) x y
@@ -182,18 +188,19 @@ acyclic R = irreflR (R ⁺)
   -- data WF {A : Set} (R : Rel A) : A → Set where -- written to provide strongly normal
   --   isNF : ∀ {x : A} → normal x R → WF R x -- is normal form
   --   indF : ∀ {x : A} → (∀ y → R x y → WF R y) → WF R x
-    
+
 
 is_-inductive_ : ∀ {A : Set} → 𝓡 A → 𝓟 A → Set
 is R -inductive φ = ∀ x → (∀ y → R y x → φ y) → φ x
-  
+
 isWF : ∀ {A} → 𝓡 A → Set₁
 isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
 
-isInhabited : Set → Set
-isInhabited A = A
+isInhabited : ∀ {A} {n} → 𝓟^ n A → Set
+isInhabited {A} {zero}   X = X
+isInhabited {A} {succ n} P = Σ[ a ∈ A ] (isInhabited (P a))
 
-¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → isInhabited A → ¬ (isWF (R ⁼))
+¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → A → ¬ (isWF (R ⁼))
 ¬WF⁼ {A} R a WFR⁼ = WFR⁼ K⊥ isR=indK⊥ (WFR⁼ (K A) (λ x _ → x) a) where
                             isR=indK⊥ : is (R ⁼) -inductive K⊥
                             isR=indK⊥ x h = h x ε⁼
@@ -202,10 +209,18 @@ lemmaReverseTransitivity : ∀ {A} {R : 𝓡 A} {x y z : A} → (R ⁺) x y → 
 lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
 lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
 
+inductive₊ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is (R ₊) -inductive φ → is R -inductive φ
+-- inductive₊ {A} R φ R₊-ind x iH = R₊-ind x (λ y → λ {  (ax₊ x) → iH y x ; (R+yx ₊, x) → {!   !} })
+inductive₊ {A} R φ R₊-ind x iH = R₊-ind x (f x iH) where
+  f : ∀ x → (∀ y → R y x → φ y) → ∀ (a : A) → (R ₊) a x → φ a
+  f x IH y (ax₊ Ryx) = IH y Ryx
+  f x IH y (R₊yz ₊, Rzx) = f _ (λ v Rvz → {!   !} )  y R₊yz
+
 WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
 WF⁺+ {A} R iswfR φ φisR⁺ind x = iswfR φ φisRind x where -- Try to directly use iswfR,
-                                φisRind : is R -inductive φ 
-                                φisRind y H = φisR⁺ind y λ z R⁺zy → iswfR φ {! φisRind  !} z   -- This feels really close. But leads to a termination error.  
+    φisRind : is R -inductive φ
+    φisRind y H = φisR⁺ind y λ { z (ax⁺ Rzy) → H z Rzy ; z (x ,⁺ R⁺zy) → H z {!   !} }
+     -- iswfR φ {! φisRind  !} z   -- This feels really close. But leads to a termination error.
   -- by providing it with a proof that φ is R -inductive.
 -- WF⁺+ {A} R iswfR φ φisR⁺ind x = φisR⁺ind x g where
 --   g : (y : A) → (R ⁺) y x → φ y
@@ -237,9 +252,6 @@ TransitiveClosure R = TC+ , TC- where
   TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺y₁y
   TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
   TC- x .x (in2 ε⁼) = ε⋆
-
-open import Agda.Builtin.Sigma renaming (_,_ to _,,_)
-open import Lifting using (ℕ; zero; succ)
 
 is_-decreasing_ : ∀ {A : Set} → 𝓡 A → 𝓟 (ℕ → A)
 is R -decreasing s = ∀ n → ~R R (s n) (s (succ n)) -- xₙ > xₙ₊₁
@@ -281,6 +293,16 @@ MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A 
 
 MPrel : ∀ {A} (B P : 𝓟 A) → Set
 MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
+
+fromΣ : ∀ {A} {B : 𝓟 A} {C : Set} → Σ[ x ∈ A ] B x → (∀ x → B x → C) → C
+fromΣ (x ,, p) f = f x p
+
+is-ind¬¬ : ∀ {A : Set} (R : 𝓡 A) (φ : 𝓟 A) → (∀ x → DeMorgan∀∃rel (~R R x) φ)  → is R -inductive (λ x → φ x) → is R -inductive (λ x → ¬¬ φ x)
+is-ind¬¬ R φ DM φ-ind x H ¬φx =
+  let φ-ind' : ¬ (∀ z → R z x → φ z)
+      φ-ind' =  λ G → ¬φx (φ-ind x G )
+      DMcont = DM x φ-ind'
+   in fromΣ DMcont (λ y p → H y (pr1 p) (pr2 p) )
 
 -- Not provable unless an assumption is added, find the assumption!
 open import Classical
@@ -365,25 +387,37 @@ is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
 is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 
 module A18Constructive where
-  
+
   lemmaA18φ : ∀ (S : Set) → 𝓡 S → 𝓟 S → 𝓟 S
   lemmaA18φ S R A x = (x ∈ A) → Σ[ y ∈ S ] (is R - A -minimal y)
 
   -- lemmaA18φ S R A x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
 
+  A18←seq : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → isInhabited A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
+           → isWFseq R
+  A18←seq R H s s-dec with H (λ x → Σ[ n ∈ ℕ ] (s n ≡ x)) ((s zero ,, zero ,, refl ))
+  ... | x ,, (n ,, sn≡x) , ((m ,, sm=x) , p) = p (s (succ n)) (succ n ,, refl ) (transp (R (s (succ n))) sn≡x (s-dec n) )
+
+  A18← : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → isInhabited A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
+           → ∀ φ → is R -inductive φ → ∀ x → ¬¬ φ x
+  -- A18← R H φ φ-ind x ¬φx =
+
+  A18← R H φ φ-ind x ¬φx with H (λ z → ¬ φ z) ((x ,, ¬φx))
+  ... | y ,, ¬φy , (_ , pr4) = ¬φy (φ-ind y λ z Rzy → φ-ind z {!   !} )
+
   A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (x : S) → x ∈ A
            → ¬¬ Σ[ y ∈ S ] is R - A -minimal y
   A18→ {S} R WFR A x x∈A ¬miny =
     let φ    = λ y → y ∈ A → ∀ z → z ∈ A → ¬¬ R z y
-        φ₂ : 𝓟 S 
-        φ₂ = λ z → (R z z) → ⊥
+        -- φ₂ : 𝓟 S
+        -- φ₂ = λ z → (R z z) → ⊥
         WFRφ : is R -inductive φ
-        WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, (y∈A , (λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A y1 y1∈A 
-                                                              λ _ →  H y1 Ry1y y1∈A y1 y1∈A
-                                                              (WFR (λ z → (x : R z z) → ⊥) (λ w H₂ Rww → H₂ w Rww Rww) y1)))) 
+        WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, (y∈A , (λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A y1 y1∈A
+                                               λ _ →  H y1 Ry1y y1∈A y1 y1∈A
+                                                    (WFR (λ z → (x : R z z) → ⊥) (λ w H₂ Rww → H₂ w Rww Rww) y1))))
         -- WFRφ y H y∈A z z∈A ¬Rzy = ¬miny (y ,, y∈A , λ y1 y1∈A Ry1y → H y1 Ry1y y1∈A z z∈A (λ Rzy1 → H y1 Ry1y y1∈A z z∈A {!     !} ) )
-        WFRφ₂ : is R -inductive φ₂ 
-        WFRφ₂ y H Rxx = H y Rxx Rxx   
+        -- WFRφ₂ : is R -inductive φ₂
+        -- WFRφ₂ y H Rxx = H y Rxx Rxx
      in  WFR φ WFRφ x x∈A x x∈A (WFR (λ z → (x : R z z) → ⊥) (λ x z x₁ → z x x₁ x₁) x)
 
 -- ↓R-dec : ∀ (S : Set) (R : 𝓡 S) → 𝓟 S
@@ -416,5 +450,8 @@ module A18Constructive where
 
 -- For the converse, try to prove "Every non-empty A contains a R-minimal element" → "isWFseq R"
 
+
+
+
+
 -- The End
-   
