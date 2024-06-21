@@ -56,6 +56,12 @@ io≅ fg b12 o = b12
 i-nat : ∀ {A B : Set} → (f : A → B) → i ∘ f ≅ ↑→ f ∘ i
 i-nat f x = refl
 
+-- Naturality of the io eliminator
+io-nat : ∀ {A B C : Set} (f : B → C) (g : A → B) (c : C) → io (f ∘ g) c ≅ io f c ∘ ↑→ g
+io-nat f g d (i x) = refl
+io-nat f g d o = refl
+
+
 -- INTEGERS AND FINITE SETS
 -- ℕ is \bN
 data ℕ : Set where
