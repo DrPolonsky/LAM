@@ -109,10 +109,14 @@ module Church where
   erase (absCh M0) = abs (erase M0)
 
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
-  prop1B19i M = {!   !}
+  prop1B19i (varCh x Γx≡A) = Var Γx≡A
+  prop1B19i (appCh M1 M2) = App (prop1B19i M1) (prop1B19i M2)
+  prop1B19i (absCh M0) = Abs (prop1B19i M0)
 
   embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
-  embellish M d = {!   !}
+  embellish (var x) (Var Γx≡A) = varCh x Γx≡A
+  embellish (app M1 M2) (App d1 d2) = appCh (embellish M1 d1) (embellish M2 d2)
+  embellish (abs M0) (Abs d) = absCh (embellish M0 d)
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
