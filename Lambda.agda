@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+-- {-# OPTIONS --allow-unsolved-metas #-}
 module Lambda where
 
 open import Logic
@@ -12,15 +12,15 @@ data Λ (V : Set) : Set where
   app : Λ V → Λ V → Λ V
   abs : Λ (↑ V) → Λ V
 
--- Terms over a finite set of variables, Λₙ n = Λ {x1, ..., xn}
--- ₙ is \_n
-Λₙ : ℕ → Set
-Λₙ n = Λ (Fin n)
+-- Terms over a finite set of variables, Λᶠ n = Λ {x1, ..., xn}
+-- ᶠ is \^f
+Λᶠ : ℕ → Set
+Λᶠ n = Λ (Fin n)
 
 -- The set of closed terms, whose set of free variables is empty
--- ₀ is \_0
-Λ₀ : Set
-Λ₀ = Λₙ zero -- Λ ⊥
+-- ⁰ is \^0
+Λ⁰ : Set
+Λ⁰ = Λᶠ 0 -- Λ ⊥
 
 -- Functorial action on morphisms
 Λ→ : ∀ {A B : Set} (f : A → B) → Λ A → Λ B
@@ -73,8 +73,13 @@ lift f = io (Λ→i ∘ f) (var o)
 
 -- Lifting preserves pointwise equality
 lift≅ : ∀ {A B : Set} {f g : A → Λ B} → f ≅ g → lift f ≅ lift g
-lift≅ f≅g (i x) = cong (Λ→ i) (f≅g x)
-lift≅ f≅g o = refl
+lift≅ f≅g (i x) = cong Λ→i (f≅g x)
+lift≅ f≅g o     = refl
+-- lift≅ f≅g = io𝓟 _ (λ x → cong Λ→i (f≅g x)) refl
+
+lift≅∘ : ∀ {A B C} {f : A → B} {g : B → Λ C} {h} → h ≅ g ∘ f → lift h ≅ lift g ∘ ↑→ f
+lift≅∘ h≅gf (i x) = cong Λ→i (h≅gf x)
+lift≅∘ h≅gf o = refl
 
 -- Substitution is the monadic bind for Λ (Haskell's >>=)
 _[_] : ∀ {A B : Set} → Λ A → (A → Λ B) → Λ B
@@ -83,37 +88,40 @@ app s t [ f ] = app (s [ f ]) (t [ f ])
 abs r   [ f ] = abs (r [ lift f ])
 
 -- A special case of the above for finitely many variables
-_[_]ₙ : ∀ {m n : ℕ} → Λₙ m → (Fin m → Λₙ n) → Λₙ n
-_[_]ₙ = _[_]
+_[_]ᶠ : ∀ {m n : ℕ} → Λᶠ m → (Fin m → Λᶠ n) → Λᶠ n
+_[_]ᶠ = _[_]
 
-_[_]ₒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
-M [ N ]ₒ = M [ io var N ]
+_[_]ᵒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
+M [ N ]ᵒ  = M [ io var N ]
 
 bind : ∀ {A B : Set} → (A → Λ B) → Λ A → Λ B
 bind f t = t [ f ]
 
 bind≅ : ∀ {A B : Set} {f g : A → Λ B} → f ≅ g → bind f ≅ bind g
-bind≅ f≅g (var x) = f≅g x
+bind≅ f≅g (var x)     = f≅g x
 bind≅ f≅g (app t1 t2) = cong2 app (bind≅ f≅g t1 ) (bind≅ f≅g t2)
-bind≅ f≅g (abs t0) = cong abs (bind≅ (lift≅ f≅g) t0)
+bind≅ f≅g (abs t0)    = cong abs (bind≅ (lift≅ f≅g) t0)
+
+bind-nat₁ : ∀ {X Y Z : Set} {f : X → Y} {g : Y → Λ Z} {h}
+              → h ≅ g ∘ f → bind h ≅ bind g ∘ Λ→ f
+bind-nat₁ h≅gf (var x)     = h≅gf x
+bind-nat₁ h≅gf (app t1 t2) = cong2 app (bind-nat₁ h≅gf t1) (bind-nat₁ h≅gf t2)
+bind-nat₁ h≅gf (abs t0)    = cong abs (bind-nat₁ (lift≅∘ h≅gf) t0 )
 
 bind-nat : ∀ {X Y : Set} (g : X → Λ Y) → Λ→ i ∘ bind g ≅ bind (lift g) ∘ Λ→ i
-bind-nat g (var x) = refl
+bind-nat g (var x)     = refl
 bind-nat g (app t1 t2) = cong2 app (bind-nat g t1) (bind-nat g t2)
-bind-nat g (abs t0) = cong abs {! bind-nat (lift g) t0  !}
-
-io-ind : ∀ {X} (B : ↑ X → Set) → (∀ x → B (i x)) → B o → ∀ y → B y
-io-ind B ih oh (i x) = ih x
-io-ind B ih oh o     = oh
+bind-nat g (abs t0)    = cong abs {! bind-nat (lift g)  t0  !}
 
 bind-assoc≅ : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} {h : A → Λ C}
                → h ≅ bind g ∘ f → bind h ≅ bind g ∘ bind f
 bind-assoc≅ bg∘f≅h (var x)     = bg∘f≅h x
 bind-assoc≅ bg∘f≅h (app t1 t2) = cong2 app (bind-assoc≅ bg∘f≅h t1) (bind-assoc≅ bg∘f≅h t2)
 bind-assoc≅ {f = f} {g} {h} bg∘f≅h (abs t0)    = cong abs (bind-assoc≅ eq t0) where
-  eq = lift≅ bg∘f≅h ≅!≅ λ { (i x) → bind-nat g (f x) ; o → refl }
+  eq = lift≅∘ bg∘f≅h ≅!≅ λ {  (i x) → {! lift≅∘   !} ; o → refl }
+  -- eq = lift≅ bg∘f≅h ≅!≅ λ { (i x) → bind-nat g (f x) ; o → refl }
   -- ih = {!   !} -- λ x → {! Λ→≅∘ _ _ (symm≅ bg∘f≅h) x    !}
-  -- eq = io-ind (λ a → bind (lift g) (lift f a) ≡ lift h a) ih refl
+  -- eq = io𝓟 (λ a → bind (lift g) (lift f a) ≡ lift h a) ih refl
 -- bind-assoc≅ {f = f} {g} bg∘f≅h (abs t0) = cong abs (bind-assoc≅ eq t0)
 --   where eq : _ -- bind (lift g) ∘ lift f ≅ lift h
 --         eq (i x) = ~ (bind-nat g (f x)) ! (cong (Λ→ i) (bg∘f≅h x))
