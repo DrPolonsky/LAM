@@ -355,9 +355,10 @@ module ClassicalPropertiesOfRelations where
 
     isWFseq→isWFacc : isWFseq R → ∀ x → ¬¬ (is R -accessible x)
     isWFseq→isWFacc WFseqR x ¬accx =
-      let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !} 
+      let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !}
        in {!   !}
 
+-- Feel free to assume ∀ x → ¬ (φ x) ∨ ¬¬ (φ x)
 
 -- MPrel : ∀ {A} (B P : 𝓟 A) → Set
 -- MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
