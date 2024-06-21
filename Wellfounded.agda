@@ -10,13 +10,24 @@ inductive⁺ R φ φ-ind x H = {!   !}
 WF+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ₊)
 WF+ {A} R iswfR φ φisR+ind x = ψ→φ where
   ψ : 𝓟 A
-  ψ x = ((∀ y → (R ₊) y x → φ y) → φ x) → φ x
+  ψ x = φ x × ∀ y → (R ⁺) x y → φ y
   ψ-ind : is R -inductive ψ
   f : ∀ w v → (R ₊) v w → φ v
   f w v (ax₊ Ryw) = {!   !}
   f w v (R+vy ₊, Ryw) = {!   !}
-  ψ-ind u ↓u⊆ψ H = H (f u) --  (λ y → λ {  (ax₊ Ryu) → ↓u⊆ψ y Ryu (φisR+ind y) ; (R+yu ₊, Rzu) → {!  !} } ) -- x∈ψ {!   !} {!   !} {!   !}
-  ψ→φ = iswfR ψ ψ-ind x (φisR+ind x)
+  ψ-ind u ↓u⊆ψ = (φisR+ind u λ { y (ax₊ Ryu) → pr1 (↓u⊆ψ y Ryu) ; y (R+yy' ₊, Ry'u) → {!   !} } ) , {!   !}
+  ψ→φ = pr1 (iswfR ψ ψ-ind x)
+
+-- WF+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ₊)
+-- WF+ {A} R iswfR φ φisR+ind x = ψ→φ where
+--   ψ : 𝓟 A
+--   ψ x = ((∀ y → (R ₊) y x → φ y) → φ x) → φ x
+--   ψ-ind : is R -inductive ψ
+--   f : ∀ w v → (R ₊) v w → φ v
+--   f w v (ax₊ Ryw) = {!   !}
+--   f w v (R+vy ₊, Ryw) = {!   !}
+--   ψ-ind u ↓u⊆ψ H = H (f u) --  (λ y → λ {  (ax₊ Ryu) → ↓u⊆ψ y Ryu (φisR+ind y) ; (R+yu ₊, Rzu) → {!  !} } ) -- x∈ψ {!   !} {!   !} {!   !}
+--   ψ→φ = iswfR ψ ψ-ind x (φisR+ind x)
 
 is⊆ind : ∀ {A} (R1 R2 : 𝓡 A) → R1 ⊆ R2
             → ∀ (P : 𝓟 A) → is R1 -inductive P → is R2 -inductive P

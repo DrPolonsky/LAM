@@ -74,26 +74,33 @@ module LogicOps₂ {A B : Set} where
 
 open LogicOps₂ public
 
+-- check : ∀ {A : Set} (R Q : Rel A A) → (_⇔_ R Q) ↔ (R ⇔₂ Q)
+-- check R Q = (λ x → x ) , (λ x → x )
 
-check : ∀ {A : Set} (R Q : Rel A A) → (_⇔_ R Q) ↔ (R ⇔₂ Q)
-check R Q = (λ x → x ) , (λ x → x )
+module RelationLaws where
 
-law1 : ∀ {A B : Set} (R : Rel A B) → ≡R ∘R R ⇔₂ R
-law2 : ∀ {A B : Set} (R : Rel A B) → R ∘R ≡R ⇔₂ R
-law3 : ∀ {A : Set} → ~R (≡R {A}) ⇔ ≡R
-law4 : ∀ {A B C : Set} (R : Rel A B) (S : Rel B C) → ~R (R ∘R S) ⇔₂ (~R S) ∘R (~R R)
+  law1 : ∀ {A B : Set} (R : Rel A B) → ≡R ∘R R ⇔₂ R
+  law2 : ∀ {A B : Set} (R : Rel A B) → R ∘R ≡R ⇔₂ R
+  law3 : ∀ {A : Set} → ~R (≡R {A}) ⇔ ≡R
+  law4 : ∀ {A B C : Set} (R : Rel A B) (S : Rel B C) → ~R (R ∘R S) ⇔₂ (~R S) ∘R (~R R)
+  law5 : ∀ {A B C D : Set} (R : Rel A B) (S : Rel B C) (T : Rel C D)
+          → ((R ∘R S) ∘R T) ⇔₂ (R ∘R (S ∘R T))
+  law6 : ∀ {A B : Set} (R : Rel A B) → ~R (~R R) ⇔₂ R
 
-pr1 (law1 R) x y (.x ,, refl , Rxy) = Rxy
-pr2 (law1 R) x y Rxy = x ,, (refl , Rxy)
+  pr1 (law1 R) x y (.x ,, refl , Rxy) = Rxy
+  pr2 (law1 R) x y Rxy = x ,, (refl , Rxy)
 
-pr1 (law2 R) x y (.y ,, Rxy , refl) = Rxy
-pr2 (law2 R) x y Rxy = y ,, Rxy , refl
+  pr1 (law2 R) x y (.y ,, Rxy , refl) = Rxy
+  pr2 (law2 R) x y Rxy = y ,, Rxy , refl
 
-pr1 law3 x .x refl = refl
-pr2 law3 x .x refl = refl
+  pr1 law3 x .x refl = refl
+  pr2 law3 x .x refl = refl
 
-pr1 (law4 R S) x y (z ,, Ryx , Szx) = z ,, Szx , Ryx
-pr2 (law4 R S) x y (z ,, Szx , Ryz) = z ,, Ryz , Szx
+  pr1 (law4 R S) x y (z ,, Ryx , Szx) = z ,, Szx , Ryx
+  pr2 (law4 R S) x y (z ,, Szx , Ryz) = z ,, Ryz , Szx
+
+  law5 R S T = {!   !}
+  law6 R = {!   !}
 
 module ClosureOperators {U : Set} where
   --reflexive closure
@@ -126,6 +133,7 @@ module ClosureOperators {U : Set} where
   infix 19 _⁼
   infix 19 _ˢ
   infix 19 _⁺
+  infix 19 _₊
   infix 19 _⋆
 
   TCisTran : ∀ (R : 𝓡 U) {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
@@ -143,7 +151,30 @@ module ClosureOperators {U : Set} where
   EQ : 𝓡 U → 𝓡 U
   EQ R = (R ˢ) ⋆
 
+  lemmaReverseTransitivity : ∀ {R : 𝓡 U} {x y z : U} → (R ⁺) x y → R y z → (R ⁺) x z
+  lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
+  lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
+
+  TC⁺⇔TC₊ : ∀ (R : 𝓡 U) → R ⁺ ⇔ R ₊
+  TC⁺⇔TC₊ R = ⁺⊆₊ , ₊⊆⁺ where
+    ⁺⊆₊ : R ⁺ ⊆ R ₊
+    ⁺⊆₊ = {!   !}
+    ₊⊆⁺ : R ₊ ⊆ R ⁺
+    ₊⊆⁺ = {!   !}
 open ClosureOperators public
+
+module ClosureOpsPreserveEquivalence {A} {R1 R2 : 𝓡 A} (R12 : R1 ⇔ R2) where
+
+  ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
+  ⇔⁼ = {!   !}
+  ⇔ˢ : R1 ˢ ⇔ R2 ˢ
+  ⇔ˢ = {!   !}
+  ⇔⁺ : R1 ⁺ ⇔ R2 ⁺
+  ⇔⁺ =  {!   !}
+  ⇔₊ : R1 ₊ ⇔ R2 ₊
+  ⇔₊ = {!   !}
+  ⇔⋆ : R1 ⋆ ⇔ R2 ⋆
+  ⇔⋆ = {!   !}
 
 -- Properties of relations
 module RelationProperties {U : Set} (R : 𝓡 U) where
@@ -152,8 +183,11 @@ module RelationProperties {U : Set} (R : 𝓡 U) where
   symmR   : Set
   asymmR  : Set
   tranR   : Set
+  acyclic : Set
+
   reflR   = ∀ x → R x x
   irreflR = ∀ x → ¬ R x x
+  acyclic = ∀ x → ¬ (R ⁺) x x
   symmR   = ∀ x y → R x y → R y x
   asymmR  = ∀ x y → R x y → R y x → x ≡ y
   tranR   = ∀ x y z → R x y → R y z → R x z
@@ -182,138 +216,172 @@ module RelationProperties {U : Set} (R : 𝓡 U) where
 
 open RelationProperties public
 
-acyclic : ∀ {U} (R : 𝓡 U) → Set
-acyclic R = irreflR (R ⁺)
+module WellFoundedness {A : Set} (R : 𝓡 A) where
 
-  -- data WF {A : Set} (R : Rel A) : A → Set where -- written to provide strongly normal
-  --   isNF : ∀ {x : A} → normal x R → WF R x -- is normal form
-  --   indF : ∀ {x : A} → (∀ y → R x y → WF R y) → WF R x
+  -- is_-nf : 𝓟 A
+  -- is_-nf x = ∀ y → ¬ R x y
+  --
+  -- is_~nf : 𝓟 A
+  -- is_~nf x = ∀ y → ¬ R y x
 
+  is_-decreasing_ : 𝓟 (ℕ → A)
+  is_-decreasing_ s = ∀ n → ~R R (s n) (s (succ n)) -- xₙ > xₙ₊₁
 
-is_-inductive_ : ∀ {A : Set} → 𝓡 A → 𝓟 A → Set
-is R -inductive φ = ∀ x → (∀ y → R y x → φ y) → φ x
+  -- The classical concept of a well-founded relation [TeReSe]
+  isWFseq : Set
+  isWFseq = ∀ (s : ℕ → A) → ¬ (is_-decreasing_ s)
 
-isWF : ∀ {A} → 𝓡 A → Set₁
-isWF {A} R = ∀ (φ : 𝓟 A) → is R -inductive φ → ∀ x → φ x
+  -- An element is R-accessible if all elements R-below it are R-accessible
+  data is_-accessible_ : 𝓟 A where
+    acc : ∀ {x : A} → (∀ y → R y x → is_-accessible_ y) → is_-accessible_ x
 
-isInhabited : ∀ {A} {n} → 𝓟^ n A → Set
-isInhabited {A} {zero}   X = X
-isInhabited {A} {succ n} P = Σ[ a ∈ A ] (isInhabited (P a))
+  -- A relation is well-founded if every element is accessible
+  isWFacc : Set
+  isWFacc = ∀ (x : A) → is_-accessible_ x
 
-¬WF⁼ : ∀ {A : Set} (R : 𝓡 A) → A → ¬ (isWF (R ⁼))
-¬WF⁼ {A} R a WFR⁼ = WFR⁼ K⊥ isR=indK⊥ (WFR⁼ (K A) (λ x _ → x) a) where
-                            isR=indK⊥ : is (R ⁼) -inductive K⊥
-                            isR=indK⊥ x h = h x ε⁼
+  is_-inductive_ : 𝓟 A → Set
+  is_-inductive_ φ = ∀ x → (∀ y → R y x → φ y) → φ x
 
-lemmaReverseTransitivity : ∀ {A} {R : 𝓡 A} {x y z : A} → (R ⁺) x y → R y z → (R ⁺) x z
-lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
-lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
+  -- The constructive concept of a well-founded relation
+  isWFind : Set₁
+  isWFind = ∀ (φ : 𝓟 A) → is_-inductive_ φ → ∀ x → φ x
 
-inductive₊ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is (R ₊) -inductive φ → is R -inductive φ
--- inductive₊ {A} R φ R₊-ind x iH = R₊-ind x (λ y → λ {  (ax₊ x) → iH y x ; (R+yx ₊, x) → {!   !} })
-inductive₊ {A} R φ R₊-ind x iH = R₊-ind x (f x iH) where
-  f : ∀ x → (∀ y → R y x → φ y) → ∀ (a : A) → (R ₊) a x → φ a
-  f x IH y (ax₊ Ryx) = IH y Ryx
-  f x IH y (R₊yz ₊, Rzx) = f _ (λ v Rvz → {!   !} )  y R₊yz
+  isWFind→isWFacc : isWFind → isWFacc
+  isWFind→isWFacc wfInd = wfInd is_-accessible_ (λ x → acc {x})
 
-WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
-WF⁺+ {A} R iswfR φ φisR⁺ind x = iswfR φ φisRind x where -- Try to directly use iswfR,
-    φisRind : is R -inductive φ
-    φisRind y H = φisR⁺ind y λ { z (ax⁺ Rzy) → H z Rzy ; z (x ,⁺ R⁺zy) → H z {!   !} }
-     -- iswfR φ {! φisRind  !} z   -- This feels really close. But leads to a termination error.
-  -- by providing it with a proof that φ is R -inductive.
--- WF⁺+ {A} R iswfR φ φisR⁺ind x = φisR⁺ind x g where
---   g : (y : A) → (R ⁺) y x → φ y
---   g y (ax⁺ Ryx) = φisR⁺ind y λ z R⁺zy → g z {!   !} -- φisR⁺ind y (λ z R⁺zy → g z (lemmaReverseTransitivity R⁺zy Ryx))
---   g y (Ryy₁ ,⁺ R⁺y₁x) = {!   !} -- WF⁺+ R iswfR {!   !} {!   !} {!   !}
+  isWFacc→isWFind : isWFacc → isWFind
+  isWFacc→isWFind wfAcc φ φ-ind x₀ = f x₀ (wfAcc x₀) where
+      f : ∀ x → is_-accessible_ x → φ x
+      f x (acc Hx) = φ-ind x (λ y Ryx → f y (Hx y Ryx) )
 
+  isWFind→WFseq : isWFind → isWFseq
+  isWFind→WFseq RisWF s sIsR-Dec =
+    let φ : 𝓟 A
+        φ a = ∀ n → ¬ a ≡ s n -- a ∉ Im [ s ]
+        φ-ind : is_-inductive_ φ
+        φ-ind x IH m x≡sm = IH (s (succ m))
+              (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
+     in RisWF φ φ-ind (s zero) zero refl
+open WellFoundedness
 
--- WF⁺+ R iswfR φ φisR⁺ind x = iswfR φ (λ y h → φisR⁺ind y λ {z (ax⁺ Rzy) → h z Rzy
---                                                          ; z (Rzy₁ ,⁺ R⁺y₁y) → h z {!   !}}) x
+module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
 
-WF⁺- : ∀ {A} (R : 𝓡 A) → isWF (R ⁺) → isWF R
-WF⁺- R isWFR⁺ φ φisRind x = isWFR⁺ φ (λ y h → φisRind y λ z Rzy → h z (ax⁺ Rzy)) x
+  ¬WF⁼ : A → ¬ (isWFind (R ⁼))
+  ¬WF⁼ a WFR⁼ = WFR⁼ K⊥ isR=indK⊥ (WFR⁼ (K A) (λ x _ → x) a) where
+                             isR=indK⊥ : is (R ⁼) -inductive K⊥
+                             isR=indK⊥ x h = h x ε⁼
 
-lemma⁺→⋆ :  ∀ {A : Set} {x y : A} (R : 𝓡 A) → (R ⁺) x y →  (R ⋆) x y
-lemma⁺→⋆ R (ax⁺ Rxy) = ax⋆ Rxy
-lemma⁺→⋆ R (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺yy₁
+  R₊acc-Lemma : ∀ {x} → is (R ₊) -accessible x → ∀ y → (R ₊) y x → is (R ₊) -accessible y
+  R₊acc-Lemma (acc xa) = xa
 
+  Racc⊆R₊acc : ∀ (x : A) → is R -accessible x → is R ₊ -accessible x
+  Racc⊆R₊acc x (acc xacc) = acc (λ y → λ {  (ax₊ Ryx) → Racc⊆R₊acc y (xacc y Ryx)
+                                            ; (R+yz ₊, Rzx) → R₊acc-Lemma (Racc⊆R₊acc _ (xacc _ Rzx)) y R+yz })
 
-TransitiveClosure : ∀ {A : Set} (R : 𝓡 A) → R ⋆ ⇔ (R ⁺ ∪ R ⁼)
-TransitiveClosure R = TC+ , TC- where
-  TC+ : (R ⋆) ⊆ (R ⁺) ∪ (R ⁼)
-  TC+ a b (ax⋆ Rab) = in1 (ax⁺ Rab )
-  TC+ a .a ε⋆ = in2 ε⁼
-  TC+ a b (Ray ,⋆ R⋆yb) = in1 (case (_,⁺_ Ray) -- (λ R⁺yb → (Ray ,⁺ R⁺yb))
-                                    (λ { (ax⁼ Ryb) → (Ray ,⁺ (ax⁺ Ryb)) ; ε⁼ → ax⁺ Ray})
-                                    (TC+ _ _ R⋆yb))
-  TC- : (R ⁺) ∪ (R ⁼) ⊆ (R ⋆)
-  TC- x y (in1 (ax⁺ Rxy)) = ax⋆ Rxy
-  TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R R⁺y₁y
-  TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
-  TC- x .x (in2 ε⁼) = ε⋆
+  WFacc₊ : isWFacc R → isWFacc (R ₊)
+  WFacc₊ WFaccR x = Racc⊆R₊acc x (WFaccR x)
 
-is_-decreasing_ : ∀ {A : Set} → 𝓡 A → 𝓟 (ℕ → A)
-is R -decreasing s = ∀ n → ~R R (s n) (s (succ n)) -- xₙ > xₙ₊₁
+  WFind₊ : isWFind R → isWFind (R ₊)
+  WFind₊ WFindR = isWFacc→isWFind (R ₊) (WFacc₊ (isWFind→isWFacc R WFindR ) )
 
-isWFseq : ∀ {A} → 𝓡 A → Set
-isWFseq {A} R = ∀ (s : ℕ → A) → ¬ (is R -decreasing s)
-
-WFisWFseq+ : ∀ {A} (R : 𝓡 A) → isWF R → isWFseq R
-WFisWFseq+ {A} R RisWF s sIsR-Dec =
-  let φ : 𝓟 A
-      φ a = ∀ n → ¬ a ≡ s n -- a ∉ Im [ s ]
-      φ-ind : is R -inductive φ
-      φ-ind x IH m x≡sm = IH (s (succ m))
-            (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
-   in RisWF φ φ-ind (s zero) zero refl
+  lemma⁺→⋆ : ∀ {x y : A} → (R ⁺) x y →  (R ⋆) x y
+  lemma⁺→⋆ (ax⁺ Rxy) = ax⋆ Rxy
+  lemma⁺→⋆ (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R⁺yy₁
 
 
---  Proving that isWFseq → isWF
-DeMorgan∀∃ : Set → Set₁
-DeMorgan∀∃ A = ∀ (P : 𝓟 A) → ¬ (∀ x → P x) → Σ[ x ∈ A ] (¬ P x)
+  TransitiveClosure : R ⋆ ⇔ (R ⁺ ∪ R ⁼)
+  TransitiveClosure = TC+ , TC- where
+    TC+ : (R ⋆) ⊆ (R ⁺) ∪ (R ⁼)
+    TC+ a b (ax⋆ Rab) = in1 (ax⁺ Rab )
+    TC+ a .a ε⋆ = in2 ε⁼
+    TC+ a b (Ray ,⋆ R⋆yb) = in1 (case (_,⁺_ Ray) -- (λ R⁺yb → (Ray ,⁺ R⁺yb))
+                                      (λ { (ax⁼ Ryb) → (Ray ,⁺ (ax⁺ Ryb)) ; ε⁼ → ax⁺ Ray})
+                                      (TC+ _ _ R⋆yb))
+    TC- : (R ⁺) ∪ (R ⁼) ⊆ (R ⋆)
+    TC- x y (in1 (ax⁺ Rxy)) = ax⋆ Rxy
+    TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R⁺y₁y
+    TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
+    TC- x .x (in2 ε⁼) = ε⋆
 
+
+
+-- Proofs involving classical logic
+module ClassicalPropertiesOfRelations where
+
+  -- This part will be moved elsewhere
+  module Preliminaries where
+    -- ¬¬Closed : ∀ {A} → 𝓟 A → Set
+    -- ¬¬Closed P = ∀ x → ¬¬ P x → P x
+    --
+    -- ¬¬Lemma : ∀ X → ¬¬ (¬¬ X → X)
+    -- ¬¬Lemma X = λ ¬¬X→X → ¬¬X→X (λ ¬¬X → ∅ (¬¬X λ x → ¬¬X→X (K x)))
+    --
+    -- ¬¬∃→¬∀¬ : ∀ {A} (P : 𝓟 A) → ¬¬ (Σ[ x ∈ A ] P x) → ¬ (∀ x → ¬ P x)
+    -- ¬¬∃→¬∀¬ P h x→¬Px = h λ { (y ,, yP) → x→¬Px y yP }
+    --
+    -- ¬∀¬→¬¬∃ : ∀ {A} (P : 𝓟 A) → ¬ (∀ x → ¬ P x) → ¬¬ (Σ[ x ∈ A ] P x)
+    -- ¬∀¬→¬¬∃ P ¬∀¬ ¬∃ = ¬∀¬ λ x Px → ¬∃ (x ,, Px)
+    --
+    -- DeMorgan∀∃ : Set → Set₁
+    -- DeMorgan∀∃ A = ∀ (P : 𝓟 A) → ¬ (∀ x → P x) → Σ[ x ∈ A ] (¬ P x)
+    --
+    -- MP : ∀ {A} (P : 𝓟 A) → Set
+    -- MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A ] P x
+
+    -- DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
+    -- DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
+
+    -- DeMorg→¬¬Closed : ∀ {A} {B : 𝓟 A} → DeMorgan∀∃ A → ¬ (¬¬Closed B) → ⊥
+    -- DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x) ¬nnC
+    -- ... | y ,, yP = ∅ (¬¬Lemma (B y) yP)
+
+    -- ⟪ is \<<
+    _⟪_ : ∀ {A} → 𝓟 A → 𝓟 A → Set
+    P ⟪ Q = ¬ (P ⊆ Q) → Σ[ y ∈ _ ] (P y × ¬ Q y)
+
+    -- A relation is well-supported if, for every element in its domain,
+    -- and every property, if it's not the case that every element related to x
+    -- has the property, then we can exhibit one that doesn't.
+    WellSupported : ∀ {A} → 𝓡 A → Set₁
+    WellSupported R = ∀ x → ∀ φ → (~R R x ⟪ φ)
+
+  open Preliminaries
+
+  module MarkovRelations {A} (R : 𝓡 A) (RisWS : WellSupported R) where
+
+--  Proving that isWFseq → isWFacc
 -- Question: Does DeMorgan∀∃ A imply that every predicate on A is decidable?
 -- Question: Do we need it to be this general?
 
-DeMorgan∀∃rel : ∀ {A} (B : 𝓟 A) → 𝓟 A → Set
-DeMorgan∀∃rel {A} B P = ¬ (B ⊆ P) → Σ[ x ∈ A ] (B x × ¬ P x)
-
-DM∀∃ : ∀ {A} (R : 𝓡 A) → Set₁
-DM∀∃ {A} R = ∀ x → ∀ (φ : 𝓟 A) → DeMorgan∀∃rel (~R R x) φ
-
-¬¬∃→¬∀¬ : ∀ {A} (P : 𝓟 A) → ¬¬ (Σ[ x ∈ A ] P x) → ¬ (∀ x → ¬ P x)
-¬¬∃→¬∀¬ P h x→¬Px = h λ { (y ,, yP) → x→¬Px y yP }
-
-¬∀¬→¬¬∃ : ∀ {A} (P : 𝓟 A) → ¬ (∀ x → ¬ P x) → ¬¬ (Σ[ x ∈ A ] P x)
-¬∀¬→¬¬∃ P ¬∀¬ ¬∃ = ¬∀¬ λ x Px → ¬∃ (x ,, Px)
-
-MP : ∀ {A} (P : 𝓟 A) → Set
-MP {A} P = (∀ x → P x ⊔ ¬ P x) → ¬ (∀ x → ¬ P x) → Σ[ x ∈ A ] P x
-
-MPrel : ∀ {A} (B P : 𝓟 A) → Set
-MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
-
-fromΣ : ∀ {A} {B : 𝓟 A} {C : Set} → Σ[ x ∈ A ] B x → (∀ x → B x → C) → C
-fromΣ (x ,, p) f = f x p
-
-is-ind¬¬ : ∀ {A : Set} (R : 𝓡 A) (φ : 𝓟 A) → (∀ x → DeMorgan∀∃rel (~R R x) φ)  → is R -inductive (λ x → φ x) → is R -inductive (λ x → ¬¬ φ x)
-is-ind¬¬ R φ DM φ-ind x H ¬φx =
-  let φ-ind' : ¬ (∀ z → R z x → φ z)
-      φ-ind' =  λ G → ¬φx (φ-ind x G )
-      DMcont = DM x φ-ind'
-   in fromΣ DMcont (λ y p → H y (pr1 p) (pr2 p) )
-
--- Not provable unless an assumption is added, find the assumption!
-open import Classical
-
-MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → EM A →  DeMorgan∀∃rel B P
-MPrel→DMrel {A} B P MPBP (in1 x) ¬B⊆P  = {!   !}
-MPrel→DMrel {A} B P MPBP (in2 ¬x) ¬B⊆P = {!   !}
--- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}
--- ... | y ,, By , Py = y ,, By , λ Py → ¬B⊆P λ x Bx → {!   !}
+    isWFseq→isWFacc : isWFseq R → ∀ x → ¬¬ (is R -accessible x)
+    isWFseq→isWFacc WFseqR x ¬accx =
+      let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !} 
+       in {!   !}
 
 
+-- MPrel : ∀ {A} (B P : 𝓟 A) → Set
+-- MPrel {A} B P = (∀ x → B x → P x ⊔ ¬ P x) → ¬ (∀ x → B x → ¬ P x) → Σ[ x ∈ A ] (B x × P x)
+--
+-- fromΣ : ∀ {A} {B : 𝓟 A} {C : Set} → Σ[ x ∈ A ] B x → (∀ x → B x → C) → C
+-- fromΣ (x ,, p) f = f x p
+--
+-- is-ind¬¬ : ∀ {A : Set} (R : 𝓡 A) (φ : 𝓟 A) → (∀ x → DeMorgan∀∃rel (~R R x) φ)  → is R -inductive (λ x → φ x) → is R -inductive (λ x → ¬¬ φ x)
+-- is-ind¬¬ R φ DM φ-ind x H ¬φx =
+--   let φ-ind' : ¬ (∀ z → R z x → φ z)
+--       φ-ind' =  λ G → ¬φx (φ-ind x G )
+--       DMcont = DM x φ-ind'
+--    in fromΣ DMcont (λ y p → H y (pr1 p) (pr2 p) )
+--
+-- -- Not provable unless an assumption is added, find the assumption!
+-- open import Classical
+--
+-- MPrel→DMrel : ∀ {A} (B P : 𝓟 A) → MPrel B P → EM A →  DeMorgan∀∃rel B P
+-- MPrel→DMrel {A} B P MPBP (in1 x) ¬B⊆P  = {!   !}
+-- MPrel→DMrel {A} B P MPBP (in2 ¬x) ¬B⊆P = {!   !}
+-- -- MPrel→DMrel B P MPBP WEM ¬B⊆P with MPBP (λ x Bx → in2 λ Px → ¬B⊆P (λ x₁ x₂ → {!   !})) {!   !}
+-- -- ... | y ,, By , Py = y ,, By , λ Py → ¬B⊆P λ x Bx → {!   !}
+
+{-
 -- Question: Does DeMorgan∀∃ → DeMorgan∀∃rel (or vice versa?)
 DeMorgan∀∃→DeMorgan∀∃rel : {A : Set} → (B P : 𝓟 A) → DeMorgan∀∃ A → DeMorgan∀∃rel B P
 DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg {!   !} (λ x→Px → ¬B⊆P (λ x x∈B → x→Px x))
@@ -340,9 +408,6 @@ DeMorgan∀∃→DeMorgan∀∃rel {A} B P DeMorg ¬B⊆P with DeMorg {!   !} (�
 -- Not mutually recursive with seq1 and seq2
 ¬ind→seq3 R φ φ-ind DeMorg x ¬φx n = pr1 (snd (¬ind→step R φ φ-ind DeMorg (¬ind→seq1 R φ φ-ind DeMorg x ¬φx n) (¬ind→seq2 R φ φ-ind DeMorg x ¬φx n)))
 
-¬¬Closed : ∀ {A} → 𝓟 A → Set
-¬¬Closed P = ∀ x → ¬¬ P x → P x
-
 -- ¬ind→seq = ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is R -inductive φ → (∀ x → DeMorgan∀∃rel (~R R x) φ) →
 
 WFisWFseq- : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → isWFseq R → is R -inductive φ → (¬¬Closed φ)
@@ -360,13 +425,7 @@ DeMorgan∀∃rel→¬¬Closed B P DeMorgRel x ¬¬Bx with DeMorgRel (λ B⊆P �
 
 DeMorgan∀∃rel→¬¬Closed2 : ∀ {A} → (B : 𝓟 A) → (H : ∀ (P : 𝓟 A) → DeMorgan∀∃rel B P) → ¬¬Closed B
 DeMorgan∀∃rel→¬¬Closed2 = {!   !}
-
-¬¬Lemma : ∀ X → ¬¬ (¬¬ X → X)
-¬¬Lemma X = λ ¬¬X→X → ¬¬X→X (λ ¬¬X → ∅ (¬¬X λ x → ¬¬X→X (K x)))
-
-DeMorg→¬¬Closed : ∀ {A} {B : 𝓟 A} → DeMorgan∀∃ A → ¬ (¬¬Closed B) → ⊥
-DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x) ¬nnC
-... | y ,, yP = ∅ (¬¬Lemma (B y) yP)
+-}
 
 -- DeMorg→¬¬Closed {A}{B} DeMorg x ¬¬Bx with DeMorg (λ x → ¬¬ (B x) → B x) (λ H → ¬¬Bx (λ Bx → {!   !} ))
 -- ... | y ,, yP = ∅ (¬¬Lemma (B y) yP)
@@ -382,30 +441,31 @@ DeMorg→¬¬Closed {A}{B} DeMorg ¬nnC with DeMorg (λ x → ¬¬ (B x) → B x
 -- weaklyBounded : ∀ {S : Set} (R : 𝓡 S) → 𝓟 S → Set
 -- weaklyBounded R A = Σ[ a ∈ A ] → is R -minimal a
 
-is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
--- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
-is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
-
+{-
 module A18Constructive where
+
+  is_-_-minimal_ : ∀ {S : Set} (R : 𝓡 S) (A : 𝓟 S) → 𝓟 S
+  -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
+  is R - A -minimal x = x ∈ A × (∀ y → y ∈ A → R y x → ⊥)
 
   lemmaA18φ : ∀ (S : Set) → 𝓡 S → 𝓟 S → 𝓟 S
   lemmaA18φ S R A x = (x ∈ A) → Σ[ y ∈ S ] (is R - A -minimal y)
 
   -- lemmaA18φ S R A x = (x ∈ A) × Σ[ y ∈ S ] (is R - A -minimal y)
 
-  A18←seq : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → isInhabited A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
+  A18←seq : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → nonEmpty A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
            → isWFseq R
   A18←seq R H s s-dec with H (λ x → Σ[ n ∈ ℕ ] (s n ≡ x)) ((s zero ,, zero ,, refl ))
   ... | x ,, (n ,, sn≡x) , ((m ,, sm=x) , p) = p (s (succ n)) (succ n ,, refl ) (transp (R (s (succ n))) sn≡x (s-dec n) )
 
-  A18← : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → isInhabited A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
+  A18← : ∀ {S : Set} (R : 𝓡 S) → (∀ (A : 𝓟 S) → nonEmpty A → Σ[ x ∈ S ] (x ∈ A × is R - A -minimal x))
            → ∀ φ → is R -inductive φ → ∀ x → ¬¬ φ x
   -- A18← R H φ φ-ind x ¬φx =
 
   A18← R H φ φ-ind x ¬φx with H (λ z → ¬ φ z) ((x ,, ¬φx))
   ... | y ,, ¬φy , (_ , pr4) = ¬φy (φ-ind y λ z Rzy → φ-ind z {!   !} )
 
-  A18→ : ∀ {S : Set} (R : 𝓡 S) → isWF R → ∀ (A : 𝓟 S) (x : S) → x ∈ A
+  A18→ : ∀ {S : Set} (R : 𝓡 S) → isWFind R → ∀ (A : 𝓟 S) (x : S) → x ∈ A
            → ¬¬ Σ[ y ∈ S ] is R - A -minimal y
   A18→ {S} R WFR A x x∈A ¬miny =
     let φ    = λ y → y ∈ A → ∀ z → z ∈ A → ¬¬ R z y
@@ -419,6 +479,8 @@ module A18Constructive where
         -- WFRφ₂ : is R -inductive φ₂
         -- WFRφ₂ y H Rxx = H y Rxx Rxx
      in  WFR φ WFRφ x x∈A x x∈A (WFR (λ z → (x : R z z) → ⊥) (λ x z x₁ → z x x₁ x₁) x)
+-}
+
 
 -- ↓R-dec : ∀ (S : Set) (R : 𝓡 S) → 𝓟 S
 -- ↓R-dec S R x = ¬ (∀ y → ¬ R y x) → Σ[ y ∈ S ] R y x
