@@ -14,6 +14,11 @@ io : ∀ {A B : Set} → (A → B) → B → ↑ A → B
 io f b (i x) = f x
 io f b o = b
 
+-- Dependent eliminator for predicates on ↑A
+io𝓟 : ∀ {A} → ∀ (B : ↑ A → Set) → (∀ x → B (i x)) → B o → ∀ x → B x
+io𝓟 B bi bo (i x) = bi x
+io𝓟 B bi bo o     = bo
+
 -- The lifting eliminator preserves pointwise equality
 io≅ : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {b1 b2} → b1 ≡ b2 → io f b1 ≅ io g b2
 io≅ fg b12 (i x) = fg x

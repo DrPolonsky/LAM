@@ -74,6 +74,15 @@ module LogicOps {A : Set} where
   infix 17 _∩_
   infix 17 _∪_
   infix 19 ∁_
+
+  _⊆!⊆_ : ∀ {n : ℕ} {P Q R : 𝓟^ n A} → P ⊆ Q → Q ⊆ R → P ⊆ R
+  _⊆!⊆_ {zero} PQ QR = QR ∘ PQ
+  _⊆!⊆_ {succ n} PQ QR = λ x → PQ x ⊆!⊆ QR x
+
+  ⊆⊤ : ∀ {n : ℕ} (P : 𝓟^ n A) → P ⊆ K⊤
+  ⊆⊤ {zero}   P = K tt
+  ⊆⊤ {succ n} P = λ _ → ⊆⊤ _
+
 open LogicOps public
 
 module Lifting^ where
@@ -89,6 +98,9 @@ module Lifting^ where
 
   ↑^ : ∀  {n : ℕ} {A : Set} → 𝓟^ n A → 𝓟^ n (↑ A)
   ↑^ P = i^ P ∪ o^
+
+  -- The dependent eliminator into k-ary predicates ?
+  
 open Lifting^ public
 
 module Lambda^ where
