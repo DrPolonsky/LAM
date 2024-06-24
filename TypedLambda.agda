@@ -73,7 +73,6 @@ So, "Γ : Cxt V" should mean:
 
 open Curry
 
-{-
 module DeBruijn where
 
   data ΛdB (V : Set) : Set where
@@ -114,14 +113,14 @@ module Church where
   erase (absCh M0)    = abs (erase M0)
 
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
-  prop1B19i (varCh x Γx≡A) = Var Γx≡A
+  prop1B19i (varCh x Γx≡A) = Var x Γx≡A
   prop1B19i (appCh M1 M2)  = App (prop1B19i M1) (prop1B19i M2)
   prop1B19i (absCh M0)     = Abs (prop1B19i M0)
 
   embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
-  embellish (var x)     (Var Γx≡A)  = varCh x Γx≡A
-  embellish (app M1 M2) (App d1 d2) = appCh (embellish M1 d1) (embellish M2 d2)
-  embellish (abs M0)    (Abs d)     = absCh (embellish M0 d)
+  embellish (var x)     (Var _ Γx≡A) = varCh x Γx≡A
+  embellish (app M1 M2) (App d1 d2)  = appCh (embellish M1 d1) (embellish M2 d2)
+  embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
   embellishdB→Ch : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛdB V) → Γ ⊢dB M ∶ A → ΛCh Γ A
   embellishdB→Ch M d = {!   !}
@@ -133,23 +132,23 @@ module Church where
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
-  prop1B19ii (var x)     (Var _)     = refl
+  prop1B19ii (var x)     (Var _ _)   = refl
   prop1B19ii (app M1 M2) (App d1 d2) = cong2 app (prop1B19ii M1 d1) (prop1B19ii M2 d2)
   prop1B19ii (abs M0)    (Abs d0)    = cong abs (prop1B19ii M0 d0)
 
   ΛCh≃ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
-  ΛCh≃ g=d (varCh x e) = varCh x (g=d x ~! e)
+  ΛCh≃ g=d (varCh x e)   = varCh x (g=d x ~! e)
   ΛCh≃ g=d (appCh t1 t2) = appCh (ΛCh≃ g=d  t1) (ΛCh≃ g=d t2)
-  ΛCh≃ g=d (absCh t0) = absCh (ΛCh≃ (io≅ g=d refl) t0)
+  ΛCh≃ g=d (absCh t0)    = absCh (ΛCh≃ (io≅ g=d refl) t0)
 
   ΛCh→≅ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) (Δ : Cxt V)
             → Δ ≅ Γ ∘ f → ΛCh Δ A → ΛCh Γ A
-  ΛCh→≅ f Δ Δ=Γf (varCh x e) = varCh (f x) (Δ=Γf x ~! e )
+  ΛCh→≅ f Δ Δ=Γf (varCh x e)   = varCh (f x) (Δ=Γf x ~! e )
   ΛCh→≅ f Δ Δ=Γf (appCh d1 d2) = appCh (ΛCh→≅ f Δ Δ=Γf d1) (ΛCh→≅ f Δ Δ=Γf d2)
-  ΛCh→≅ f Δ Δ=Γf (absCh d0) = absCh (ΛCh→≅ (↑→ f) (io Δ _) cxt≅ d0) where
+  ΛCh→≅ f Δ Δ=Γf (absCh d0)    = absCh (ΛCh→≅ (↑→ f) (io Δ _) cxt≅ d0) where
     cxt≅ : _
     cxt≅ (i x) = Δ=Γf  x
-    cxt≅ o = refl
+    cxt≅ o     = refl
 
   -- ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh Γ A → ΛCh (Γ ∘ f) A
   ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh (Γ ∘ f) A → ΛCh Γ A
@@ -171,4 +170,3 @@ module Church where
   --           → Γ ⊢ M ∶ (A ⇒ B)  →  Γ ⊢ N ∶ A  →  Γ ⊢ app M N ∶ B
   --   Abs : ∀ {Γ : Cxt V} {M : Λ (↑ V)} {A B : 𝕋}
   --           → io Γ A ⊢ M ∶ B  →  Γ ⊢ abs M ∶ (A ⇒ B)
--}
