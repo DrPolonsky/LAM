@@ -6,7 +6,7 @@ open import Lambda
 open import Predicates
 
 -- term2 = "λxλy.y(λz.z(λa.ax)y)x"
-term2 : Λ₀
+term2 : Λ⁰
 term2 = abs (abs (app (app (var o ) (abs (app (app (var o)
   (abs (app (var o) (var (i (i (i o))))))) (var (i o))))) (var (i o))))
 
@@ -67,7 +67,7 @@ So, "Γ : Cxt V" should mean:
 
   -- Prop 1B.5 in [BDS 2010]
   SubLemma⊢ₒ : ∀ {V : Set} {Γ : Cxt V} {M : Λ (↑ V)} {N : Λ V} {A B : 𝕋}
-              → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ₒ ∶ B
+              → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ᵒ ∶ B
   SubLemma⊢ₒ μ ν = SubLemma⊢ μ (io𝓟 _ (λ x → Var x refl) ν)
 
 
@@ -102,15 +102,20 @@ module Church where
     absCh : ∀ {Γ} {A B}   → ΛCh (io Γ A) (B)        → ΛCh Γ (A ⇒ B)
 
   erase1 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → ΛdB V
-  erase1 t = {!   !}
+  erase1         (varCh x Γx≡A) = vardB x
+  erase1         (appCh M1 M2)  = appdB (erase1 M1) (erase1 M2)
+  erase1 {A = A} (absCh M0)     = absdB A (erase1 M0)
+  
   erase2 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛdB V → Λ V
-  erase2 t = {!   !}
+  erase2 (vardB x) = var x
+  erase2 {V} {Γ} {A} (appdB M1 M2) = app (erase2 M1) (erase2 M2)
+  erase2 (absdB x M0) = abs (erase2 M0)
 
   erase : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → Λ V
-  -- erase = erase2 ∘ erase1
-  erase (varCh x e)   = var x
-  erase (appCh M1 M2) = app (erase M1) (erase M2)
-  erase (absCh M0)    = abs (erase M0)
+  erase = erase2 ∘ erase1
+  -- erase (varCh x e)   = var x
+  -- erase (appCh M1 M2) = app (erase M1) (erase M2)
+  -- erase (absCh M0)    = abs (erase M0)
 
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
   prop1B19i (varCh x Γx≡A) = Var x Γx≡A
@@ -123,12 +128,20 @@ module Church where
   embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
   embellishdB→Ch : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛdB V) → Γ ⊢dB M ∶ A → ΛCh Γ A
-  embellishdB→Ch M d = {!   !}
+  embellishdB→Ch (vardB x)     (VardB Γx≡A)  = varCh x Γx≡A
+  embellishdB→Ch (appdB M1 M2) (AppdB d1 d2) = appCh (embellishdB→Ch M1 d1) (embellishdB→Ch M2 d2)
+  embellishdB→Ch (absdB x M0)  (AbsdB d0)    = absCh (embellishdB→Ch M0 d0)
+
   embellishCu→dB : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛdB V
-  embellishCu→dB M d = {!   !}
+  embellishCu→dB         (var x) d               = vardB x
+  embellishCu→dB         (app M1 M2) (App d1 d2) = appdB (embellishCu→dB M1 d1) (embellishCu→dB M2 d2)
+  embellishCu→dB {A = A} (abs M0) (Abs d0)       = absdB A (embellishCu→dB M0 d0)
+  
   embellishCu→dB⊢ : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                     → Γ ⊢dB embellishCu→dB M d ∶ A
-  embellishCu→dB⊢ M d = {!   !}
+  embellishCu→dB⊢ (var _) (Var _ Γx≡A) = VardB Γx≡A
+  embellishCu→dB⊢ (app M1 M2) (App d1 d2) = AppdB (embellishCu→dB⊢ M1 d1) (embellishCu→dB⊢ M2 d2)
+  embellishCu→dB⊢ (abs M0) (Abs d0) = {!   !} -- AbsdB  (embellishCu→dB⊢ M0 d0)
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
