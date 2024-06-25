@@ -92,6 +92,18 @@ module DeBruijn where
     VardB : ∀ {Γ A} {x}    →  Γ x ≡ A                          → Γ ⊢dB vardB x ∶ A
     AppdB : ∀ {Γ A B M N}  →  Γ ⊢dB M ∶ (A ⇒ B) → Γ ⊢dB N ∶ A  → Γ ⊢dB appdB M N ∶ B
     AbsdB : ∀ {Γ M A B}    →  io Γ A ⊢dB M ∶ B                 → Γ ⊢dB absdB A M ∶ (A ⇒ B)
+  
+  Λ→dB : ∀ {A B : Set} (f : A → B) → ΛdB A → ΛdB B
+  Λ→dB f (vardB x) = vardB (f x)
+  Λ→dB f (appdB M1 M2) = appdB (Λ→dB f M1) (Λ→dB f M2)
+  Λ→dB f (absdB x M0) = absdB x (Λ→dB (↑→ f) M0)
+
+  -- weak⊢ : ∀ {V W} {Δ : Cxt W} {N : Λ V} {A : 𝕋} (f : V → W) → (Δ ∘ f) ⊢ N ∶ A → Δ ⊢ Λ→ f N ∶ A
+  weak⊢dB : ∀ {V W} {Δ : Cxt W} {N : ΛdB V} {A : 𝕋} (f : V → W) → (Δ ∘ f) ⊢dB N ∶ A → Δ ⊢dB (Λ→dB f N) ∶ A
+  weak⊢dB f (VardB x) = VardB {!   !}
+  weak⊢dB f (AppdB M1 M2) = AppdB (weak⊢dB f M1) (weak⊢dB f M2)
+  weak⊢dB f (AbsdB M0) = AbsdB (weak⊢dB (↑→ f) {!   !})
+
 
 open DeBruijn
 
