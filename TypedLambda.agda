@@ -107,12 +107,12 @@ module Church where
   erase1 {A = A} (absCh M0)     = absdB A (erase1 M0)
   
   erase2 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛdB V → Λ V
-  erase2 (vardB x) = var x
-  erase2 {V} {Γ} {A} (appdB M1 M2) = app (erase2 M1) (erase2 M2)
-  erase2 (absdB x M0) = abs (erase2 M0)
+  erase2 {V} {Γ} {A} (vardB x)     = var x
+  erase2 {V} {Γ} {A} (appdB M1 M2) = app (erase2 {V} {Γ} {A} M1) (erase2 {V} {Γ} {A} M2)
+  erase2 {V} {Γ} {A} (absdB x M0)  = abs (erase2 {↑ V} {λ Γ → x} {A} M0)
 
   erase : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → Λ V
-  erase = erase2 ∘ erase1
+  erase {V} {Γ} {A} = erase2 {V} {Γ} {A} ∘ erase1
   -- erase (varCh x e)   = var x
   -- erase (appCh M1 M2) = app (erase M1) (erase M2)
   -- erase (absCh M0)    = abs (erase M0)
@@ -183,3 +183,4 @@ module Church where
   --           → Γ ⊢ M ∶ (A ⇒ B)  →  Γ ⊢ N ∶ A  →  Γ ⊢ app M N ∶ B
   --   Abs : ∀ {Γ : Cxt V} {M : Λ (↑ V)} {A B : 𝕋}
   --           → io Γ A ⊢ M ∶ B  →  Γ ⊢ abs M ∶ (A ⇒ B)
+  
