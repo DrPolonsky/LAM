@@ -92,17 +92,22 @@ module DeBruijn where
     VardB : ∀ {Γ A} {x}    →  Γ x ≡ A                          → Γ ⊢dB vardB x ∶ A
     AppdB : ∀ {Γ A B M N}  →  Γ ⊢dB M ∶ (A ⇒ B) → Γ ⊢dB N ∶ A  → Γ ⊢dB appdB M N ∶ B
     AbsdB : ∀ {Γ M A B}    →  io Γ A ⊢dB M ∶ B                 → Γ ⊢dB absdB A M ∶ (A ⇒ B)
-  
+
   Λ→dB : ∀ {A B : Set} (f : A → B) → ΛdB A → ΛdB B
   Λ→dB f (vardB x) = vardB (f x)
   Λ→dB f (appdB M1 M2) = appdB (Λ→dB f M1) (Λ→dB f M2)
   Λ→dB f (absdB x M0) = absdB x (Λ→dB (↑→ f) M0)
 
+  _≅⊢dB_ : ∀ {V} {Γ Δ : Cxt V} → Γ ≅ Δ → ∀ {M : ΛdB V} {A} → Γ ⊢dB M ∶ A → Δ ⊢dB M ∶ A
+  Γ≅Δ ≅⊢dB VardB e = VardB (Γ≅Δ _ ~! e )
+  Γ≅Δ ≅⊢dB AppdB d1 d2 = AppdB (Γ≅Δ ≅⊢dB d1) (Γ≅Δ ≅⊢dB d2)
+  Γ≅Δ ≅⊢dB AbsdB d0 = AbsdB (io≅ Γ≅Δ refl ≅⊢dB d0)
+
   -- weak⊢ : ∀ {V W} {Δ : Cxt W} {N : Λ V} {A : 𝕋} (f : V → W) → (Δ ∘ f) ⊢ N ∶ A → Δ ⊢ Λ→ f N ∶ A
   weak⊢dB : ∀ {V W} {Δ : Cxt W} {N : ΛdB V} {A : 𝕋} (f : V → W) → (Δ ∘ f) ⊢dB N ∶ A → Δ ⊢dB (Λ→dB f N) ∶ A
-  weak⊢dB f (VardB x) = VardB {!   !}
-  weak⊢dB f (AppdB M1 M2) = AppdB (weak⊢dB f M1) (weak⊢dB f M2)
-  weak⊢dB f (AbsdB M0) = AbsdB (weak⊢dB (↑→ f) {!   !})
+  weak⊢dB f (VardB p) = VardB p
+  weak⊢dB f (AppdB d1 d2) = AppdB (weak⊢dB f d1) (weak⊢dB f d2)
+  weak⊢dB f (AbsdB d0) = AbsdB (weak⊢dB (↑→ f) (io-nat _ f _ ≅⊢dB d0))
 
 
 open DeBruijn
@@ -117,7 +122,7 @@ module Church where
   erase1         (varCh x Γx≡A) = vardB x
   erase1         (appCh M1 M2)  = appdB (erase1 M1) (erase1 M2)
   erase1 {A = A} (absCh M0)     = absdB A (erase1 M0)
-  
+
   erase2 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛdB V → Λ V
   erase2 {V} {Γ} {A} (vardB x)     = var x
   erase2 {V} {Γ} {A} (appdB M1 M2) = app (erase2 {V} {Γ} {A} M1) (erase2 {V} {Γ} {A} M2)
@@ -145,21 +150,21 @@ module Church where
   embellishdB→Ch (absdB x M0)  (AbsdB d0)    = absCh (embellishdB→Ch M0 d0)
 
   embellishCu→dB : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛdB V
-  embellishCu→dB         (var x) d               = vardB x
-  embellishCu→dB         (app M1 M2) (App d1 d2) = appdB (embellishCu→dB M1 d1) (embellishCu→dB M2 d2)
-  embellishCu→dB {A = A} (abs M0) (Abs d0)       = absdB A (embellishCu→dB M0 d0)
-  
+  embellishCu→dB (var x) d               = vardB x
+  embellishCu→dB (app M1 M2) (App d1 d2) = appdB (embellishCu→dB M1 d1) (embellishCu→dB M2 d2)
+  embellishCu→dB (abs M0) (Abs {A = A} d0)       = absdB A (embellishCu→dB M0 d0)
+
   embellishCu→dB⊢ : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                     → Γ ⊢dB embellishCu→dB M d ∶ A
   embellishCu→dB⊢ (var _) (Var _ Γx≡A) = VardB Γx≡A
   embellishCu→dB⊢ (app M1 M2) (App d1 d2) = AppdB (embellishCu→dB⊢ M1 d1) (embellishCu→dB⊢ M2 d2)
-  embellishCu→dB⊢ (abs M0) (Abs d0) = {!   !} -- AbsdB  (embellishCu→dB⊢ M0 d0)
+  embellishCu→dB⊢ (abs M0) (Abs d0) = AbsdB (embellishCu→dB⊢ M0 d0)
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
   prop1B19ii (var x)     (Var _ _)   = refl
   prop1B19ii (app M1 M2) (App d1 d2) = cong2 app (prop1B19ii M1 d1) (prop1B19ii M2 d2)
-  prop1B19ii (abs M0)    (Abs d0)    = cong abs (prop1B19ii M0 d0)
+  prop1B19ii (abs M0)    (Abs d0)    = cong abs  (prop1B19ii M0 d0)
 
   ΛCh≃ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
   ΛCh≃ g=d (varCh x e)   = varCh x (g=d x ~! e)
@@ -195,4 +200,3 @@ module Church where
   --           → Γ ⊢ M ∶ (A ⇒ B)  →  Γ ⊢ N ∶ A  →  Γ ⊢ app M N ∶ B
   --   Abs : ∀ {Γ : Cxt V} {M : Λ (↑ V)} {A B : 𝕋}
   --           → io Γ A ⊢ M ∶ B  →  Γ ⊢ abs M ∶ (A ⇒ B)
-  
