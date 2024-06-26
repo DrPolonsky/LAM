@@ -69,7 +69,7 @@ module LogicOps {A : Set} where
   _⇔_ : ∀ {n : ℕ} → 𝓟^ n A → 𝓟^ n A → Set
   A ⇔ B = A ⊆ B × B ⊆ A
 
-  infix 15 _⇔_
+  infixr 15 _⇔_
   infix 16 _⊆_
   infix 17 _∩_
   infix 17 _∪_
@@ -79,14 +79,24 @@ module LogicOps {A : Set} where
   nonEmpty {zero}   X = X
   nonEmpty {succ n} P = Σ[ a ∈ A ] (nonEmpty (P a))
 
-  _⊆!⊆_ : ∀ {n : ℕ} {P Q R : 𝓟^ n A} → P ⊆ Q → Q ⊆ R → P ⊆ R
-  _⊆!⊆_ {zero} PQ QR = QR ∘ PQ
-  _⊆!⊆_ {succ n} PQ QR = λ x → PQ x ⊆!⊆ QR x
-
   ⊆⊤ : ∀ {n : ℕ} (P : 𝓟^ n A) → P ⊆ K⊤
   ⊆⊤ {zero}   P = K tt
   ⊆⊤ {succ n} P = λ _ → ⊆⊤ _
 
+  -- For the operators below, Agda cannot infer the implicit argument
+
+  _⊆!⊆_ : ∀ {n : ℕ} {P Q R : 𝓟^ n A} → P ⊆ Q → Q ⊆ R → P ⊆ R
+  _⊆!⊆_ {zero}   PQ QR = QR ∘ PQ
+  _⊆!⊆_ {succ n} PQ QR = λ x → PQ x ⊆!⊆ QR x
+
+  _⇔!⇔_ : ∀ {n : ℕ} {P Q R : 𝓟^ n A} → P ⇔ Q → Q ⇔ R → P ⇔ R
+  _⇔!⇔_ {zero}   PQ QR = PQ ↔!↔ QR
+  _⇔!⇔_ {succ n} PQ QR = PR , RP where
+                         PR = λ x → pr1 PQ x ⊆!⊆ pr1 QR x
+                         RP = λ x → pr2 QR x ⊆!⊆ pr2 PQ x
+
+  ~⇔ : ∀ {n} {P Q : 𝓟^ n A} → P ⇔ Q → Q ⇔ P
+  ~⇔ (PQ , QP) = QP , PQ
 open LogicOps public
 
 module Lifting^ where

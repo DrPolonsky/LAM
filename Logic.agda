@@ -57,6 +57,9 @@ case f g (in2 y) = g y
 _↔_ : Set → Set → Set
 A ↔ B = (A → B) × (B → A)
 
+_↔!↔_ : ∀ {A B C} → A ↔ B → B ↔ C → A ↔ C
+(AB , BA) ↔!↔ (BC , CB) = (BC ∘ AB) , (BA ∘ CB)
+
 -- EQUALITY
 -- ≡ is \== or \equiv
 data _≡_ {A : Set} (a : A) : A → Set where

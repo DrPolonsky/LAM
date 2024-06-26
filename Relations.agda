@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
-{-# OPTIONS --allow-unsolved-metas #-}
+-- {-# OPTIONS --allow-unsolved-metas --inversion-max-depth=100 #-}
 
 module Relations where
 
@@ -72,6 +72,13 @@ module LogicOps₂ {A B : Set} where
   relEq = (λ RS x y → pr1 RS x y , pr2 RS x y )
         , λ H → (λ x y → pr1 (H x y)) , (λ x y → pr2 (H x y))
 
+  _⊆!⊆₂_ : ∀ {P Q R : Rel A B} → P ⊆₂ Q → Q ⊆₂ R → P ⊆₂ R
+  PQ ⊆!⊆₂ QR = λ x y → QR x y ∘ PQ x y
+
+  _⇔!⇔₂_ : ∀ {P Q R : Rel A B} → P ⇔₂  Q → Q ⇔₂  R → P ⇔₂  R
+  (PQ , QP) ⇔!⇔₂ (QR , RQ) = (PQ ⊆!⊆₂ QR) , (RQ ⊆!⊆₂ QP)
+  infixr 18 _⇔!⇔₂_
+
 open LogicOps₂ public
 
 -- check : ∀ {A : Set} (R Q : Rel A A) → (_⇔_ R Q) ↔ (R ⇔₂ Q)
@@ -101,7 +108,7 @@ module RelationLaws where
 
   pr1 (law5 R S T) a d (c ,, (b ,, Rab , Sbc) , Tcd) = b ,, (Rab , (c ,, Sbc , Tcd))
   pr2 (law5 R S T) a d (b ,, Rab , (c ,, Sbc , Tcd)) = c ,, ((b ,, (Rab , Sbc)) , Tcd)
-  
+
   pr1 (law6 R) x y LHS = LHS
   pr2 (law6 R) x y Rxy = Rxy
 
@@ -166,7 +173,7 @@ module ClosureOperators {U : Set} where
   TC⁺⇔TC₊ R = ⁺⊆₊ , ₊⊆⁺ where
     ⁺⊆₊ : R ⁺ ⊆ R ₊
     ⁺⊆₊ x y (ax⁺ Rxy) = ax₊ Rxy
-    ⁺⊆₊ x y (Rxy ,⁺ R⁺yz) = ~₊ Rxy (⁺⊆₊ _ y R⁺yz) 
+    ⁺⊆₊ x y (Rxy ,⁺ R⁺yz) = ~₊ Rxy (⁺⊆₊ _ y R⁺yz)
     ₊⊆⁺ : R ₊ ⊆ R ⁺
     ₊⊆⁺ x y (ax₊ Rxy) = ax⁺ Rxy
     ₊⊆⁺ x y (R₊xy ₊, Ryz) = ~⁺ (₊⊆⁺ x _ R₊xy) Ryz
@@ -179,7 +186,7 @@ module ClosureOpsPreserveEquivalence {A} {R1 R2 : 𝓡 A} (R12 : R1 ⇔ R2) wher
   pr1 ⇔⁼ x .x ε⁼ = ε⁼
   pr2 ⇔⁼ x y (ax⁼ R2xy) = ax⁼ (pr2 R12 x y R2xy)
   pr2 ⇔⁼ x .x ε⁼ = ε⁼
-  
+
   ⇔ˢ : R1 ˢ ⇔ R2 ˢ
   pr1 ⇔ˢ x y (axˢ+ R1xy) = axˢ+ (pr1 R12 x y R1xy)
   pr1 ⇔ˢ x y (axˢ- R1yx) = axˢ- (pr1 R12 y x R1yx)
@@ -191,12 +198,17 @@ module ClosureOpsPreserveEquivalence {A} {R1 R2 : 𝓡 A} (R12 : R1 ⇔ R2) wher
   pr1 ⇔⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⇔⁺ _ y R1⁺yz)
   pr2 ⇔⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
   pr2 ⇔⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⇔⁺ _ y R2⁺yz
-  
+
+  -- ⊆₊ : R1 ₊ ⊆ R2 ₊
+  -- ⊆₊ = (pr2 (TC⁺⇔TC₊ R1)) ⊆!⊆₂
+  --                    (pr1 ⇔⁺ ⊆!⊆₂ (pr1 (TC⁺⇔TC₊ R2)))
+
   ⇔₊ : R1 ₊ ⇔ R2 ₊
-  pr1 ⇔₊ x y (ax₊ R1xy) = ax₊ (pr1 R12 x y R1xy)
-  pr1 ⇔₊ x y (R1₊xy ₊, R1yz) = pr1 ⇔₊ x _ R1₊xy ₊, pr1 R12 _ y R1yz
-  pr2 ⇔₊ x y (ax₊ R2xy) = ax₊ (pr2 R12 x y R2xy)
-  pr2 ⇔₊ x y (R2₊xy ₊, R2yz) = pr2 ⇔₊ x _ R2₊xy ₊, (pr2 R12 _ y R2yz)
+  ⇔₊ = (~⇔ {n = 2} (TC⁺⇔TC₊ R1)) ⇔!⇔₂ ⇔⁺ ⇔!⇔₂ (TC⁺⇔TC₊ R2)
+  -- pr1 ⇔₊ x y (ax₊ R1xy) = ax₊ (pr1 R12 x y R1xy)
+  -- pr1 ⇔₊ x y (R1₊xy ₊, R1yz) = pr1 ⇔₊ x _ R1₊xy ₊, pr1 R12 _ y R1yz
+  -- pr2 ⇔₊ x y (ax₊ R2xy) = ax₊ (pr2 R12 x y R2xy)
+  -- pr2 ⇔₊ x y (R2₊xy ₊, R2yz) = pr2 ⇔₊ x _ R2₊xy ₊, (pr2 R12 _ y R2yz)
 
   ⇔⋆ : R1 ⋆ ⇔ R2 ⋆
   pr1 ⇔⋆ x y (ax⋆ Rxy) = ax⋆ (pr1 R12 x y Rxy)
@@ -304,6 +316,9 @@ module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
   R₊acc-Lemma : ∀ {x} → is (R ₊) -accessible x → ∀ y → (R ₊) y x → is (R ₊) -accessible y
   R₊acc-Lemma (acc xa) = xa
 
+  Racc₊⊆Racc : ∀ (x : A) → is R ₊ -accessible x → is R -accessible x
+  Racc₊⊆Racc x (acc H) = acc (λ y Ryx → Racc₊⊆Racc y (H y (ax₊ Ryx) ) )
+
   Racc⊆R₊acc : ∀ (x : A) → is R -accessible x → is R ₊ -accessible x
   Racc⊆R₊acc x (acc xacc) = acc (λ y → λ {  (ax₊ Ryx) → Racc⊆R₊acc y (xacc y Ryx)
                                             ; (R+yz ₊, Rzx) → R₊acc-Lemma (Racc⊆R₊acc _ (xacc _ Rzx)) y R+yz })
@@ -311,13 +326,15 @@ module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
   WFacc₊ : isWFacc R → isWFacc (R ₊)
   WFacc₊ WFaccR x = Racc⊆R₊acc x (WFaccR x)
 
+  wfR+→wfR : isWFacc (R ₊) → isWFacc R
+  wfR+→wfR wfR+ x = Racc₊⊆Racc x (wfR+ x)
+
   WFind₊ : isWFind R → isWFind (R ₊)
   WFind₊ WFindR = isWFacc→isWFind (R ₊) (WFacc₊ (isWFind→isWFacc R WFindR ) )
 
   lemma⁺→⋆ : ∀ {x y : A} → (R ⁺) x y →  (R ⋆) x y
   lemma⁺→⋆ (ax⁺ Rxy) = ax⋆ Rxy
   lemma⁺→⋆ (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R⁺yy₁
-
 
   TransitiveClosure : R ⋆ ⇔ (R ⁺ ∪ R ⁼)
   TransitiveClosure = TC+ , TC- where
@@ -337,6 +354,7 @@ module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
 
 -- Proofs involving classical logic
 module ClassicalPropertiesOfRelations where
+  open import Classical
 
   -- This part will be moved elsewhere
   module Preliminaries where
@@ -373,7 +391,7 @@ module ClassicalPropertiesOfRelations where
     -- and every property, if it's not the case that every element related to x
     -- has the property, then we can exhibit one that doesn't.
     WellSupported : ∀ {A} → 𝓡 A → Set₁
-    WellSupported R = ∀ x → ∀ φ → (~R R x ⟪ φ)
+    WellSupported R = ∀ x → ∀ φ → dec φ → (~R R x ⟪ φ)
 
   open Preliminaries
 
@@ -383,9 +401,15 @@ module ClassicalPropertiesOfRelations where
 -- Question: Does DeMorgan∀∃ A imply that every predicate on A is decidable?
 -- Question: Do we need it to be this general?
 
+    ¬acc→seq : ∀ x → ¬ is R -accessible x → ℕ → A
+    ¬acc→seq x ¬accx zero = {!   !}
+    ¬acc→seq x ¬accx (succ n) = {!   !}
+
     isWFseq→isWFacc : isWFseq R → ∀ x → ¬¬ (is R -accessible x)
-    isWFseq→isWFacc WFseqR x ¬accx with RisWS x (λ z → R z x) (λ H → ¬accx (acc (λ y Ryx → ∅ {!   !})))
-    ... | y ,, Ryx , pr4 = pr4 Ryx 
+    isWFseq→isWFacc WFseqR x ¬accx = ¬accx (acc λ y Ryx → {!   !} )
+
+    -- with RisWS x (λ z → R z x) {!   !} (λ H → ¬accx (acc (λ y Ryx → ∅ {!   !})))
+    -- ... | y ,, Ryx , pr4 = pr4 Ryx
 
       -- let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !}
       --  in {!   !}
@@ -548,6 +572,5 @@ module A18Constructive where
 
 
 
-  
+
 -- The End
-   
