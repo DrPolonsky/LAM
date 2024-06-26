@@ -99,8 +99,11 @@ module RelationLaws where
   pr1 (law4 R S) x y (z ,, Ryx , Szx) = z ,, Szx , Ryx
   pr2 (law4 R S) x y (z ,, Szx , Ryz) = z ,, Ryz , Szx
 
-  law5 R S T = {!   !}
-  law6 R = {!   !}
+  pr1 (law5 R S T) a d (c ,, (b ,, Rab , Sbc) , Tcd) = b ,, (Rab , (c ,, Sbc , Tcd))
+  pr2 (law5 R S T) a d (b ,, Rab , (c ,, Sbc , Tcd)) = c ,, ((b ,, (Rab , Sbc)) , Tcd)
+  
+  pr1 (law6 R) x y LHS = LHS
+  pr2 (law6 R) x y Rxy = Rxy
 
 module ClosureOperators {U : Set} where
   --reflexive closure
@@ -151,30 +154,57 @@ module ClosureOperators {U : Set} where
   EQ : 𝓡 U → 𝓡 U
   EQ R = (R ˢ) ⋆
 
-  lemmaReverseTransitivity : ∀ {R : 𝓡 U} {x y z : U} → (R ⁺) x y → R y z → (R ⁺) x z
-  lemmaReverseTransitivity (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
-  lemmaReverseTransitivity (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ lemmaReverseTransitivity R⁺y₁z Ryz
+  ~⁺ : ∀ {R : 𝓡 U} {x y z : U} → (R ⁺) x y → R y z → (R ⁺) x z
+  ~⁺ (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
+  ~⁺ (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ ~⁺ R⁺y₁z Ryz
+
+  ~₊ : ∀ {R : 𝓡 U} {x y z : U} → R x y → (R ₊) y z → (R ₊) x z
+  ~₊ Rxy (ax₊ Ryz) = ax₊ Rxy ₊, Ryz
+  ~₊ Rxy (R₊xy ₊, Ryz) = ~₊ Rxy R₊xy ₊, Ryz
 
   TC⁺⇔TC₊ : ∀ (R : 𝓡 U) → R ⁺ ⇔ R ₊
   TC⁺⇔TC₊ R = ⁺⊆₊ , ₊⊆⁺ where
     ⁺⊆₊ : R ⁺ ⊆ R ₊
-    ⁺⊆₊ = {!   !}
+    ⁺⊆₊ x y (ax⁺ Rxy) = ax₊ Rxy
+    ⁺⊆₊ x y (Rxy ,⁺ R⁺yz) = ~₊ Rxy (⁺⊆₊ _ y R⁺yz) 
     ₊⊆⁺ : R ₊ ⊆ R ⁺
-    ₊⊆⁺ = {!   !}
+    ₊⊆⁺ x y (ax₊ Rxy) = ax⁺ Rxy
+    ₊⊆⁺ x y (R₊xy ₊, Ryz) = ~⁺ (₊⊆⁺ x _ R₊xy) Ryz
 open ClosureOperators public
 
 module ClosureOpsPreserveEquivalence {A} {R1 R2 : 𝓡 A} (R12 : R1 ⇔ R2) where
 
   ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
-  ⇔⁼ = {!   !}
+  pr1 ⇔⁼ x y (ax⁼ R1xy) = ax⁼ (pr1 R12 x y R1xy)
+  pr1 ⇔⁼ x .x ε⁼ = ε⁼
+  pr2 ⇔⁼ x y (ax⁼ R2xy) = ax⁼ (pr2 R12 x y R2xy)
+  pr2 ⇔⁼ x .x ε⁼ = ε⁼
+  
   ⇔ˢ : R1 ˢ ⇔ R2 ˢ
-  ⇔ˢ = {!   !}
+  pr1 ⇔ˢ x y (axˢ+ R1xy) = axˢ+ (pr1 R12 x y R1xy)
+  pr1 ⇔ˢ x y (axˢ- R1yx) = axˢ- (pr1 R12 y x R1yx)
+  pr2 ⇔ˢ x y (axˢ+ R2xy) = axˢ+ (pr2 R12 x y R2xy)
+  pr2 ⇔ˢ x y (axˢ- R2yx) = axˢ- (pr2 R12 y x R2yx)
+
   ⇔⁺ : R1 ⁺ ⇔ R2 ⁺
-  ⇔⁺ =  {!   !}
+  pr1 ⇔⁺ x y (ax⁺ R1xy) = ax⁺ (pr1 R12 x y R1xy)
+  pr1 ⇔⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⇔⁺ _ y R1⁺yz)
+  pr2 ⇔⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
+  pr2 ⇔⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⇔⁺ _ y R2⁺yz
+  
   ⇔₊ : R1 ₊ ⇔ R2 ₊
-  ⇔₊ = {!   !}
+  pr1 ⇔₊ x y (ax₊ R1xy) = ax₊ (pr1 R12 x y R1xy)
+  pr1 ⇔₊ x y (R1₊xy ₊, R1yz) = pr1 ⇔₊ x _ R1₊xy ₊, pr1 R12 _ y R1yz
+  pr2 ⇔₊ x y (ax₊ R2xy) = ax₊ (pr2 R12 x y R2xy)
+  pr2 ⇔₊ x y (R2₊xy ₊, R2yz) = pr2 ⇔₊ x _ R2₊xy ₊, (pr2 R12 _ y R2yz)
+
   ⇔⋆ : R1 ⋆ ⇔ R2 ⋆
-  ⇔⋆ = {!   !}
+  pr1 ⇔⋆ x y (ax⋆ Rxy) = ax⋆ (pr1 R12 x y Rxy)
+  pr1 ⇔⋆ x .x ε⋆ = ε⋆
+  pr1 ⇔⋆ x y (R1xy ,⋆ R2⋆yz) = (pr1 R12 x _ R1xy) ,⋆ pr1 ⇔⋆ _ y R2⋆yz
+  pr2 ⇔⋆ x y (ax⋆ R2xy) = ax⋆ (pr2 R12 x y R2xy)
+  pr2 ⇔⋆ x .x ε⋆ = ε⋆
+  pr2 ⇔⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⇔⋆ _ y R2⋆yz
 
 -- Properties of relations
 module RelationProperties {U : Set} (R : 𝓡 U) where
@@ -354,9 +384,11 @@ module ClassicalPropertiesOfRelations where
 -- Question: Do we need it to be this general?
 
     isWFseq→isWFacc : isWFseq R → ∀ x → ¬¬ (is R -accessible x)
-    isWFseq→isWFacc WFseqR x ¬accx =
-      let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !}
-       in {!   !}
+    isWFseq→isWFacc WFseqR x ¬accx with RisWS x (λ z → R z x) (λ H → ¬accx (acc (λ y Ryx → ∅ {!   !})))
+    ... | y ,, Ryx , pr4 = pr4 Ryx 
+
+      -- let ws = RisWS x (λ y → ¬ (is R -accessible y)) λ H → ¬accx {!   !}
+      --  in {!   !}
 
 -- Feel free to assume ∀ x → ¬ (φ x) ∨ ¬¬ (φ x)
 
@@ -516,5 +548,6 @@ module A18Constructive where
 
 
 
-
+  
 -- The End
+   
