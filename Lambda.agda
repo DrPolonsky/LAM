@@ -81,6 +81,25 @@ lift≅∘ : ∀ {A B C} {f : A → B} {g : B → Λ C} {h} → h ≅ g ∘ f �
 lift≅∘ h≅gf (i x) = cong Λ→i (h≅gf x)
 lift≅∘ h≅gf o = refl
 
+lift-nat : ∀ {A B C} {f : A → B} {g : B → Λ C} {h} → h ≅ g ∘ f → lift h ≅ lift g ∘ ↑→ f
+lift-nat h≅gf (i x) = cong Λ→i (h≅gf x)
+lift-nat h≅gf o = refl
+
+lift+nat : ∀ {A B C} {f : A → Λ B} {g : B → C} {h} → h ≅ Λ→ g ∘ f → lift h ≅ Λ→ (↑→ g) ∘ lift f
+lift+nat {f = f} {g} h≅Λg∘f (i x) = cong Λ→i (h≅Λg∘f x) ! ~ (Λ→∘ g i (f x) ) ! Λ→≅∘ i (↑→ g) (i-nat g) (f x) -- -- Λ→≅∘ i (↑→ g) !≅! (f x)
+lift+nat h≅Λg∘f o = refl
+
+-- lift≅∘ : ∀ {A B C} {f : A → B} {g : B → Λ C} {h} → h ≅ g ∘ f → lift h ≅ lift g ∘ ↑→ f
+
+-- Distribution law for syntax over lifting
+Λ↑ : ∀ {A : Set} → ↑ (Λ A) → Λ (↑ A)
+Λ↑ = lift I
+
+Λ↑-nat : ∀ {A B : Set} (f : A → B) → Λ↑ ∘ (↑→ (Λ→ f)) ≅ Λ→ (↑→ f) ∘ Λ↑
+Λ↑-nat f = io𝓟 _ (Λ→∘≅ f i  (i-nat f) ≅!≅ Λ→≅∘ i (↑→ f) (i-nat f)) refl
+-- Λ↑-nat f (i x) = Λ→∘≅ f i  (i-nat f) x ! Λ→≅∘ i (↑→ f) (i-nat f) x
+-- Λ↑-nat f o = refl
+
 -- Substitution is the monadic bind for Λ (Haskell's >>=)
 _[_] : ∀ {A B : Set} → Λ A → (A → Λ B) → Λ B
 var x   [ f ] = f x
@@ -108,32 +127,36 @@ bind-nat₁ h≅gf (var x)     = h≅gf x
 bind-nat₁ h≅gf (app t1 t2) = cong2 app (bind-nat₁ h≅gf t1) (bind-nat₁ h≅gf t2)
 bind-nat₁ h≅gf (abs t0)    = cong abs (bind-nat₁ (lift≅∘ h≅gf) t0 )
 
-bind-nat : ∀ {X Y : Set} (g : X → Λ Y) → Λ→ i ∘ bind g ≅ bind (lift g) ∘ Λ→ i
-bind-nat g (var x)     = refl
-bind-nat g (app t1 t2) = cong2 app (bind-nat g t1) (bind-nat g t2)
-bind-nat g (abs t0)    = cong abs {! bind-nat (lift g)  t0  !}
+bind-nat₂ : ∀ {X Y Z : Set} {f : X → Λ Y} {g : Y → Z} {h}
+              → h ≅ Λ→ g ∘ f → bind h ≅ Λ→ g ∘ bind f
+bind-nat₂ h≅Λg∘f (var x) = h≅Λg∘f x
+bind-nat₂ h≅Λg∘f (app t1 t2) = cong2 app (bind-nat₂ h≅Λg∘f t1) (bind-nat₂ h≅Λg∘f t2)
+bind-nat₂ h≅Λg∘f (abs t0) = cong abs (bind-nat₂ (lift+nat h≅Λg∘f) t0)
+  -- where e = λ {  (i x) → {!   !} ; o → refl }
+-- bind-nat : ∀ {X X' Y Y' : Set} (f : X → X') (g : X → Λ Y) (h : Y → Y') → Λ→ f ∘ bind f ≅ bind (lift g) ∘ Λ→ i
+
+bind-nat≅ : ∀ {X1 X2 Y1 Y2 : Set} (f : X1 → X2) (g : X2 → Λ Y1) (h : Y1 → Y2)
+              → Λ→ h ∘ bind (g ∘ f) ≅ bind (Λ→ h ∘ g) ∘ Λ→ f
+bind-nat≅ f g h = bind-nat₂ !≅! ~!≅ bind-nat₁ !≅!
+-- bind-nat≅ f g h (var x) = refl
+-- bind-nat≅ f g h (app t1 t2) = cong2 app (bind-nat≅ f g h t1) (bind-nat≅ f g h t2)
+-- bind-nat≅ f g h (abs t0) = cong abs ( cong (Λ→ (↑→ h)) (bind≅ (lift≅∘ λ x → refl ) t0)
+--                                     ! (bind-nat≅ (↑→ f) (lift g) (↑→ h) t0
+--                                     ! bind≅ (~≅ lift+nat !≅! ) (Λ→ (↑→ f) t0) ))
+
+bind-lift : ∀ {X Y : Set} (g : X → Λ Y) → Λ→ i ∘ bind g ≅ bind (lift g) ∘ Λ→ i
+bind-lift g = bind-nat₂ !≅! ~!≅ bind-nat₁ !≅!
 
 bind-assoc≅ : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} {h : A → Λ C}
                → h ≅ bind g ∘ f → bind h ≅ bind g ∘ bind f
 bind-assoc≅ bg∘f≅h (var x)     = bg∘f≅h x
 bind-assoc≅ bg∘f≅h (app t1 t2) = cong2 app (bind-assoc≅ bg∘f≅h t1) (bind-assoc≅ bg∘f≅h t2)
 bind-assoc≅ {f = f} {g} {h} bg∘f≅h (abs t0)    = cong abs (bind-assoc≅ eq t0) where
-  eq = lift≅∘ bg∘f≅h ≅!≅ λ {  (i x) → {! lift≅∘   !} ; o → refl }
-  -- eq = lift≅ bg∘f≅h ≅!≅ λ { (i x) → bind-nat g (f x) ; o → refl }
-  -- ih = {!   !} -- λ x → {! Λ→≅∘ _ _ (symm≅ bg∘f≅h) x    !}
-  -- eq = io𝓟 (λ a → bind (lift g) (lift f a) ≡ lift h a) ih refl
--- bind-assoc≅ {f = f} {g} bg∘f≅h (abs t0) = cong abs (bind-assoc≅ eq t0)
---   where eq : _ -- bind (lift g) ∘ lift f ≅ lift h
---         eq (i x) = ~ (bind-nat g (f x)) ! (cong (Λ→ i) (bg∘f≅h x))
---         eq o = refl
+  eq = lift≅∘ {f = f} {g = bind g}  bg∘f≅h ≅!≅ λ {  (i x) → bind-lift g (f x) ; o → refl }
 
 bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
                → bind (bind g ∘ f) ≅ bind g ∘ bind f
 bind-assoc {f = f} {g} = bind-assoc≅ refl≅
--- bind-assoc {A} {B} {C} {f} {g} (var x) = refl
--- bind-assoc {A} {B} {C} {f} {g} (app t1 t2) = cong2 app (bind-assoc t1) (bind-assoc t2)
--- bind-assoc {A} {B} {C} {f} {g} (abs t0)
---   = cong abs {! bind-assoc t0   !}
 
 
 -- The End

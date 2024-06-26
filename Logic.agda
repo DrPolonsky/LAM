@@ -124,14 +124,14 @@ infix 14 _⊔_
 infix 15 _×_
 infix 18 _≡_
 infix 18 _≅_
-infix 22 _!_
+infixr 22 _!_
 infix 25 _∘_
 infix 10 _,_
 infix 17 ¬_
 infix 25 ~≅_
-infix 23 _≅!≅_
-infix 23 _~!≅_
-infix 23 _≅!~_
+infixr 23 _≅!≅_
+infixr 23 _~!≅_
+infixr 23 _≅!~_
 -- infix 23 _≅~≅_
 -- infix 23 _~≅~_
 
