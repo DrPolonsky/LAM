@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
--- {-# OPTIONS --allow-unsolved-metas --inversion-max-depth=100 #-}
+{-# OPTIONS --allow-unsolved-metas --inversion-max-depth=100 #-}
 
 module Relations where
 
@@ -304,7 +304,8 @@ module WellFoundedness {A : Set} (R : 𝓡 A) where
         φ-ind x IH m x≡sm = IH (s (succ m))
               (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
      in RisWF φ φ-ind (s zero) zero refl
-open WellFoundedness
+
+open WellFoundedness public
 
 module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
 
@@ -350,6 +351,17 @@ module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
     TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
     TC- x .x (in2 ε⁼) = ε⋆
 
+
+module Knaster-Tarski {S : Set} (Δ : 𝓟 S → 𝓟 S) (Δ⊆ : ∀ {X Y : 𝓟 S} → X ⊆ Y → Δ X ⊆ Δ Y) where
+  -- May need to define it as a datatype: data M : S → Set where ....
+  M : 𝓟 S
+  M = {!   !}
+
+  M⇔ΔM : M ⇔ Δ M
+  M⇔ΔM = {!   !}
+
+  M=μΔ : ∀ N → (Δ N ⊆ N) → M ⊆ N
+  M=μΔ N ΔN⊆N = {!   !} 
 
 
 -- Proofs involving classical logic
