@@ -1,8 +1,73 @@
 module Wellfounded where
 
 open import Logic
+open import Lifting
 open import Predicates
 open import Relations
+
+{- 6.26  Exercise A1.18 from the accessible point of view.
+-}
+
+module June26 {D : Set} (R : 𝓡 D) where
+
+  is_-_-minimal_ : 𝓟 D → 𝓟 D
+  -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
+  is_-_-minimal_ φ x = x ∈ φ × (∀ y → y ∈ φ → R y x → ⊥)
+
+  isWFmin : Set₁
+  isWFmin = ∀ (P : 𝓟 D) → ∀ {d : D} → d ∈ P → Σ[ y ∈ D ] is_-_-minimal_ P y
+
+  isWFmin- : Set₁
+  isWFmin- = ∀ (P : 𝓟 D) → ∀ {d : D} → d ∈ P → ¬¬ (Σ[ y ∈ D ] is_-_-minimal_ P y)
+
+  isWFind- : Set₁
+  isWFind- = ∀ (φ : 𝓟 D) → is R -inductive φ → ∀ x → ¬¬ (φ x)
+
+open June26
+
+-- isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → isWFacc R
+-- isWFmin→isWFacc {D} R RisWFmin = ?
+
+
+isWFacc→isWFmin : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin R
+isWFacc→isWFmin R RisWFacc P {d} d∈P = {!   !}
+
+isWFacc→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin- R
+isWFacc→isWFmin- R RisWFacc P {d} d∈P ¬Σ = {!   !}
+
+isWFseq→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFseq R → isWFmin- R
+isWFseq→isWFmin- {D} R RisWFseq P {d} d∈P ¬Σmin = RisWFseq f f-dec where
+  f : ℕ → D
+  f⊆P : ∀ n → f n ∈ P
+  f-dec : is R -decreasing f
+  f zero = d
+  f (succ n) = {!   !}
+  f-dec = {!   !}
+  f⊆P = {!   !}
+
+isWFmin-→isWFseq : ∀ {D} (R : 𝓡 D) → isWFmin- R → isWFseq R
+isWFmin-→isWFseq {D} R RisWFmin- s s-dec = RisWFmin- B (zero ,, refl) f
+  where B = (λ d → Σ[ n ∈ ℕ ] (s n ≡ d))
+        f : ¬ Σ[ d ∈ D ] is R - B -minimal d
+        f (d ,, dRBmin) with pr1 dRBmin
+        ... | n ,, sn≡d = pr2 dRBmin (s (succ n)) (succ n ,, refl)
+                              (transp (R (s (succ n))) sn≡d (s-dec n))
+
+isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → ∀ d → ¬¬ (is R -accessible d)
+isWFmin→isWFacc R RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
+... | m ,, mIsMin¬Acc = pr1 mIsMin¬Acc (acc λ y Rym → {!   !} )
+
+isWFmin-→isWFind- : ∀ {D} (R : 𝓡 D) → isWFmin- R → isWFind- R
+isWFmin-→isWFind- {D} R RisWFmin- φ φ-ind x ¬φx = RisWFmin- (λ v → ¬ (φ v)) ¬φx f
+  where f : ¬ Σ[ d ∈ D ] is R - (∁ φ) -minimal d
+        f (d ,, dis¬φmin)= {!   !}
+-- RisWFmin- (λ d → ¬ (φ d)) ¬φx
+
+-- isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → ∀ d → ¬¬ (is R -accessible d)
+-- isWFmin→isWFacc R RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
+
+{- Before 6.26
+
 
 inductive⁺ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is (R ⁺) -inductive φ → is R -inductive φ
 inductive⁺ R φ φ-ind x H = {!   !}
@@ -126,3 +191,4 @@ A18→ {S} R WFR A x x∈A =
 
 ↓R-dec : ∀ (S : Set) (R : 𝓡 S) → 𝓟 S
 ↓R-dec S R x = ¬ (∀ y → ¬ R y x) → Σ[ y ∈ S ] R y x
+-}

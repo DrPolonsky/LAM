@@ -75,13 +75,21 @@ module LogicOps {A : Set} where
   infix 17 _∪_
   infix 19 ∁_
 
-  nonEmpty : ∀ {n} → 𝓟^ n A → Set
-  nonEmpty {zero}   X = X
-  nonEmpty {succ n} P = Σ[ a ∈ A ] (nonEmpty (P a))
+  Elem : ∀ {n} → 𝓟^ n A → Set
+  Elem {zero}   X = X
+  Elem {succ n} P = Σ[ a ∈ A ] (Elem (P a))
 
   ⊆⊤ : ∀ {n : ℕ} (P : 𝓟^ n A) → P ⊆ K⊤
   ⊆⊤ {zero}   P = K tt
   ⊆⊤ {succ n} P = λ _ → ⊆⊤ _
+
+  refl⊆^ : ∀ (n : ℕ) {P : 𝓟^ n A} → P ⊆ P
+  refl⊆^ zero = I
+  refl⊆^ (succ n) = λ x → refl⊆^ n
+
+  tran⊆^ : ∀ (n : ℕ) {P Q R : 𝓟^ n A} → P ⊆ Q → Q ⊆ R → P ⊆ R
+  tran⊆^ (zero)   PQ QR = QR ∘ PQ
+  tran⊆^ (succ n) PQ QR = λ x → tran⊆^ n (PQ x) (QR x)
 
   -- For the operators below, Agda cannot infer the implicit argument
 
