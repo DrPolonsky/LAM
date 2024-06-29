@@ -1,5 +1,6 @@
 -- {-# OPTIONS --type-in-type #-}
--- {-# OPTIONS --allow-unsolved-metas --inversion-max-depth=100 #-}
+-- {-# OPTIONS --inversion-max-depth=100  #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Relations where
 
@@ -304,7 +305,7 @@ module WellFoundedness {A : Set} (R : 𝓡 A) where
         φ-ind x IH m x≡sm = IH (s (succ m))
               (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
      in RisWF φ φ-ind (s zero) zero refl
-open WellFoundedness
+open WellFoundedness public 
 
 module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
 
