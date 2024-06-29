@@ -305,12 +305,7 @@ module WellFoundedness {A : Set} (R : 𝓡 A) where
         φ-ind x IH m x≡sm = IH (s (succ m))
               (transp (R (s (succ m))) (~ x≡sm) (sIsR-Dec m)) (succ m) refl
      in RisWF φ φ-ind (s zero) zero refl
-<<<<<<< HEAD
 open WellFoundedness public
-=======
-
-open WellFoundedness public
->>>>>>> cd07188a55ca38bd28e5592ad798f67d43609741
 
 module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
 
