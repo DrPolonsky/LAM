@@ -21,29 +21,94 @@ module June26 {D : Set} (R : 𝓡 D) where
   isWFmin- = ∀ (P : 𝓟 D) → ∀ {d : D} → d ∈ P → ¬¬ (Σ[ y ∈ D ] is_-_-minimal_ P y)
 
   isWFind- : Set₁
-  isWFind- = ∀ (φ : 𝓟 D) → is R -inductive φ → ∀ x → ¬¬ (φ x)
+  isWFind- = ∀ (φ : 𝓟 D) → (is_-inductive_ R φ) → ∀ x → ¬¬ (φ x)
+
+  isWFacc- : Set
+  isWFacc- = ∀ x → ¬¬ (is R -accessible x)
+
+  acc⊆ind : ∀ (φ : 𝓟 D) → is R -inductive φ → is_-accessible_ R ⊆ φ
+  acc⊆ind φ φisR-ind x (acc IH) = φisR-ind x (λ y Ryx → acc⊆ind φ φisR-ind y (IH y Ryx) )
+
+  -- ind⊆acc : ∀ (φ : 𝓟 D) → is R -inductive φ →
+
+  isWFacc-→isWFind- : isWFacc- → isWFind-
+  isWFacc-→isWFind- RisWFacc- P Pind d ¬Pd = RisWFacc- d (λ disRacc → ¬Pd (acc⊆ind P Pind d disRacc) )
+
+  isWFind-→isWFacc- : isWFind- → isWFacc-
+  isWFind-→isWFacc- RisWFind = RisWFind (λ y → is R -accessible y) (λ x → acc)
+
+  ¬acc : ∀ {x : D} → ¬ (is R -accessible x) → ¬ (∀ y → R y x → is R -accessible y)
+  ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
+
+  -- Easy
+  -- ∁∁indWF : isWFind R → ∀ (P : 𝓟 D) → is R -inductive P → is R -inductive (∁ (∁ P))
+  -- ∁∁indWF RisWF P PisRind x H ¬Px = ¬Px (RisWF P PisRind x)
+
+  -- Hard
+  -- ∁∁ind : ∀ (P : 𝓟 D) → is R -inductive P → is R -inductive (∁ (∁ P))
+  -- ∁∁ind P PisRind x H ¬Px = ¬Px {!   !}
+
+  -- Obvious
+  -- isWFacc→isWFacc- : isWFacc R → isWFacc- R
+  -- isWFacc→isWFacc- isWFacc x ¬accx = ¬accx (isWFacc x)
 
 open June26
 
--- isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → isWFacc R
--- isWFmin→isWFacc {D} R RisWFmin = ?
+-- lemma-acc :  ∀ {D} (R : 𝓡 D) → isWFacc R → ∀ x
+--                → (∀ y → R y x → ¬¬ (is R -accessible y)) → → ¬¬ (is R -accessible x)
+-- lemma-acc wfR
 
+-- Double negation shift for accessibility
+isWFacc-→¬¬isWFacc :  ∀ {D} (R : 𝓡 D) → isWFacc- R → ¬¬ (isWFacc R)
+isWFacc-→¬¬isWFacc {D} R RisWFacc- ¬RisWFacc = {!   !}
 
-isWFacc→isWFmin : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin R
-isWFacc→isWFmin R RisWFacc P {d} d∈P = {!   !}
+-- A strengthening of the above
+isWFacc-→isWFacc : ∀ {D} (R : 𝓡 D) → isWFacc- R → isWFacc R
+isWFacc-→isWFacc R RisWF x = {!   !}
+
+-- isWFacc→isWFmin : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin R
+-- isWFacc→isWFmin R RisWFacc P {d} d∈P = f d d∈P (RisWFacc d) where
+--   f : ∀ x → x ∈ P → is R -accessible x → _
+--   f x x∈P (acc xac) = {! f y   !}
 
 isWFacc→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin- R
 isWFacc→isWFmin- R RisWFacc P {d} d∈P ¬Σ = {!   !}
 
-isWFseq→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFseq R → isWFmin- R
-isWFseq→isWFmin- {D} R RisWFseq P {d} d∈P ¬Σmin = RisWFseq f f-dec where
-  f : ℕ → D
-  f⊆P : ∀ n → f n ∈ P
-  f-dec : is R -decreasing f
-  f zero = d
-  f (succ n) = {!   !}
-  f-dec = {!   !}
-  f⊆P = {!   !}
+isWFind→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFind R → isWFmin- R
+isWFind→isWFmin- {D} R RisWFind P d∈P = -- ¬Σmin =
+  let φ : 𝓟 D
+      φ x = x ∈ P → ¬¬ Σ[ y ∈ D ] (is R - P -minimal y)
+      φ-ind : is R -inductive φ
+      φ-ind x IH x∈P ¬Σ = ¬Σ (x ,, x∈P , λ y y∈P Ryx → IH y Ryx y∈P ¬Σ )
+    in RisWFind φ φ-ind _ d∈P
+
+isWFind-→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFind- R → isWFmin- R
+isWFind-→isWFmin- {D} R RisWFind- P {d} d∈P = -- ¬Σmin =
+  let φ : 𝓟 D
+      φ x = x ∈ P → ¬¬ Σ[ y ∈ D ] (is R - P -minimal y)
+      φ-ind : is R -inductive φ
+      φ-ind x IH x∈P ¬Σ = ¬Σ (x ,, x∈P , λ y y∈P Ryx → IH y Ryx y∈P ¬Σ )
+    in λ ¬Σ → RisWFind- φ φ-ind d (λ H → H d∈P ¬Σ )
+
+-- isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → isWFacc R
+-- isWFmin→isWFacc {D} R RisWFmin = ?
+
+isWFmin→isWFacc- : ∀ {D} (R : 𝓡 D) → isWFmin R → isWFacc- R
+isWFmin→isWFacc- {D} R RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
+... | m ,, ¬misRacc , mismin =
+  let f : ¬ ((y : D) → R y m → is R -accessible y) → ¬ ((y : D) → (is R -accessible y → ⊥) → R y m → ⊥)
+      f ¬H G = {!   !}
+    in f (¬acc R ¬misRacc ) mismin
+
+-- The next two implications are valid only for ¬¬-closed φ
+isWFmin→isWFind- : ∀ {D} (R : 𝓡 D) → isWFmin R → isWFind- R
+isWFmin→isWFind- {D} R RisWFmin φ φ-ind x ¬φx with RisWFmin (λ y → ¬ φ y) ¬φx
+... | d ,, (¬φd , d-min) = {!   !}
+
+isWFmin-→isWFind- : ∀ {D} (R : 𝓡 D) → isWFmin- R → isWFind- R
+isWFmin-→isWFind- {D} R RisWFmin- φ φ-ind x ¬φx = RisWFmin- (λ v → ¬ (φ v)) ¬φx f
+  where f : ¬ Σ[ d ∈ D ] is R - (∁ φ) -minimal d
+        f (d ,, ¬φd , ¬φ⊆¬↓d) = {!   !}
 
 isWFmin-→isWFseq : ∀ {D} (R : 𝓡 D) → isWFmin- R → isWFseq R
 isWFmin-→isWFseq {D} R RisWFmin- s s-dec = RisWFmin- B (zero ,, refl) f
@@ -53,18 +118,20 @@ isWFmin-→isWFseq {D} R RisWFmin- s s-dec = RisWFmin- B (zero ,, refl) f
         ... | n ,, sn≡d = pr2 dRBmin (s (succ n)) (succ n ,, refl)
                               (transp (R (s (succ n))) sn≡d (s-dec n))
 
-isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → ∀ d → ¬¬ (is R -accessible d)
-isWFmin→isWFacc R RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
-... | m ,, mIsMin¬Acc = pr1 mIsMin¬Acc (acc λ y Rym → {!   !} )
+isWFseq→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFseq R → isWFmin- R
+isWFseq→isWFmin- R RisWFseq = {!   !}
+-- isWFseq→isWFmin- {D} R RisWFseq P {d} d∈P ¬Σmin = RisWFseq f f-dec where
+--   -- ∀¬min : ∀ x → x ∈ P →
+--   f : ℕ → D
+--   f⊆P : ∀ n → f n ∈ P
+--   f-dec : is R -decreasing f
+--   f zero = d
+--   f (succ n) = {!   !}
+--   f-dec n = {!   !}
+--   f⊆P zero = d∈P
+--   f⊆P (succ n) = {!   !}
 
-isWFmin-→isWFind- : ∀ {D} (R : 𝓡 D) → isWFmin- R → isWFind- R
-isWFmin-→isWFind- {D} R RisWFmin- φ φ-ind x ¬φx = RisWFmin- (λ v → ¬ (φ v)) ¬φx f
-  where f : ¬ Σ[ d ∈ D ] is R - (∁ φ) -minimal d
-        f (d ,, dis¬φmin)= {!   !}
--- RisWFmin- (λ d → ¬ (φ d)) ¬φx
 
--- isWFmin→isWFacc : ∀ {D} (R : 𝓡 D) → isWFmin R → ∀ d → ¬¬ (is R -accessible d)
--- isWFmin→isWFacc R RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
 
 {- Before 6.26
 
