@@ -5,6 +5,17 @@ open import Lifting
 open import Predicates
 open import Relations
 
+{- 2024.06.28.
+Questions to investigate.
+1. Does ¬¬ R-accessible x → R-accessible x ?
+2. Does ¬¬WFacc R → WFacc R ?
+3. Does WFacc- R → ¬¬WFacc R ?
+4. What's the role of ¬¬-closedness in the implication WFmin→WFind ?
+5. How should the "minimality" concept be changed to be useful?
+6. Does WFseq → WFmin- ?
+-}
+
+
 {- 6.26  Exercise A1.18 from the accessible point of view.
 -}
 
@@ -62,17 +73,33 @@ open June26
 isWFacc-→¬¬isWFacc :  ∀ {D} (R : 𝓡 D) → isWFacc- R → ¬¬ (isWFacc R)
 isWFacc-→¬¬isWFacc {D} R RisWFacc- ¬RisWFacc = {!   !}
 
--- A strengthening of the above
+-- A strengthening of the above, probably unprovable
 isWFacc-→isWFacc : ∀ {D} (R : 𝓡 D) → isWFacc- R → isWFacc R
 isWFacc-→isWFacc R RisWF x = {!   !}
 
--- isWFacc→isWFmin : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin R
--- isWFacc→isWFmin R RisWFacc P {d} d∈P = f d d∈P (RisWFacc d) where
---   f : ∀ x → x ∈ P → is R -accessible x → _
---   f x x∈P (acc xac) = {! f y   !}
+isWFacc→isWFmin : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin R
+isWFacc→isWFmin R RisWFacc P {d} d∈P = f d d∈P (RisWFacc d) where
+  f : ∀ x → x ∈ P → is R -accessible x → _
+  f x x∈P (acc xac) = {! f y   !}
 
 isWFacc→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFacc R → isWFmin- R
-isWFacc→isWFmin- R RisWFacc P {d} d∈P ¬Σ = {!   !}
+isWFacc→isWFmin- R RisWFacc P {d} d∈P = f d d∈P (RisWFacc d) where
+  f : ∀ x → x ∈ P → is R -accessible x → _
+  f x x∈P (acc xac) ¬Σ = ¬Σ (x ,, x∈P , (λ y y∈P Ryx → f y y∈P (xac y Ryx) ¬Σ))
+
+isWFacc-→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFacc- R → isWFmin- R
+isWFacc-→isWFmin- {D} R RisWFacc- P {d} d∈P ¬Σ₀ = RisWFacc- d (λ dRacc → f d d∈P dRacc ¬Σ₀)
+  where f : ∀ x → x ∈ P → is R -accessible x → ¬¬ Σ[ y ∈ D ] (is R - P -minimal y)
+        f x x∈P (acc xac) ¬Σ = ¬Σ (x ,, x∈P , (λ y y∈P Ryx → f y y∈P (xac y Ryx) ¬Σ))
+
+isWFind→isWFmin : ∀ {D} (R : 𝓡 D) → isWFind R → isWFmin R
+isWFind→isWFmin {D} R RisWFind P d∈P =
+  let S = Σ[ y ∈ D ] (is R - P -minimal y)
+      φ : 𝓟 D
+      φ x = x ∈ P → Σ[ y ∈ D ] (y ∈ P × ∀ z → z ∈ P → R z y → S)
+      φ-ind : is R -inductive φ
+      φ-ind x IH x∈P = {!   !}
+    in {!   !} -- RisWFind φ φ-ind _ d∈P
 
 isWFind→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFind R → isWFmin- R
 isWFind→isWFmin- {D} R RisWFind P d∈P = -- ¬Σmin =
