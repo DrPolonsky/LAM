@@ -360,21 +360,21 @@ module Knaster-Tarski {S : Set} (Δ : 𝓟 S → 𝓟 S) (Δ⊆ : ∀ {X Y : �
   M : 𝓟 S
   M = {!   !}
 
-  ΔClosed : (Δ : 𝓟 S → 𝓟 S) → 𝓟 S → Set -- I'm unable to use Δ from the module here. Not sure why.
-  ΔClosed Δ X = ∀ {x} → Δ X x → X x
+  ΔClosed : 𝓟 S → Set -- I'm unable to use Δ from the module here. Not sure why.
+  ΔClosed  X = ∀ {x} → Δ X x → X x
 
   -- The smallest Δ closed set will be the intersect of all Δ closed sets.
-  smallestΔClosed : (Δ : 𝓟 S → 𝓟 S) → ∀ (x : S) → Set₁            -- Can we provide this defn without Set₁?
-  smallestΔClosed Δ x = ∀ (X : 𝓟 S) → ΔClosed Δ X → X x
+  smallestΔClosed : ∀ (x : S) → Set₁            -- Can we provide this defn without Set₁?
+  smallestΔClosed x = ∀ (X : 𝓟 S) → ΔClosed X → X x
 
-  fixedPoint : (Δ : 𝓟 S → 𝓟 S) → 𝓟 S → Set
-  fixedPoint Δ X = ∀ {x} → Δ X x ⇔ X x  -- Something wrong with this definition. We want to say they are pointwise equal right?
+  fixedPoint : 𝓟 S → Set
+  fixedPoint X = ∀ {x} → Δ X x ⇔ X x  -- Something wrong with this definition. We want to say they are pointwise equal right?
 
-  leastFixedPoint : (Δ : 𝓟 S → 𝓟 S) → 𝓟 S → Set
-  leastFixedPoint Δ X = fixedPoint Δ X × {! ∀ {Y} → fixedPoint Δ Y → ∀ x → X x → Y x   !}       -- We have a conjunction Set x Set₁
+  leastFixedPoint : 𝓟 S → Set
+  leastFixedPoint X = fixedPoint X × {! ∀ {Y} → fixedPoint Y → ∀ x → X x → Y x   !}       -- We have a conjunction Set x Set₁
 
-  Knaster-TarskiLemma : Set 
-  Knaster-TarskiLemma = Δ⊆ → Σ[ X : 𝓟 S ] → (smallestΔClosed Δ × leastFixedPoint Δ X)
+  -- Knaster-TarskiLemma : Set 
+  -- Knaster-TarskiLemma = Δ⊆ → Σ[ X : 𝓟 S ] → (smallestΔClosed Δ × leastFixedPoint Δ X)
 
   M⇔ΔM : M ⇔ Δ M
   M⇔ΔM = {!   !}
