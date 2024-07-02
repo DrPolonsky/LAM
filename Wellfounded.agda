@@ -25,8 +25,14 @@ module June26 {D : Set} (R : 𝓡 D) where
   -- is R - A -minimal {S} R A x = x ∈ A × ¬ Σ[ y ∈ S ] (y ∈ A × R y x)
   is_-_-minimal_ φ x = x ∈ φ × (∀ y → y ∈ φ → R y x → ⊥)
 
+  is_-unbounded_ : 𝓟 D → Set
+  is_-unbounded_ φ = ∀ x → x ∈ φ → Σ[ y ∈ D ] (y ∈ φ × R y x)
+
   isWFmin : Set₁
   isWFmin = ∀ (P : 𝓟 D) → ∀ {d : D} → d ∈ P → Σ[ y ∈ D ] is_-_-minimal_ P y
+
+  isWFbnd : Set₁
+  isWFbnd = ∀ (P : 𝓟 D) → is_-unbounded_ P → ∀ x → x ∉ P
 
   isWFmin- : Set₁
   isWFmin- = ∀ (P : 𝓟 D) → ∀ {d : D} → d ∈ P → ¬¬ (Σ[ y ∈ D ] is_-_-minimal_ P y)
@@ -65,9 +71,15 @@ module June26 {D : Set} (R : 𝓡 D) where
 
 open June26
 
--- lemma-acc :  ∀ {D} (R : 𝓡 D) → isWFacc R → ∀ x
---                → (∀ y → R y x → ¬¬ (is R -accessible y)) → → ¬¬ (is R -accessible x)
--- lemma-acc wfR
+isWFbnd→isWFmin- : ∀ {D} (R : 𝓡 D) → isWFbnd R → isWFmin- R
+isWFbnd→isWFmin- R RisWFbnd φ {d} d∈φ ¬Σ = RisWFbnd φ (λ x x∈φ → ? ) d d∈φ
+
+isWFbnd→isWFind- : ∀ {D} (R : 𝓡 D) → isWFbnd R → isWFind- R
+isWFbnd→isWFind- R isWFbndR φ φ-ind x ¬φx =
+  isWFbndR (∁ φ) (λ y ¬φy → {!   !} ) x ¬φx
+
+isWFind→isWFbnd : ∀ {D} (R : 𝓡 D) → isWFind R → isWFbnd R
+isWFind→isWFbnd R isWFindR φ φ-ubd x x∈φ = {!   !}
 
 -- Double negation shift for accessibility
 isWFacc-→¬¬isWFacc :  ∀ {D} (R : 𝓡 D) → isWFacc- R → ¬¬ (isWFacc R)
