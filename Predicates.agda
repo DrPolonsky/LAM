@@ -1,7 +1,7 @@
 module Predicates where
 
 -- open import LogicLevels
-open import Logic
+open import Logic-Levels
 open import Lifting
 open import Lambda
 
@@ -106,6 +106,19 @@ module LogicOps {A : Set} where
   ~⇔ : ∀ {n} {P Q : 𝓟^ n A} → P ⇔ Q → Q ⇔ P
   ~⇔ (PQ , QP) = QP , PQ
 open LogicOps public
+
+module BigOps {A : Set} where
+
+  -- ⋃ is \bigcup
+  data ⋃ {D : Set} (s : D → 𝓟 A) : 𝓟 A where
+    Sup : ∀ d x → x ∈ s d → x ∈ ⋃ s
+
+  ⋃-ub : ∀ {D : Set} (s : D → 𝓟 A) → (∀ d → s d ⊆ ⋃ s)
+  ⋃-ub s d = Sup d
+  ⋃-lub : ∀ {D : Set} (s : D → 𝓟 A) (X : 𝓟 A) → (∀ d → s d ⊆ X) → ⋃ s ⊆ X
+  ⋃-lub s X H x (Sup d .x x∈sd) = H d x x∈sd
+
+open BigOps public
 
 module Lifting^ where
   o^ : ∀ {n : ℕ} {A : Set} → 𝓟^ n (↑ A)
