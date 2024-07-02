@@ -351,11 +351,30 @@ module ClosureOperatorProperties {A : Set} (R : 𝓡 A) where
     TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
     TC- x .x (in2 ε⁼) = ε⋆
 
-
+-- Knaster-Tarski Lemma: Let S be a set. If the mapping Δ: 𝓟 (S) → 𝓟 (S) is monotone with respect to 
+-- ⊆ (property Δ⊆ below), then there exists a smallest Δ-closed set. Moreover, this smallest 
+-- Δ-closed set coincides with the smallest fixed point of Δ. 
 module Knaster-Tarski {S : Set} (Δ : 𝓟 S → 𝓟 S) (Δ⊆ : ∀ {X Y : 𝓟 S} → X ⊆ Y → Δ X ⊆ Δ Y) where
+ 
   -- May need to define it as a datatype: data M : S → Set where ....
   M : 𝓟 S
   M = {!   !}
+
+  ΔClosed : 𝓟 S → Set -- I'm unable to use Δ from the module here. Not sure why.
+  ΔClosed  X = ∀ {x} → Δ X x → X x
+
+  -- The smallest Δ closed set will be the intersect of all Δ closed sets.
+  smallestΔClosed : ∀ (x : S) → Set₁            -- Can we provide this defn without Set₁?
+  smallestΔClosed x = ∀ (X : 𝓟 S) → ΔClosed X → X x
+
+  fixedPoint : 𝓟 S → Set
+  fixedPoint X = ∀ {x} → Δ X x ⇔ X x  -- Something wrong with this definition. We want to say they are pointwise equal right?
+
+  leastFixedPoint : 𝓟 S → Set
+  leastFixedPoint X = fixedPoint X × {! ∀ {Y} → fixedPoint Y → ∀ x → X x → Y x   !}       -- We have a conjunction Set x Set₁
+
+  -- Knaster-TarskiLemma : Set 
+  -- Knaster-TarskiLemma = Δ⊆ → Σ[ X : 𝓟 S ] → (smallestΔClosed Δ × leastFixedPoint Δ X)
 
   M⇔ΔM : M ⇔ Δ M
   M⇔ΔM = {!   !}
