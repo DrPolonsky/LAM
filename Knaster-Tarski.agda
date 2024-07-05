@@ -51,7 +51,7 @@ isCont = ∀ {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (s : D → 𝓟 S)
            → Δ (⋃ s) ⊆ ⋃ (λ x → Δ (s x))
 
 module Kleene {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
-
+      
   seq-helper : ∀ (d : D) → is R -accessible d → 𝓟 S
   seq-helper d (acc H) = ⋃ s where
     s : D → 𝓟 S
@@ -61,10 +61,13 @@ module Kleene {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
   ⋃Δ = ⋃ s where s = λ d → seq-helper d (wfR d)
 
   ⋃Δ-preFP : preFP ⋃Δ
-  ⋃Δ-preFP x x∈Δ⋃Δ = {!   !}
+  ⋃Δ-preFP x x∈Δ⋃Δ = {!   !} 
+  -- with Δcont R wfR {!   !} {!   !} x x∈Δ⋃Δ
+  -- ... | H = {!   !} 
   ⋃Δ-postFP : postFP ⋃Δ
-  ⋃Δ-postFP x x∈⋃Δ = {!   !}
+  ⋃Δ-postFP x x∈⋃Δ = monoPreCont R wfR {!   !} {!   !} x {!   !}
   ⋃Δ-FP : FP ⋃Δ
   ⋃Δ-FP = ⋃Δ-preFP , ⋃Δ-postFP
   ⋃Δ-LFP : ∀ {Y} → preFP Y → ⋃Δ ⊆ Y
-  ⋃Δ-LFP {Y} preFPY x x∈⋃Δ = {!   !}
+  ⋃Δ-LFP {Y} preFPY x x∈⋃Δ = preFPY x (Δ⊆ {!   !} x {!   !})
+  
