@@ -129,6 +129,11 @@ module WellFoundedness {A : Set} (R : 𝓡 A) where
   ¬acc : ∀ {x : A} → ¬ (is_-accessible_ x) → ¬ (∀ y → R y x → is_-accessible_ y)
   ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
 
+  wf→irrefl : isWFacc → ∀ x → ¬ R x x
+  wf→irrefl RisWF x = go x (RisWF x) where
+    go : ∀ y → is_-accessible_ y → ¬ R y y
+    go y (acc Hy) Ryy = go y (Hy y Ryy) Ryy
+
 open WellFoundedness public
 
 -- module June26 {D : Set} (R : 𝓡 D) where

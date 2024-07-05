@@ -1,7 +1,7 @@
 module Predicates where
 
--- open import LogicLevels
-open import Logic -- -Levels
+open import Logic-Levels
+-- open import Logic
 open import Lifting
 open import Lambda
 
@@ -118,6 +118,8 @@ module BigOps {A : Set} where
   ⋃-lub : ∀ {D : Set} (s : D → 𝓟 A) (X : 𝓟 A) → (∀ d → s d ⊆ X) → ⋃ s ⊆ X
   ⋃-lub s X H x (Sup d .x x∈sd) = H d x x∈sd
 
+  ⋃-mono : ∀ {D : Set} (s1 s2 : D → 𝓟 A) → (∀ d → s1 d ⊆ s2 d) → ⋃ s1 ⊆ ⋃ s2
+  ⋃-mono s1 s2 ∀xs1x⊆s2x = ⋃-lub s1 (⋃ s2) (λ d x x∈s1d → ⋃-ub s2 d x (∀xs1x⊆s2x d x x∈s1d)  )
 open BigOps public
 
 module Lifting^ where

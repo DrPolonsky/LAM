@@ -4,8 +4,8 @@
 
 module RelationsCore where
 
-open import Logic
--- open import Logic-Levels
+-- open import Logic
+open import Logic-Levels
 open import Lifting using (ℕ; zero; succ)
 open import Predicates
 
