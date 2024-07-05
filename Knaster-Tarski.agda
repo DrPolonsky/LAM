@@ -50,6 +50,44 @@ isCont = ∀ {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (s : D → 𝓟 S)
            (s-mono : ∀ {x y : D} → R x y → s x ⊆ s y)
            → Δ (⋃ s) ⊆ ⋃ (λ x → Δ (s x))
 
+module KleeneFresh {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
+
+  s-acc : ∀ (d : D) → is R -accessible d → 𝓟 S
+  s-acc d (acc dacc) = ⋃ sa where
+    sa : (Σ[ i ∈ D ] R i d) → 𝓟 S
+    sa (i ,, Rid) = Δ (s-acc i (dacc i Rid))
+
+  s : D → 𝓟 S
+  s d = s-acc d (wfR d)
+
+  ⋃Δ : 𝓟 S
+  ⋃Δ = ⋃ s
+
+  s-acc-irrel : ∀ {d : D} → (da1 da2 : is R -accessible d) → s-acc d da1 ⊆ s-acc d da2
+  s-acc-irrel (acc da1) (acc da2) = ⋃-mono _ _ f where
+    f = λ {(i ,, Rid) x → Δ⊆ (s-acc-irrel (da1 i Rid) (da2 i Rid)) x}
+
+  s-mono-acc :  ∀ {i j : D} → (ia : is R -accessible i) → R i j → s-acc i ia ⊆ s j
+  s-mono-acc {i} {j} acci Rij x x∈⋃ with acci | x∈⋃
+  ... | acc ia | Sup (d ,, Rdi) .x x∈sad with wfR j
+  ... | acc ja = Sup (i ,, Rij) x (Δ⊆ f x x∈sad)
+    where f = λ z z∈sd → s-acc-irrel (wfR i) (ja i Rij) z (s-mono-acc (ia d Rdi) Rdi z z∈sd)
+
+  s-mono :  ∀ {i j : D} → R i j → s i ⊆ s j
+  s-mono {i} = s-mono-acc (wfR i)
+
+  ⋃Δ-preFP : preFP ⋃Δ
+  ⋃Δ-preFP x x∈Δ⋃ with Δcont R wfR s s-mono x x∈Δ⋃
+  ... | Sup d .x x∈Δsd = {!    !}
+
+  ⋃Δ-postFP-acc : ∀ i (iacc : is R -accessible i) → s-acc i iacc ⊆ ⋃ (λ z → Δ (s z))
+  ⋃Δ-postFP-acc i (acc Hi) x (Sup (d ,, Rdi) .x x∈sad) = Sup d x (Δ⊆ (s-acc-irrel (Hi d Rdi) (wfR d)) x x∈sad)
+
+  ⋃Δ-postFP : ∀ x → x ∈ ⋃Δ → x ∈ Δ (⋃Δ)
+  ⋃Δ-postFP x (Sup d .x x∈sd) = monoPreCont R wfR s s-mono x (⋃Δ-postFP-acc d (wfR d) x x∈sd )
+
+
+
 module KleeneAcc {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
   seq-helper : ∀ (d : D) → is R -accessible d → 𝓟 S
   seq-helper d (acc H) = ⋃ seq where

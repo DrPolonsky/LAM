@@ -105,6 +105,12 @@ module LogicOps {A : Set} where
 
   ~⇔ : ∀ {n} {P Q : 𝓟^ n A} → P ⇔ Q → Q ⇔ P
   ~⇔ (PQ , QP) = QP , PQ
+
+  _⊆!⇔_ : ∀ {n : ℕ} → {P Q R : 𝓟^ n A} → P ⊆ Q → Q ⇔ R → P ⊆ R
+  _⊆!⇔_ {n} PQ (QR , RQ) = PQ ⊆!⊆ QR
+
+  _⇔!⊆_ : ∀ {n : ℕ} → {P Q R : 𝓟^ n A} → P ⇔ Q → Q ⊆ R → P ⊆ R
+  _⇔!⊆_ {n} (PQ , QP) QR = PQ ⊆!⊆ QR
 open LogicOps public
 
 module BigOps {A : Set} where
