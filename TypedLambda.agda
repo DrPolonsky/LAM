@@ -4,6 +4,7 @@ open import Logic
 open import Lifting
 open import Lambda
 open import Predicates
+open import Reduction
 
 -- term2 = "λxλy.y(λz.z(λa.ax)y)x"
 term2 : Λ⁰
@@ -70,6 +71,13 @@ So, "Γ : Cxt V" should mean:
               → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ᵒ ∶ B
   SubLemma⊢ₒ μ ν = SubLemma⊢ μ (io𝓟 _ (λ x → Var x refl) ν)
 
+  SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}
+                    → Γ ⊢ M ∶ A → M ⟶β N → Γ ⊢ N ∶ A
+  SubReduction⊢ (App d1 d2) (redexβ refl) = SubLemma⊢ₒ {!   !} {!   !}
+  SubReduction⊢ (App d1 d2) (appLβ re) = App (SubReduction⊢ d1 re) d2
+  SubReduction⊢ (App d1 d2) (appRβ re) = App d1 (SubReduction⊢ d2 re)
+  SubReduction⊢ (Abs d0) (absβ re) = SubReduction⊢ {!   !} {!   !}
+  
 
 open Curry
 
