@@ -1,41 +1,80 @@
-open import Predicates
-
-module ClosureOperators {A : Set} (R : 𝓡 A) where
+module ClosureOperators {U : Set} where
 
 open import Logic-Levels
+open import Predicates
 open import RelationsCore
-open import Wellfounded
 
-¬WF⁼ : A → ¬ (isWFind (R ⁼))
-¬WF⁼ a WFR⁼ = WFR⁼ K⊥ isR=indK⊥ (WFR⁼ (K A) (λ x _ → x) a) where
-                           isR=indK⊥ : is (R ⁼) -inductive K⊥
-                           isR=indK⊥ x h = h x ε⁼
+--reflexive closure
+data _⁼ (R : 𝓡 U) : 𝓡 U where
+  ax⁼ : ∀ {x y : U} → R x y → (R ⁼) x y
+  ε⁼  : ∀ {x} → (R ⁼) x x
 
-R₊acc-Lemma : ∀ {x} → is (R ₊) -accessible x → ∀ y → (R ₊) y x → is (R ₊) -accessible y
-R₊acc-Lemma (acc xa) = xa
+-- Transitive closure
+data _⁺ (R : 𝓡 U) : 𝓡 U   where
+  ax⁺  : ∀ {x y : U}   → R x y → (R ⁺) x y
+  _,⁺_ : ∀ {x y z : U} → R x y → (R ⁺) y z → (R ⁺) x z
 
-Racc₊⊆Racc : ∀ (x : A) → is R ₊ -accessible x → is R -accessible x
-Racc₊⊆Racc x (acc H) = acc (λ y Ryx → Racc₊⊆Racc y (H y (ax₊ Ryx) ) )
+-- Transitive closure, starting from the tail
+data _₊ (R : 𝓡 U) : 𝓡 U   where
+  ax₊  : ∀ {x y : U}   → R x y → (R ₊) x y
+  _₊,_ : ∀ {x y z : U} → (R ₊) x y → R y z → (R ₊) x z
 
-Racc⊆R₊acc : ∀ (x : A) → is R -accessible x → is R ₊ -accessible x
-Racc⊆R₊acc x (acc xacc) = acc (λ y → λ {  (ax₊ Ryx) → Racc⊆R₊acc y (xacc y Ryx)
-                                          ; (R+yz ₊, Rzx) → R₊acc-Lemma (Racc⊆R₊acc _ (xacc _ Rzx)) y R+yz })
+-- symmetric closure
+data _ˢ (R : 𝓡 U) : 𝓡 U where
+  axˢ+ : ∀ {x y} → R x y → (R ˢ) x y
+  axˢ- : ∀ {x y} → R y x → (R ˢ) x y
 
-WFacc₊ : isWFacc R → isWFacc (R ₊)
-WFacc₊ WFaccR x = Racc⊆R₊acc x (WFaccR x)
+-- reflexive transitive closure
+-- ⋆ is \*
+data _⋆ (R : 𝓡 U) : 𝓡 U where
+  ax⋆ : ∀ {x y : U} → R x y → (R ⋆) x y
+  ε⋆  :  ∀ {x} → (R ⋆) x x
+  _,⋆_ : ∀ {x y z} → R x y → (R ⋆) y z → (R ⋆) x z
 
-wfR+→wfR : isWFacc (R ₊) → isWFacc R
-wfR+→wfR wfR+ x = Racc₊⊆Racc x (wfR+ x)
+infix 19 _⁼
+infix 19 _ˢ
+infix 19 _⁺
+infix 19 _₊
+infix 19 _⋆
 
-WFind₊ : isWFind R → isWFind (R ₊)
-WFind₊ WFindR = isWFacc→isWFind (R ₊) (WFacc₊ (isWFind→isWFacc R WFindR ) )
+TCisTran : ∀ (R : 𝓡 U) {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
+TCisTran R (ax⋆ x) R*yz = x ,⋆ R*yz
+TCisTran R ε⋆ R*yz = R*yz
+TCisTran R (x ,⋆ R*xy) R*yz = x ,⋆ (TCisTran R R*xy R*yz)
 
-lemma⁺→⋆ : ∀ {x y : A} → (R ⁺) x y →  (R ⋆) x y
+TCisSym : ∀ (R : 𝓡 U) {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
+TCisSym R (ax⋆ (axˢ+ x)) = ax⋆ ((axˢ- x))
+TCisSym R (ax⋆ (axˢ- x)) = ax⋆ ((axˢ+ x))
+TCisSym R ε⋆ = ε⋆
+TCisSym R (axˢ+ x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym R rxy) (axˢ- x ,⋆ ε⋆ )
+TCisSym R (axˢ- x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym R rxy) (axˢ+ x ,⋆ ε⋆ )
+
+EQ : 𝓡 U → 𝓡 U
+EQ R = (R ˢ) ⋆
+
+~⁺ : ∀ {R : 𝓡 U} {x y z : U} → (R ⁺) x y → R y z → (R ⁺) x z
+~⁺ (ax⁺ Rxy) Ryz = Rxy ,⁺ ax⁺ Ryz
+~⁺ (Rxy₁ ,⁺ R⁺y₁z) Ryz = Rxy₁ ,⁺ ~⁺ R⁺y₁z Ryz
+
+~₊ : ∀ {R : 𝓡 U} {x y z : U} → R x y → (R ₊) y z → (R ₊) x z
+~₊ Rxy (ax₊ Ryz) = ax₊ Rxy ₊, Ryz
+~₊ Rxy (R₊xy ₊, Ryz) = ~₊ Rxy R₊xy ₊, Ryz
+
+TC⁺⇔TC₊ : ∀ (R : 𝓡 U) → R ⁺ ⇔ R ₊
+TC⁺⇔TC₊ R = ⁺⊆₊ , ₊⊆⁺ where
+  ⁺⊆₊ : R ⁺ ⊆ R ₊
+  ⁺⊆₊ x y (ax⁺ Rxy) = ax₊ Rxy
+  ⁺⊆₊ x y (Rxy ,⁺ R⁺yz) = ~₊ Rxy (⁺⊆₊ _ y R⁺yz)
+  ₊⊆⁺ : R ₊ ⊆ R ⁺
+  ₊⊆⁺ x y (ax₊ Rxy) = ax⁺ Rxy
+  ₊⊆⁺ x y (R₊xy ₊, Ryz) = ~⁺ (₊⊆⁺ x _ R₊xy) Ryz
+
+lemma⁺→⋆ : ∀ {x y : U} {R : 𝓡 U} → (R ⁺) x y →  (R ⋆) x y
 lemma⁺→⋆ (ax⁺ Rxy) = ax⋆ Rxy
 lemma⁺→⋆ (Rxy₁ ,⁺ R⁺yy₁) = Rxy₁ ,⋆ lemma⁺→⋆ R⁺yy₁
 
-TransitiveClosure : R ⋆ ⇔ (R ⁺ ∪ R ⁼)
-TransitiveClosure = TC+ , TC- where
+TransitiveClosure :  ∀ {R : 𝓡 U} → R ⋆ ⇔ (R ⁺ ∪ R ⁼)
+TransitiveClosure {R} = TC+ , TC- where
   TC+ : (R ⋆) ⊆ (R ⁺) ∪ (R ⁼)
   TC+ a b (ax⋆ Rab) = in1 (ax⁺ Rab )
   TC+ a .a ε⋆ = in2 ε⁼
@@ -47,3 +86,77 @@ TransitiveClosure = TC+ , TC- where
   TC- x y (in1 (Rxy₁ ,⁺ R⁺y₁y)) = Rxy₁ ,⋆ lemma⁺→⋆ R⁺y₁y
   TC- x y (in2 (ax⁼ Rxy)) = ax⋆ Rxy
   TC- x .x (in2 ε⁼) = ε⋆
+
+module ClosureOpsPreserveContainment {R1 R2 : 𝓡 U} (R12 : R1 ⊆ R2) where
+
+  ⊆⁼ : R1 ⁼ ⊆ R2 ⁼
+  ⊆⁼ = {!   !}
+  -- pr1 ⊆⁼ x y (ax⁼ R1xy) = ax⁼ (pr1 R12 x y R1xy)
+  -- pr1 ⊆⁼ x .x ε⁼ = ε⁼
+  -- pr2 ⊆⁼ x y (ax⁼ R2xy) = ax⁼ (pr2 R12 x y R2xy)
+  -- pr2 ⊆⁼ x .x ε⁼ = ε⁼
+
+  ⊆ˢ : R1 ˢ ⊆ R2 ˢ
+  ⊆ˢ = {!   !}
+  -- pr1 ⊆ˢ x y (axˢ+ R1xy) = axˢ+ (pr1 R12 x y R1xy)
+  -- pr1 ⊆ˢ x y (axˢ- R1yx) = axˢ- (pr1 R12 y x R1yx)
+  -- pr2 ⊆ˢ x y (axˢ+ R2xy) = axˢ+ (pr2 R12 x y R2xy)
+  -- pr2 ⊆ˢ x y (axˢ- R2yx) = axˢ- (pr2 R12 y x R2yx)
+
+  ⊆⁺ : R1 ⁺ ⊆ R2 ⁺
+  ⊆⁺ = {!   !}
+  -- pr1 ⊆⁺ x y (ax⁺ R1xy) = ax⁺ (pr1 R12 x y R1xy)
+  -- pr1 ⊆⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⊆⁺ _ y R1⁺yz)
+  -- pr2 ⊆⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
+  -- pr2 ⊆⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⊆⁺ _ y R2⁺yz
+
+  ⊆₊ : R1 ₊ ⊆ R2 ₊
+  ⊆₊ = {!   !}
+
+  ⊆⋆ : R1 ⋆ ⊆ R2 ⋆
+  ⊆⋆ = {!   !}
+  -- pr1 ⊆⋆ x y (ax⋆ Rxy) = ax⋆ (pr1 R12 x y Rxy)
+  -- pr1 ⊆⋆ x .x ε⋆ = ε⋆
+  -- pr1 ⊆⋆ x y (R1xy ,⋆ R2⋆yz) = (pr1 R12 x _ R1xy) ,⋆ pr1 ⊆⋆ _ y R2⋆yz
+  -- pr2 ⊆⋆ x y (ax⋆ R2xy) = ax⋆ (pr2 R12 x y R2xy)
+  -- pr2 ⊆⋆ x .x ε⋆ = ε⋆
+  -- pr2 ⊆⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⋆ _ y R2⋆yz
+
+module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
+
+  ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
+  pr1 ⇔⁼ x y (ax⁼ R1xy) = ax⁼ (pr1 R12 x y R1xy)
+  pr1 ⇔⁼ x .x ε⁼ = ε⁼
+  pr2 ⇔⁼ x y (ax⁼ R2xy) = ax⁼ (pr2 R12 x y R2xy)
+  pr2 ⇔⁼ x .x ε⁼ = ε⁼
+
+  ⇔ˢ : R1 ˢ ⇔ R2 ˢ
+  pr1 ⇔ˢ x y (axˢ+ R1xy) = axˢ+ (pr1 R12 x y R1xy)
+  pr1 ⇔ˢ x y (axˢ- R1yx) = axˢ- (pr1 R12 y x R1yx)
+  pr2 ⇔ˢ x y (axˢ+ R2xy) = axˢ+ (pr2 R12 x y R2xy)
+  pr2 ⇔ˢ x y (axˢ- R2yx) = axˢ- (pr2 R12 y x R2yx)
+
+  ⇔⁺ : R1 ⁺ ⇔ R2 ⁺
+  pr1 ⇔⁺ x y (ax⁺ R1xy) = ax⁺ (pr1 R12 x y R1xy)
+  pr1 ⇔⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⇔⁺ _ y R1⁺yz)
+  pr2 ⇔⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
+  pr2 ⇔⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⇔⁺ _ y R2⁺yz
+
+  ⊆₊ : R1 ₊ ⊆ R2 ₊
+  ⊆₊ = (pr2 (TC⁺⇔TC₊ R1)) ⊆!⊆₂
+                     (pr1 ⇔⁺ ⊆!⊆₂ (pr1 (TC⁺⇔TC₊ R2)))
+
+  ⇔₊ : R1 ₊ ⇔ R2 ₊
+  ⇔₊ = (~⇔ {n = 2} (TC⁺⇔TC₊ R1)) ⇔!⇔₂ ⇔⁺ ⇔!⇔₂ (TC⁺⇔TC₊ R2)
+  -- pr1 ⇔₊ x y (ax₊ R1xy) = ax₊ (pr1 R12 x y R1xy)
+  -- pr1 ⇔₊ x y (R1₊xy ₊, R1yz) = pr1 ⇔₊ x _ R1₊xy ₊, pr1 R12 _ y R1yz
+  -- pr2 ⇔₊ x y (ax₊ R2xy) = ax₊ (pr2 R12 x y R2xy)
+  -- pr2 ⇔₊ x y (R2₊xy ₊, R2yz) = pr2 ⇔₊ x _ R2₊xy ₊, (pr2 R12 _ y R2yz)
+
+  ⇔⋆ : R1 ⋆ ⇔ R2 ⋆
+  pr1 ⇔⋆ x y (ax⋆ Rxy) = ax⋆ (pr1 R12 x y Rxy)
+  pr1 ⇔⋆ x .x ε⋆ = ε⋆
+  pr1 ⇔⋆ x y (R1xy ,⋆ R2⋆yz) = (pr1 R12 x _ R1xy) ,⋆ pr1 ⇔⋆ _ y R2⋆yz
+  pr2 ⇔⋆ x y (ax⋆ R2xy) = ax⋆ (pr2 R12 x y R2xy)
+  pr2 ⇔⋆ x .x ε⋆ = ε⋆
+  pr2 ⇔⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⇔⋆ _ y R2⋆yz

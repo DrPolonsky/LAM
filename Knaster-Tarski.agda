@@ -51,7 +51,7 @@ isCont = ∀ {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (s : D → 𝓟 S)
            (s-mono : ∀ {x y : D} → R x y → s x ⊆ s y)
            → Δ (⋃ s) ⊆ ⋃ (λ x → Δ (s x))
 
-isContBad : isCont → Δ K⊥ ⊆ K⊥
+isContBad : isCont → Δ K⊥ ⊆ K⊥                 -- Δ ∅ = ∅
 isContBad isC x = i3 x ∘ (i2 x ∘ i1 x) where
       i1 = Δ⊆ {K⊥} {⋃ (K K⊥)} (⊥⊆ (⋃ (K K⊥)))
       i2 = isC K⊥ (λ x → ∅ x) (K K⊥) ∅
@@ -87,7 +87,7 @@ module KleeneFresh {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) wh
           ... | acc ja0 = s-acc-bad j (da j Rjd) z
                   (s-acc-irrel (acc ja0) (da j Rjd) z (Sup (i ,, Rij) z (Δ⊆ (s-acc-irrel (ja i Rij) (ja0 i Rij) ) z z∈si)) )
 
-  ⋃s-bad : ⋃s ⊆ K⊥
+  ⋃s-bad : ⋃s ⊆ K⊥ -- union of Δ is ∅
   ⋃s-bad = ⋃-lub s K⊥ (λ d x → s-acc-bad d (wfR d) x)
 
   ⋃s-ub-acc : ∀ d (dacc : is R -accessible d) → s-acc d dacc ⊆ ⋃s
