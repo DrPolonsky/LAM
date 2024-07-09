@@ -5,6 +5,7 @@ open import Lifting
 open import Lambda
 open import Predicates
 open import RelationsCore
+open import ClosureOperators
 
 -- Congruence Closure
 data CC (R : ∀ {X : Set} → 𝓡 (Λ X)) {X : Set} : 𝓡 (Λ X) where
@@ -85,12 +86,12 @@ I[II]→⋆I = (redexβ refl ) ,⋆ (II→I ,⋆ ε⋆ )
 
 open import Agda.Builtin.Sigma renaming (_,_ to _,,_)
 
-FPT : ∀ {X} (F : Λ X) → Σ[ YF ∈ Λ X ] (YF ⟶⋆β app F YF)
-FPT F =
-  let W = abs (app (Λ→ i F) (app (var o) (var o)))
-      WW→FWW : app W W ⟶⋆β app F (app W W)
-      WW→FWW = (redexβ (cong2 app {!   !} refl ) ) ,⋆ ε⋆
-   in (app W W ,, WW→FWW )
+-- FPT : ∀ {X} (F : Λ X) → Σ[ YF ∈ Λ X ] (YF ⟶⋆β app F YF)
+-- FPT F =
+--   let W = abs (app (Λ→ i F) (app (var o) (var o)))
+--       WW→FWW : app W W ⟶⋆β app F (app W W)
+--       WW→FWW = (redexβ (cong2 app {!   !} refl ) ) ,⋆ ε⋆
+--    in (app W W ,, WW→FWW )
 
 
 

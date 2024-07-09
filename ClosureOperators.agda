@@ -1,9 +1,9 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 module ClosureOperators {U : Set} where
 
 open import Logic-Levels
 open import Predicates
 open import RelationsCore
-
 --reflexive closure
 data _⁼ (R : 𝓡 U) : 𝓡 U where
   ax⁼ : ∀ {x y : U} → R x y → (R ⁼) x y

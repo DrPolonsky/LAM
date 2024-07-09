@@ -1,3 +1,6 @@
+-- {-# OPTIONS --cubical-compatible #-}
+-- {-# OPTIONS --without-K  #-}
+
 module TypedLambda (𝔸 : Set) where
 
 open import Logic
@@ -5,6 +8,7 @@ open import Lifting
 open import Lambda
 open import Predicates
 open import Reduction
+open import ClosureOperators
 
 -- term2 = "λxλy.y(λz.z(λa.ax)y)x"
 term2 : Λ⁰
@@ -71,13 +75,19 @@ So, "Γ : Cxt V" should mean:
               → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ᵒ ∶ B
   SubLemma⊢ₒ μ ν = SubLemma⊢ μ (io𝓟 _ (λ x → Var x refl) ν)
 
-  SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}
+  SubReduction⊢₁ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋}
                     → Γ ⊢ M ∶ A → M ⟶β N → Γ ⊢ N ∶ A
-  SubReduction⊢ (App d1 d2) (redexβ refl) = SubLemma⊢ₒ {!   !} {!   !}
-  SubReduction⊢ (App d1 d2) (appLβ re) = App (SubReduction⊢ d1 re) d2
-  SubReduction⊢ (App d1 d2) (appRβ re) = App d1 (SubReduction⊢ d2 re)
-  SubReduction⊢ (Abs d0) (absβ re) = SubReduction⊢ {!   !} {!   !}
-  
+  -- SubReduction⊢ {V} {Γ} {M} {N} {A} (App {A = B} {N = P} d1 d2) (redexβ {s = G} refl)
+  SubReduction⊢₁ (App (Abs d1) d2) (redexβ refl) = SubLemma⊢ₒ d1 d2
+  SubReduction⊢₁ (App d1 d2) (appLβ re) = App (SubReduction⊢₁ d1 re) d2
+  SubReduction⊢₁ (App d1 d2) (appRβ re) = App d1 (SubReduction⊢₁ d2 re)
+  SubReduction⊢₁ (Abs d0) (absβ re) = Abs (SubReduction⊢₁ d0 re)
+
+
+  SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶⋆β N → Γ ⊢ N ∶ A
+  SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
+  SubReduction⊢ d ε⋆ = d
+  SubReduction⊢ d (M→y ,⋆ y→⋆N) = SubReduction⊢ (SubReduction⊢₁ d M→y) y→⋆N
 
 open Curry
 
@@ -152,11 +162,6 @@ module Church where
   embellish (app M1 M2) (App d1 d2)  = appCh (embellish M1 d1) (embellish M2 d2)
   embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
-  embellishdB→Ch : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛdB V) → Γ ⊢dB M ∶ A → ΛCh Γ A
-  embellishdB→Ch (vardB x)     (VardB Γx≡A)  = varCh x Γx≡A
-  embellishdB→Ch (appdB M1 M2) (AppdB d1 d2) = appCh (embellishdB→Ch M1 d1) (embellishdB→Ch M2 d2)
-  embellishdB→Ch (absdB x M0)  (AbsdB d0)    = absCh (embellishdB→Ch M0 d0)
-
   embellishCu→dB : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛdB V
   embellishCu→dB (var x) d               = vardB x
   embellishCu→dB (app M1 M2) (App d1 d2) = appdB (embellishCu→dB M1 d1) (embellishCu→dB M2 d2)
@@ -167,6 +172,13 @@ module Church where
   embellishCu→dB⊢ (var _) (Var _ Γx≡A) = VardB Γx≡A
   embellishCu→dB⊢ (app M1 M2) (App d1 d2) = AppdB (embellishCu→dB⊢ M1 d1) (embellishCu→dB⊢ M2 d2)
   embellishCu→dB⊢ (abs M0) (Abs d0) = AbsdB (embellishCu→dB⊢ M0 d0)
+
+  embellishdB→Ch : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛdB V) → Γ ⊢dB M ∶ A → ΛCh Γ A
+  embellishdB→Ch (vardB x)     (VardB Γx≡A)  = varCh x Γx≡A
+  embellishdB→Ch (appdB M1 M2) (AppdB d1 d2) = appCh (embellishdB→Ch M1 d1) (embellishdB→Ch M2 d2)
+  embellishdB→Ch (absdB x M0)  (AbsdB d0)    = absCh (embellishdB→Ch M0 d0)
+
+  -- embellishCu→Ch : ∀ {V} {Γ : Cxt V} {A : 𝕋} {M : Λ V} → Γ ⊢ M ∶ A →
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
@@ -201,6 +213,26 @@ module Church where
     N' (i x) = ΛCh→ i (N x)
     N' o     = varCh o refl
 
+  NF : ∀ {X} → 𝓟 (Λ X)
+  NF M = ∀ N → ¬ (M ⟶β N)
+
+  CxtEqIrrel : ∀ {V} (Γ : Cxt V) (x : V) (A : 𝕋) (p1 p2 : Γ x ≡ A) → p1 ≡ p2
+  CxtEqIrrel Γ x .(Γ x) refl refl = refl
+
+  absChInv : ∀ {V} {Γ : Cxt V} {A B : 𝕋} (N1 N2 : ΛCh (io Γ A) B) → absCh N1 ≡ absCh N2 → N1 ≡ N2
+  absChInv N1 .N1 refl = refl
+
+  absInv : ∀ {V} {N1 N2 : Λ (↑ V)} → abs N1 ≡ abs N2 → N1 ≡ N2
+  absInv refl = refl
+
+  Prop1B24 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : Λ V) → M ∈ NF
+                → (d : Γ ⊢ M ∶ A) → ∀ (N : ΛCh Γ A) → erase N ≡ M → N ≡ embellish M d
+  Prop1B24 {V} {Γ} A (var x) M∈NF (Var .x Γx=A) (varCh .x Γy=A) refl
+    = cong (varCh x) (CxtEqIrrel Γ x A Γy=A Γx=A )
+  Prop1B24 A (app M1 M2) M∈NF d N eN=M = {! M∈NF   !}
+  Prop1B24 (A ⇒ B) (abs M0) M∈NF (Abs d) (absCh N) eN=M = cong absCh c where
+    b = λ M' M0→M' → M∈NF (abs M') (absβ M0→M')
+    c = Prop1B24 B M0 b d N (absInv eN=M)
 
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
