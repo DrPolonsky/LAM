@@ -1,6 +1,7 @@
 open import Predicates
 open import Logic-Levels
 open import Wellfounded
+open import RelationsCore
 
 -- Knaster-Tarski Lemma: Let S be a set. If the mapping Δ: 𝓟 (S) → 𝓟 (S) is monotone with respect to
 -- ⊆ (property Δ⊆ below), then there exists a smallest Δ-closed set. Moreover, this smallest
@@ -50,6 +51,12 @@ isCont = ∀ {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (s : D → 𝓟 S)
            (s-mono : ∀ {x y : D} → R x y → s x ⊆ s y)
            → Δ (⋃ s) ⊆ ⋃ (λ x → Δ (s x))
 
+isContBad : isCont → Δ K⊥ ⊆ K⊥
+isContBad isC x = i3 x ∘ (i2 x ∘ i1 x) where
+      i1 = Δ⊆ {K⊥} {⋃ (K K⊥)} (⊥⊆ (⋃ (K K⊥)))
+      i2 = isC K⊥ (λ x → ∅ x) (K K⊥) ∅
+      i3 = ⋃-empty (λ x → Δ (K K⊥ x))
+
 module KleeneFresh {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
 
   s-acc : ∀ (d : D) → is R -accessible d → 𝓟 S
@@ -60,12 +67,31 @@ module KleeneFresh {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) wh
   s : D → 𝓟 S
   s d = s-acc d (wfR d)
 
-  ⋃Δ : 𝓟 S
-  ⋃Δ = ⋃ s
+  ⋃s : 𝓟 S
+  ⋃s = ⋃ s
+
+  ⋃s-ub : ∀ d → s d ⊆ ⋃s
+  ⋃s-ub = Sup
+  ⋃s-lub : ∀ {P : 𝓟 S} (P-ub : ∀ d → s d ⊆ P) → ⋃s ⊆ P
+  ⋃s-lub P-ub x (Sup d .x x∈sd) = P-ub d x x∈sd
 
   s-acc-irrel : ∀ {d : D} → (da1 da2 : is R -accessible d) → s-acc d da1 ⊆ s-acc d da2
   s-acc-irrel (acc da1) (acc da2) = ⋃-mono _ _ f where
     f = λ {(i ,, Rid) x → Δ⊆ (s-acc-irrel (da1 i Rid) (da2 i Rid)) x}
+
+  s-acc-bad : ∀ d (dacc : is R -accessible d) → s-acc d dacc ⊆ K⊥
+  s-acc-bad d (acc da) x (Sup (j ,, Rjd) .x x∈sj) with da j Rjd
+  ... | acc ja = isContBad Δcont x (Δ⊆ (⋃-lub _ K⊥ f) x x∈sj) -- s-acc-bad j (da j Rjd) x {!   !}
+    where f : _
+          f (i ,, Rij) z z∈si with wfR j
+          ... | acc ja0 = s-acc-bad j (da j Rjd) z
+                  (s-acc-irrel (acc ja0) (da j Rjd) z (Sup (i ,, Rij) z (Δ⊆ (s-acc-irrel (ja i Rij) (ja0 i Rij) ) z z∈si)) )
+
+  ⋃s-bad : ⋃s ⊆ K⊥
+  ⋃s-bad = ⋃-lub s K⊥ (λ d x → s-acc-bad d (wfR d) x)
+
+  ⋃s-ub-acc : ∀ d (dacc : is R -accessible d) → s-acc d dacc ⊆ ⋃s
+  ⋃s-ub-acc d dacc x x∈sd = ⋃s-ub d x (s-acc-irrel dacc (wfR d) x x∈sd )
 
   s-mono-acc :  ∀ {i j : D} → (ia : is R -accessible i) → R i j → s-acc i ia ⊆ s j
   s-mono-acc {i} {j} acci Rij x x∈⋃ with acci | x∈⋃
@@ -76,68 +102,72 @@ module KleeneFresh {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) wh
   s-mono :  ∀ {i j : D} → R i j → s i ⊆ s j
   s-mono {i} = s-mono-acc (wfR i)
 
-  ⋃Δ-preFP : preFP ⋃Δ
-  ⋃Δ-preFP x x∈Δ⋃ with Δcont R wfR s s-mono x x∈Δ⋃
-  ... | Sup d .x x∈Δsd = {!    !}
+  module LiftedRel where
+    open import Lifting
 
-  ⋃Δ-postFP-acc : ∀ i (iacc : is R -accessible i) → s-acc i iacc ⊆ ⋃ (λ z → Δ (s z))
-  ⋃Δ-postFP-acc i (acc Hi) x (Sup (d ,, Rdi) .x x∈sad) = Sup d x (Δ⊆ (s-acc-irrel (Hi d Rdi) (wfR d)) x x∈sad)
+    𝓡↑ : ∀ {X} → 𝓡 X → 𝓡 (↑ X)
+    𝓡↑ Q o _ = ⊥
+    𝓡↑ Q (i x) o =  ⊤
+    𝓡↑ Q (i x) (i y) = Q x y
 
-  ⋃Δ-postFP : ∀ x → x ∈ ⋃Δ → x ∈ Δ (⋃Δ)
-  ⋃Δ-postFP x (Sup d .x x∈sd) = monoPreCont R wfR s s-mono x (⋃Δ-postFP-acc d (wfR d) x x∈sd )
+    R↑ : 𝓡 (↑ D)
+    R↑ = 𝓡↑ R
 
+    isAcci : ∀ x → is R -accessible x → is R↑ -accessible (i x)
+    isAcci x (acc xa) = acc yR↑acc where
+      yR↑acc : ∀ (y : ↑ D) → R↑ y (i x) → is R↑ -accessible y
+      yR↑acc (i y) R↑yx = isAcci y (xa y R↑yx)
 
+    isAcco : is R↑ -accessible o
+    isAcco = acc oacc where
+      oacc : ∀ (y : ↑ D) → R↑ y o → is R↑ -accessible y
+      oacc (i x) tt = isAcci x (wfR x)
 
-module KleeneAcc {D : Set} (R : 𝓡 D) (wfR : isWFacc R) (Δcont : isCont) where
-  seq-helper : ∀ (d : D) → is R -accessible d → 𝓟 S
-  seq-helper d (acc H) = ⋃ seq where
-    seq : D → 𝓟 S
-    seq d' = λ x → ∀ (Rd'd : R d' d) → Δ (seq-helper d' (H d' Rd'd)) x
+    R↑wf : isWFacc R↑
+    R↑wf (i x) = isAcci x (wfR x)
+    R↑wf o = isAcco
 
-  seq-helper-mono : ∀ (d : D) (da1 da2 : is R -accessible d) → seq-helper d da1 ⊆ seq-helper d da2
-  seq-helper-mono d (acc H1) (acc H2) = ⋃-mono _ _ seq-mono where
-    seq-mono = λ d' x x∈S1 Rd'd → Δ⊆ (seq-helper-mono d' (H1 d' Rd'd) (H2 d' Rd'd)) x (x∈S1 Rd'd ) --
+    s↑ : ↑ D → 𝓟 S
+    s↑ (i x) = s x
+    s↑ o = ⋃ s
 
-  s : D → 𝓟 S
-  s d = seq-helper d (wfR d)
+    s↑mono : ∀ {x y : ↑ D} → R↑ x y → s↑ x ⊆ s↑ y
+    s↑mono {i x} {i y} R↑xy a a∈s↑x = s-mono R↑xy a a∈s↑x
+    s↑mono {i x} {o} tt a a∈s↑x = Sup x a a∈s↑x
 
-  s-mono :  ∀ {i j : D} → R i j → s i ⊆ s j
-  s-mono {i} {j} Rij x x∈si with wfR j
-  ... | acc Hj = Sup j x (λ Rjj → ∅ (wf→irrefl R wfR j Rjj))
+    ⋃s↑ : Δ (⋃ s↑) ⊆ ⋃ (λ z → Δ (s↑ z))
+    ⋃s↑ x x∈Δ⋃s↑ = Δcont {↑ D} R↑ R↑wf s↑ (λ {a} → s↑mono {a} ) x x∈Δ⋃s↑
 
-  s-mono-acc : ∀ (i : D) → Δ (s i) ⊆ ⋃ s
-  s-mono-acc = {!   !}
-  -- s-mono-acc i = s-mono-acc-helper i (wfR i) where
-  --   s-mono-acc-helper : ∀ (j : D) (ai : is R -accessible j) → Δ (s j) ⊆ ⋃ s
-  --   s-mono-acc-helper j (acc Hj) x x∈Δsj with Δcont R wfR {!   !} {!   !} x {!   !}
-  --   ... | Sup k .x x∈Δseq = s-mono-acc-helper j (acc Hj) x (Δ⊆ (λ y Rkd → {!   !} ) x x∈Δseq)
+  ⋃s-preFP-acc : ∀ (i : D) (iacc : is R -accessible i) → Δ (s-acc i iacc) ⊆ ⋃s
+  ⋃s-preFP-acc i (acc ia) x x∈Δsi = {!   !}
+{-
+  ⋃s-preFP-acc : ∀ (i : D) (iacc : is R -accessible i) → Δ (s-acc i iacc) ⊆ ⋃s
+  ⋃s-preFP-acc i (acc ia) x x∈Δsi =
+    let inc = λ {y (Sup (j ,, Rji) .y y∈sj) → ⋃s-preFP-acc j (ia j Rji) y y∈sj  }
+        cont = Δcont R wfR s s-mono x (Δ⊆ inc x x∈Δsi)
+    --     g = λ { y (Sup (k ,, Rki) .y y∈si) → Sup k y (λ Rji → {!   !} ) }
+    --     contΣ = Δcont R wfR (λ j y → ∀ (Rji : R j i) → s-acc j (ia j Rji) y)
+    --             (λ {z} {y} Rzy s sa Ryi → {! acc  !} ) x ((Δ⊆ g x x∈Δsi))
+        -- contΣ = Δcont {Σ[ y ∈ D ] R y i} (λ { (y1 ,, _) (y2 ,, _) → R y1 y2 }) {!   !}
+        --                 (λ {(y ,, _) → s y}) s-mono x (Δ⊆ (λ z z∈⋃ → {!   !} ) x x∈Δsi)
+     in ⋃-lub (λ d → Δ (s d)) ⋃s {!   !} x cont -- inc x {!   !} -- (⋃-lub (λ z → Δ (s z)) (λ w → Σ[ ρ ] R w i) → w ∈ ⋃s) {!   !} x ?
+     -- in ⋃-lub (λ d → Δ (s d)) ⋃s (λ d z z∈Δsd → ⋃s-ub-acc d (wfR d) z {!   !} ) x cont -- inc x {!   !} -- (⋃-lub (λ z → Δ (s z)) (λ w → Σ[ ρ ] R w i) → w ∈ ⋃s) {!   !} x ?
+     -- in inc x (⋃-lub (λ z → Δ (s z)) {! λ w → ∀ (ρ : R w i) → w ∈ ⋃s  !}  {!   !} x cont)
 
-  -- s-mono-acc i (acc Hi) x x∈Δsi with wfR i
-  -- ... | acc Hi' = let
-  --      Δc = Δcont R wfR s s-mono x (Δ⊆ (λ z z∈⋃ → Sup i z (seq-helper-mono i (acc Hi') (wfR i) z z∈⋃)) x x∈Δsi)
-  --      rc : ∀ y → R y i → Δ (s y) ⊆ ⋃ s
-  --      rc y Ryi = s-mono-acc y (Hi y Ryi)
-  --   in Sup i x {!   !}
+  -- ⋃s-preFP-acc i (acc ia) x x∈Δsi with Δcont R wfR s s-mono x (Δ⊆ inc x x∈Δsi)
+  --   where inc : _
+  --         inc = {!   !} -- λ {y (Sup (j ,, Rji) .y y∈sj) → ⋃s-preFP-acc j (ia j Rji) y y∈sj  }
+  -- ... | Sup d .x x∈Δsd = {!   !}
+  -- -- ... | Sup d .x x∈Δsd = ⋃s-preFP-acc d (ia d {!   !} ) x
+  -- --                                     (Δ⊆ (s-acc-irrel (wfR d) (ia d _)) x x∈Δsd)
+-}
+  ⋃s-preFP : preFP ⋃s
+  ⋃s-preFP x x∈Δ⋃ with Δcont R wfR s s-mono x x∈Δ⋃
+  ... | Sup d .x x∈Δsd = ⋃s-preFP-acc d (wfR d) x x∈Δsd
 
-  ⋃Δ : 𝓟 S
-  ⋃Δ = ⋃ s
+  ⋃s-postFP-acc : ∀ i (iacc : is R -accessible i) → s-acc i iacc ⊆ ⋃ (λ z → Δ (s z))
+  ⋃s-postFP-acc i (acc Hi) x (Sup (d ,, Rdi) .x x∈sad) = Sup d x (Δ⊆ (s-acc-irrel (Hi d Rdi) (wfR d)) x x∈sad)
 
-  ⋃Δ-preFP : preFP ⋃Δ
-  ⋃Δ-preFP x x∈Δ⋃Δ  with Δcont R wfR s s-mono x x∈Δ⋃Δ
-  ... | H = ⋃-lub (λ x₁ → Δ (seq-helper x₁ (wfR x₁))) (⋃ (λ d → seq-helper d (wfR d))) inc x H
-    where inc = λ d y y∈Δsd → {!   !} --  s-mono-acc d y y∈Δsd
-
-  ⋃Δ-postFP : ∀ x → x ∈ ⋃Δ → x ∈ Δ (⋃Δ)
-  ⋃Δ-postFP x (Sup d .x x∈sd) = monoPreCont R wfR s s-mono x {!   !}
-
-  ⋃Δ-postFP-acc : ∀ i → (is R -accessible i) → s i ⊆ ⋃ (λ z → Δ (s z))
-  ⋃Δ-postFP-acc i (acc Hi) x x∈si with wfR i
-  ... | acc Hi' = ⋃-lub _ (⋃ (λ z → Δ (seq-helper z (wfR z))))
-                          (λ j y → λ KT → ⋃Δ-postFP-acc j {!   !} y (myFun j y KT))
-                          x x∈si
-              where myFun = λ j y KT →  {!   !}
-
-  ⋃Δ-FP : FP ⋃Δ
-  ⋃Δ-FP = ⋃Δ-preFP , ⋃Δ-postFP
-  -- ⋃Δ-LFP : ∀ {Y} → preFP Y → ⋃Δ ⊆ Y
-  -- ⋃Δ-LFP {Y} preFPY x x∈⋃Δ = preFPY x (Δ⊆ {!   !} x {!   !})
+  -- ⋃s-postFP : ∀ x → x ∈ ⋃s → x ∈ Δ (⋃s)
+  ⋃s-postFP : ⋃s ⊆ Δ (⋃s)
+  ⋃s-postFP x (Sup d .x x∈sd) = monoPreCont R wfR s s-mono x (⋃s-postFP-acc d (wfR d) x x∈sd )

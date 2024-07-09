@@ -83,6 +83,10 @@ module LogicOps {A : Set} where
   ⊆⊤ {zero}   P = K tt
   ⊆⊤ {succ n} P = λ _ → ⊆⊤ _
 
+  ⊥⊆ : ∀ {n : ℕ} (P : 𝓟^ n A) → K⊥ ⊆ P
+  ⊥⊆ {zero}   P = ∅
+  ⊥⊆ {succ n} P = λ x → ⊥⊆ (P x)
+
   refl⊆^ : ∀ (n : ℕ) {P : 𝓟^ n A} → P ⊆ P
   refl⊆^ zero = I
   refl⊆^ (succ n) = λ x → refl⊆^ n
@@ -126,6 +130,10 @@ module BigOps {A : Set} where
 
   ⋃-mono : ∀ {D : Set} (s1 s2 : D → 𝓟 A) → (∀ d → s1 d ⊆ s2 d) → ⋃ s1 ⊆ ⋃ s2
   ⋃-mono s1 s2 ∀xs1x⊆s2x = ⋃-lub s1 (⋃ s2) (λ d x x∈s1d → ⋃-ub s2 d x (∀xs1x⊆s2x d x x∈s1d)  )
+
+  ⋃-empty : ∀ (s : ⊥ → 𝓟 A) → ⋃ s ⊆ K⊥
+  ⋃-empty s x (Sup ω .x _) = ω
+
 open BigOps public
 
 module Lifting^ where
