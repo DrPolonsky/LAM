@@ -90,38 +90,26 @@ TransitiveClosure {R} = TC+ , TC- where
 module ClosureOpsPreserveContainment {R1 R2 : 𝓡 U} (R12 : R1 ⊆ R2) where
 
   ⊆⁼ : R1 ⁼ ⊆ R2 ⁼
-  ⊆⁼ = {!   !}
-  -- pr1 ⊆⁼ x y (ax⁼ R1xy) = ax⁼ (pr1 R12 x y R1xy)
-  -- pr1 ⊆⁼ x .x ε⁼ = ε⁼
-  -- pr2 ⊆⁼ x y (ax⁼ R2xy) = ax⁼ (pr2 R12 x y R2xy)
-  -- pr2 ⊆⁼ x .x ε⁼ = ε⁼
-
+  ⊆⁼ x y (ax⁼ R1xy) = ax⁼ (R12 x y R1xy)
+  ⊆⁼ x .x ε⁼ = ε⁼
+  
   ⊆ˢ : R1 ˢ ⊆ R2 ˢ
-  ⊆ˢ = {!   !}
-  -- pr1 ⊆ˢ x y (axˢ+ R1xy) = axˢ+ (pr1 R12 x y R1xy)
-  -- pr1 ⊆ˢ x y (axˢ- R1yx) = axˢ- (pr1 R12 y x R1yx)
-  -- pr2 ⊆ˢ x y (axˢ+ R2xy) = axˢ+ (pr2 R12 x y R2xy)
-  -- pr2 ⊆ˢ x y (axˢ- R2yx) = axˢ- (pr2 R12 y x R2yx)
-
+  ⊆ˢ x y (axˢ+ R1xy) = axˢ+ (R12 x y R1xy)
+  ⊆ˢ x y (axˢ- R1yx) = axˢ- (R12 y x R1yx)
+  
   ⊆⁺ : R1 ⁺ ⊆ R2 ⁺
-  ⊆⁺ = {!   !}
-  -- pr1 ⊆⁺ x y (ax⁺ R1xy) = ax⁺ (pr1 R12 x y R1xy)
-  -- pr1 ⊆⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⊆⁺ _ y R1⁺yz)
-  -- pr2 ⊆⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
-  -- pr2 ⊆⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⊆⁺ _ y R2⁺yz
-
+  ⊆⁺ x y (ax⁺ R1xy) = ax⁺ (R12 x y R1xy)
+  ⊆⁺ x y (R1xy ,⁺ R1⁺yz) = (R12 x _ R1xy) ,⁺ (⊆⁺ _ y R1⁺yz)
+  
   ⊆₊ : R1 ₊ ⊆ R2 ₊
-  ⊆₊ = {!   !}
+  ⊆₊ = (pr2 (TC⁺⇔TC₊ R1)) ⊆!⊆₂
+                     (⊆⁺ ⊆!⊆₂ (pr1 (TC⁺⇔TC₊ R2)))
 
   ⊆⋆ : R1 ⋆ ⊆ R2 ⋆
-  ⊆⋆ = {!   !}
-  -- pr1 ⊆⋆ x y (ax⋆ Rxy) = ax⋆ (pr1 R12 x y Rxy)
-  -- pr1 ⊆⋆ x .x ε⋆ = ε⋆
-  -- pr1 ⊆⋆ x y (R1xy ,⋆ R2⋆yz) = (pr1 R12 x _ R1xy) ,⋆ pr1 ⊆⋆ _ y R2⋆yz
-  -- pr2 ⊆⋆ x y (ax⋆ R2xy) = ax⋆ (pr2 R12 x y R2xy)
-  -- pr2 ⊆⋆ x .x ε⋆ = ε⋆
-  -- pr2 ⊆⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⋆ _ y R2⋆yz
-
+  ⊆⋆ x y (ax⋆ Rxy) = ax⋆ (R12 x y Rxy)
+  ⊆⋆ x .x ε⋆ = ε⋆
+  ⊆⋆ x y (R1xy ,⋆ R2⋆yz) = (R12 x _ R1xy) ,⋆ ⊆⋆ _ y R2⋆yz
+  
 module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
 
   ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
@@ -160,3 +148,4 @@ module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
   pr2 ⇔⋆ x y (ax⋆ R2xy) = ax⋆ (pr2 R12 x y R2xy)
   pr2 ⇔⋆ x .x ε⋆ = ε⋆
   pr2 ⇔⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⇔⋆ _ y R2⋆yz
+ 
