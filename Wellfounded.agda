@@ -75,6 +75,12 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc) → isWFacc-
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )
 
+  ¬¬isWFind→isWFind- : ¬¬ isWFind → isWFind-
+  ¬¬isWFind→isWFind- ¬¬WFiR = λ φ φind x ¬φx → ¬¬WFiR (λ isWFiR → ¬φx (isWFiR φ φind x) )
+
+  ¬¬isWFmin→isWFmin- : ¬¬ isWFmin → isWFmin-
+  ¬¬isWFmin→isWFmin- ¬¬WFmR = λ P p ¬Σ → ¬¬WFmR (λ WFmR → ¬Σ (WFmR P p ) )
+
   isWFacc-→isWFind- : isWFacc- → isWFind-
   isWFacc-→isWFind- RisWFacc- P Pind d ¬Pd = RisWFacc- d (λ disRacc → ¬Pd (acc⊆ind P Pind d disRacc) )
 
@@ -105,6 +111,9 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   ¬acc : ∀ {x : A} → ¬ (is_-accessible_ x) → ¬ (∀ y → R y x → is_-accessible_ y)
   ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
 
+  ¬ind : ∀ (P : 𝓟 A) → is_-inductive_ P → ∀ x → ¬ (P x) → ¬ (∀ y → R y x → P y)
+  ¬ind P Pind x ¬Px ∀y = ¬Px (Pind x ∀y )
+
   wf→irrefl : isWFacc → ∀ x → ¬ R x x
   wf→irrefl RisWF x = go x (RisWF x) where
     go : ∀ y → is_-accessible_ y → ¬ R y y
@@ -112,19 +121,28 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
 
 open WFDefinitions public
 
-module ClassicalProperties {D : Set} (R : 𝓡 D) where
+module ClassicalProperties {A : Set} (R : 𝓡 A) where
 
-  isMinDec : D → Set
-  isMinDec x = (Σ[ y ∈ D ] R y x) ⊔ (∀ y → ¬ R y x)
+  isMinDec : A → Set
+  isMinDec x = (Σ[ y ∈ A ] R y x) ⊔ (∀ y → ¬ R y x)
 
   -- Double negation shift for accessibility (element-wise)
   ¬¬ACC : Set
-  ¬¬ACC = ∀ {x : D} → ¬¬ (is R -accessible x) → is R -accessible x
+  ¬¬ACC = ∀ {x : A} → ¬¬ (is R -accessible x) → is R -accessible x
 
-  ¬¬acc : ∀ {x : D} → ¬¬ (is R -accessible x) → is R -accessible x
-  ¬¬acc {x} ¬¬accx = {!   !}
+  ¬¬acc : ¬¬ACC
+  ¬¬acc {x} ¬¬accx = {! a  !}
   -- Non-terminating proof:
   -- ¬¬acc {x} ¬¬accx = acc (λ y Ryx → ¬¬acc (λ ¬accy → ¬¬accx λ {  (acc xa) → ¬accy (xa y Ryx) } ))
+
+  ¬¬ind : ∀ (P : 𝓟 A) (Pind : is R -inductive P) (x : A) → ¬¬ (P x) → P x
+  ¬¬ind P Pind x ¬¬Px =
+    let huh = ¬¬Px λ Px → {!   !}
+        npx = {!   !}
+     in Pind x {!   !}
+
+  Pind→¬¬Pind : ∀ (P : 𝓟 A) → is R -inductive P → is R -inductive (∁ (∁ P))
+  Pind→¬¬Pind P Pind = λ x IHx ¬Px → {!   !}
 
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : ¬¬ACC → isWFacc- R → ¬¬ (isWFacc R)
@@ -159,13 +177,13 @@ module ClassicalProperties {D : Set} (R : 𝓡 D) where
   isWFmin→isWFacc- : ¬¬ACC → isWFmin R → isWFacc- R
   isWFmin→isWFacc- ¬¬Acc RisWFmin d ¬disRacc with RisWFmin (λ x → ¬ is R -accessible x) (¬disRacc)
   ... | m ,, ¬misRacc , mismin =
-    let f : ¬ ((y : D) → R y m → is R -accessible y) → ¬ ((y : D) → (is R -accessible y → ⊥) → R y m → ⊥)
+    let f : ¬ ((y : A) → R y m → is R -accessible y) → ¬ ((y : A) → (is R -accessible y → ⊥) → R y m → ⊥)
         f ¬H G = {!   !}
       in f (¬acc R ¬misRacc ) mismin
 
   isWFmin-→isWFind- : ¬¬ACC → isWFmin- R → isWFind- R
   isWFmin-→isWFind- ¬¬Acc RisWFmin- φ φ-ind x ¬φx = RisWFmin- (λ v → ¬ (φ v)) ¬φx f
-    where f : ¬ Σ[ d ∈ D ] is R - (∁ φ) -minimal d
+    where f : ¬ Σ[ d ∈ A ] is R - (∁ φ) -minimal d
           f (d ,, ¬φd , ¬φ⊆¬↓d) = {!   !}
 
   isWFseq→isWFmin- : isWFseq R → isWFmin- R
@@ -180,4 +198,17 @@ module ClassicalProperties {D : Set} (R : 𝓡 D) where
   --   f-dec n = {!   !}
   --   f⊆P zero = d∈P
   --   f⊆P (succ n) = {!   !}
-   
+
+  isWFseq+ : Set
+  isWFseq+ = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
+
+  isWFseq+→isWFseq : isWFseq+ → isWFseq R
+  isWFseq+→isWFseq WFs s sdec with WFs s
+  ... | (n ,, ¬snRn) = ¬snRn (sdec n)
+
+  ¬¬isWFseq+→isWFseq : ¬¬ isWFseq+ → isWFseq R
+  ¬¬isWFseq+→isWFseq ¬¬WFs s sdec = ¬¬WFs (λ WFs → isWFseq+→isWFseq WFs s sdec)
+
+  -- Requires ¬(∀n)R(sn,n) → (∃n)¬R(sn,n)
+  isWFseq→¬¬isWFseq+ : isWFseq R → ¬¬ isWFseq+
+  isWFseq→¬¬isWFseq+ WFs ¬isWFseq+ = ¬isWFseq+ λ s → {! WFs s   !}
