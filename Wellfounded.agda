@@ -128,12 +128,12 @@ module ClassicalProperties {D : Set} (R : 𝓡 D) where
 
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : ¬¬ACC → isWFacc- R → ¬¬ (isWFacc R)
-  isWFacc-→¬¬isWFacc  RisWFacc- ¬RisWFacc = {!   !}
+  isWFacc-→¬¬isWFacc ¬¬ACC RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → ¬¬ACC (RisWFacc- x)
   -- This follows from the previous one:
   -- isWFacc-→¬¬isWFacc  RisWFacc- ¬RisWFacc = ¬RisWFacc (λ x → ¬¬acc (RisWFacc- x) )
 
   isWFmin-→¬¬isWFmin : ¬¬ACC → isWFmin- R → ¬¬ (isWFmin R)
-  isWFmin-→¬¬isWFmin ¬¬Acc = {!   !}
+  isWFmin-→¬¬isWFmin ¬¬Acc isWFmin- ¬isWFmin = ¬isWFmin (λ P {a} a∈P  → a ,, a∈P , λ b b∈P Rba → isWFmin- P a∈P λ {(c ,, c∈P , cIsMin) → {!   !}})
 
   isWFacc→isWFmin : (∀ x → isMinDec x) → isWFacc R → isWFmin R
   isWFacc→isWFmin minDec RisWFacc P {d} d∈P = f d d∈P (RisWFacc d) where
@@ -180,3 +180,4 @@ module ClassicalProperties {D : Set} (R : 𝓡 D) where
   --   f-dec n = {!   !}
   --   f⊆P zero = d∈P
   --   f⊆P (succ n) = {!   !}
+   
