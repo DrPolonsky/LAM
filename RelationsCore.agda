@@ -65,6 +65,17 @@ _∘R_ {B = B} R S = λ x z → Σ[ y ∈ B ] (R x y × S y z)
 _R∘_ : ∀ {A B C} → Rel B C → Rel A B → Rel A C
 S R∘ R = R ∘R S
 
+_∘~_ : ∀ {A B C} → Rel A B → Rel C B → Rel A C
+R ∘~ Q = R ∘R (~R Q)
+
+_~∘_ : ∀ {A B C} → Rel A B → Rel A C → Rel B C
+R ~∘ Q = (~R R) ∘R Q
+
+infixr 18 _∘R_
+infixr 18 _R∘_
+infixr 18 _~∘_
+infixr 18 _∘~_ 
+
 module RelationLaws where
 
   law1 : ∀ {A B : Set} (R : Rel A B) → ≡R ∘R R ⇔₂ R
