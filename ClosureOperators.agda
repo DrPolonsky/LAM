@@ -61,6 +61,25 @@ module ClosureProperties where
   SymisSym (axˢ+ Rxy) = axˢ- Rxy
   SymisSym (axˢ- Ryx) = axˢ+ Ryx
 
+  EQisTran : ∀ {R : 𝓡 U} {x y z : U} → (EQ R) x y → (EQ R) y z → (EQ R) x z
+  EQisTran (ax⋆ Rˢxy) EQRyz = Rˢxy ,⋆ EQRyz
+  EQisTran ε⋆ EQRyz = EQRyz
+  EQisTran (Rˢxy₁ ,⋆ EQRy₁y) EQRyz = Rˢxy₁ ,⋆ EQisTran EQRy₁y EQRyz 
+
+  *⊆EQ : ∀ {R : 𝓡 U} {x y : U} → (R ⋆) x y → (EQ R) x y
+  *⊆EQ (ax⋆ Rxy) = ax⋆ (axˢ+ Rxy)
+  *⊆EQ ε⋆ = ε⋆
+  *⊆EQ (Rxy₁ ,⋆ R*y₁y) = axˢ+ Rxy₁ ,⋆ *⊆EQ R*y₁y
+
+  s⊆EQ : ∀ {R : 𝓡 U} {x y : U} → (R ˢ) x y → (EQ R) x y
+  s⊆EQ (axˢ+ Rxy) = ax⋆ (axˢ+ Rxy)
+  s⊆EQ (axˢ- Ryx) = ax⋆ (axˢ- Ryx) 
+
+  EQisSym : ∀ {R : 𝓡 U} {x y : U} → (EQ R) x y → (EQ R) y x
+  EQisSym (ax⋆ Rˢxy) = s⊆EQ (SymisSym Rˢxy)
+  EQisSym ε⋆ = ε⋆
+  EQisSym (Rˢxy₁ ,⋆ Rˢ*y₁y) = EQisTran (EQisSym Rˢ*y₁y) (s⊆EQ (SymisSym Rˢxy₁))
+
 open ClosureProperties public
 
 module ClosureTransformations where  
@@ -136,6 +155,8 @@ module ClosureOpsPreserveContainment {R1 R2 : 𝓡 U} (R12 : R1 ⊆ R2) where
   ⊆⋆ x .x ε⋆ = ε⋆
   ⊆⋆ x y (R1xy ,⋆ R2⋆yz) = (R12 x _ R1xy) ,⋆ ⊆⋆ _ y R2⋆yz
 
+open ClosureOpsPreserveContainment public
+
 module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
 
   ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
@@ -155,10 +176,6 @@ module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
   pr1 ⇔⁺ x y (R1xy ,⁺ R1⁺yz) = (pr1 R12 x _ R1xy) ,⁺ (pr1 ⇔⁺ _ y R1⁺yz)
   pr2 ⇔⁺ x y (ax⁺ R2xy) = ax⁺ (pr2 R12 x y R2xy)
   pr2 ⇔⁺ x y (R2xy ,⁺ R2⁺yz) = (pr2 R12 x _ R2xy) ,⁺ pr2 ⇔⁺ _ y R2⁺yz
-
-  ⊆₊ : R1 ₊ ⊆ R2 ₊
-  ⊆₊ = (pr2 (TC⁺⇔TC₊ R1)) ⊆!⊆₂
-                     (pr1 ⇔⁺ ⊆!⊆₂ (pr1 (TC⁺⇔TC₊ R2)))
 
   ⇔₊ : R1 ₊ ⇔ R2 ₊
   ⇔₊ = (~⇔ {n = 2} (TC⁺⇔TC₊ R1)) ⇔!⇔₂ ⇔⁺ ⇔!⇔₂ (TC⁺⇔TC₊ R2)
