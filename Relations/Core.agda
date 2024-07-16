@@ -1,4 +1,4 @@
-module RelationsCore where
+module Relations.Core where
 
 -- open import Logic
 open import Logic-Levels
@@ -74,7 +74,7 @@ R ~∘ Q = (~R R) ∘R Q
 infixr 18 _∘R_
 infixr 18 _R∘_
 infixr 18 _~∘_
-infixr 18 _∘~_ 
+infixr 18 _∘~_
 
 module RelationLaws where
 

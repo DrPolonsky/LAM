@@ -3,7 +3,7 @@
 open import Logic-Levels
 open import Lifting
 open import Predicates
-open import RelationsCore
+open import Relations.Core
 
 {- 2024.06.28.
   Questions to investigate.
@@ -18,7 +18,7 @@ open import RelationsCore
   6. Does WFseq → WFmin- ?
   -}
 
-module Wellfounded where
+module Relations.Wellfounded where
 
 module WFDefinitions {A : Set} (R : 𝓡 A) where
 
@@ -47,8 +47,11 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFmin : Set₁
   isWFmin = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∈ P → Σ[ m ∈ A ] is_-_-minimal_ P m
 
+  is_-increasing_ : 𝓟 (ℕ → A)
+  is_-increasing_ s = ∀ n → R (s n) (s (succ n)) -- xₙ < xₙ₊₁
+
   is_-decreasing_ : 𝓟 (ℕ → A)
-  is_-decreasing_ s = ∀ n → ~R R (s n) (s (succ n)) -- xₙ > xₙ₊₁
+  is_-decreasing_ s = ∀ n → R (s (succ n)) (s n) -- xₙ > xₙ₊₁
 
   isWFseq : Set
   isWFseq = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
