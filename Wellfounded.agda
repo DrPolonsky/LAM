@@ -21,7 +21,6 @@ open import RelationsCore
 module Wellfounded where
 
 module WFDefinitions {A : Set} (R : 𝓡 A) where
-  -- 1. DEFINITIONS
 
   -- An element is R-accessible if all elements R-below it are R-accessible
   data is_-accessible_ : 𝓟 A where
@@ -31,6 +30,8 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFacc : Set
   isWFacc = ∀ (x : A) → is_-accessible_ x
 
+  -- A predicate φ is R-inductive if:
+  --   φ x is true whenever φ y is true for all elements y R-below x.
   is_-inductive_ : 𝓟 A → Set
   is_-inductive_ φ = ∀ x → (∀ y → R y x → φ y) → φ x
 
@@ -52,20 +53,7 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFseq : Set
   isWFseq = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
 
-  -- 2. Relations between definitions of well-foundedness
-  acc⊆ind : ∀ (φ : 𝓟 A) → is_-inductive_ φ → is_-accessible_ ⊆ φ
-  acc⊆ind φ φisR-ind x (acc IH) = φisR-ind x (λ y Ryx → acc⊆ind φ φisR-ind y (IH y Ryx) )
-
-  isWFacc→isWFind : isWFacc → isWFind
-  isWFacc→isWFind wfAcc φ φ-ind = λ x → acc⊆ind φ φ-ind x (wfAcc x)
-
-  isWFind→isWFacc : isWFind → isWFacc
-  isWFind→isWFacc wfInd = wfInd is_-accessible_ (λ x → acc {x})
-
-  isWFmin→isWFseq : isWFmin → isWFseq
-  isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
-  ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
-
+  -- Weaker notions of well-foundedness
   isWFacc- : Set
   isWFacc- = ∀ x → ¬¬ (is_-accessible_ x)
 
@@ -81,7 +69,23 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
 
 open WFDefinitions public
 
-module WFRelations {A : Set} (R : 𝓡 A) where
+module WFImplications {A : Set} (R : 𝓡 A) where
+-- 2. Implications between well-foundedness notions
+
+  -- Accessibility is the least inductive predicate
+  acc⊆ind : ∀ (φ : 𝓟 A) → is R -inductive φ → (is_-accessible_ R) ⊆ φ
+  acc⊆ind φ φisR-ind x (acc IH) = φisR-ind x (λ y Ryx → acc⊆ind φ φisR-ind y (IH y Ryx) )
+
+  isWFacc→isWFind : isWFacc R → isWFind R
+  isWFacc→isWFind wfAcc φ φ-ind = λ x → acc⊆ind φ φ-ind x (wfAcc x)
+
+  isWFind→isWFacc : isWFind R → isWFacc R
+  isWFind→isWFacc wfInd = wfInd (is_-accessible_ R) λ x → acc
+
+  isWFmin→isWFseq : isWFmin R → isWFseq R
+  isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
+  ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
+
 
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc R) → isWFacc- R
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx     → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )
@@ -97,7 +101,7 @@ module WFRelations {A : Set} (R : 𝓡 A) where
 
 
   isWFacc-→isWFind- : isWFacc- R → isWFind- R
-  isWFacc-→isWFind- RisWFacc- P Pind d ¬Pd = RisWFacc- d (λ disRacc → ¬Pd (acc⊆ind R P Pind d disRacc) )
+  isWFacc-→isWFind- RisWFacc- P Pind d ¬Pd = RisWFacc- d (λ disRacc → ¬Pd (acc⊆ind P Pind d disRacc) )
 
   isWFind-→isWFacc- : isWFind- R → isWFacc- R
   isWFind-→isWFacc- RisWFind = RisWFind (λ y → is R -accessible y) (λ x → acc)
@@ -123,8 +127,6 @@ module WFRelations {A : Set} (R : 𝓡 A) where
           ... | n ,, sn≡d = pr2 dRBmin (s (succ n)) (succ n ,, refl)
                                 (transp (R (s (succ n))) sn≡d (s-dec n))
 
-
-
   ¬acc : ∀ {x : A} → ¬ (is R -accessible x) → ¬ (∀ y → R y x → is R -accessible y)
   ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
 
@@ -136,17 +138,17 @@ module WFRelations {A : Set} (R : 𝓡 A) where
     go : ∀ y → is R -accessible y → ¬ R y y
     go y (acc Hy) Ryy = go y (Hy y Ryy) Ryy
 
-open WFRelations public
+open WFImplications public
 
 module ClassicalImplications {A : Set} (R : 𝓡 A) where
 
-  -- 1. Implications relying on decidability of minimality
+  -- Implications relying on decidability of minimality
 
-  -- Decidability of R-minimality, for a given element
+  -- Decidability of being R-minimal, for a given element
   isMinDec : A → Set
   isMinDec x = (Σ[ y ∈ A ] R y x) ⊔ (∀ y → ¬ R y x)
 
-  -- Decidability of R-minimality, globally
+  -- Decidability of being R-minimal, globally
   decMin : Set
   decMin = ∀ x → isMinDec x
 
@@ -158,13 +160,16 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     ... | in2 xIsMin = λ x∈P → (x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx ))
 
   isWFind→isWFmin : decMin → isWFind R → isWFmin R
-  isWFind→isWFmin dM RisWFind P d∈P =
-    let S = Σ[ y ∈ A ] (is R - P -minimal y)
+  isWFind→isWFmin dM RisWFind P d∈P = RisWFind φ φ-ind _ d∈P where
+        S = Σ[ y ∈ A ] (is R - P -minimal y)
         φ : 𝓟 A
-        φ x = x ∈ P → Σ[ y ∈ A ] (y ∈ P × ∀ z → z ∈ P → R z y → S)
+        φ x = x ∈ P → S
+        -- φ : 𝓟 A
+        -- φ x = x ∈ P → Σ[ y ∈ A ] (y ∈ P × ∀ z → z ∈ P → R z y → S)
         φ-ind : is R -inductive φ
-        φ-ind x IH x∈P = {!   !}
-      in {!   !} -- RisWFind φ φ-ind _ d∈P
+        φ-ind x H x∈P with dM x
+        ... | in1 (y ,, Ryx) = {!   !}
+        ... | in2 xRmin = x ,, x∈P , (λ x _ → xRmin x)
 
   {- It seems we need the following lemma. -}
   -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
