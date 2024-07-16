@@ -151,7 +151,7 @@ module Church where
   -- erase (varCh x e)   = var x
   -- erase (appCh M1 M2) = app (erase M1) (erase M2)
   -- erase (absCh M0)    = abs (erase M0)
-
+  
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
   prop1B19i (varCh x Γx≡A) = Var x Γx≡A
   prop1B19i (appCh M1 M2)  = App (prop1B19i M1) (prop1B19i M2)
@@ -215,6 +215,9 @@ module Church where
 
   NF : ∀ {X} → 𝓟 (Λ X)
   NF M = ∀ N → ¬ (M ⟶β N)
+  
+  NFCh : ∀ (V : Set) (Γ : Cxt V) (A : 𝕋) → 𝓟 (ΛCh Γ A)
+  NFCh V Γ A M = ∀ N → ¬ (erase M ⟶β erase {V} {Γ} {A} N)
 
   CxtEqIrrel : ∀ {V} (Γ : Cxt V) (x : V) (A : 𝕋) (p1 p2 : Γ x ≡ A) → p1 ≡ p2
   CxtEqIrrel Γ x .(Γ x) refl refl = refl
@@ -234,6 +237,13 @@ module Church where
     b = λ M' M0→M' → M∈NF (abs M') (absβ M0→M')
     c = Prop1B24 B M0 b d N (absInv eN=M)
 
+  -- should probably change NF to NFCh here (not working with ∈)
+  Prop1B25 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A)
+              → erase M ∈ NF → (Γ ⊢ erase M ∶ A)
+  Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
+  Prop1B25 A (appCh M1 M2) nf = {!   !}
+  Prop1B25 (A ⇒ B) (absCh M) nf = {!   !}
+  
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
   --   App : ∀ {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}
