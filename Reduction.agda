@@ -4,8 +4,8 @@ open import Logic
 open import Lifting
 open import Lambda
 open import Predicates
-open import RelationsCore
-open import ClosureOperators
+open import Relations.Core
+open import Relations.ClosureOperators
 
 -- Congruence Closure
 data CC (R : ∀ {X : Set} → 𝓡 (Λ X)) {X : Set} : 𝓡 (Λ X) where

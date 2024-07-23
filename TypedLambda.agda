@@ -8,7 +8,7 @@ open import Lifting
 open import Lambda
 open import Predicates
 open import Reduction
-open import ClosureOperators
+open import Relations.ClosureOperators
 
 -- term2 = "λxλy.y(λz.z(λa.ax)y)x"
 term2 : Λ⁰
@@ -151,7 +151,7 @@ module Church where
   -- erase (varCh x e)   = var x
   -- erase (appCh M1 M2) = app (erase M1) (erase M2)
   -- erase (absCh M0)    = abs (erase M0)
-  
+
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
   prop1B19i (varCh x Γx≡A) = Var x Γx≡A
   prop1B19i (appCh M1 M2)  = App (prop1B19i M1) (prop1B19i M2)
@@ -215,7 +215,7 @@ module Church where
 
   NF : ∀ {X} → 𝓟 (Λ X)
   NF M = ∀ N → ¬ (M ⟶β N)
-  
+
   NFCh : ∀ (V : Set) (Γ : Cxt V) (A : 𝕋) → 𝓟 (ΛCh Γ A)
   NFCh V Γ A M = ∀ N → ¬ (erase M ⟶β erase {V} {Γ} {A} N)
 
@@ -232,18 +232,37 @@ module Church where
                 → (d : Γ ⊢ M ∶ A) → ∀ (N : ΛCh Γ A) → erase N ≡ M → N ≡ embellish M d
   Prop1B24 {V} {Γ} A (var x) M∈NF (Var .x Γx=A) (varCh .x Γy=A) refl
     = cong (varCh x) (CxtEqIrrel Γ x A Γy=A Γx=A )
-  Prop1B24 A (app M1 M2) M∈NF d N eN=M = {! M∈NF   !}
+  Prop1B24 A (app M1 M2) M∈NF (App d1 d2) (appCh N1 N2) eN=M = {! cong2 appCh {N1} {embellish M1 d1}   !}
   Prop1B24 (A ⇒ B) (abs M0) M∈NF (Abs d) (absCh N) eN=M = cong absCh c where
     b = λ M' M0→M' → M∈NF (abs M') (absβ M0→M')
     c = Prop1B24 B M0 b d N (absInv eN=M)
 
+  emptyLemma : ∀ {X : Set} (Γ : ⊥ → X) → Γ ≅ ∅
+  emptyLemma Γ = λ x → ∅ x
+
+  emptyCxtLemma : ∀ {Γ Δ : Cxt ⊥} → Γ ≅ Δ
+  emptyCxtLemma {Γ} {Δ} = emptyLemma Γ ≅!~ emptyLemma Δ
+
   -- should probably change NF to NFCh here (not working with ∈)
-  Prop1B25 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A)
-              → erase M ∈ NF → (Γ ⊢ erase M ∶ A)
-  Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
-  Prop1B25 A (appCh M1 M2) nf = {!   !}
-  Prop1B25 (A ⇒ B) (absCh M) nf = {!   !}
-  
+  -- problem: M and N might have ``different'' contexts,
+  -- even though we know they are the same (≅-equal)
+  -- Prop1B25 : ∀ {Γ : Cxt ⊥} (A : 𝕋) (M : ΛCh Γ A) (N : Λ ⊥)
+  --             → erase M ∈ NF → (d : ∅ ⊢ N ∶ A) → erase M ≡ N → embellish N d ≡ M
+  -- Prop1B25 A M M∈NF d = ?
+
+  -- Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
+  -- Prop1B25 A (appCh M1 M2) nf = {!   !}
+  -- Prop1B25 (A ⇒ B) (absCh M) nf = {!   !}
+
+
+
+
+
+
+
+
+
+
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
   --   App : ∀ {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}
