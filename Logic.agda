@@ -64,6 +64,7 @@ _↔!↔_ : ∀ {A B C} → A ↔ B → B ↔ C → A ↔ C
 -- ≡ is \== or \equiv
 data _≡_ {A : Set} (a : A) : A → Set where
   refl : a ≡ a
+{-# BUILTIN EQUALITY _≡_ #-}
 
 ~ : ∀ {A : Set} {a b : A} → a ≡ b → b ≡ a
 ~ refl = refl
