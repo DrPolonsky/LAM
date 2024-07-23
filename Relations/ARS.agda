@@ -232,7 +232,6 @@ module Newmans-Lemma where
   SN→NFelement SNR a with SNR a 
   ... | acc H = {!   !} ,, {!   !} 
 
-  temp : ∀ {R : 𝓡 A} → SN R → (a : A) → Σ[ n ∈ A ] ((R ⋆) a n × is R -NF  n) → UN 
 
   NLemmai : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R 
   NLemmai SNR WCR with SN→NFelement SNR {!   !} 
