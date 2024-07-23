@@ -139,7 +139,7 @@ module Proposition-1-1-11  where
     lemmaii R◆ (a ,, R*ab , ax⋆ Rac) with lemmai R◆ R*ab Rac 
     ... |  d ,, Rbd , R*cd = d ,, (ax⋆ Rbd , R*cd)
     lemmaii R◆ (a ,, R*ab , (Ray ,⋆ R*yc)) with  lemmai R◆ R*ab Ray  -- lemmai R◆ R*ab Ray 
-    ... | d ,, Rbd , R*yd with lemmaii R◆ {!   !}  --  R◆ (_ ,, R*yd , R*yc)           -- something is going wrong here. 
+    ... | d ,, Rbd , R*yd with lemmaii R◆ {!   !}   --  R◆ (_ ,, R*yd , R*yc)           -- something is going wrong here. 
     ... | e ,, R*de , R*ce = e ,, ((Rbd ,⋆ R*de) , R*ce)
     -- lemmaii R◆ ε⋆ R*ab = _ ,, R*ab , ε⋆
     -- lemmaii R◆ (ax⋆ Rac) R*ab with lemmai R◆ R*ab Rac
@@ -159,7 +159,7 @@ module Proposition-1-1-11  where
     ... | R*cd with lemmaiii R⋄⊆R* b d R⋄*bd
     ... | R*bd = d ,, R*bd , R*cd
 
-    
+ 
 -- Notions related to termination in ARSs
 module Termination (R : 𝓡 A)  where
 
@@ -218,6 +218,46 @@ module Termination (R : 𝓡 A)  where
 open Termination public
 
 
+module Newmans-Lemma where 
+  -- If R is SN and WCR then R is CR 
+
+  -- Three proofs in Therese. 
+  -- i) By SN, every a ∈ A reduces to at least one normal form. For CR it suffices to show that every a ∈ A has at most one normal form.
+  -- ii) As → is SN, ← is WF, and hence ←⁺ is a well founded order... 
+  -- iii) 
+
+  -- Proof i
+
+  SN→NFelement : ∀ {R : 𝓡 A} → SN R → (a : A) → Σ[ n ∈ A ] ((R ⋆) a n × is R -NF  n)
+  SN→NFelement SNR a with SNR a 
+  ... | acc H = {!   !} ,, {!   !} 
+
+  temp : ∀ {R : 𝓡 A} → SN R → (a : A) → Σ[ n ∈ A ] ((R ⋆) a n × is R -NF  n) → UN 
+
+  NLemmai : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R 
+  NLemmai SNR WCR with SN→NFelement SNR {!   !} 
+  ... | n ,, R*an , NFn = {!   !}
+
+  -- Proof ii 
+
+  SNisWFacc : ∀ {R : 𝓡 A} {x : A} → is R -SN x → isWFacc R 
+  SNisWFacc (acc H) x = {!   !}
+
+  confluentElement : ∀ (R : 𝓡 A) → A → Set 
+  confluentElement R a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d) 
+
+  wCR→conflInd : ∀ {R : 𝓡 A} → weakly-confluent R → (x : A) → (∀ y → R x y → confluentElement R y) → confluentElement R x 
+  wCR→conflInd WCR a IND ε⋆ R*ac = _ ,, R*ac , ε⋆
+  wCR→conflInd WCR a IND (ax⋆ x) R*ac = {!   !}
+  wCR→conflInd WCR a IND (Ray ,⋆ R*yb) ε⋆ = _ ,, ε⋆ , (Ray ,⋆ R*yb)
+  wCR→conflInd WCR a IND (Ray ,⋆ R*yb) (ax⋆ x) = {!   !}
+  wCR→conflInd WCR a IND (Ray ,⋆ R*yb) (Raz ,⋆ R*zc) with WCR (a ,, (Ray , Raz)) 
+  ... | d ,, R*yd , R*zd with IND _ Ray R*yb R*yd 
+  ... | e ,, R*be , R*de with IND _ Raz R*zc (TCisTran _ R*zd R*de) 
+  ... | f ,, R*cf , R*ef = f ,, (TCisTran _ R*be R*ef , R*cf)  
+
+  NLemmaii : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R 
+  NLemmaii SNR WCR peak@(a ,, R*ab , R*ac) = wCR→conflInd WCR a (λ y Ray → {!  !}) R*ab R*ac
 
 
 
@@ -237,7 +277,6 @@ open Termination public
 
 
 
-
-  
+   
 -- The end
-      
+       
