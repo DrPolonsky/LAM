@@ -85,7 +85,7 @@ So, "Γ : Cxt V" should mean:
 
 
   SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶⋆β N → Γ ⊢ N ∶ A
-  SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
+  -- SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
   SubReduction⊢ d ε⋆ = d
   SubReduction⊢ d (M→y ,⋆ y→⋆N) = SubReduction⊢ (SubReduction⊢₁ d M→y) y→⋆N
 
@@ -246,15 +246,19 @@ module Church where
   -- should probably change NF to NFCh here (not working with ∈)
   -- problem: M and N might have ``different'' contexts,
   -- even though we know they are the same (≅-equal)
-  -- Prop1B25 : ∀ {Γ : Cxt ⊥} (A : 𝕋) (M : ΛCh Γ A) (N : Λ ⊥)
-  --             → erase M ∈ NF → (d : ∅ ⊢ N ∶ A) → erase M ≡ N → embellish N d ≡ M
-  -- Prop1B25 A M M∈NF d = ?
 
-  -- Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
-  -- Prop1B25 A (appCh M1 M2) nf = {!   !}
-  -- Prop1B25 (A ⇒ B) (absCh M) nf = {!   !}
+  eraseM2∈NF : ∀ {V : Set} {Γ : Cxt V} (A) (M1 M2 : ΛCh Γ A) → erase (appCh _ M2) ∈ NF → erase M2 ∈ NF
+  eraseM2∈NF = {!   !}
 
-
+  -- should probably change NF to NFCh here (not working with ∈)
+  Prop1B25 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A)
+              → erase M ∈ NF → (Γ ⊢ erase M ∶ A)
+  Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
+  Prop1B25 A (appCh M1 M2) nf = App (Prop1B25 _ M1 eraseM1∈NF) (Prop1B25 _ M2 {!   !})
+      where eraseM1∈NF = λ { X M2betaX → nf X {!   !} }
+            -- eraseM2∈NF = {!   !}
+  Prop1B25 (A ⇒ B) (absCh M0) nf = Abs (Prop1B25 B M0 eraseM0∈NF)
+      where eraseM0∈NF = λ ↑X M0betaX → nf (abs ↑X) (absβ M0betaX)
 
 
 
