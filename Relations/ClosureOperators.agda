@@ -197,10 +197,10 @@ module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
   pr2 ⇔⋆ x .x ε⋆ = ε⋆
   pr2 ⇔⋆ x y (R2xy ,⋆ R2⋆yz) = pr2 R12 x _ R2xy ,⋆ pr2 ⇔⋆ _ y R2⋆yz
 
-  ⇔⁼ : R1 ⁼ ⇔ R2 ⁼ 
+  ⇔⁼ : R1 ⁼ ⇔ R2 ⁼
   pr1 ⇔⁼ x .x ε⋆ = ε⋆
-  pr1 ⇔⁼ x y (ax⋆ R1ˢxy) = ax⋆ (pr1 ⇔ˢ x y R1ˢxy)  
-  pr1 ⇔⁼ x y (R1ˢxy₁ ,⋆ R1⁼y₁y) = (pr1 ⇔ˢ x _ R1ˢxy₁) ,⋆ pr1 ⇔⁼ _ y R1⁼y₁y 
+  pr1 ⇔⁼ x y (ax⋆ R1ˢxy) = ax⋆ (pr1 ⇔ˢ x y R1ˢxy)
+  pr1 ⇔⁼ x y (R1ˢxy₁ ,⋆ R1⁼y₁y) = (pr1 ⇔ˢ x _ R1ˢxy₁) ,⋆ pr1 ⇔⁼ _ y R1⁼y₁y
   pr2 ⇔⁼ x .x ε⋆ = ε⋆
   pr2 ⇔⁼ x y (ax⋆ R2ˢxy) = ax⋆ (pr2 ⇔ˢ x y R2ˢxy)
-  pr2 ⇔⁼ x y (R2ˢxy₁ ,⋆ R2⁼y₁y) = (pr2 ⇔ˢ x _ R2ˢxy₁) ,⋆ pr2 ⇔⁼ _ y R2⁼y₁y   
+  pr2 ⇔⁼ x y (R2ˢxy₁ ,⋆ R2⁼y₁y) = (pr2 ⇔ˢ x _ R2ˢxy₁) ,⋆ pr2 ⇔⁼ _ y R2⁼y₁y

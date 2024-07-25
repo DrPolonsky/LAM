@@ -64,6 +64,7 @@ _↔!↔_ : ∀ {A B C} → A ↔ B → B ↔ C → A ↔ C
 -- ≡ is \== or \equiv
 data _≡_ {A : Set} (a : A) : A → Set where
   refl : a ≡ a
+{-# BUILTIN EQUALITY _≡_ #-}
 
 ~ : ∀ {A : Set} {a b : A} → a ≡ b → b ≡ a
 ~ refl = refl
@@ -102,6 +103,9 @@ symm≅ : ∀ {A B : Set} {f g : A → B} → f ≅ g → g ≅ f
 symm≅ fg x = ~ (fg x)
 tran≅ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
 tran≅ fg gh x = (fg x) ! (gh x)
+
+ap : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {x y : A} → x ≡ y → f x ≡ g y
+ap {g = g} fg {x} xy = fg x ! cong g xy 
 
 !≅! : ∀ {A B : Set} {f : A → B} → f ≅ f
 !≅! = refl≅

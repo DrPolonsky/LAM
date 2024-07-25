@@ -110,8 +110,8 @@ abs r   [ f ] = abs (r [ lift f ])
 _[_]ᶠ : ∀ {m n : ℕ} → Λᶠ m → (Fin m → Λᶠ n) → Λᶠ n
 _[_]ᶠ = _[_]
 
-_[_]ᵒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
-M [ N ]ᵒ  = M [ io var N ]
+_[_]ₒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
+M [ N ]ₒ  = M [ io var N ]
 
 bind : ∀ {A B : Set} → (A → Λ B) → Λ A → Λ B
 bind f t = t [ f ]
@@ -158,5 +158,6 @@ bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
                → bind (bind g ∘ f) ≅ bind g ∘ bind f
 bind-assoc {f = f} {g} = bind-assoc≅ refl≅
 
-
+bind-map : ∀ {X Y Z : Set} (f : X → Y) (g : Y → Λ Z)
+              → bind (Λ→ f) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g
 -- The End
