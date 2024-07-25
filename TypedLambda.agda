@@ -8,12 +8,7 @@ open import Lifting
 open import Lambda
 open import Predicates
 open import Reduction
-open import ClosureOperators
-
--- term2 = "λxλy.y(λz.z(λa.ax)y)x"
-term2 : Λ⁰
-term2 = abs (abs (app (app (var o ) (abs (app (app (var o)
-  (abs (app (var o) (var (i (i (i o))))))) (var (i o))))) (var (i o))))
+open import Relations.ClosureOperators
 
 data 𝕋 : Set where
   atom : 𝔸 → 𝕋
@@ -85,7 +80,7 @@ So, "Γ : Cxt V" should mean:
 
 
   SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶⋆β N → Γ ⊢ N ∶ A
-  SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
+  -- SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
   SubReduction⊢ d ε⋆ = d
   SubReduction⊢ d (M→y ,⋆ y→⋆N) = SubReduction⊢ (SubReduction⊢₁ d M→y) y→⋆N
 
@@ -127,7 +122,6 @@ module DeBruijn where
   weak⊢dB f (AppdB d1 d2) = AppdB (weak⊢dB f d1) (weak⊢dB f d2)
   weak⊢dB f (AbsdB d0) = AbsdB (weak⊢dB (↑→ f) (io-nat _ f _ ≅⊢dB d0))
 
-
 open DeBruijn
 
 module Church where
@@ -151,16 +145,11 @@ module Church where
   -- erase (varCh x e)   = var x
   -- erase (appCh M1 M2) = app (erase M1) (erase M2)
   -- erase (absCh M0)    = abs (erase M0)
-  
+
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
   prop1B19i (varCh x Γx≡A) = Var x Γx≡A
   prop1B19i (appCh M1 M2)  = App (prop1B19i M1) (prop1B19i M2)
   prop1B19i (absCh M0)     = Abs (prop1B19i M0)
-
-  embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
-  embellish (var x)     (Var _ Γx≡A) = varCh x Γx≡A
-  embellish (app M1 M2) (App d1 d2)  = appCh (embellish M1 d1) (embellish M2 d2)
-  embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
   embellishCu→dB : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛdB V
   embellishCu→dB (var x) d               = vardB x
@@ -178,18 +167,17 @@ module Church where
   embellishdB→Ch (appdB M1 M2) (AppdB d1 d2) = appCh (embellishdB→Ch M1 d1) (embellishdB→Ch M2 d2)
   embellishdB→Ch (absdB x M0)  (AbsdB d0)    = absCh (embellishdB→Ch M0 d0)
 
-  -- embellishCu→Ch : ∀ {V} {Γ : Cxt V} {A : 𝕋} {M : Λ V} → Γ ⊢ M ∶ A →
+  embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
+  embellish M d = embellishdB→Ch (embellishCu→dB M d ) (embellishCu→dB⊢ M d)
+  -- embellish (var x)     (Var _ Γx≡A) = varCh x Γx≡A
+  -- embellish (app M1 M2) (App d1 d2)  = appCh (embellish M1 d1) (embellish M2 d2)
+  -- embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
   prop1B19ii (var x)     (Var _ _)   = refl
   prop1B19ii (app M1 M2) (App d1 d2) = cong2 app (prop1B19ii M1 d1) (prop1B19ii M2 d2)
   prop1B19ii (abs M0)    (Abs d0)    = cong abs  (prop1B19ii M0 d0)
-
-  ΛCh≃ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
-  ΛCh≃ g=d (varCh x e)   = varCh x (g=d x ~! e)
-  ΛCh≃ g=d (appCh t1 t2) = appCh (ΛCh≃ g=d  t1) (ΛCh≃ g=d t2)
-  ΛCh≃ g=d (absCh t0)    = absCh (ΛCh≃ (io≅ g=d refl) t0)
 
   ΛCh→≅ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) (Δ : Cxt V)
             → Δ ≅ Γ ∘ f → ΛCh Δ A → ΛCh Γ A
@@ -200,7 +188,24 @@ module Church where
     cxt≅ (i x) = Δ=Γf  x
     cxt≅ o     = refl
 
-  -- ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh Γ A → ΛCh (Γ ∘ f) A
+  ΛCh≅ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
+  ΛCh≅ {V} {Γ} {Δ} {A} g=d m = ΛCh→≅ {V} {V} {Δ} {A} I Γ (λ x → g=d x) m
+  -- ΛCh≃ g=d (varCh x e)   = varCh x (g=d x ~! e)
+  -- ΛCh≃ g=d (appCh t1 t2) = appCh (ΛCh≃ g=d  t1) (ΛCh≃ g=d t2)
+  -- ΛCh≃ g=d (absCh t0)    = absCh (ΛCh≃ (io≅ g=d refl) t0)
+
+  erase→≅ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) (Δ : Cxt V)
+            → (gd : Δ ≅ Γ ∘ f) (M : ΛCh Δ A) → Λ→ f (erase M) ≡ erase (ΛCh→≅ {Γ = Γ} f Δ gd M)
+  erase→≅ f Δ gd (varCh x Γx=A) = refl
+  erase→≅ f Δ gd (appCh M1 M2) = cong2 app (erase→≅ f Δ gd M1) (erase→≅ f Δ gd M2)
+  erase→≅ {Γ = Γ} {A ⇒ B} f Δ gd (absCh M0) = cong abs (erase→≅ (↑→ f) (io Δ _ ) h M0) where
+    h : io Δ A ≅ io Γ A ∘ ↑→ f
+    h x = _ -- TypedLambda.Church.cxt≅ f Δ gd M0
+
+  erase≅ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} (gd : Γ ≅ Δ)
+              → ∀ (M : ΛCh Γ A) → erase M ≡ erase (ΛCh≅ gd M)
+  erase≅ {Γ = Γ} gd M = Λ→≅I !≅! (erase M) ~! erase→≅ I Γ gd M
+
   ΛCh→ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) → ΛCh (Γ ∘ f) A → ΛCh Γ A
   ΛCh→ {Γ = Γ} f M = ΛCh→≅ f (Γ ∘ f) !≅! M
 
@@ -212,10 +217,11 @@ module Church where
     N' : _ -- ∀ (x : ↑ V) → ΛCh (io Δ A) (io Γ A x)
     N' (i x) = ΛCh→ i (N x)
     N' o     = varCh o refl
+  -- absCh M0        [ N ]Ch = absCh (M0 [ io𝓟 (λ y → ΛCh (io Δ A) (io Γ A y)) (varCh o refl) (λ x → ΛCh→ i (N x)) ]Ch)
 
   NF : ∀ {X} → 𝓟 (Λ X)
   NF M = ∀ N → ¬ (M ⟶β N)
-  
+
   NFCh : ∀ (V : Set) (Γ : Cxt V) (A : 𝕋) → 𝓟 (ΛCh Γ A)
   NFCh V Γ A M = ∀ N → ¬ (erase M ⟶β erase {V} {Γ} {A} N)
 
@@ -228,22 +234,59 @@ module Church where
   absInv : ∀ {V} {N1 N2 : Λ (↑ V)} → abs N1 ≡ abs N2 → N1 ≡ N2
   absInv refl = refl
 
+  appInvL : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M1 ≡ N1
+  appInvL refl = refl
+  appInvR : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M2 ≡ N2
+  appInvR refl = refl
+
   Prop1B24 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : Λ V) → M ∈ NF
                 → (d : Γ ⊢ M ∶ A) → ∀ (N : ΛCh Γ A) → erase N ≡ M → N ≡ embellish M d
   Prop1B24 {V} {Γ} A (var x) M∈NF (Var .x Γx=A) (varCh .x Γy=A) refl
     = cong (varCh x) (CxtEqIrrel Γ x A Γy=A Γx=A )
-  Prop1B24 A (app M1 M2) M∈NF d N eN=M = {! M∈NF   !}
+  Prop1B24 A (app M1 M2) M∈NF (App d1 d2) (appCh N1 N2) eN=M
+    rewrite appInvL (~ eN=M)
+    rewrite appInvR (~ eN=M)
+    = {! cong2 appCh    !}
   Prop1B24 (A ⇒ B) (abs M0) M∈NF (Abs d) (absCh N) eN=M = cong absCh c where
     b = λ M' M0→M' → M∈NF (abs M') (absβ M0→M')
     c = Prop1B24 B M0 b d N (absInv eN=M)
 
+  emptyLemma : ∀ {X : Set} (Γ : ⊥ → X) → Γ ≅ ∅
+  emptyLemma Γ = λ x → ∅ x
+
+  emptyCxtLemma : ∀ {Γ Δ : Cxt ⊥} → Γ ≅ Δ
+  emptyCxtLemma {Γ} {Δ} = emptyLemma Γ ≅!~ emptyLemma Δ
+
   -- should probably change NF to NFCh here (not working with ∈)
-  Prop1B25 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A)
-              → erase M ∈ NF → (Γ ⊢ erase M ∶ A)
-  Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
-  Prop1B25 A (appCh M1 M2) nf = {!   !}
-  Prop1B25 (A ⇒ B) (absCh M) nf = {!   !}
-  
+  -- problem: M and N might have ``different'' contexts,
+  -- even though we know they are the same (≅-equal)
+  -- eraseM2∈NF : ∀ {V : Set} {Γ : Cxt V} (A) (M1 M2 : ΛCh Γ A) → erase (appCh _ M2) ∈ NF → erase M2 ∈ NF
+  -- eraseM2∈NF = {!   !}
+
+  Prop1B25 : ∀ {Γ : Cxt ⊥} (A : 𝕋) (M : ΛCh Γ A) (N : Λ ⊥)
+                → erase M ∈ NF → (d : ∅ ⊢ N ∶ A) → erase M ≡ N
+                → ΛCh≅ (emptyLemma Γ) M ≡ embellish N d
+  Prop1B25 {Γ} A M N M∈NF d eM=N = Prop1B24 A N g1 d (ΛCh→≅ (λ z → z) Γ (λ x → ∅ x) M) g2
+    where g1 = transp NF eM=N M∈NF
+          g2 = ~ (erase≅ (λ x → ∅ x) M)  ! eM=N
+
+  -- -- should probably change NF to NFCh here (not working with ∈)
+  -- Prop1B25 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A)
+  --             → erase M ∈ NF → (Γ ⊢ erase M ∶ A)
+  -- Prop1B25 A (varCh x Γx=A) nf = Var x Γx=A
+  -- Prop1B25 A (appCh M1 M2) nf = App (Prop1B25 _ M1 eraseM1∈NF) (Prop1B25 _ M2 {!   !})
+  --     where eraseM1∈NF = λ { X M2betaX → nf X {!   !} }
+  --           -- eraseM2∈NF = {!   !}
+  -- Prop1B25 (A ⇒ B) (absCh M0) nf = Abs (Prop1B25 B M0 eraseM0∈NF)
+  --     where eraseM0∈NF = λ ↑X M0betaX → nf (abs ↑X) (absβ M0betaX)
+
+
+
+
+
+
+
+
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
   --   App : ∀ {Γ : Cxt V} {M N : Λ V} {A B : 𝕋}

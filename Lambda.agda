@@ -158,6 +158,6 @@ bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
                → bind (bind g ∘ f) ≅ bind g ∘ bind f
 bind-assoc {f = f} {g} = bind-assoc≅ refl≅
 
-bind-map : ∀ {X Y Z : Set} (f : X → Y) (g : Y → Λ Z)
-              → bind (Λ→ f) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g
+-- bind-map : ∀ {X Y Z : Set} (f : X → Y) (g : Y → Λ Z)
+--               → bind (Λ→ f) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g
 -- The End
