@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 module Reduction where
 
 open import Logic
@@ -140,7 +142,6 @@ data _⇉_ {X : Set} : Λ X → Λ X → Set where
 ⟶s!⟶β (app⟶s s12 t12) (appR⟶β st) = app⟶s s12 (⟶s!⟶β t12 st)
 
 ⟶s!⟶β⋆ : ∀ {X} {r s t : Λ X} → r ⟶s s → s ⟶β⋆ t → r ⟶s t
-⟶s!⟶β⋆ rs (ax⋆ st) = ⟶s!⟶β rs st
 ⟶s!⟶β⋆ rs ε⋆ = rs
 ⟶s!⟶β⋆ rs (sy ,⋆ yt) = ⟶s!⟶β⋆ (⟶s!⟶β rs sy) yt
 
@@ -151,6 +152,11 @@ refl⟶s {X} {abs t} = abs⟶s refl⟶s
 
 ⟶β⋆⊆⟶s : ∀ {X} {s t : Λ X} →  s ⟶β⋆ t → s ⟶s t
 ⟶β⋆⊆⟶s = ⟶s!⟶β⋆ refl⟶s
+
+NF : ∀ {X} → 𝓟 (Λ X)
+NF M = ∀ N → ¬ (M ⟶β N)
+
+
 {-
 
 bindCong : ∀ (R : (∀ {X} → 𝓡Λ X)) → isCong R

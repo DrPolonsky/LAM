@@ -1,5 +1,6 @@
 -- {-# OPTIONS --cubical-compatible #-}
 -- {-# OPTIONS --without-K  #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module TypedLambda (𝔸 : Set) where
 
@@ -67,19 +68,19 @@ So, "Γ : Cxt V" should mean:
 
   -- Prop 1B.5 in [BDS 2010]
   SubLemma⊢ₒ : ∀ {V : Set} {Γ : Cxt V} {M : Λ (↑ V)} {N : Λ V} {A B : 𝕋}
-              → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ᵒ ∶ B
+              → io Γ A ⊢ M ∶ B  →  Γ ⊢ N ∶ A  →  Γ ⊢ M [ N ]ₒ ∶ B
   SubLemma⊢ₒ μ ν = SubLemma⊢ μ (io𝓟 _ (λ x → Var x refl) ν)
 
   SubReduction⊢₁ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋}
                     → Γ ⊢ M ∶ A → M ⟶β N → Γ ⊢ N ∶ A
   -- SubReduction⊢ {V} {Γ} {M} {N} {A} (App {A = B} {N = P} d1 d2) (redexβ {s = G} refl)
-  SubReduction⊢₁ (App (Abs d1) d2) (redexβ refl) = SubLemma⊢ₒ d1 d2
-  SubReduction⊢₁ (App d1 d2) (appLβ re) = App (SubReduction⊢₁ d1 re) d2
-  SubReduction⊢₁ (App d1 d2) (appRβ re) = App d1 (SubReduction⊢₁ d2 re)
-  SubReduction⊢₁ (Abs d0) (absβ re) = Abs (SubReduction⊢₁ d0 re)
+  SubReduction⊢₁ (App (Abs d1) d2) (red⟶β (redex refl)) = SubLemma⊢ₒ d1 d2
+  SubReduction⊢₁ (App d1 d2) (appL⟶β re) = App (SubReduction⊢₁ d1 re) d2
+  SubReduction⊢₁ (App d1 d2) (appR⟶β re) = App d1 (SubReduction⊢₁ d2 re)
+  SubReduction⊢₁ (Abs d0) (abs⟶β re) = Abs (SubReduction⊢₁ d0 re)
 
 
-  SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶⋆β N → Γ ⊢ N ∶ A
+  SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶β⋆ N → Γ ⊢ N ∶ A
   -- SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
   SubReduction⊢ d ε⋆ = d
   SubReduction⊢ d (M→y ,⋆ y→⋆N) = SubReduction⊢ (SubReduction⊢₁ d M→y) y→⋆N
@@ -219,9 +220,6 @@ module Church where
     N' o     = varCh o refl
   -- absCh M0        [ N ]Ch = absCh (M0 [ io𝓟 (λ y → ΛCh (io Δ A) (io Γ A y)) (varCh o refl) (λ x → ΛCh→ i (N x)) ]Ch)
 
-  NF : ∀ {X} → 𝓟 (Λ X)
-  NF M = ∀ N → ¬ (M ⟶β N)
-
   NFCh : ∀ (V : Set) (Γ : Cxt V) (A : 𝕋) → 𝓟 (ΛCh Γ A)
   NFCh V Γ A M = ∀ N → ¬ (erase M ⟶β erase {V} {Γ} {A} N)
 
@@ -248,7 +246,7 @@ module Church where
     rewrite appInvR (~ eN=M)
     = {! cong2 appCh    !}
   Prop1B24 (A ⇒ B) (abs M0) M∈NF (Abs d) (absCh N) eN=M = cong absCh c where
-    b = λ M' M0→M' → M∈NF (abs M') (absβ M0→M')
+    b = λ M' M0→M' → M∈NF (abs M') (abs⟶β M0→M')
     c = Prop1B24 B M0 b d N (absInv eN=M)
 
   emptyLemma : ∀ {X : Set} (Γ : ⊥ → X) → Γ ≅ ∅
@@ -279,13 +277,6 @@ module Church where
   --           -- eraseM2∈NF = {!   !}
   -- Prop1B25 (A ⇒ B) (absCh M0) nf = Abs (Prop1B25 B M0 eraseM0∈NF)
   --     where eraseM0∈NF = λ ↑X M0betaX → nf (abs ↑X) (absβ M0betaX)
-
-
-
-
-
-
-
 
   -- data _⊢_∶_ {V : Set} : Cxt V → Λ V → 𝕋 → Set where
   --   Var : ∀ {Γ : Cxt V} {x : V} {A : 𝕋} → Γ x ≡ A → Γ ⊢ var x ∶ A
