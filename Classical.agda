@@ -1,6 +1,6 @@
 module Classical where
 
-open import Logic
+open import Logic-Levels 
 
 -- Classical Principles
 EM : Set → Set
@@ -26,3 +26,9 @@ open import Predicates
 
 dec : ∀ {A} → 𝓟 A → Set
 dec P = ∀ x → EM (P x)
+
+¬¬Closed : ∀ {A} → 𝓟 A → Set
+¬¬Closed P = ∀ x → ¬¬ P x → P x
+
+DNS : ∀ {A} → 𝓟 A → Set
+DNS P = (∀ x → ¬¬ (P x)) → ¬¬ (∀ x → P x)

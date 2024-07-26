@@ -1,5 +1,6 @@
 {-# OPTIONS --allow-unsolved-metas #-}
 
+-- open import Logic
 open import Logic-Levels
 open import Lifting
 open import Predicates
@@ -17,6 +18,10 @@ open import Relations.Core
   5. How should the "minimality" concept be changed to be useful?
   6. Does WFseq → WFmin- ?
   -}
+
+{- 2024.07.25.
+  ¬¬-closure of well-foundedness properties should be provable for an
+  inductively defined collection of predicates -}
 
 module Relations.Wellfounded where
 
@@ -53,6 +58,7 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   is_-decreasing_ : 𝓟 (ℕ → A)
   is_-decreasing_ s = ∀ n → R (s (succ n)) (s n) -- xₙ > xₙ₊₁
 
+  -- Well-foundedness defined as: every sequence contains a non-decreasing index
   isWFseq : Set
   isWFseq = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
 
@@ -60,11 +66,11 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFacc- : Set
   isWFacc- = ∀ x → ¬¬ (is_-accessible_ x)
 
-  isWFmin- : Set₁
-  isWFmin- = ∀ (P : 𝓟 A) → ∀ {d : A} → d ∈ P → ¬¬ (Σ[ y ∈ A ] is_-_-minimal_ P y)
-
   isWFind- : Set₁
   isWFind- = ∀ (φ : 𝓟 A) → (is_-inductive_ φ) → ∀ x → ¬¬ (φ x)
+
+  isWFmin- : Set₁
+  isWFmin- = ∀ (P : 𝓟 A) → ∀ {d : A} → d ∈ P → ¬¬ (Σ[ y ∈ A ] is_-_-minimal_ P y)
 
   -- The classical concept of a well-founded relation [TeReSe]
   isWFseq- : Set
@@ -144,8 +150,7 @@ module WFImplications {A : Set} (R : 𝓡 A) where
 open WFImplications public
 
 module ClassicalImplications {A : Set} (R : 𝓡 A) where
-
-  -- Implications relying on decidability of minimality
+  -- 1. Implications relying on decidability of minimality
 
   -- Decidability of being R-minimal, for a given element
   isMinDec : A → Set
@@ -155,12 +160,24 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   decMin : Set
   decMin = ∀ x → isMinDec x
 
+  -- Even with the global decidability assumption, this is not yet provable
   isWFacc→isWFmin : decMin → isWFacc R → isWFmin R
   isWFacc→isWFmin dM RisWFacc P {d} d∈P = f d (RisWFacc d) d∈P where
     f : ∀ x → is R -accessible x → x ∈ P → Σ[ a ∈ A ] is R - P -minimal a
     f x (acc xac) with dM x
     ... | in1 (y ,, Ryx) = {! f y (xac y Ryx)   !}
     ... | in2 xIsMin = λ x∈P → (x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx ))
+
+  -- -- An additional condition for proving the above implication
+  CoInd : 𝓟 A → Set
+  CoInd P = ∀ x → ¬ (P x) → Σ[ y ∈ A ] (R y x × ¬ P y)
+
+  open import Classical
+
+  CoInd→Ind : ∀ (P : 𝓟 A) → ¬¬Closed P → CoInd P → is R -inductive P
+  CoInd→Ind P ¬¬cP ciP x IHx = ¬¬cP x (λ ¬px → f (ciP x ¬px) ) where
+    f : Σ[ y ∈ A ] (R y x × ¬ P y) → ⊥
+    f (y ,, Ryx , ¬Py) = ¬Py (IHx y Ryx)
 
   isWFind→isWFmin : decMin → isWFind R → isWFmin R
   isWFind→isWFmin dM RisWFind P d∈P = RisWFind φ φ-ind _ d∈P where
@@ -174,49 +191,49 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
         ... | in1 (y ,, Ryx) = {!   !}
         ... | in2 xRmin = x ,, x∈P , (λ x _ → xRmin x)
 
+
+  dMseq : decMin → A → ℕ → A
+  dMseq dM a0 zero = a0
+  dMseq dM a0 (succ n) with dM (dMseq dM a0 n)
+  ... | in1 (b ,, bRsn) = b
+  ... | in2 x = dMseq dM a0 n
+
   {- It seems we need the following lemma. -}
   -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
   --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
 
   isWFseq→isWFmin : decMin → isWFseq R → isWFmin R
-  isWFseq→isWFmin dM RisWFseq P {a} a∈P = {! np  !} where
-    s : ℕ → A
-    s zero = a
-    s (succ n) with dM (s n)
-    ... | in1 (a ,, _) = a
-    ... | in2 x = s n
-    np = RisWFseq s
+  isWFseq→isWFmin dM RisWFseq P {a} a∈P with RisWFseq (dMseq dM a)
+  ... | n ,, snRn with dM (dMseq dM a n)
+  ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
+  ... | in2 snRmin = {!   !}
 
-  -- Not clear what the issue is.
+  -- This seems to lead to the same issue as above
   isWFseq-→isWFmin- : decMin → isWFseq- R → isWFmin- R
-  isWFseq-→isWFmin- dM RisWFseq P {a} a∈P ¬Σmin = RisWFseq f f-dec where
-    f : ℕ → A
-    f⊆P : ∀ n → f n ∈ P
-    f-dec : is R -decreasing f
-    f zero = a
-    f (succ n) with dM (f n)
-    ... | in1 (y ,, Ryfn) = y
-    ... | in2 x = f n
-    f-dec zero with dM a
-    ... | in1 x = snd x
-    ... | in2 aIsRmin = ∅ (¬Σmin ((a ,, a∈P , λ y Py → aIsRmin y)))
-    f-dec (succ n) = {!   !}
-    -- f-dec (succ n) with dM (f n)
-    -- ... | c = ?
-    f⊆P zero = a∈P
-    f⊆P (succ n) = {!   !}
+  isWFseq-→isWFmin- dM RisWFseq P {a} a∈P ¬Σmin = RisWFseq (dMseq dM a) s-dec where
+    s-dec : is R -decreasing (dMseq dM a)
+    s-dec n with dM (dMseq dM a n)
+    ... | in1 (y ,, yRsn) = yRsn
+    ... | in2 snRmin = {!   !}
 
   -- 2. Implications relying on ¬¬-closure of accessibility
   ¬¬ACC : Set
   ¬¬ACC = ∀ {x : A} → ¬¬ (is R -accessible x) → is R -accessible x
 
+  -- Non-terminating proof of ¬¬ACC:
   -- ¬¬acc : ¬¬ACC
-  -- Non-terminating proof:
   -- ¬¬acc {x} ¬¬accx = acc (λ y Ryx → ¬¬acc (λ ¬accy → ¬¬accx λ {  (acc xa) → ¬accy (xa y Ryx) } ))
 
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : ¬¬ACC → isWFacc- R → ¬¬ (isWFacc R)
-  isWFacc-→¬¬isWFacc ¬¬ACC RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → ¬¬ACC (RisWFacc- x)
+  isWFacc-→¬¬isWFacc ¬¬acc RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → ¬¬acc (RisWFacc- x)
+
+  ¬¬isWFacc→isWFacc : ¬¬ACC → ¬¬ (isWFacc R) → isWFacc R
+  ¬¬isWFacc→isWFacc ¬¬acc ¬¬isWFaccR = λ x → ¬¬acc (λ ¬accx → ¬¬isWFaccR (λ ∀acc → ¬accx (∀acc x ) ))
+
+  ¬¬isWFind→isWFind : ¬¬ACC → ¬¬ (isWFind R) → isWFind R
+  ¬¬isWFind→isWFind ¬¬acc ¬¬isWFindR = isWFacc→isWFind R (¬¬isWFacc→isWFacc ¬¬acc g )
+    where g = λ ¬Racc → ¬¬isWFindR (λ Rind → ¬Racc (isWFind→isWFacc R Rind ) )
 
   {- Investigating whether inductive predicates are ¬¬-closed.  Apparently they aren't.
   ¬¬ind : ∀ (P : 𝓟 A) (Pind : is R -inductive P) (x : A) → ¬¬ (P x) → P x
@@ -231,7 +248,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
 
   -- No idea about this one.
   isWFmin-→¬¬isWFmin : ¬¬ACC → isWFmin- R → ¬¬ (isWFmin R)
-  isWFmin-→¬¬isWFmin ¬¬Acc isWFmin- ¬isWFmin = {!   !}
+  isWFmin-→¬¬isWFmin ¬¬Acc isWFmin- ¬isWFmin = {!  !}
   -- isWFmin-→¬¬isWFmin ¬¬Acc isWFmin- ¬isWFmin = ¬isWFmin (λ P {a} a∈P  → a ,, a∈P , λ b b∈P Rba → isWFmin- P a∈P λ {(c ,, c∈P , cIsMin) → {!   !}})
 
   -- Requires ¬(∀n)R(sn,n) → (∃n)¬R(sn,n), IE, Markov Principle + Decidability of R
