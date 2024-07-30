@@ -83,12 +83,14 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
       Sat𝓝 : 𝓝Λ ⊆Λ S
       SatWE : whexp S ⊆Λ S
 
+  SNisSat : Saturated SN
+  SNisSat = {!   !}
 
+  ⇒𝓟isSat : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → Saturated (⇒𝓟 P Q)
+  ⇒𝓟isSat P Q Psat Qsat = {!   !}
 
-
-
-
-
+  𝓒isSat : (∀ (a : 𝔸) → Saturated (P₀ a)) → (∀ (A : 𝕋 𝔸) → Saturated (𝓒 A))
+  𝓒isSat atomSat A = {!   !}
 
 
 
