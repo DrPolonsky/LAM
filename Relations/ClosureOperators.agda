@@ -120,6 +120,10 @@ module ClosureTransformations (R : 𝓡 U) where
   ⁺→⋆ (ax⁺ Rxy) = ax⋆ _ Rxy
   ⁺→⋆ (Rxy₁ ,⁺ R⁺bb₁) = Rxy₁ ,⋆ ⁺→⋆ R⁺bb₁
 
+  ʳ→* : ∀ {x y : U} → (R ʳ) x y → (R ⋆) x y
+  ʳ→* (axʳ Rxy) = Rxy ,⋆ ε⋆
+  ʳ→* εʳ = ε⋆ 
+
   TransitiveClosure :  R ⋆ ⇔ (R ⁺ ∪ R ʳ)
   TransitiveClosure = TC+ , TC- where
     TC+ : (R ⋆) ⊆ (R ⁺) ∪ (R ʳ)
