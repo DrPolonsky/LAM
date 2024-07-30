@@ -76,6 +76,10 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFseq- : Set
   isWFseq- = ∀ (s : ℕ → A) → ¬ (is_-decreasing_ s)
 
+  -- A positive variation of isWFmin
+  isWFmin+ : Set₁
+  isWFmin+ = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∉ P → Σ[ m ∈ A ] (m ∉ P × (∀ x → R x m → P x) )
+
 open WFDefinitions public
 
 module WFImplications {A : Set} (R : 𝓡 A) where
@@ -227,6 +231,11 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : ¬¬ACC → isWFacc- R → ¬¬ (isWFacc R)
   isWFacc-→¬¬isWFacc ¬¬acc RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → ¬¬acc (RisWFacc- x)
+
+  -- isWFacc-→¬¬isWFacc : isWFacc- R → ¬¬ (isWFacc R)
+  -- isWFacc-→¬¬isWFacc RisWFacc- ¬RisWFacc = f (λ {(a ,, ¬acca) → RisWFacc- a ¬acca })
+  --   where f : ¬¬ Σ[ x ∈ A ] (¬ is R -accessible x)
+  --         f ¬Σ = ¬RisWFacc (λ x → acc (λ y Ryx → {!   !} ) )
 
   ¬¬isWFacc→isWFacc : ¬¬ACC → ¬¬ (isWFacc R) → isWFacc R
   ¬¬isWFacc→isWFacc ¬¬acc ¬¬isWFaccR = λ x → ¬¬acc (λ ¬accx → ¬¬isWFaccR (λ ∀acc → ¬accx (∀acc x ) ))
