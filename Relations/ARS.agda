@@ -113,12 +113,12 @@ module Proposition-1-1-10 {R : 𝓡 A} where
     vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c (EQisTran (EQisSym (*⊆EQ R*ab)) (*⊆EQ R*ac))
     ... | d ,, R*cd , R*bd = d ,, (R*cd , R*bd)
 
-    i→vi : confluent R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆) 
+    i→vi : confluent R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
     i→vi confR = v→vi (i→v confR)
 
-    v→i : ~R R ∘R (R ⋆) ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R 
+    v→i : ~R R ∘R (R ⋆) ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R
     v→i v = vi→i (v→vi v)
-open Proposition-1-1-10 public
+-- open Proposition-1-1-10 public
 
 module Proposition-1-1-11  where
     lemmai : ∀ {R : 𝓡 A} → {a b c : A} → ◆ R → (R ⋆) a b → R a c → Σ[ d ∈ A ] (R b d × (R ⋆) c d)
@@ -145,6 +145,8 @@ module Proposition-1-1-11  where
     ... | R*bd = d ,, R*bd , R*cd
 
 
+open ClassicalImplications using (decMin)
+
 -- Notions related to termination in ARSs
 module Termination (R : 𝓡 A)  where
 
@@ -163,6 +165,9 @@ module Termination (R : 𝓡 A)  where
   is_-SN_ : 𝓟 A
   is_-SN_ = is_-SNacc_
 
+  is_-UN_ : 𝓟 A
+  is_-UN_ x = ∀ y → is_-NF_ y → (R ⋆) x y → ∀ z → is_-NF_ z → (R ⋆) x z → y ≡ z
+
   CR : Set
   CR = confluent R
 
@@ -179,7 +184,7 @@ module Termination (R : 𝓡 A)  where
   NFP = ∀ {a b} → is_-NF_ b → (R ⁼) a b → (R ⋆) a b
 
   UN : Set
-  UN = ∀ {a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_ → (R ⁼) ⊆ _≡_
+  UN = ∀ {a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_ → (R ⁼) a b → a ≡ b
 
   UN→ : Set
   UN→ = ∀ {x a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_  → (R ⋆) x a → (R ⋆) x b → a ≡ b
@@ -207,6 +212,20 @@ module Termination (R : 𝓡 A)  where
   CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ]
                     (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) )
 
+  NF→ε : ∀ {x} → x ∈ is_-NF_ → ∀ {y} → (R ⋆) x y → x ≡ y
+  NF→ε {x} x∈NF {.x} ε⋆ = refl
+  NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
+
+  -- ***
+  SNdec→WN : decMin R → is_-SN_ ⊆ is_-WN_
+  SNdec→WN decR x x∈SN = {!   !}
+
+  confluentElement : 𝓟 A
+  confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
+
+  unormElement : 𝓟 A
+  unormElement a = Σ[ n ∈ A ] ((is_-NF_ n) × (∀ y → (R ⋆) a y → (R ⋆) y n))
+
 open Termination public
 
 
@@ -221,39 +240,48 @@ module Newmans-Lemma where
   -- Proof i
   -- Requires being able to decide whether a given element is already a NF.
 
-  -- SN→NFelement : ∀ {R : 𝓡 A} → SN R → (a : A) → Σ[ n ∈ A ] ((R ⋆) a n × is R -NF  n)
-  -- SN→NFelement SNR a with SNR a
-  -- ... | acc H = {!   !} ,, {!   !}
+  CR-lemma : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x
+               → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
+  CR-lemma R wcR x (acc xacc) .x y∈NF ε⋆ .x ε⋆ = ε⋆
+  CR-lemma R wcR x (acc xacc) .x y∈NF ε⋆ z (Rxy ,⋆ R⋆yz) = ∅ (y∈NF _ Rxy )
+  CR-lemma R wcR x (acc xacc) y y∈NF (Rxy₀ ,⋆ R⋆y₀y) .x ε⋆ = Rxy₀ ,⋆ R⋆y₀y
+  CR-lemma R wcR x (acc xacc) y y∈NF (Rxy₀ ,⋆ R⋆y₀y) z (Rxz₀ ,⋆ R⋆z₀z)
+    with wcR (x ,, Rxy₀ , Rxz₀)
+  ... | (w ,, R⋆y₀w , R⋆z₀w) with CR-lemma R wcR _ (xacc _ Rxy₀) y y∈NF R⋆y₀y w R⋆y₀w
+  ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (TCisTran R R⋆z₀w c) z R⋆z₀z
 
-  unormElement : 𝓡 A → 𝓟 A
-  unormElement R a = Σ[ n ∈ A ] ((is R -NF n) × (∀ y → (R ⋆) a y → (R ⋆) y n))
+  WCR∧SN→UN : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x → is R -UN x
+  WCR∧SN→UN R wcR x xa y y∈NF R⋆xy z z∈NF R⋆xz with CR-lemma R wcR x xa y y∈NF R⋆xy z R⋆xz
+  ... | R⋆zy = ~ (NF→ε R z∈NF R⋆zy)
 
-  unormInd : ∀ (R : 𝓡 A) → weakly-confluent R → is (~R R) -inductive (unormElement R)
-  unormInd R wcR x IH = {!   !}
-
-  open ClassicalImplications using (decMin)
+  -- ***
+  WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
+  WN∧UN→CRelem R x x∈WN x∈UN = {!   !}
+  --
+  -- unormInd : ∀ (R : 𝓡 A) → weakly-confluent R → is (~R R) -inductive (unormElement R)
+  -- unormInd R wcR x IH = {!   !}
 
   is-ambiguous_-WN_ : ∀ (R : 𝓡 A) → 𝓟 A
   is-ambiguous R -WN  x = Σ[ n₁ ∈ A ] Σ[ n₂ ∈ A ] ((((R ⋆) x n₁ × is R -NF n₁) × ((R ⋆) x n₂ × is R -NF n₂)) × (n₁ ≡ n₂ → ⊥) )
 
-  ambiguous-reduces-ambiguous : ∀ {R : 𝓡 A} {a b : A} → is-ambiguous R -WN a → R a b → is-ambiguous R -WN b 
-  ambiguous-reduces-ambiguous (n₁ ,, n₂ ,, ((R*an₁ , n₁∈NF) , (R*an₂ , n₂∈NF)) , n₁≢₂) Rab 
-            =  n₁ ,, n₂ ,, ((({!   !} , n₁∈NF) , ({!   !} , n₂∈NF)) , n₁≢₂) 
+  ambiguous-reduces-ambiguous : ∀ {R : 𝓡 A} {a b : A} → is-ambiguous R -WN a → R a b → is-ambiguous R -WN b
+  ambiguous-reduces-ambiguous (n₁ ,, n₂ ,, ((R*an₁ , n₁∈NF) , (R*an₂ , n₂∈NF)) , n₁≢₂) Rab
+            =  n₁ ,, n₂ ,, ((({!   !} , n₁∈NF) , ({!   !} , n₂∈NF)) , n₁≢₂)
 
-  lemmanorm : ∀ {R : 𝓡 A} → ∀ (a : A) → ∀ (b : A) → R a b → is R -WN b → 
-                              Σ A (λ n → ((y : A) → R n y → ⊥) × 
-                                ((y : A) → (R ⋆) a y → (R ⋆) y n)) 
+  lemmanorm : ∀ {R : 𝓡 A} → ∀ (a : A) → ∀ (b : A) → R a b → is R -WN b →
+                              Σ A (λ n → ((y : A) → R n y → ⊥) ×
+                                ((y : A) → (R ⋆) a y → (R ⋆) y n))
   lemmanorm a b Rab (n ,, R*bn , n∈NF) = n ,, (n∈NF , (λ y R*ay → {!   !}))
 
-  lemmaWN : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (a : A) → (∀ b → R a b → is R -WN b) → is R -WN a
-  lemmaWN wcR a IH = {!   !} 
- 
+  -- lemmaWN : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (a : A) → (∀ b → R a b → is R -WN b) → is R -WN a
+  -- lemmaWN wcR a IH = {!   !}
+
   NFPel : ∀ {R : 𝓡 A} → decMin (~R R) → weakly-confluent R
             → ∀ a → is (~R R) -accessible a → unormElement R a
   NFPel {R} Rdec wcR a (acc IH) with Rdec a
   ... | in2 a∈NF = a ,, (a∈NF , λ { y ε⋆ → ε⋆ ; y (Raz ,⋆ R*zy) → ∅ (a∈NF _ Raz)})
   ... | in1 (b ,, Rab) with NFPel Rdec wcR b (IH b Rab)
-  ... | n ,, n∈NF , n∈cofb = -- lemmanorm a b Rab (n ,, ((n∈cofb b ε⋆) , n∈NF)) 
+  ... | n ,, n∈NF , n∈cofb = -- lemmanorm a b Rab (n ,, ((n∈cofb b ε⋆) , n∈NF))
                             n ,, n∈NF , λ y R*ay → {!   !}  where
     f : ∀ (y : A) → (R ⋆) a y → (R ⋆) y n
     f y ε⋆ = Rab ,⋆ n∈cofb b ε⋆
@@ -267,9 +295,6 @@ module Newmans-Lemma where
 
   -- SNisWFacc : ∀ {R : 𝓡 A} {x : A} → is R -SN x → is (~R R) -accessible x
   -- SNisWFacc = I
-
-  confluentElement : ∀ (R : 𝓡 A) → A → Set
-  confluentElement R a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
 
   wCR→conflInd : ∀ {R : 𝓡 A} → weakly-confluent R → (x : A) → (∀ y → R x y → confluentElement R y) → confluentElement R x
   wCR→conflInd WCR a IND ε⋆ R*ac = _ ,, R*ac , ε⋆
@@ -289,42 +314,48 @@ module Newmans-Lemma where
 
 
 module theorem-1-2-2 (R : 𝓡 A) where
-  i : confluent R → NFP R → UN R
-  i confR nfpR {a} {b} a∈NF b∈NF x y R⁼xy with i→vi confR x y R⁼xy  
-  ... | z ,, R*xz , R*yz with nfpR {!   !} R⁼xy  
-  ... | q = {!   !}
-  -- i confR nfpR {a} {b} a∈NF b∈NF x .x ε⋆ = refl
-  -- i confR nfpR {a} {b} a∈NF b∈NF x y (Rˢxy₁ ,⋆ R⁼y₁y) = {! i→vi  !}
+  i1 : confluent R → NFP R
+  i1 confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  ... | z ,, R⋆xz , ε⋆ = R⋆xz
+  ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
+
+  i2 : confluent R → UN R
+  i2 confR {x} {y} x∈NF y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  ... | y ,, ε⋆ , ε⋆ = refl
+  ... | y ,, (Rxw ,⋆ R⋆wy') , ε⋆ = ∅ (x∈NF _ Rxw )
+  ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
+
+  -- i : confluent R → NFP R → UN R
+  -- i confR nfpR {a} {b} a∈NF b∈NF x y R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  -- ... | z ,, R*xz , R*yz with nfpR {!   !} R⁼xy
+  -- ... | q = {!   !}
+  -- -- i confR nfpR {a} {b} a∈NF b∈NF x .x ε⋆ = refl
+  -- -- i confR nfpR {a} {b} a∈NF b∈NF x y (Rˢxy₁ ,⋆ R⁼y₁y) = {! i→vi  !}
 
   lemmaii : WN R → UN R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
-  lemmaii wnR unR x y R⁼xy with wnR x
-  ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y 
-  ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF x y R⁼xy  
-  ... | refl = nˣ ,, R*xnˣ , R*xnˣ
-  
+  lemmaii = {!   !}
+  -- lemmaii wnR unR x y R⁼xy with wnR x
+  -- ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y
+  -- ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF x y R⁼xy
+  -- ... | refl = nˣ ,, R*xnˣ , R*xnˣ
+
   ii : WN R × UN R → CR R
-  ii (wnR , unR) {b}{c} peak@(a ,, R*ab , R*ac) with wnR a  
-  ... | n ,, R*an , n∈NF with vi→i (lemmaii wnR unR) peak     
+  ii (wnR , unR) {b}{c} peak@(a ,, R*ab , R*ac) with wnR a
+  ... | n ,, R*an , n∈NF with Proposition-1-1-10.vi→i (lemmaii wnR unR) peak
   ... | d ,, R*bd , R*cd = d ,, R*bd , R*cd
 
   -- Probably an easier way to show ii, without the need of a lemma
 
-  iii : subcommutative R → confluent R 
-  iii scR {b}{c} peak@(a ,, R*ab , R*ac) = v→i f peak where 
-      f : (x x₁ : A) → (~R R ∘R R ⋆) x x₁ → (R ⋆ ∘R ~R (R ⋆)) x x₁ 
-      f x y zpeak@(.y ,, Rzx , ε⋆) = x ,, ε⋆ , (Rzx ,⋆ ε⋆)
-      f x y zpeak@(z ,, Rzx , (Rzy₁ ,⋆ R*y₁y)) with scR (z ,, (Rzx , Rzy₁)) 
-      ... | d ,, Rʳxd , Rʳy₁d = d ,, (ʳ→* R Rʳxd , {!   !}) 
-
-
-
-
-
-
-
+  iii : subcommutative R → confluent R
+  iii scR {b}{c} peak = Proposition-1-1-10.v→i (λ { b c (a ,, Rab , R*ac) → f b c a Rab R*ac } ) peak  where
+      f : (x y z : A) → R z x → (R ⋆) z y → ((R ⋆) ∘R ~R (R ⋆)) x y
+      f x y .y Rzx ε⋆ = x ,, ε⋆ , (Rzx ,⋆ ε⋆)
+      f x y z Rzx (Rzy₁ ,⋆ R*y₁y) with scR (z ,, (Rzx , Rzy₁))
+      ... | d ,, R , εʳ = y ,, R ʳ,⋆ R*y₁y , ε⋆
+      ... | d ,, Rʳxd , axʳ x₁ with f d y _ x₁ R*y₁y
+      ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ,⋆ R*dw ) , R*yw
 
 
 
 
 -- The end
-     

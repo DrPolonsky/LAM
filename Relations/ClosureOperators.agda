@@ -36,6 +36,10 @@ module ClosureDefinitions where
   ax⋆ : ∀ (R : 𝓡 U) {x y : U} → R x y → (R ⋆) x y
   ax⋆ R Rxy = Rxy ,⋆ ε⋆
 
+  _ʳ,⋆_ : ∀ {R : 𝓡 U} {x y z : U} → (R ʳ) x y → (R ⋆) y z → (R ⋆) x z
+  axʳ xy ʳ,⋆ yz = xy ,⋆ yz
+  εʳ ʳ,⋆ yz = yz
+
   _⁼ : 𝓡 U → 𝓡 U
   R ⁼ = (R ˢ) ⋆
 
@@ -122,7 +126,7 @@ module ClosureTransformations (R : 𝓡 U) where
 
   ʳ→* : ∀ {x y : U} → (R ʳ) x y → (R ⋆) x y
   ʳ→* (axʳ Rxy) = Rxy ,⋆ ε⋆
-  ʳ→* εʳ = ε⋆ 
+  ʳ→* εʳ = ε⋆
 
   TransitiveClosure :  R ⋆ ⇔ (R ⁺ ∪ R ʳ)
   TransitiveClosure = TC+ , TC- where
