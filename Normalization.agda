@@ -51,3 +51,68 @@ SN⊆WN t (NF⊆SN t∈NF) = t ,, ε⋆ , t∈NF
 SN⊆WN t (redSN IH) = case f g (decNF t) where
   f = λ t∈NF → t ,, ε⋆ , t∈NF
   g = λ { (u ,, t⟶βu) → redex!WN t⟶βu (SN⊆WN u (IH u t⟶βu) ) }
+
+Λ𝓟 : Set₁
+Λ𝓟 = ∀ {X} → 𝓟 (Λ X)
+
+_⊆Λ_ : Λ𝓟 → Λ𝓟 → Set₁
+P ⊆Λ Q = ∀ X → P {X} ⊆ Q {X}
+
+data whexp {X : Set} (P : 𝓟 (Λ X)) : 𝓟 (Λ X) where
+  whe : ∀ {s t : Λ X} → s ⟶w t → t ∈ P → s ∈ whexp P
+
+
+-- Neutral terms, 𝓝 is \MCN
+data 𝓝Λ {X : Set} : 𝓟 (Λ X) where
+  var𝓝Λ : ∀ (x : X) → var x ∈ 𝓝Λ
+  app𝓝Λ : ∀ (s t : Λ X) → s ∈ 𝓝Λ → t ∈ SN → app s t ∈ 𝓝Λ
+
+module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
+
+  ⇒𝓟 : Λ𝓟 → Λ𝓟 → Λ𝓟
+  ⇒𝓟 P Q {X} = λ t → ∀ (a : Λ X) → a ∈ P → app t a ∈ Q
+
+  -- 𝓒 is \MCC
+  𝓒 : ∀ (A : 𝕋 𝔸) → Λ𝓟
+  𝓒 (atom α) = P₀ α
+  𝓒 (A ⇒ B) {X} = ⇒𝓟 (𝓒 A) (𝓒 B)
+
+  record Saturated (S : Λ𝓟) : Set₁ where
+    field
+      SatSN : S ⊆Λ SN
+      Sat𝓝 : 𝓝Λ ⊆Λ S
+      SatWE : whexp S ⊆Λ S
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- The end
