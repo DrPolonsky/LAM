@@ -114,7 +114,7 @@ module RelationProperties {U : Set} (R : 𝓡 U) where
 
   reflR   = ∀ x → R x x
   irreflR = ∀ x → ¬ R x x
-  symmR   = ∀ x y → R x y → R y x
+  symmR   = ∀ {x} {y} → R x y → R y x
   asymmR  = ∀ x y → R x y → R y x → x ≡ y
   tranR   = ∀ x y z → R x y → R y z → R x z
 

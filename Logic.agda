@@ -50,7 +50,7 @@ case f g (in2 y) = g y
 ¬_ : ∀ {l} → Set l → Set l
 ¬_ A = A → ⊥
 
-¬¬_ : Set → Set
+¬¬_ : ∀ {l} → Set l → Set l
 ¬¬_ A = ¬ (¬ A)
 
 -- ↔ is \<->
@@ -105,7 +105,7 @@ tran≅ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
 tran≅ fg gh x = (fg x) ! (gh x)
 
 ap : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {x y : A} → x ≡ y → f x ≡ g y
-ap {g = g} fg {x} xy = fg x ! cong g xy 
+ap {g = g} fg {x} xy = fg x ! cong g xy
 
 !≅! : ∀ {A B : Set} {f : A → B} → f ≅ f
 !≅! = refl≅

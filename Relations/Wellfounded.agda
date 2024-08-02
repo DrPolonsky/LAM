@@ -1,7 +1,6 @@
 {-# OPTIONS --allow-unsolved-metas #-}
 
 open import Logic
--- open import Logic-Levels
 open import Lifting
 open import Predicates
 open import Relations.Core
@@ -80,6 +79,12 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFmin+ : Set₁
   isWFmin+ = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∉ P → Σ[ m ∈ A ] (m ∉ P × (∀ x → R x m → P x) )
 
+  open import Relations.ClosureOperators
+  -- A positive variation of isWFseq, CF "inductive" in TeReSe
+  isWFseq+ : Set
+  isWFseq+ = ∀ (s : ℕ → A) → is_-decreasing_ s → Σ[ a ∈ A ] (∀ n → (R ⋆) (s n) a )
+  -- NB. Does NOT imply well-foundedness; EG, loop a ⟶ a is WFseq+
+
 open WFDefinitions public
 
 module WFImplications {A : Set} (R : 𝓡 A) where
@@ -99,6 +104,8 @@ module WFImplications {A : Set} (R : 𝓡 A) where
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
+  isWFacc→isWFmin+ : isWFacc R → isWFmin+ R
+  isWFacc→isWFmin+ RisWFacc P {a} a∉P = {!   !} 
 
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc R) → isWFacc- R
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx     → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )

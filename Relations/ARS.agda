@@ -2,7 +2,7 @@ module Relations.ARS {A : Set} where
 
 open import Relations.Relations
 open import Predicates
-open import Logic-Levels
+open import Logic
 
 {-
 What we want to do:
@@ -107,10 +107,10 @@ module Proposition-1-1-10 {R : 𝓡 A} where
     ... | d ,, R*cd , R*bd with Rˢac
     ... | axˢ+ Ray = d ,, (Ray ,⋆ R*cd) , R*bd
     ... | axˢ- Rya with v a d (_ ,, (Rya , R*cd))
-    ... | e ,, R*ae , R*de = e ,, (R*ae , ( R*bd ⋆,⋆ R*de ))
+    ... | e ,, R*ae , R*de = e ,, (R*ae , ( R*bd ⋆!⋆ R*de ))
 
     vi→i : R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R
-    vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c ((~⁼ (*⊆EQ R*ab)) ⁼,⁼ (*⊆EQ R*ac))
+    vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c ((~⁼ (⋆⊆⁼ R R*ab)) ⁼!⁼ (⋆⊆⁼ R R*ac))
     ... | d ,, R*cd , R*bd = d ,, (R*cd , R*bd)
 
     i→vi : confluent R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
@@ -201,6 +201,9 @@ module Termination (R : 𝓡 A)  where
   ω-bounded : Set
   ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (∀ n → R (f n) a)
 
+  dominatedByWF : 𝓡 A → Set
+  dominatedByWF Q = isWFacc Q × (R ⊆ Q)
+
   isFinitelyBranching : Set
   isFinitelyBranching = ∀ (a : A)
     → Σ[ n ∈ ℕ ] (Σ[ f ∈ (Fin n → A) ] (∀ b → R a b → Σ[ j ∈ Fin n ] (b ≡ f j)))
@@ -250,7 +253,7 @@ module Newmans-Lemma where
   CR-lemma R wcR x (acc xacc) y y∈NF (Rxy₀ ,⋆ R⋆y₀y) z (Rxz₀ ,⋆ R⋆z₀z)
     with wcR (x ,, Rxy₀ , Rxz₀)
   ... | (w ,, R⋆y₀w , R⋆z₀w) with CR-lemma R wcR _ (xacc _ Rxy₀) y y∈NF R⋆y₀y w R⋆y₀w
-  ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (R⋆z₀w ⋆,⋆ c) z R⋆z₀z
+  ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (R⋆z₀w ⋆!⋆ c) z R⋆z₀z
 
   WCR∧SN→UN : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x → is R -UN x
   WCR∧SN→UN R wcR x xa y y∈NF R⋆xy z z∈NF R⋆xz with CR-lemma R wcR x xa y y∈NF R⋆xy z R⋆xz
@@ -258,7 +261,7 @@ module Newmans-Lemma where
 
   -- ***
   WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
-  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN = {!   !} 
+  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN = {!   !}
 
   --
   -- unormInd : ∀ (R : 𝓡 A) → weakly-confluent R → is (~R R) -inductive (unormElement R)
@@ -304,8 +307,8 @@ module Newmans-Lemma where
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) ε⋆ = _ ,, ε⋆ , (Ray ,⋆ R*yb)
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) (Raz ,⋆ R*zc) with WCR (a ,, (Ray , Raz))
   ... | d ,, R*yd , R*zd with IND _ Ray R*yb R*yd
-  ... | e ,, R*be , R*de with IND _ Raz R*zc (R*zd ⋆,⋆ R*de)
-  ... | f ,, R*cf , R*ef = f ,, (R*be ⋆,⋆ R*ef , R*cf)
+  ... | e ,, R*be , R*de with IND _ Raz R*zc (R*zd ⋆!⋆ R*de)
+  ... | f ,, R*cf , R*ef = f ,, (R*be ⋆!⋆ R*ef , R*cf)
 
   NLemmaii : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
   NLemmaii {R} RisSN RisWCR (a ,, R*ab , R*ac) =
@@ -328,26 +331,19 @@ module theorem-1-2-2 (R : 𝓡 A) where
   ... | y ,, (Rxw ,⋆ R⋆wy') , ε⋆ = ∅ (x∈NF _ Rxw )
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
-  i3 : confluent R → NFP R × UN R 
+  i3 : confluent R → NFP R × UN R
   i3 confR = (i1 confR) , (i2 confR)
 
-  i : confluent R → NFP R → UN R 
-  i confR nfpR = pr2 (i3 confR)
+  i4 : confluent R → NFP R → UN R
+  i4 confR nfpR = pr2 (i3 confR)
 
-  -- i : confluent R → NFP R → UN R
-  -- i confR nfpR {a} {b} a∈NF b∈NF x y R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
-  -- ... | z ,, R*xz , R*yz with nfpR {!   !} R⁼xy
-  -- ... | q = {!   !}
-  -- -- i confR nfpR {a} {b} a∈NF b∈NF x .x ε⋆ = refl
-  -- -- i confR nfpR {a} {b} a∈NF b∈NF x y (Rˢxy₁ ,⋆ R⁼y₁y) = {! i→vi  !}
-
-  confluenceFromEquivalence : ∀ {a b c d} → (R ⁼) a b → (R ⋆) a c → (R ⋆) b d → (R ⁼) c d
-  confluenceFromEquivalence R⁼ab R*ac R*bd = (~⁼ (*⊆EQ R*ac)) ⁼,⁼ (R⁼ab ⁼,⁼ *⊆EQ R*bd) 
+  ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
+  ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
 
   lemmaii : WN R → UN R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
-  lemmaii wnR unR x y R⁼xy with wnR x 
-  ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y 
-  ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF (confluenceFromEquivalence R⁼xy R*xnˣ R*ynʸ)  
+  lemmaii wnR unR x y R⁼xy with wnR x
+  ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y
+  ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF (⋆~!⁼!⋆ R*xnˣ R⁼xy R*ynʸ)
   ... | refl = nʸ ,, R*xnˣ , R*ynʸ
 
   ii : WN R × UN R → CR R
@@ -362,12 +358,21 @@ module theorem-1-2-2 (R : 𝓡 A) where
       f : (x y z : A) → R z x → (R ⋆) z y → ((R ⋆) ∘R ~R (R ⋆)) x y
       f x y .y Rzx ε⋆ = x ,, ε⋆ , (Rzx ,⋆ ε⋆)
       f x y z Rzx (Rzy₁ ,⋆ R*y₁y) with scR (z ,, (Rzx , Rzy₁))
-      ... | d ,, R , εʳ = y ,, R ʳ,⋆ R*y₁y , ε⋆
+      ... | d ,, R , εʳ = y ,, R ʳ!⋆ R*y₁y , ε⋆
       ... | d ,, Rʳxd , axʳ x₁ with f d y _ x₁ R*y₁y
-      ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ,⋆ R*dw ) , R*yw
+      ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
+module Theorem-1-2-3 (R : 𝓡 A) where
+  i : WN R → UN R → ω-bounded R
+  i RisWN RisUN = {!   !}
 
+  ii : ∀ Q → dominatedByWF R Q → ω-bounded R → SN R -- isWFacc (~R R)
+  ii Q domRQ bddR = {!   !}
 
+  iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
+  iii Q domRQ RisWCR RisWN = {!   !}
+
+  iv : CP R → CR R
+  iv RhasCP = {!   !}
 
 -- The end
- 
