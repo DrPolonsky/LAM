@@ -53,21 +53,34 @@ module ClosureDefinitions where
 open ClosureDefinitions public
 
 module ClosureProperties where
-  TCisTran : ∀ (R : 𝓡 U) {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
-  -- TCisTran R (ax⋆ x) R*yz = x ,⋆ R*yz
-  TCisTran R ε⋆ R*yz = R*yz
-  TCisTran R (x ,⋆ R*xy) R*yz = x ,⋆ (TCisTran R R*xy R*yz)
+  -- TCisTran : ∀ (R : 𝓡 U) {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
+  -- -- TCisTran R (ax⋆ x) R*yz = x ,⋆ R*yz
+  -- TCisTran R ε⋆ R*yz = R*yz
+  -- TCisTran R (x ,⋆ R*xy) R*yz = x ,⋆ (TCisTran R R*xy R*yz)
 
-  TCisSym : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
-  -- TCisSym (ax⋆ (axˢ+ x)) = ax⋆ ((axˢ- x))
-  -- TCisSym (ax⋆ (axˢ- x)) = ax⋆ ((axˢ+ x))
-  TCisSym ε⋆ = ε⋆
-  TCisSym {R} (axˢ+ x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym rxy) (axˢ- x ,⋆ ε⋆ )
-  TCisSym {R} (axˢ- x ,⋆ rxy) = TCisTran (R ˢ) (TCisSym rxy) (axˢ+ x ,⋆ ε⋆ )
+  _⋆,⋆_ : ∀ {R : 𝓡 U} {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
+  ε⋆ ⋆,⋆ R*yz = R*yz
+  (x ,⋆ R*xy) ⋆,⋆ R*yz = x ,⋆ (R*xy ⋆,⋆ R*yz)
 
-  SymisSym : ∀ {R : 𝓡 U} {x y : U} → (R ˢ) x y → (R ˢ) y x
-  SymisSym (axˢ+ Rxy) = axˢ- Rxy
-  SymisSym (axˢ- Ryx) = axˢ+ Ryx
+  -- TCisSym : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
+  -- -- TCisSym (ax⋆ (axˢ+ x)) = ax⋆ ((axˢ- x))
+  -- -- TCisSym (ax⋆ (axˢ- x)) = ax⋆ ((axˢ+ x))
+  -- TCisSym ε⋆ = ε⋆
+  -- TCisSym {R} (axˢ+ x ,⋆ rxy) = (TCisSym rxy) ⋆,⋆ (axˢ- x ,⋆ ε⋆ )
+  -- TCisSym {R} (axˢ- x ,⋆ rxy) = (TCisSym rxy) ⋆,⋆ (axˢ+ x ,⋆ ε⋆ )
+
+  ~ˢ⋆ : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
+  ~ˢ⋆ ε⋆ = ε⋆
+  ~ˢ⋆ (axˢ+ Rxy₀ ,⋆ Rˢ*y₀y) = (~ˢ⋆ Rˢ*y₀y) ⋆,⋆ (axˢ- Rxy₀ ,⋆ ε⋆)
+  ~ˢ⋆ (axˢ-  Ry₀x ,⋆ Rˢ*y₀y) = (~ˢ⋆ Rˢ*y₀y) ⋆,⋆ (axˢ+ Ry₀x ,⋆ ε⋆)
+
+  -- SymisSym : ∀ {R : 𝓡 U} {x y : U} → (R ˢ) x y → (R ˢ) y x
+  -- SymisSym (axˢ+ Rxy) = axˢ- Rxy
+  -- SymisSym (axˢ- Ryx) = axˢ+ Ryx
+
+  ~ˢ : ∀ {R : 𝓡 U} {x y : U} → (R ˢ) x y → (R ˢ) y x
+  ~ˢ (axˢ+ Rxy) = axˢ- Rxy
+  ~ˢ (axˢ- Ryx) = axˢ+ Ryx
 
   *⊆EQ : ∀ {R : 𝓡 U} {x y : U} → (R ⋆) x y → (R ⁼) x y
   -- *⊆EQ (ax⋆ Rxy) = ax⋆ (axˢ+ Rxy)
@@ -78,15 +91,23 @@ module ClosureProperties where
   s⊆EQ (axˢ+ Rxy) = ax⋆ _ (axˢ+ Rxy)
   s⊆EQ (axˢ- Ryx) = ax⋆ _ (axˢ- Ryx)
 
-  EQisTran : ∀ {R : 𝓡 U} {x y z : U} → (R ⁼) x y → (R ⁼) y z → (R ⁼) x z
-  -- EQisTran (ax⋆ Rˢxy) EQRyz = Rˢxy ,⋆ EQRyz
-  EQisTran ε⋆ EQRyz = EQRyz
-  EQisTran (Rˢxy₁ ,⋆ EQRy₁y) EQRyz = Rˢxy₁ ,⋆ EQisTran EQRy₁y EQRyz
+  -- EQisTran : ∀ {R : 𝓡 U} {x y z : U} → (R ⁼) x y → (R ⁼) y z → (R ⁼) x z
+  -- -- EQisTran (ax⋆ Rˢxy) EQRyz = Rˢxy ,⋆ EQRyz
+  -- EQisTran ε⋆ EQRyz = EQRyz
+  -- EQisTran (Rˢxy₁ ,⋆ EQRy₁y) EQRyz = Rˢxy₁ ,⋆ EQisTran EQRy₁y EQRyz
 
-  EQisSym : ∀ {R : 𝓡 U} {x y : U} → (R ⁼) x y → (R ⁼) y x
-  -- EQisSym (ax⋆ Rˢxy) = s⊆EQ (SymisSym Rˢxy)
-  EQisSym ε⋆ = ε⋆
-  EQisSym (Rˢxy₁ ,⋆ Rˢ*y₁y) = EQisTran (EQisSym Rˢ*y₁y) (s⊆EQ (SymisSym Rˢxy₁))
+  _⁼,⁼_ : ∀ {R : 𝓡 U} {x y z : U} → (R ⁼) x y → (R ⁼) y z → (R ⁼) x z
+  ε⋆ ⁼,⁼ EQRyz = EQRyz
+  (Rˢxy₁ ,⋆ EQRy₁y) ⁼,⁼ EQRyz = Rˢxy₁ ,⋆ (EQRy₁y ⁼,⁼ EQRyz)
+
+  -- EQisSym : ∀ {R : 𝓡 U} {x y : U} → (R ⁼) x y → (R ⁼) y x
+  -- -- EQisSym (ax⋆ Rˢxy) = s⊆EQ (SymisSym Rˢxy)
+  -- EQisSym ε⋆ = ε⋆
+  -- EQisSym (Rˢxy₁ ,⋆ Rˢ*y₁y) =  (EQisSym Rˢ*y₁y) ⁼,⁼ (s⊆EQ (~ˢ Rˢxy₁))
+
+  ~⁼ :  ∀ {R : 𝓡 U} {x y : U} → (R ⁼) x y → (R ⁼) y x
+  ~⁼ ε⋆ = ε⋆
+  ~⁼ (Rˢxy₁ ,⋆ Rˢ*y₁y) = ( ~⁼ Rˢ*y₁y) ⁼,⁼ ( s⊆EQ (~ˢ Rˢxy₁))
 
 open ClosureProperties public
 
@@ -94,7 +115,7 @@ module ClosureTransformations (R : 𝓡 U) where
   **→* : ∀ {x y} → ((R ⋆) ⋆) x y → (R ⋆) x y
   -- **→* (ax⋆ R*xy) = R*xy
   **→* ε⋆ = ε⋆
-  **→* (R*xy ,⋆ R**yz) =  TCisTran R R*xy (**→* R**yz)
+  **→* (R*xy ,⋆ R**yz) =  R*xy ⋆,⋆ (**→* R**yz)
 
   **→*ʳ : ∀ {x y : U} → ((R ⋆)⋆) x y → ((R ⋆)ʳ) x y
   **→*ʳ = axʳ ∘ **→*
@@ -215,3 +236,4 @@ module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
   pr2 ⇔⁼ x .x ε⋆ = ε⋆
   -- pr2 ⇔⁼ x y (ax⋆ R2ˢxy) = ax⋆ (pr2 ⇔ˢ x y R2ˢxy)
   pr2 ⇔⁼ x y (R2ˢxy₁ ,⋆ R2⁼y₁y) = (pr2 ⇔ˢ x _ R2ˢxy₁) ,⋆ pr2 ⇔⁼ _ y R2⁼y₁y
+ 
