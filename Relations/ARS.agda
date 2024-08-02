@@ -328,6 +328,12 @@ module theorem-1-2-2 (R : 𝓡 A) where
   ... | y ,, (Rxw ,⋆ R⋆wy') , ε⋆ = ∅ (x∈NF _ Rxw )
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
+  i3 : confluent R → NFP R × UN R 
+  i3 confR = (i1 confR) , (i2 confR)
+
+  i : confluent R → NFP R → UN R 
+  i confR nfpR = pr2 (i3 confR)
+
   -- i : confluent R → NFP R → UN R
   -- i confR nfpR {a} {b} a∈NF b∈NF x y R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   -- ... | z ,, R*xz , R*yz with nfpR {!   !} R⁼xy
