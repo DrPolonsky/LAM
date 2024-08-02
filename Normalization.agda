@@ -37,11 +37,20 @@ var⊆NF N (red⟶β ())
 abs⊆NF : ∀ {X} {t : Λ (↑ X)} → t ∈ NF → abs t ∈ NF
 abs⊆NF t∈NF .(abs _) (abs⟶β r) = t∈NF _ r
 
+app⊆NF : ∀ {X} {s1 s2 : Λ X} → s1 ∈ NF → s2 ∈ NF → app s1 s2 ∈ NF
+app⊆NF s1∈NF s2∈NF (var M) (red⟶β x) = {!   !}
+app⊆NF s1∈NF s2∈NF (app M N) (red⟶β x) = {!   !}
+app⊆NF s1∈NF s2∈NF (app M N) (appL⟶β apps1s2⟶βΛX) = s1∈NF M apps1s2⟶βΛX
+app⊆NF s1∈NF s2∈NF (app M N) (appR⟶β apps1s2⟶βΛX) = s2∈NF N apps1s2⟶βΛX
+app⊆NF s1∈NF s2∈NF (abs M) (red⟶β x) = {!   !}
+
 decNF : ∀ {X} (s : Λ X) → (s ∈ NF) ⊔ Σ[ t ∈ Λ X ] (s ⟶β t)
 decNF (var x) = in1 var⊆NF
-decNF (app s1 s2) with decNF s2
-... | in2 (t2 ,, s2⟶βt2) = in2 {!   !}
-... | in1 s2∈NF = {!   !}
+decNF (app s1 s2) with decNF s1 | decNF s2
+... | in1 s1∈NF | in1 s2∈NF = in1 (app⊆NF s1∈NF s2∈NF)
+... | in1 s1∈NF | in2 (t ,, s2⟶βt) = in1 (app⊆NF s1∈NF {!   !})
+... | in2 (t ,, s1⟶βt) | in1 s2∈NF = {!   !}
+... | in2 x | in2 x₁ = {!   !}
 decNF (abs s) with decNF s
 ... | in1 s∈NF = in1 (abs⊆NF s∈NF )
 ... | in2 (t ,, s⟶βt) = in2 (abs t ,, abs⟶β s⟶βt )
@@ -84,13 +93,19 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
       SatWE : whexp S ⊆Λ S
 
   SNisSat : Saturated SN
-  SNisSat = {!   !}
+  SNisSat = record { SatSN = λ X ΛX SNΛX → SNΛX ;
+                     Sat𝓝 = λ X ΛX 𝓝ΛX → NF⊆SN λ N x → {!   !} ;
+                     SatWE = {!   !} }
 
   ⇒𝓟isSat : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → Saturated (⇒𝓟 P Q)
-  ⇒𝓟isSat P Q Psat Qsat = {!   !}
+  ⇒𝓟isSat P Q Psat Qsat = record { SatSN = λ X ΛX ⇒𝓟PQΛX → {!   !} ;
+                                   Sat𝓝 = {!   !} ;
+                                   SatWE = {!   !} }
 
   𝓒isSat : (∀ (a : 𝔸) → Saturated (P₀ a)) → (∀ (A : 𝕋 𝔸) → Saturated (𝓒 A))
-  𝓒isSat atomSat A = {!   !}
+  𝓒isSat atomSat A = record { SatSN = λ X x x₁ → redSN λ s x₂ → {!   !} ;
+                              Sat𝓝 = {!   !} ;
+                              SatWE = {!   !} }
 
 
 
@@ -116,5 +131,6 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
 
 
-
+ 
 -- The end
+ 
