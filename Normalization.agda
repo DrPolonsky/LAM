@@ -38,19 +38,23 @@ abs⊆NF : ∀ {X} {t : Λ (↑ X)} → t ∈ NF → abs t ∈ NF
 abs⊆NF t∈NF .(abs _) (abs⟶β r) = t∈NF _ r
 
 app⊆NF : ∀ {X} {s1 s2 : Λ X} → s1 ∈ NF → s2 ∈ NF → app s1 s2 ∈ NF
-app⊆NF s1∈NF s2∈NF (var M) (red⟶β x) = {!   !}
-app⊆NF s1∈NF s2∈NF (app M N) (red⟶β x) = {!   !}
-app⊆NF s1∈NF s2∈NF (app M N) (appL⟶β apps1s2⟶βΛX) = s1∈NF M apps1s2⟶βΛX
-app⊆NF s1∈NF s2∈NF (app M N) (appR⟶β apps1s2⟶βΛX) = s2∈NF N apps1s2⟶βΛX
-app⊆NF s1∈NF s2∈NF (abs M) (red⟶β x) = {!   !}
+app⊆NF s1∈NF s2∈NF = {!   !} -- not quite true!!
+-- app⊆NF s1∈NF s2∈NF (var M)   (red⟶β (redex {s = var y} x)) = {!   !}
+-- app⊆NF s1∈NF s2∈NF (app M N) (red⟶β x) = {!   !}
+-- app⊆NF s1∈NF s2∈NF (abs M)   (red⟶β x) = {!   !}
+-- app⊆NF s1∈NF s2∈NF (app M N) (appL⟶β apps1s2⟶βΛX) = s1∈NF M apps1s2⟶βΛX
+-- app⊆NF s1∈NF s2∈NF (app M N) (appR⟶β apps1s2⟶βΛX) = s2∈NF N apps1s2⟶βΛX
+
+lemma : ∀ {X} {s1 s2 t : Λ X} → s2 ⟶β t → app s1 s2 ⟶β app s1 t
+lemma = appR⟶β
 
 decNF : ∀ {X} (s : Λ X) → (s ∈ NF) ⊔ Σ[ t ∈ Λ X ] (s ⟶β t)
 decNF (var x) = in1 var⊆NF
-decNF (app s1 s2) with decNF s1 | decNF s2
-... | in1 s1∈NF | in1 s2∈NF = in1 (app⊆NF s1∈NF s2∈NF)
-... | in1 s1∈NF | in2 (t ,, s2⟶βt) = in1 (app⊆NF s1∈NF {!   !})
-... | in2 (t ,, s1⟶βt) | in1 s2∈NF = {!   !}
-... | in2 x | in2 x₁ = {!   !}
+decNF (app s1 s2) with decNF s1 | decNF s2 -- consider casing s1 before decNF
+... | in1 s1∈NF         | in1 s2∈NF         = {!   !}
+... | in1 s1∈NF         | in2 (t ,, s2⟶βt) = in2 (app s1 t ,, appR⟶β s2⟶βt ) -- in1 (app⊆NF s1∈NF {!   !})
+... | in2 (t ,, s1⟶βt) | in1 s2∈NF         = {!   !}
+... | in2 x             | in2 x₁            = {!   !}
 decNF (abs s) with decNF s
 ... | in1 s∈NF = in1 (abs⊆NF s∈NF )
 ... | in2 (t ,, s⟶βt) = in2 (abs t ,, abs⟶β s⟶βt )
@@ -131,6 +135,5 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
 
 
- 
+
 -- The end
- 
