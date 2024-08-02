@@ -1,6 +1,7 @@
 module Classical where
 
-open import Logic-Levels 
+-- open import Logic-Levels
+open import Logic
 
 -- Classical Principles
 EM : Set → Set

@@ -1,7 +1,7 @@
 module Relations.Core where
 
--- open import Logic
-open import Logic-Levels
+open import Logic
+-- open import Logic-Levels
 open import Predicates
 
 Rel : Set → Set → Set₁

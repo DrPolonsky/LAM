@@ -132,7 +132,7 @@ bind-nat₂ : ∀ {X Y Z : Set} {f : X → Λ Y} {g : Y → Z} {h}
 bind-nat₂ h≅Λg∘f (var x) = h≅Λg∘f x
 bind-nat₂ h≅Λg∘f (app t1 t2) = cong2 app (bind-nat₂ h≅Λg∘f t1) (bind-nat₂ h≅Λg∘f t2)
 bind-nat₂ h≅Λg∘f (abs t0) = cong abs (bind-nat₂ (lift+nat h≅Λg∘f) t0)
-  -- where e = λ {  (i x) → {!   !} ; o → refl }
+
 -- bind-nat : ∀ {X X' Y Y' : Set} (f : X → X') (g : X → Λ Y) (h : Y → Y') → Λ→ f ∘ bind f ≅ bind (lift g) ∘ Λ→ i
 
 bind-nat≅ : ∀ {X1 X2 Y1 Y2 : Set} (f : X1 → X2) (g : X2 → Λ Y1) (h : Y1 → Y2)
@@ -158,6 +158,36 @@ bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
                → bind (bind g ∘ f) ≅ bind g ∘ bind f
 bind-assoc {f = f} {g} = bind-assoc≅ refl≅
 
+-- assoc[] :  ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} (t : Λ A)
+--              → (t [ f ]) [ g ] ≡ (t [ (λ x → f x [ g ]) ])
+-- assoc[] t = bind-assoc {! t  !}
+
+liftvar≅var : ∀ {A : Set} → lift {A} var ≅ var
+liftvar≅var (i x) = refl
+liftvar≅var o = refl
+
+bind-unit0 : ∀ {A : Set} → bind {A} var ≅ I
+bind-unit0 (var x) = refl
+bind-unit0 (app s t) = cong2 app (bind-unit0 s) (bind-unit0 t)
+bind-unit0 (abs r) = cong abs (bind≅ liftvar≅var r ! bind-unit0 r)
+
+bind-unit1 : ∀ {A B : Set} {f : A → Λ B} → bind var ∘ f ≅ f
+bind-unit1 _ = bind-unit0 _
+
+bind-unit2 : ∀ {A B : Set} {f : A → Λ B} → bind f ∘ var ≅ f
+bind-unit2 = !≅!
+
+-- bind-unit3 : ∀ {A B : Set} {f : A → B} {g : B → Λ B}
+--                → (∀ x → g (f x) ≡ var (f x)) → bind g ∘ Λ→ f ≅ Λ→
+-- bind-unit3 gfvar t = ?
+
+-- bind-nat₁ : ∀ {X Y Z : Set} {f : X → Y} {g : Y → Λ Z} {h}
+--               → h ≅ g ∘ f → bind h ≅ bind g ∘ Λ→ f
+
+bind-lift2 : ∀ {A : Set} (N : Λ A) → bind (io var N) ∘ Λ→i ≅ I
+bind-lift2 N = bind-nat₁ {f = i} {io var N} {var} !≅! ~!≅ bind-unit0
+
 -- bind-map : ∀ {X Y Z : Set} (f : X → Y) (g : Y → Λ Z)
 --               → bind (Λ→ f) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g
+
 -- The End

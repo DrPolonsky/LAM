@@ -63,6 +63,7 @@ _↔!↔_ : ∀ {l} {A B C : Set l} → A ↔ B → B ↔ C → A ↔ C
 -- ≡ is \== or \equiv
 data _≡_ {l} {A : Set l} (a : A) : A → Set where
   refl : a ≡ a
+{-# BUILTIN EQUALITY _≡_ #-}
 
 ~ : ∀ {l} {A : Set l} {a b : A} → a ≡ b → b ≡ a
 ~ refl = refl
@@ -102,6 +103,28 @@ symm≅ fg x = ~ (fg x)
 tran≅ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
 tran≅ fg gh x = (fg x) ! (gh x)
 
+ap : ∀ {A B : Set} {f g : A → B} → f ≅ g → ∀ {x y : A} → x ≡ y → f x ≡ g y
+ap {g = g} fg {x} xy = fg x ! cong g xy
+
+!≅! : ∀ {A B : Set} {f : A → B} → f ≅ f
+!≅! = refl≅
+~≅_ : ∀ {A B : Set} {f g : A → B} → f ≅ g → g ≅ f
+~≅_ = symm≅
+_≅!≅_ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → g ≅ h → f ≅ h
+_≅!≅_ = tran≅
+_~!≅_ : ∀ {A B : Set} {f g h : A → B} → g ≅ f → g ≅ h → f ≅ h
+p ~!≅ q = (~≅ p) ≅!≅ q
+_≅!~_ : ∀ {A B : Set} {f g h : A → B} → f ≅ g → h ≅ g → f ≅ h
+p ≅!~ q = p ≅!≅ (~≅ q)
+_≅~≅_ : ∀ {A B : Set} {f g h : A → B} → g ≅ f → h ≅ g → f ≅ h
+p ≅~≅ q = (~≅ p) ≅!≅ (~≅ q)
+
+_≅∘_ : ∀ {A B C} {f g : B → C} → f ≅ g → ∀ (h : A → B) → f ∘ h ≅ g ∘ h
+fg ≅∘ h = λ a → fg (h a)
+
+_∘≅_ : ∀ {A B C} (f : B → C) {g h : A → B} → g ≅ h → f ∘ g ≅ f ∘ h
+f ∘≅ gh = λ a → cong f (gh a)
+
 infix 10 _↔_
 infix 14 _⊔_
 infix 15 _×_
@@ -111,6 +134,12 @@ infix 22 _!_
 infix 25 _∘_
 infix 10 _,_
 infix 17 ¬_
+infix 25 ~≅_
+infixr 23 _≅!≅_
+infixr 23 _~!≅_
+infixr 23 _≅!~_
+-- infix 23 _≅~≅_
+-- infix 23 _~≅~_
 
 -- SIGMA TYPE
 open import Agda.Builtin.Sigma renaming (_,_ to _,,_) public

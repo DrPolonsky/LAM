@@ -1,7 +1,7 @@
 module Predicates where
 
-open import Logic-Levels
--- open import Logic
+-- open import Logic-Levels
+open import Logic
 open import Lifting
 open import Lambda
 

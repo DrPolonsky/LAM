@@ -1,7 +1,8 @@
 {-# OPTIONS --allow-unsolved-metas #-}
 module Relations.ClosureOperators {U : Set}  where
 
-open import Logic-Levels
+-- open import Logic-Levels
+open import Logic
 open import Predicates
 open import Relations.Core
 

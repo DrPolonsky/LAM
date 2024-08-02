@@ -1,7 +1,7 @@
 {-# OPTIONS --allow-unsolved-metas #-}
 
--- open import Logic
-open import Logic-Levels
+open import Logic
+-- open import Logic-Levels
 open import Lifting
 open import Predicates
 open import Relations.Core

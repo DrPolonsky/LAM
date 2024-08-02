@@ -1,7 +1,6 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 module Reduction where
 
+-- open import Logic-Levels
 open import Logic
 open import Lifting
 open import Lambda
@@ -32,13 +31,13 @@ data _⟶w_ {X} : Λ X → Λ X → Set where
   appL⟶w : ∀ {s t r}  →  s ⟶w t  →  app s r ⟶w app t r
 
 map⟶ₒ : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶ₒ t2 → Λ→ f t1 ⟶ₒ Λ→ f t2
-map⟶ₒ f (redex refl) = redex {!   !}
+map⟶ₒ f (redex {_} {r} {t} refl) = redex (e1 ~! e2) where
+  e0 = λ {  (i x) → refl ; o → refl }
+  e1 = bind-nat₁ {f = ↑→ f} {io var (Λ→ f t)} e0 r
+  e2 = bind-nat₂ {f = io var t} {f} !≅! r
 
 map⟶w : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶w t2 → Λ→ f t1 ⟶w Λ→ f t2
-map⟶w f {t1} {t2} (red⟶w (redex e)) = red⟶w (redex (e1 ! e0))
-  where e0 = cong (Λ→ f) e
-        e1 = {! (? ≅!≅ bind-nat₁ {f = io var _} {f} ? ) _  !}
-              -- bind-nat≅ (io var t1) I f _ ~! cong (Λ→ f) e
+map⟶w f {t1} {t2} (red⟶w Δ) = red⟶w (map⟶ₒ f Δ)
 map⟶w f (appL⟶w t12) = appL⟶w (map⟶w f t12)
 
 -- Multistep reduction is the reflexive-transitive closure of one-step reduction
@@ -54,6 +53,9 @@ data _⟶s_ {X} : Λ X → Λ X → Set where
   app⟶s : ∀ {s1 s2 t1 t2} → s1 ⟶s s2 → t1 ⟶s t2 → app s1 t1 ⟶s app s2 t2
   abs⟶s : ∀ {r1 r2}       → r1 ⟶s r2 → abs r1 ⟶s abs r2
 
+_≡!⟶s_ : ∀ {X} {r s t : Λ X} → (r ≡ s) → (s ⟶s t) → (r ⟶s t)
+refl ≡!⟶s st = st
+
 map⟶s : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶s t2 → Λ→ f t1 ⟶s Λ→ f t2
 map⟶s f (red⟶s W t12) = red⟶s (map⟶w f W ) (map⟶s f t12)
 map⟶s f var⟶s = var⟶s
@@ -66,7 +68,7 @@ lift⟶s f g f→g o = var⟶s
 
 bind⟶ₒ : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶ₒ t) → (s [ f ]) ⟶ₒ (t [ f ])
 bind⟶ₒ f (redex {_} {s} {t} refl) = redex ((bind-assoc s ~! (e ! bind-assoc s))) where
-  e1 = λ { (i x) → {!   !} ; o → refl }
+  e1 = λ { (i x) → bind-lift2 (t [ f ]) (f x) ; o → refl }
   e = bind≅ e1 s
 
 bind⟶w : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶w t) → (s [ f ]) ⟶w (t [ f ])
@@ -78,38 +80,59 @@ bind⟶s f g f→g (var x) = f→g x
 bind⟶s f g f→g (app s t) = app⟶s (bind⟶s f g f→g s) (bind⟶s f g f→g t)
 bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f→g) t )
 
+⟶ₒ[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
+             → ∀ {s t : Λ X} → s ⟶ₒ t →   (s [ f ])  ⟶s  (t [ g ])
+⟶ₒ[⟶s] f g f→g (redex {s = s} {t} refl) = red⟶s (red⟶w (redex refl) ) (E ≡!⟶s R) where
+  E1 = bind-assoc≅ {f = lift f} {io var (t [ f ])} {io f (t [ f ])}
+                   (io𝓟 _ (λ x → ~ (bind-lift2 (t [ f ]) (f x) ) ) refl ) s
+  E2 = bind-assoc≅ (io𝓟 _ (λ x → refl) refl) s
+  E = E1 ~! E2 -- E1 ! E2
+  R = bind⟶s f g f→g (s [ io var t ])
+
+⟶w[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
+             → ∀ {s t : Λ X} → s ⟶w t →   (s [ f ])  ⟶s  (t [ g ])
+⟶w[⟶s] f g f→g (red⟶w Δ) = ⟶ₒ[⟶s] f g f→g Δ
+⟶w[⟶s] f g f→g (appL⟶w {r = r} s→t) = app⟶s (⟶w[⟶s] f g f→g s→t ) (bind⟶s f g f→g r )
+
+⟶s[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
+             → ∀ {s t : Λ X} → s ⟶s t →   (s [ f ])  ⟶s  (t [ g ])
+⟶s[⟶s] f g f→g (red⟶s s→t t→u) = red⟶s (bind⟶w f s→t ) (⟶s[⟶s] f g f→g  t→u)
+⟶s[⟶s] f g f→g var⟶s = f→g _
+⟶s[⟶s] f g f→g (app⟶s R1 R2) = app⟶s (⟶s[⟶s] f g f→g R1) (⟶s[⟶s] f g f→g R2)
+⟶s[⟶s] f g f→g (abs⟶s R0) = abs⟶s (⟶s[⟶s] (lift f) (lift g) (lift⟶s f g f→g) R0 )
+
+-- ⟶s!⟶s : ∀ {X} {r s t : Λ X} → (r ⟶s s) → (s ⟶s t) → (r ⟶s t)
+-- ⟶s!⟶s (red⟶s W rs) st = red⟶s W (⟶s!⟶s rs st)
+-- ⟶s!⟶s var⟶s st = st
+-- ⟶s!⟶s (app⟶s (red⟶s s1→s s1s2) t1t2) R@(red⟶s (red⟶w W) s2t2u) =
+--   red⟶s (appL⟶w s1→s ) (⟶s!⟶s (app⟶s s1s2 t1t2 ) R)
+-- ⟶s!⟶s (app⟶s (abs⟶s s1s2) t1t2) R@(red⟶s (red⟶w W) s2t2u) = {!   !}
+--   -- red⟶s (red⟶w (redex refl) ) (⟶s!⟶s (⟶s[⟶s] _ _ (io𝓟 _ (λ x → var⟶s) t1t2 ) s1s2) s2t2u )
+-- ⟶s!⟶s (app⟶s s1s2 t1t2) (red⟶s (appL⟶w x) s2t2u) = {!   !}
+-- ⟶s!⟶s (app⟶s s1s2 t1t2) (app⟶s s2s3 t2t3) = app⟶s (⟶s!⟶s s1s2 s2s3) (⟶s!⟶s t1t2 t2t3)
+-- ⟶s!⟶s (abs⟶s rs) (red⟶s (red⟶w ()) st)
+-- ⟶s!⟶s (abs⟶s rs) (abs⟶s st) = abs⟶s (⟶s!⟶s rs st)
+
 ⟶s!⟶ₒ : ∀ {X} {t1 t2 t3 : Λ X} → (t1 ⟶s t2) → (t2 ⟶ₒ t3) → (t1 ⟶s t3)
 ⟶s!⟶ₒ (red⟶s W t12) r@(redex refl) = red⟶s W (⟶s!⟶ₒ t12 r)
-⟶s!⟶ₒ (app⟶s (red⟶s {s = u} W t12) t13) r@(redex refl) = {!   !}
--- red⟶s (appL⟶w W) (⟶s!⟶ₒ (app⟶s t12 t13) (redex refl))
--- ⟶s!⟶ₒ (app⟶s (red⟶s W t12) t13) r@(redex refl) = red⟶s (appL⟶w W) (⟶s!⟶ₒ (app⟶s t12 t13 ) r )
-⟶s!⟶ₒ (app⟶s (abs⟶s t12) t13) (redex refl) = {!   !}
+⟶s!⟶ₒ (app⟶s {s1 = s1} {s2} {t1} {t2} s1s2 t1t2) r@(redex {s = s} refl) = wredLemma s1 s1s2 where
+  wredLemma : ∀ u → (u ⟶s abs s) → app u t1 ⟶s (s [ t2 ]ₒ)
+  wredLemma u (red⟶s {s = v} u→v u→λs) = red⟶s (appL⟶w u→v ) (wredLemma v u→λs )
+  wredLemma (abs w) (abs⟶s u→λs) = red⟶s (red⟶w (redex refl) ) R
+    where R = ⟶s[⟶s] (io var _) (io var _) (io𝓟 _ (λ x → var⟶s) t1t2 ) u→λs
 
 ⟶s!⟶w : ∀ {X} {t1 t2 t3 : Λ X} → (t1 ⟶s t2) → (t2 ⟶w t3) → (t1 ⟶s t3)
 ⟶s!⟶w (red⟶s W t12) (red⟶w (redex {r0} {r1} {r2} re)) rewrite ~ re =
         red⟶s W (⟶s!⟶w t12 (red⟶w (redex refl)) )
-⟶s!⟶w (app⟶s t12 t13) (red⟶w (redex {r0} {r1} {r2} re)) = {!   !}
+⟶s!⟶w (app⟶s {s1} {s2} {t1} {t2} s1r1 t12) (red⟶w (redex {r0} {r1} {t2} re)) rewrite ~ re = sr _ s1r1
+  where sr : ∀ u → u ⟶s abs r1 → app u t1 ⟶s (r1 [ t2 ]ₒ)
+        sr u (red⟶s u→s u→λr1) = red⟶s (appL⟶w u→s ) (sr _ u→λr1)
+        sr (abs w) (abs⟶s u→λr1) = red⟶s (red⟶w (redex refl))
+          (⟶s[⟶s] (io var t1 ) (io var t2)  (io𝓟 _ (λ x → var⟶s) t12 ) u→λr1)
+
 ⟶s!⟶w (red⟶s W t12) (appL⟶w t23) = red⟶s W (⟶s!⟶w t12 (appL⟶w t23))
 ⟶s!⟶w (app⟶s t12 t13) (appL⟶w t23) = app⟶s (⟶s!⟶w t12 t23) t13
 
-subst⟶w⟶s : ∀ {X Y} → (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
-                   →  ∀ {t1 t2 : Λ X} → t1 ⟶w t2 → (t1 [ f ]) ⟶s (t2 [ g ])
-subst⟶w⟶s f g f→g (red⟶w (redex {s} {t} {u} re)) = red⟶s (red⟶w (redex sub)) bin
-  where bin = bind⟶s f g f→g s
-        mb  = {!   !}
-        asc = (mb ≅!≅ bind-assoc≅ {f = io var u} {f} !≅!) t
-        sub = asc ! cong (bind f) re
-subst⟶w⟶s f g f→g (appL⟶w {r = r} W) = app⟶s (subst⟶w⟶s f g f→g W) (bind⟶s f g f→g r)
-
-subst⟶s : ∀ {X Y} → (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
-                   →  ∀ {t1 t2 : Λ X} → t1 ⟶s t2 → (t1 [ f ]) ⟶s (t2 [ g ])
-subst⟶s f g f→g (red⟶s W t12) = {! subst⟶w⟶s f g f→g W  !} -- subst⟶w⟶s f g f→g {! W  !}
-subst⟶s f g f→g var⟶s = f→g _
-subst⟶s f g f→g (app⟶s t12 t13) = app⟶s (subst⟶s f g f→g t12 ) (subst⟶s f g f→g t13 )
-subst⟶s {X} f g f→g (abs⟶s t12) = abs⟶s (subst⟶s (lift f) (lift g) lf→lg t12 )
-  where lf→lg : ∀ (x : ↑ X) → lift f x ⟶s lift g x
-        lf→lg (i x) = map⟶s i (f→g x )
-        lf→lg o = var⟶s
 -- Parallel reduction
 -- AKA "inside-out" reduction strategy
 data _⇉_ {X : Set} : Λ X → Λ X → Set where
@@ -127,7 +150,7 @@ data _⇉_ {X : Set} : Λ X → Λ X → Set where
 ⟶w!red : ∀ {X} {s t1 t2 : Λ X} {r} (sr : s ⟶s abs r) (t12 : t1 ⟶s t2)
           → app s t1 ⟶s (r [ t2 ]ₒ)
 ⟶w!red (red⟶s W sr) t12 = red⟶s (appL⟶w W ) (⟶w!red sr t12 )
-⟶w!red {t1 = t1} {t2} (abs⟶s sr) t12 = red⟶s (red⟶w (redex refl ) ) (subst⟶s (io var t1) (io var t2) f=g sr )
+⟶w!red {t1 = t1} {t2} (abs⟶s sr) t12 = red⟶s (red⟶w (redex refl ) ) (⟶s[⟶s] (io var t1) (io var t2) f=g sr )
   where f=g = λ {  (i x) → var⟶s ; o → t12 }
 
 ⟶s!⟶β : ∀ {X} {r s t : Λ X} → r ⟶s s → s ⟶β t → r ⟶s t
@@ -137,7 +160,8 @@ data _⇉_ {X : Set} : Λ X → Λ X → Set where
 ⟶s!⟶β (app⟶s (red⟶s W rs) t12) br@(red⟶β (redex s[t2]=t)) rewrite ~ s[t2]=t
   = ⟶w!red (red⟶s W rs ) t12
 ⟶s!⟶β (app⟶s (abs⟶s rs) t12) (red⟶β (redex s[t2]=t)) rewrite ~ s[t2]=t
-  = red⟶s (red⟶w (redex refl ) ) {!   !}
+  = red⟶s (red⟶w (redex refl ) ) (⟶s[⟶s] _ _ e rs )
+    where e = io𝓟 _ (λ x → var⟶s) t12
 ⟶s!⟶β (app⟶s s12 t12) (appL⟶β st) = app⟶s (⟶s!⟶β s12 st) t12
 ⟶s!⟶β (app⟶s s12 t12) (appR⟶β st) = app⟶s s12 (⟶s!⟶β t12 st)
 
