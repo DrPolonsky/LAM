@@ -1,3 +1,5 @@
+{-# OPTIONS --cubical-compatible #-}
+
 module Lifting where
 
 open import Logic

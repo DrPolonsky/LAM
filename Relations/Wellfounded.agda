@@ -104,8 +104,8 @@ module WFImplications {A : Set} (R : 𝓡 A) where
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-  isWFacc→isWFmin+ : isWFacc R → isWFmin+ R
-  isWFacc→isWFmin+ RisWFacc P {a} a∉P = {!   !} 
+  isWFacc→isWFmin+ : isWFind R → isWFmin+ R
+  isWFacc→isWFmin+ RisWFacc P {a} a∉P = {!   !}
 
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc R) → isWFacc- R
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx     → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )

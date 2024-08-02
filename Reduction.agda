@@ -101,17 +101,9 @@ bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f
 ⟶s[⟶s] f g f→g (app⟶s R1 R2) = app⟶s (⟶s[⟶s] f g f→g R1) (⟶s[⟶s] f g f→g R2)
 ⟶s[⟶s] f g f→g (abs⟶s R0) = abs⟶s (⟶s[⟶s] (lift f) (lift g) (lift⟶s f g f→g) R0 )
 
--- ⟶s!⟶s : ∀ {X} {r s t : Λ X} → (r ⟶s s) → (s ⟶s t) → (r ⟶s t)
--- ⟶s!⟶s (red⟶s W rs) st = red⟶s W (⟶s!⟶s rs st)
--- ⟶s!⟶s var⟶s st = st
--- ⟶s!⟶s (app⟶s (red⟶s s1→s s1s2) t1t2) R@(red⟶s (red⟶w W) s2t2u) =
---   red⟶s (appL⟶w s1→s ) (⟶s!⟶s (app⟶s s1s2 t1t2 ) R)
--- ⟶s!⟶s (app⟶s (abs⟶s s1s2) t1t2) R@(red⟶s (red⟶w W) s2t2u) = {!   !}
---   -- red⟶s (red⟶w (redex refl) ) (⟶s!⟶s (⟶s[⟶s] _ _ (io𝓟 _ (λ x → var⟶s) t1t2 ) s1s2) s2t2u )
--- ⟶s!⟶s (app⟶s s1s2 t1t2) (red⟶s (appL⟶w x) s2t2u) = {!   !}
--- ⟶s!⟶s (app⟶s s1s2 t1t2) (app⟶s s2s3 t2t3) = app⟶s (⟶s!⟶s s1s2 s2s3) (⟶s!⟶s t1t2 t2t3)
--- ⟶s!⟶s (abs⟶s rs) (red⟶s (red⟶w ()) st)
--- ⟶s!⟶s (abs⟶s rs) (abs⟶s st) = abs⟶s (⟶s!⟶s rs st)
+⟶s[⟶s]ₒ : ∀ {X} → {s1 s2 : Λ (↑ X)} → {t1 t2 : Λ X} → s1 ⟶s s2 → t1 ⟶s t2 → (s1 [ t1 ]ₒ) ⟶s (s2 [ t2 ]ₒ)
+⟶s[⟶s]ₒ {X} {s1} {s2} {t1} {t2} s12 t12 =
+  ⟶s[⟶s] (io var t1) (io var t2) (io𝓟 _ (λ x → var⟶s) t12) s12
 
 ⟶s!⟶ₒ : ∀ {X} {t1 t2 t3 : Λ X} → (t1 ⟶s t2) → (t2 ⟶ₒ t3) → (t1 ⟶s t3)
 ⟶s!⟶ₒ (red⟶s W t12) r@(redex refl) = red⟶s W (⟶s!⟶ₒ t12 r)
@@ -133,8 +125,16 @@ bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f
 ⟶s!⟶w (red⟶s W t12) (appL⟶w t23) = red⟶s W (⟶s!⟶w t12 (appL⟶w t23))
 ⟶s!⟶w (app⟶s t12 t13) (appL⟶w t23) = app⟶s (⟶s!⟶w t12 t23) t13
 
+⟶s!⟶s : ∀ {X} {r s t : Λ X} → (r ⟶s s) → (s ⟶s t) → (r ⟶s t)
+⟶s!⟶s rs               (red⟶s W st)    = ⟶s!⟶s (⟶s!⟶w rs W ) st
+⟶s!⟶s (red⟶s W rs)    st               = red⟶s W (⟶s!⟶s rs st)
+⟶s!⟶s rs               var⟶s           = rs
+⟶s!⟶s (app⟶s rs1 rs2) (app⟶s st1 st2) = app⟶s (⟶s!⟶s rs1 st1) (⟶s!⟶s rs2 st2)
+⟶s!⟶s (abs⟶s rs)      (abs⟶s st)      = abs⟶s (⟶s!⟶s rs st)
+
 -- Parallel reduction
 -- AKA "inside-out" reduction strategy
+-- ­⇉ is \r-2
 data _⇉_ {X : Set} : Λ X → Λ X → Set where
   red⇉ : ∀ {s1 s2 : Λ (↑ X)} {t1 t2 t3 : Λ X}
            → s1 ⇉ s2 → t1 ⇉ t2 → s2 [ t2 ]ₒ ≡ t3 → (app (abs s1) t1) ⇉ t3
@@ -180,6 +180,39 @@ refl⟶s {X} {abs t} = abs⟶s refl⟶s
 NF : ∀ {X} → 𝓟 (Λ X)
 NF M = ∀ N → ¬ (M ⟶β N)
 
+⇉[⇉] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⇉ g x)
+             → ∀ {s t : Λ X} → s ⇉ t →   (s [ f ])  ⇉  (t [ g ])
+⇉[⇉] f g f⇉g = {!   !}
+
+⇉[⇉]ₒ : ∀ {X} → {s1 s2 : Λ (↑ X)} → {t1 t2 : Λ X} → s1 ⇉ s2 → t1 ⇉ t2 → (s1 [ t1 ]ₒ) ⇉ (s2 [ t2 ]ₒ)
+⇉[⇉]ₒ {X} {s1} {s2} {t1} {t2} s12 t12 =
+  ⇉[⇉] (io var t1) (io var t2) (io𝓟 _ (λ x → var⇉) t12) s12
+
+⟶w\⇉ : ∀ {X} {s t1 t2 : Λ X} → s ⟶w t1 → s ⇉ t2 → Σ[ u ∈ Λ X ] (t1 ⇉ u × (_⟶w_ ʳ) t2 u)
+⟶w\⇉ (red⟶w (redex refl)) (red⇉ {s2 = s2} {t2 = t2} s⇉s2 t⇉t2 refl) =
+  s2 [ t2 ]ₒ ,, ⇉[⇉]ₒ s⇉s2 t⇉t2 , εʳ
+⟶w\⇉ (red⟶w (redex refl)) (app⇉ {s2 = (abs s3)} {t2 = t2} (abs⇉ s⇉s3) t⇉t2) =
+  s3 [ t2 ]ₒ ,, ⇉[⇉]ₒ s⇉s3 t⇉t2 , axʳ (red⟶w (redex refl))
+⟶w\⇉ (appL⟶w (red⟶w ())) (red⇉ s⇉t2 s⇉t3 x)
+⟶w\⇉ (appL⟶w s⟶t1) (app⇉ s⇉t2 s⇉t3) with ⟶w\⇉ s⟶t1 s⇉t2
+... | u ,, t1⇉u , axʳ W = app u _ ,, app⇉ t1⇉u s⇉t3 , axʳ (appL⟶w W )
+... | u ,, t1⇉u , εʳ    = app u _ ,, app⇉ t1⇉u s⇉t3 , εʳ
+
+⟶s\⇉ : ∀ {X} {s t1 t2 : Λ X} → s ⟶s t1 → s ⇉ t2 → Σ[ u ∈ Λ X ] (t1 ⇉ u × t2 ⟶s u)
+⟶s\⇉ (red⟶s W s⟶t1) s⇉t2 with ⟶w\⇉ W s⇉t2
+... | u ,, s1⇉u , εʳ       = ⟶s\⇉ s⟶t1 s1⇉u
+... | u ,, s1⇉u , axʳ W with ⟶s\⇉ s⟶t1 s1⇉u
+... | v ,, t1⇉v , u⟶sv = v ,, t1⇉v , red⟶s W u⟶sv
+⟶s\⇉ var⟶s var⇉ = var _ ,, var⇉ , var⟶s
+⟶s\⇉ (app⟶s (red⟶s (red⟶w ()) s⟶t1) s⟶t2) (red⇉ s⇉t2 s⇉t3 r)
+⟶s\⇉ (app⟶s (abs⟶s s1⟶t11) s2⟶t21) (red⇉ {s1} {s2} {t1} {t2} {t3} s1⇉t12 s2⇉t22 refl)
+  with ⟶s\⇉ s1⟶t11 s1⇉t12 | ⟶s\⇉ s2⟶t21 s2⇉t22
+... | (u1 ,, t11⇉u1 , t21⟶u1) | (u2 ,, t21⇉u2 , t22⟶u2) =
+  u1 [ u2 ]ₒ ,, red⇉ t11⇉u1 t21⇉u2 refl , (⟶s[⟶s]ₒ t21⟶u1 t22⟶u2  )
+⟶s\⇉ (app⟶s s1⟶t11 s2⟶t21) (app⇉ s1⇉t12 s2⇉t22) with ⟶s\⇉ s1⟶t11 s1⇉t12 | ⟶s\⇉ s2⟶t21 s2⇉t22
+... | (u1 ,, t11⇉u1 , t21⟶u1) | (u2 ,, t21⇉u2 , t22⟶u2) = (app u1 u2 ,, app⇉ t11⇉u1 t21⇉u2 , app⟶s t21⟶u1 t22⟶u2 )
+⟶s\⇉ (abs⟶s s⟶t1) (abs⇉ s⇉t2) with ⟶s\⇉ s⟶t1 s⇉t2
+... | (u ,, t1⇉u , t2⟶u) = abs u ,, abs⇉ t1⇉u , abs⟶s t2⟶u
 
 {-
 
