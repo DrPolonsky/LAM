@@ -107,10 +107,10 @@ module Proposition-1-1-10 {R : 𝓡 A} where
     ... | d ,, R*cd , R*bd with Rˢac
     ... | axˢ+ Ray = d ,, (Ray ,⋆ R*cd) , R*bd
     ... | axˢ- Rya with v a d (_ ,, (Rya , R*cd))
-    ... | e ,, R*ae , R*de = e ,, (R*ae , ( TCisTran R R*bd R*de ))
+    ... | e ,, R*ae , R*de = e ,, (R*ae , ( R*bd ⋆,⋆ R*de ))
 
     vi→i : R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R
-    vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c (EQisTran (EQisSym (*⊆EQ R*ab)) (*⊆EQ R*ac))
+    vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c ((~⁼ (*⊆EQ R*ab)) ⁼,⁼ (*⊆EQ R*ac))
     ... | d ,, R*cd , R*bd = d ,, (R*cd , R*bd)
 
     i→vi : confluent R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
@@ -218,7 +218,9 @@ module Termination (R : 𝓡 A)  where
 
   -- ***
   SNdec→WN : decMin R → is_-SN_ ⊆ is_-WN_
-  SNdec→WN decR x x∈SN = {!   !}
+  SNdec→WN decR x x∈SN with decR x
+  ... | in1 (y ,, Ryx) = {!   !}
+  ... | in2 y∈NF =  x ,, (ε⋆ , {!   !})
 
   confluentElement : 𝓟 A
   confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
@@ -248,7 +250,7 @@ module Newmans-Lemma where
   CR-lemma R wcR x (acc xacc) y y∈NF (Rxy₀ ,⋆ R⋆y₀y) z (Rxz₀ ,⋆ R⋆z₀z)
     with wcR (x ,, Rxy₀ , Rxz₀)
   ... | (w ,, R⋆y₀w , R⋆z₀w) with CR-lemma R wcR _ (xacc _ Rxy₀) y y∈NF R⋆y₀y w R⋆y₀w
-  ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (TCisTran R R⋆z₀w c) z R⋆z₀z
+  ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (R⋆z₀w ⋆,⋆ c) z R⋆z₀z
 
   WCR∧SN→UN : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x → is R -UN x
   WCR∧SN→UN R wcR x xa y y∈NF R⋆xy z z∈NF R⋆xz with CR-lemma R wcR x xa y y∈NF R⋆xy z R⋆xz
@@ -256,7 +258,8 @@ module Newmans-Lemma where
 
   -- ***
   WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
-  WN∧UN→CRelem R x x∈WN x∈UN = {!   !}
+  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN = {!   !} 
+
   --
   -- unormInd : ∀ (R : 𝓡 A) → weakly-confluent R → is (~R R) -inductive (unormElement R)
   -- unormInd R wcR x IH = {!   !}
@@ -301,8 +304,8 @@ module Newmans-Lemma where
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) ε⋆ = _ ,, ε⋆ , (Ray ,⋆ R*yb)
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) (Raz ,⋆ R*zc) with WCR (a ,, (Ray , Raz))
   ... | d ,, R*yd , R*zd with IND _ Ray R*yb R*yd
-  ... | e ,, R*be , R*de with IND _ Raz R*zc (TCisTran _ R*zd R*de)
-  ... | f ,, R*cf , R*ef = f ,, (TCisTran _ R*be R*ef , R*cf)
+  ... | e ,, R*be , R*de with IND _ Raz R*zc (R*zd ⋆,⋆ R*de)
+  ... | f ,, R*cf , R*ef = f ,, (R*be ⋆,⋆ R*ef , R*cf)
 
   NLemmaii : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
   NLemmaii {R} RisSN RisWCR (a ,, R*ab , R*ac) =
@@ -332,12 +335,14 @@ module theorem-1-2-2 (R : 𝓡 A) where
   -- -- i confR nfpR {a} {b} a∈NF b∈NF x .x ε⋆ = refl
   -- -- i confR nfpR {a} {b} a∈NF b∈NF x y (Rˢxy₁ ,⋆ R⁼y₁y) = {! i→vi  !}
 
+  confluenceFromEquivalence : ∀ {a b c d} → (R ⁼) a b → (R ⋆) a c → (R ⋆) b d → (R ⁼) c d
+  confluenceFromEquivalence R⁼ab R*ac R*bd = (~⁼ (*⊆EQ R*ac)) ⁼,⁼ (R⁼ab ⁼,⁼ *⊆EQ R*bd) 
+
   lemmaii : WN R → UN R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
-  lemmaii = {!   !}
-  -- lemmaii wnR unR x y R⁼xy with wnR x
-  -- ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y
-  -- ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF x y R⁼xy
-  -- ... | refl = nˣ ,, R*xnˣ , R*xnˣ
+  lemmaii wnR unR x y R⁼xy with wnR x 
+  ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y 
+  ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF (confluenceFromEquivalence R⁼xy R*xnˣ R*ynʸ)  
+  ... | refl = nʸ ,, R*xnˣ , R*ynʸ
 
   ii : WN R × UN R → CR R
   ii (wnR , unR) {b}{c} peak@(a ,, R*ab , R*ac) with wnR a
@@ -359,3 +364,4 @@ module theorem-1-2-2 (R : 𝓡 A) where
 
 
 -- The end
+ 
