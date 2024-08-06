@@ -221,9 +221,11 @@ module Termination (R : 𝓡 A)  where
 
   -- ***
   SNdec→WN : decMin R → is_-SN_ ⊆ is_-WN_
-  SNdec→WN decR x x∈SN with decR x
-  ... | in1 (y ,, Ryx) = {!   !}
-  ... | in2 y∈NF =  x ,, (ε⋆ , {!   !})
+  SNdec→WN decR x (acc accx)  with ClassicalImplications.isWFacc→isWFmin R decR  
+  ... | z = {!   !} 
+  -- with decR x
+  -- ... | in1 (y ,, Ryx) = {!   !}    
+  -- ... | in2 y∈NF = {!   !}   
 
   confluentElement : 𝓟 A
   confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
@@ -260,8 +262,15 @@ module Newmans-Lemma where
   ... | R⋆zy = ~ (NF→ε R z∈NF R⋆zy)
 
   -- ***
+
+  CR→CRelem : ∀ (R : 𝓡 A) → (CR R) → (∀ x → confluentElement R x)
+  CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
+
+
   WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
-  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN = {!   !}
+  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b}{c} R*xb R*xc with x∈UN b {!   !} {!   !}
+  ... | z = {!   !}
+  
 
   --
   -- unormInd : ∀ (R : 𝓡 A) → weakly-confluent R → is (~R R) -inductive (unormElement R)
@@ -320,22 +329,22 @@ module Newmans-Lemma where
 
 
 module theorem-1-2-2 (R : 𝓡 A) where
-  i1 : confluent R → NFP R
-  i1 confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  i-1 : confluent R → NFP R
+  i-1 confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   ... | z ,, R⋆xz , ε⋆ = R⋆xz
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
-  i2 : confluent R → UN R
-  i2 confR {x} {y} x∈NF y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  i-2 : confluent R → UN R
+  i-2 confR {x} {y} x∈NF y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   ... | y ,, ε⋆ , ε⋆ = refl
   ... | y ,, (Rxw ,⋆ R⋆wy') , ε⋆ = ∅ (x∈NF _ Rxw )
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
-  i3 : confluent R → NFP R × UN R
-  i3 confR = (i1 confR) , (i2 confR)
+  i-3 : confluent R → NFP R × UN R
+  i-3 confR = (i-1 confR) , (i-2 confR)
 
-  i4 : confluent R → NFP R → UN R
-  i4 confR nfpR = pr2 (i3 confR)
+  i-4 : confluent R → NFP R → UN R
+  i-4 confR nfpR = pr2 (i-3 confR)
 
   ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
   ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
@@ -351,8 +360,9 @@ module theorem-1-2-2 (R : 𝓡 A) where
   ... | n ,, R*an , n∈NF with Proposition-1-1-10.vi→i (lemmaii wnR unR) peak
   ... | d ,, R*bd , R*cd = d ,, R*bd , R*cd
 
-  -- Probably an easier way to show ii, without the need of a lemma
-
+  WN∧UN→CRelem : ∀ x → is R -WN x → is R -UN x → confluentElement R x
+  WN∧UN→CRelem x x∈WN x∈UN  = Newmans-Lemma.CR→CRelem R (ii ({! x∈WN  !} , {!   !})) x -- Can we do this or am I being too bullheaded in comparing x∈UN and UN etc?
+  
   iii : subcommutative R → confluent R
   iii scR {b}{c} peak = Proposition-1-1-10.v→i (λ { b c (a ,, Rab , R*ac) → f b c a Rab R*ac } ) peak  where
       f : (x y z : A) → R z x → (R ⋆) z y → ((R ⋆) ∘R ~R (R ⋆)) x y
@@ -376,3 +386,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   iv RhasCP = {!   !}
 
 -- The end
+ 
