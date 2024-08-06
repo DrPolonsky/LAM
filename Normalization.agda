@@ -141,4 +141,3 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
 
 -- The end
- 

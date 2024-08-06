@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 module Reduction where
 
 -- open import Logic-Levels
