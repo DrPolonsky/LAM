@@ -37,24 +37,28 @@ var⊆NF N (red⟶β ())
 abs⊆NF : ∀ {X} {t : Λ (↑ X)} → t ∈ NF → abs t ∈ NF
 abs⊆NF t∈NF .(abs _) (abs⟶β r) = t∈NF _ r
 
-app⊆NF : ∀ {X} {s1 s2 : Λ X} → s1 ∈ NF → s2 ∈ NF → app s1 s2 ∈ NF
-app⊆NF s1∈NF s2∈NF = {!   !} -- not quite true!!
--- app⊆NF s1∈NF s2∈NF (var M)   (red⟶β (redex {s = var y} x)) = {!   !}
--- app⊆NF s1∈NF s2∈NF (app M N) (red⟶β x) = {!   !}
--- app⊆NF s1∈NF s2∈NF (abs M)   (red⟶β x) = {!   !}
--- app⊆NF s1∈NF s2∈NF (app M N) (appL⟶β apps1s2⟶βΛX) = s1∈NF M apps1s2⟶βΛX
--- app⊆NF s1∈NF s2∈NF (app M N) (appR⟶β apps1s2⟶βΛX) = s2∈NF N apps1s2⟶βΛX
+appvar⊆NF : ∀ {X} {x : X} {s2 : Λ X} → (var x) ∈ NF → s2 ∈ NF → app (var x) s2 ∈ NF
+appvar⊆NF s1∈NF s2∈NF (var x) (red⟶β ())
+appvar⊆NF s1∈NF s2∈NF (app M N) (appL⟶β (red⟶β ()))
+appvar⊆NF s1∈NF s2∈NF (app (var x) N) (appR⟶β n) = s2∈NF N n
+appvar⊆NF s1∈NF s2∈NF (abs M) (red⟶β ())
 
-lemma : ∀ {X} {s1 s2 t : Λ X} → s2 ⟶β t → app s1 s2 ⟶β app s1 t
-lemma = appR⟶β
+appapp⊆NF : ∀ {X} {s1 s2 s3 : Λ X} → (app s1 s3) ∈ NF → s2 ∈ NF → app (app s1 s3) s2 ∈ NF
+appapp⊆NF s2∈NF s1s3∈NF (var x) (red⟶β ())
+appapp⊆NF s2∈NF s1s3∈NF (app M N) (appL⟶β n) = s2∈NF M n
+appapp⊆NF s2∈NF s1s3∈NF (app .(app _ _) N) (appR⟶β n) = s1s3∈NF N n
+appapp⊆NF s2∈NF s1s3∈NF (abs M) (red⟶β ())
 
 decNF : ∀ {X} (s : Λ X) → (s ∈ NF) ⊔ Σ[ t ∈ Λ X ] (s ⟶β t)
 decNF (var x) = in1 var⊆NF
-decNF (app s1 s2) with decNF s1 | decNF s2 -- consider casing s1 before decNF
-... | in1 s1∈NF         | in1 s2∈NF         = {!   !}
-... | in1 s1∈NF         | in2 (t ,, s2⟶βt) = in2 (app s1 t ,, appR⟶β s2⟶βt ) -- in1 (app⊆NF s1∈NF {!   !})
-... | in2 (t ,, s1⟶βt) | in1 s2∈NF         = {!   !}
-... | in2 x             | in2 x₁            = {!   !}
+decNF (app (var x) s2) with decNF s2
+... | in1 s2∈NF = in1 (appvar⊆NF var⊆NF s2∈NF)
+... | in2 (t ,, s2⟶βt) = in2 (app (var x) t ,, appR⟶β s2⟶βt)
+decNF (app (app s1 s3) s2) with decNF (app s1 s3) | decNF s2
+... | in2 (t ,, apps1s3⟶βt) | _ = in2 (app t s2 ,, appL⟶β apps1s3⟶βt)
+... | in1 _ | in2 (t ,, apps2⟶βt) = in2 (app (app s1 s3) t ,, appR⟶β apps2⟶βt)
+... | in1 s1s3∈NF | in1 s2∈NF = in1 (appapp⊆NF s1s3∈NF s2∈NF)
+decNF (app (abs s1) s2) = in2 ((s1 [ io var s2 ]) ,, red⟶β (redex refl))
 decNF (abs s) with decNF s
 ... | in1 s∈NF = in1 (abs⊆NF s∈NF )
 ... | in2 (t ,, s⟶βt) = in2 (abs t ,, abs⟶β s⟶βt )
@@ -137,3 +141,4 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
 
 -- The end
+ 
