@@ -38,29 +38,29 @@ abs⊆NF : ∀ {X} {t : Λ (↑ X)} → t ∈ NF → abs t ∈ NF
 abs⊆NF t∈NF .(abs _) (abs⟶β r) = t∈NF _ r
 
 appvar⊆NF : ∀ {X} {x : X} {s2 : Λ X} → (var x) ∈ NF → s2 ∈ NF → app (var x) s2 ∈ NF
-appvar⊆NF s1∈NF s2∈NF (var x) (red⟶β ())
-appvar⊆NF s1∈NF s2∈NF (app M N) (appL⟶β (red⟶β ()))
+appvar⊆NF s1∈NF s2∈NF (var x)         (red⟶β ())
+appvar⊆NF s1∈NF s2∈NF (app M N)       (appL⟶β (red⟶β ()))
 appvar⊆NF s1∈NF s2∈NF (app (var x) N) (appR⟶β n) = s2∈NF N n
-appvar⊆NF s1∈NF s2∈NF (abs M) (red⟶β ())
+appvar⊆NF s1∈NF s2∈NF (abs M)         (red⟶β ())
 
 appapp⊆NF : ∀ {X} {s1 s2 s3 : Λ X} → (app s1 s3) ∈ NF → s2 ∈ NF → app (app s1 s3) s2 ∈ NF
-appapp⊆NF s2∈NF s1s3∈NF (var x) (red⟶β ())
-appapp⊆NF s2∈NF s1s3∈NF (app M N) (appL⟶β n) = s2∈NF M n
+appapp⊆NF s2∈NF s1s3∈NF (var x)            (red⟶β ())
+appapp⊆NF s2∈NF s1s3∈NF (app M N)          (appL⟶β n) = s2∈NF M n
 appapp⊆NF s2∈NF s1s3∈NF (app .(app _ _) N) (appR⟶β n) = s1s3∈NF N n
-appapp⊆NF s2∈NF s1s3∈NF (abs M) (red⟶β ())
+appapp⊆NF s2∈NF s1s3∈NF (abs M)            (red⟶β ())
 
 decNF : ∀ {X} (s : Λ X) → (s ∈ NF) ⊔ Σ[ t ∈ Λ X ] (s ⟶β t)
 decNF (var x) = in1 var⊆NF
 decNF (app (var x) s2) with decNF s2
-... | in1 s2∈NF = in1 (appvar⊆NF var⊆NF s2∈NF)
+... | in1 s2∈NF        = in1 (appvar⊆NF var⊆NF s2∈NF)
 ... | in2 (t ,, s2⟶βt) = in2 (app (var x) t ,, appR⟶β s2⟶βt)
 decNF (app (app s1 s3) s2) with decNF (app s1 s3) | decNF s2
-... | in2 (t ,, apps1s3⟶βt) | _ = in2 (app t s2 ,, appL⟶β apps1s3⟶βt)
-... | in1 _ | in2 (t ,, apps2⟶βt) = in2 (app (app s1 s3) t ,, appR⟶β apps2⟶βt)
-... | in1 s1s3∈NF | in1 s2∈NF = in1 (appapp⊆NF s1s3∈NF s2∈NF)
+... | in1 s1s3∈NF           | in1 s2∈NF           = in1 (appapp⊆NF s1s3∈NF s2∈NF)
+... | _                     | in2 (t ,, apps2⟶βt) = in2 (app (app s1 s3) t ,, appR⟶β apps2⟶βt)
+... | in2 (t ,, apps1s3⟶βt) | _                   = in2 (app t s2 ,, appL⟶β apps1s3⟶βt)
 decNF (app (abs s1) s2) = in2 ((s1 [ io var s2 ]) ,, red⟶β (redex refl))
 decNF (abs s) with decNF s
-... | in1 s∈NF = in1 (abs⊆NF s∈NF )
+... | in1 s∈NF        = in1 (abs⊆NF s∈NF )
 ... | in2 (t ,, s⟶βt) = in2 (abs t ,, abs⟶β s⟶βt )
 
 SN⊆WN : ∀ {X} → SN {X} ⊆ WN
@@ -102,8 +102,8 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
   SNisSat : Saturated SN
   SNisSat = record { SatSN = λ X ΛX SNΛX → SNΛX ;
-                     Sat𝓝 = λ X ΛX 𝓝ΛX → NF⊆SN λ N x → {!   !} ;
-                     SatWE = {!   !} }
+                     Sat𝓝 = λ X ΛX → {!       !} ;
+                     SatWE = λ X ΛX whexpSNx → NF⊆SN λ N x → {!   !}}
 
   ⇒𝓟isSat : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → Saturated (⇒𝓟 P Q)
   ⇒𝓟isSat P Q Psat Qsat = record { SatSN = λ X ΛX ⇒𝓟PQΛX → {!   !} ;
@@ -114,6 +114,7 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
   𝓒isSat atomSat A = record { SatSN = λ X x x₁ → redSN λ s x₂ → {!   !} ;
                               Sat𝓝 = {!   !} ;
                               SatWE = {!   !} }
+
 
 
 
