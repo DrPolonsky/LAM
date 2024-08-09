@@ -424,7 +424,17 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
-  ... | f ,, f-inc , (refl , fisCof) = {!   !}
+  ... | f ,, f-inc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac 
+  ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ with seq-lemma2 f f-inc bₙ cₙ 
+  ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
+  ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ) 
+  
+  -- with seq-lemma2 f f-inc {! fisCof _ R*ab   !} {!   !} 
+  -- ... | in1 x = {!   !}
+  -- ... | in2 x = {!   !}  
+  
+  -- with fisCof _ R*ab | fisCof _ R*ac 
+  -- ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ = {!   !}
 
 
 
