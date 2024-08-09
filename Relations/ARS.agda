@@ -13,6 +13,7 @@ provide a formalisation of the proofs in Term Rewriting Systems Chapter 1: Abstr
 The chapter is focussed on an abstract approach to reduction systems such as reduction, conversion, confluence,
 and normalisation.
 -}
+
 -- ↘ is \dr, ↙ is \dl
 _↘_↙_ : A → 𝓡 A → A → Set
 _↘_↙_ a R b = (R ∘~ R) a b
@@ -221,13 +222,11 @@ module Termination (R : 𝓡 A)  where
   NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
 
 
-  -- ***
   SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
-  SNdec→WN decR x (acc accx) --  with ClassicalImplications.isWFacc→isWFmin R decR
-  -- ... | z = {!   !}
-    with decR x
-  ... | in1 (y ,, Rxy) = {!   !} 
+  SNdec→WN decR x (acc accx) with decR x
   ... | in2 y∈NF = x ,, (ε⋆ , y∈NF)
+  ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
+  ... | (n ,, R*yn , n∈NF) = (n ,, (Rxy ,⋆ R*yn) , n∈NF)
 
   confluentElement : 𝓟 A
   confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
@@ -289,6 +288,7 @@ module Newmans-Lemma where
   ... | (z ,, R*xz , z∈NF) = (z ,, UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz b R*xb
                                  , UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz c R*xc )
 
+  {- First proof of NL
   is-ambiguous_-WN_ : ∀ (R : 𝓡 A) → 𝓟 A
   is-ambiguous R -WN  x = Σ[ n₁ ∈ A ] Σ[ n₂ ∈ A ] ((((R ⋆) x n₁ × is R -NF n₁) × ((R ⋆) x n₂ × is R -NF n₂)) × (n₁ ≡ n₂ → ⊥) )
 
@@ -301,8 +301,8 @@ module Newmans-Lemma where
                                 ((y : A) → (R ⋆) a y → (R ⋆) y n))
   lemmanorm a b Rab (n ,, R*bn , n∈NF) = n ,, (n∈NF , (λ y R*ay → {!   !}))
 
-  -- lemmaWN : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (a : A) → (∀ b → R a b → is R -WN b) → is R -WN a
-  -- lemmaWN wcR a IH = {!   !}
+  lemmaWN : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (a : A) → (∀ b → R a b → is R -WN b) → is R -WN a
+  lemmaWN wcR a IH = {!   !}
 
   NFPel : ∀ {R : 𝓡 A} → decMin (~R R) → weakly-confluent R
             → ∀ a → is (~R R) -accessible a → unormElement R a
@@ -318,6 +318,7 @@ module Newmans-Lemma where
   -- NLemmai : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
   -- NLemmai SNR WCR with SN→NFelement SNR {!   !}
   -- ... | n ,, R*an , NFn = {!   !}
+  -}
 
   -- Proof ii
 
@@ -392,6 +393,11 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   seq-lemma f f-inc zero = ε⋆
   seq-lemma f f-inc (succ n) = f-inc zero ,⋆ seq-lemma (f ∘ succ) (λ k → f-inc (succ k)) n
 
+  seq-lemma2 : ∀ (f : ℕ → A) → is R -increasing f → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
+  seq-lemma2 f f-inc zero m = in1 (seq-lemma f f-inc m)
+  seq-lemma2 f f-inc (succ n) zero = in2 (seq-lemma f f-inc (succ n))
+  seq-lemma2 f f-inc (succ n) (succ m) = seq-lemma2 (f ∘ succ) (λ k → f-inc (succ k) ) n m
+
   i : WN R → UN R → ω-bounded R
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
@@ -418,20 +424,14 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
-  ... | f ,, f-inc , (refl , fisCof) = {!   !} where
-    f-lem : ∀ {m n} → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
-    f-lem {zero} {n} = in2 {!   !}
-    f-lem {succ m} {n} with f-lem {m} {n}
-    ... | in1 x = {! x   !}
-    ... | in2 x = {!   !}
+  ... | f ,, f-inc , (refl , fisCof) = {!   !}
 
 
 
 -- Ex1-3-2 : →₁ →₂
 -- Ex1-3-4 : ∀ {Rα Rβ : 𝓡 A} → commute Rα Rβ → confluent (⋃₂ Rα Rβ)
 -- Ex1-3-4 = ?
--- tester :  ∀ {B : Set} (R : I → Rel A B) → ⋃ R 
--- tester = ? 
+-- tester :  ∀ {B : Set} (R : I → Rel A B) → ⋃ R
+-- tester = ?
 
 -- The end
- 
