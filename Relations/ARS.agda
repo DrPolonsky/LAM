@@ -220,13 +220,14 @@ module Termination (R : 𝓡 A)  where
   NF→ε {x} x∈NF {.x} ε⋆ = refl
   NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
 
+
   -- ***
   SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
   SNdec→WN decR x (acc accx) --  with ClassicalImplications.isWFacc→isWFmin R decR
   -- ... | z = {!   !}
     with decR x
-  ... | in1 (y ,, Ryx) = {!   !}
-  ... | in2 y∈NF = {!   !}
+  ... | in1 (y ,, Rxy) = {!   !} 
+  ... | in2 y∈NF = x ,, (ε⋆ , y∈NF)
 
   confluentElement : 𝓟 A
   confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
@@ -247,6 +248,7 @@ module Newmans-Lemma where
 
   -- Proof i
   -- Requires being able to decide whether a given element is already a NF.
+
 
   CR-lemma : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x
                → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
@@ -424,4 +426,12 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | in2 x = {!   !}
 
 
+
+-- Ex1-3-2 : →₁ →₂
+-- Ex1-3-4 : ∀ {Rα Rβ : 𝓡 A} → commute Rα Rβ → confluent (⋃₂ Rα Rβ)
+-- Ex1-3-4 = ?
+-- tester :  ∀ {B : Set} (R : I → Rel A B) → ⋃ R 
+-- tester = ? 
+
 -- The end
+ 
