@@ -429,19 +429,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
   ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ) 
   
-  -- with seq-lemma2 f f-inc {! fisCof _ R*ab   !} {!   !} 
-  -- ... | in1 x = {!   !}
-  -- ... | in2 x = {!   !}  
-  
-  -- with fisCof _ R*ab | fisCof _ R*ac 
-  -- ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ = {!   !}
-
-
-
--- Ex1-3-2 : →₁ →₂
--- Ex1-3-4 : ∀ {Rα Rβ : 𝓡 A} → commute Rα Rβ → confluent (⋃₂ Rα Rβ)
--- Ex1-3-4 = ?
--- tester :  ∀ {B : Set} (R : I → Rel A B) → ⋃ R
--- tester = ?
-
 -- The end
