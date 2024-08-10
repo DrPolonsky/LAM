@@ -1,6 +1,5 @@
 module Reduction where
 
--- open import Logic-Levels
 open import Logic
 open import Lifting
 open import Lambda
@@ -180,9 +179,25 @@ refl⟶s {X} {abs t} = abs⟶s refl⟶s
 NF : ∀ {X} → 𝓟 (Λ X)
 NF M = ∀ N → ¬ (M ⟶β N)
 
+map⇉ : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⇉ t2 → Λ→ f t1 ⇉ Λ→ f t2
+map⇉ f (red⇉ {s1} {s2} {t1} {t2} s12 t12 refl) =
+  red⇉ (map⇉ (↑→ f) s12) (map⇉ f t12) (~ (bind-map s2 t2 f) )
+map⇉ f var⇉ = var⇉
+map⇉ f (app⇉ t12 t13) = app⇉ (map⇉ f t12) (map⇉ f t13)
+map⇉ f (abs⇉ t12) = abs⇉ (map⇉ (↑→ f) t12)
+
+lift⇉ : ∀ {X Y} → (f g : X → Λ Y) → (∀ x → f x ⇉ g x) → (∀ y → lift f y ⇉ lift g y)
+lift⇉ f g f→g (i x) = map⇉ i (f→g x)
+lift⇉ f g f→g o = var⇉
+
 ⇉[⇉] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⇉ g x)
              → ∀ {s t : Λ X} → s ⇉ t →   (s [ f ])  ⇉  (t [ g ])
-⇉[⇉] f g f⇉g = {!   !}
+⇉[⇉] f g f⇉g {(app (abs s1) s2)} {t} (red⇉ {u1} {u2} {t1} {t2} s⇉t1 s⇉t2 refl) =
+  red⇉ (⇉[⇉] (lift f) (lift g) (lift⇉ f g f⇉g) s⇉t1) (⇉[⇉] f g f⇉g s⇉t2)
+        (~ (subst-lemma u2 t2 g) )
+⇉[⇉] f g f⇉g {(var x)} {.(var x)} var⇉ = f⇉g x
+⇉[⇉] f g f⇉g {(app s1 s2)} {(app t1 t2)} (app⇉ s1⇉t1 s2⇉t2) = app⇉ (⇉[⇉] f g f⇉g s1⇉t1) (⇉[⇉] f g f⇉g s2⇉t2)
+⇉[⇉] f g f⇉g {(abs r1)} {(abs r2)} (abs⇉ s⇉t) = abs⇉ (⇉[⇉] (lift f) (lift g) (lift⇉ f g f⇉g) s⇉t )
 
 ⇉[⇉]ₒ : ∀ {X} → {s1 s2 : Λ (↑ X)} → {t1 t2 : Λ X} → s1 ⇉ s2 → t1 ⇉ t2 → (s1 [ t1 ]ₒ) ⇉ (s2 [ t2 ]ₒ)
 ⇉[⇉]ₒ {X} {s1} {s2} {t1} {t2} s12 t12 =

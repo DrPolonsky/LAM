@@ -158,10 +158,6 @@ bind-assoc : ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C}
                → bind (bind g ∘ f) ≅ bind g ∘ bind f
 bind-assoc {f = f} {g} = bind-assoc≅ refl≅
 
--- assoc[] :  ∀ {A B C : Set} {f : A → Λ B} {g : B → Λ C} (t : Λ A)
---              → (t [ f ]) [ g ] ≡ (t [ (λ x → f x [ g ]) ])
--- assoc[] t = bind-assoc {! t  !}
-
 liftvar≅var : ∀ {A : Set} → lift {A} var ≅ var
 liftvar≅var (i x) = refl
 liftvar≅var o = refl
@@ -177,17 +173,23 @@ bind-unit1 _ = bind-unit0 _
 bind-unit2 : ∀ {A B : Set} {f : A → Λ B} → bind f ∘ var ≅ f
 bind-unit2 = !≅!
 
--- bind-unit3 : ∀ {A B : Set} {f : A → B} {g : B → Λ B}
---                → (∀ x → g (f x) ≡ var (f x)) → bind g ∘ Λ→ f ≅ Λ→
--- bind-unit3 gfvar t = ?
-
--- bind-nat₁ : ∀ {X Y Z : Set} {f : X → Y} {g : Y → Λ Z} {h}
---               → h ≅ g ∘ f → bind h ≅ bind g ∘ Λ→ f
-
 bind-lift2 : ∀ {A : Set} (N : Λ A) → bind (io var N) ∘ Λ→i ≅ I
 bind-lift2 N = bind-nat₁ {f = i} {io var N} {var} !≅! ~!≅ bind-unit0
 
+subst-lemma : ∀ {A B : Set} (t : Λ (↑ A)) (N : Λ A) (f : A → Λ B)
+                → (t [ N ]ₒ) [ f ] ≡ (t [ lift f ]) [ N [ f ] ]ₒ
+subst-lemma t N f = (bind-assoc  {f = io var N} {g = f} t ) ~! bind-assoc≅ e t
+  where e = io𝓟 _ (λ x → ~ (bind-lift2 (N [ f ]) (f x) ) ) refl
+
+bind-map : ∀ {A B : Set} (s : Λ (↑ A)) (t : Λ A) (f : A → B)
+           → Λ→ f (s [ t ]ₒ) ≡ (Λ→ (↑→ f) s [ Λ→ f t ]ₒ)
+bind-map s t f = bind-nat₂ {f = io var t} {f} !≅! s
+              ~! bind-nat₁ (io𝓟 _ (λ x → refl) refl ) s
 -- bind-map : ∀ {X Y Z : Set} (f : X → Y) (g : Y → Λ Z)
---               → bind (Λ→ f) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g
+--               → bind (Λ→ f ∘ g) ∘ Λ→ (↑→ f) ≅ Λ→ f ∘ bind g ?????
+-- bind-nat₁ : ∀ {X Y Z : Set} {f : X → Y} {g : Y → Λ Z} {h}
+--               → h ≅ g ∘ f → bind h ≅ bind g ∘ Λ→ f
+-- bind-nat₂ : ∀ {X Y Z : Set} {f : X → Λ Y} {g : Y → Z} {h}
+--               → h ≅ Λ→ g ∘ f → bind h ≅ Λ→ g ∘ bind f
 
 -- The End
