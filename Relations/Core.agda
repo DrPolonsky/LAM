@@ -29,6 +29,10 @@ module LogicOps₂ {A B : Set} where
   ∁₂ R = λ x y → ¬ R x y
   infix 19 ∁₂_
 
+  -- ⋃ is \bigcup
+  ⋃₂ : ∀ {I : Set} (R : I → Rel A B) → Rel A B
+  ⋃₂ {I} R x y = Σ[ α ∈ I ] (R α x y)
+
   -- Inclusion of relations.
   _⊆₂_ : Rel A B → Rel A B → Set
   R ⊆₂ S = ∀ x y → R x y → S x y

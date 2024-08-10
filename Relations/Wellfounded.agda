@@ -76,6 +76,7 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFseq- = ∀ (s : ℕ → A) → ¬ (is_-decreasing_ s)
 
   -- A positive variation of isWFmin
+  -- What about restricting P to ¬¬-closed predicates?
   isWFmin+ : Set₁
   isWFmin+ = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∉ P → Σ[ m ∈ A ] (m ∉ P × (∀ x → R x m → P x) )
 
