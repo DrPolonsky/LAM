@@ -7,6 +7,8 @@ open import BasicLogic
 open import BasicDatatypes
 open import Functions
 
+open import Environment
+
 data ADT (n : ℕ) : Set where
   𝕍 : Fin n → ADT n
   𝟎 : ADT n
@@ -18,29 +20,6 @@ data ADT (n : ℕ) : Set where
 infixr 28 _×_
 infixr 27 _⊔_
 
-Env : ℕ → Set₁
-Env n = Fin n → Set
-
-decEnv : ∀ {n} → Env n → Set
-decEnv ρ = ∀ x → dec≡ (ρ x)
-
-EmptyEnv : Env 0
-EmptyEnv ()
-
-ρ₀ : Env 0
-ρ₀ = EmptyEnv
-
-coskip : ∀ {n} {k} {A : Set k} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
-coskip f (here _) a (here _) = a
-coskip f (here _) a (down y) = f y
-coskip {.(succ n)} f (down x) a (here (succ n)) = f (here n)
-coskip {succ n} f (down x) a (down y) = coskip (λ x₁ → f (down x₁ ) ) x a y
-
-extEnvGen : ∀ {n : ℕ} → (Fin (succ n)) → Set → Env n → Env (succ n)
-extEnvGen {n} x A ρ y = coskip ρ x A y
-
-extEnv : ∀ {n : ℕ} → Set → Env n → Env (succ n)
-extEnv {n} A ρ y = extEnvGen (here _) (A ) ρ y
 
 {-# NO_POSITIVITY_CHECK  #-}
 data LFP (F : Set → Set) : Set where
@@ -53,6 +32,9 @@ Functor F = ∀ {X Y : Set} → (X → Y) → F X → F Y
 fold : ∀ {F : Set → Set} (Fmap : Functor F) {A : Set} (a : F A → A) → LFP F → A
 fold Fmap a (lfp x) = a (Fmap (fold Fmap a) x )
 
+foldInj : ∀ {F : Set → Set} → (Fmap : Functor F) {A : Set} (a : F A → A) → inj a → inj (fold Fmap a)
+foldInj {F} Fmap {A} a inja = {!   !}
+
 NatFun : Functor (λ X → X ∨ ⊤)
 NatFun f (in1 x) = in1 (f x)
 NatFun f (in2 x) = in2 x
@@ -64,20 +46,31 @@ NatFun f (in2 x) = in2 x
 ⟦ x × y ⟧ e = ⟦ x ⟧ e ∧ ⟦ y ⟧ e
 ⟦ x ⊔ y ⟧ e = ⟦ x ⟧ e ∨ ⟦ y ⟧ e
 ⟦ μ x ⟧ e = LFP λ X → ⟦ x ⟧ (extEnv X e)
+{-
+y' : LFP (λ X → ⟦ a ⟧ (λ y₁ → coskip ρ (here n) X y₁))
+x' : LFP (λ X → ⟦ a ⟧ (λ y₁ → coskip ρ (here n) X y₁))
+-}
 
-decADT : ∀ {n} (a : ADT n) (ρ : Env n) → dec≡ (⟦ a ⟧ ρ)
-decADT a ρ = {!   !}
+{-# TERMINATING #-}
+decLFP : ∀ (F : Set → Set) → (∀ A → dec≡ A → dec≡ (F A)) → dec≡ (LFP F)
+decLFP F Fdec (lfp x) (lfp y) with Fdec (LFP F) (decLFP F Fdec) x y
+... | in1 x=y = in1 (ext lfp x=y)
+... | in2 x≠y = in2 (λ {  (refl .(lfp x)) → x≠y (refl x) })
 
-Env→ : ∀ {n : ℕ} → Env n → Env n → Set
-Env→ ρ σ = ∀ x → ρ x → σ x
+decADT : ∀ {n} (a : ADT n) (ρ : Env n) → decEnv ρ → dec≡ (⟦ a ⟧ ρ)
+decADT (𝕍 x) ρ de = {!   !}
+decADT 𝟎 ρ de = {!   !}
+decADT 𝟏 ρ de = {!   !}
+decADT (a × a₁) ρ de = {!   !}
+decADT (a ⊔ a₁) ρ de = {!   !}
+decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ extEnv X ρ)) (λ A dA → decADT a (extEnv A ρ) (decExtEnv ρ A de dA) )
+-- decADT (μ a) ρ de (lfp x) (lfp y) with decADT a (extEnv A ρ) (decExtEnv ρ A de deA) x y
+--                     where A = (LFP (λ X → ⟦ a ⟧ extEnv X ρ))
+--                           deA = λ x' y' → {!   !}
+-- ... | in1 x=y = in1 (ext lfp x=y)
+-- ... | in2 x≠y = in2 (λ { (refl .(lfp x)) → x≠y (refl x) })
 
-ConsEnv→ : ∀ {n} {X Y : Set} (f : X → Y) → {e1 e2 : Env n} (e12 : Env→ e1 e2)
-             → Env→ (extEnv X e1) (extEnv Y e2)
-ConsEnv→ f e12 (here _) = f
-ConsEnv→ f e12 (down x) = e12 x
 
-reflEnv→ : ∀ {n} (e : Env n) → Env→ e e
-reflEnv→ e x = I
 
 NatTran : (Set → Set) → (Set → Set) → Set₁
 NatTran F G = ∀ X → F X → G X
@@ -99,6 +92,10 @@ foldADT : ∀ {n} (a : ADT (succ n)) (ρ : Env n) (X : Set) (f : ⟦ a ⟧ (extE
           → ⟦ μ a ⟧ ρ → X
 foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsEnv→ f (reflEnv→ ρ ) )
 
+foldInjADT : ∀ {n} (ρ : Env n) (t : ADT (succ n)) {A : Set} (a : ⟦ t ⟧ (extEnv A ρ) → A) → inj a → inj (foldADT t ρ A a)
+foldInjADT {n} ρ t {A} a inja = {!   !}
+
+
 Nat' : ADT 0
 Nat' = μ (𝟏 ⊔ 𝕍 (here 0) )
 
@@ -111,16 +108,6 @@ Nat = ⟦ Nat' ⟧ EmptyEnv
 one : Nat
 one = lfp (in2 (lfp (in1 tt ) ) )
 
-
-Env≃ : ∀ {n : ℕ} → Env n → Env n → Set
-Env≃ ρ σ = ∀ x → ρ x ≃ σ x
-
-_enviso∘_ : ∀ {n : ℕ} {ρ σ ψ : Env n} → Env≃ ρ σ → Env≃ σ ψ → Env≃ ρ ψ
-_enviso∘_ {n} {ρ} {σ} {ψ} e1 e2 x with e1 x | e2 x
-... | e1x | e2x = e1x iso∘ e2x
-
-reflEnv : ∀ {n} (ρ : Env n)  → Env≃ ρ ρ
-reflEnv ρ x = id≃ (ρ x)
 
 {-# TERMINATING #-}
 LFP≃ : ∀ (f g : Set → Set) → (∀ x y (xy : x ≃ y) → f x ≃ g y) → LFP f ≃ LFP g
@@ -149,17 +136,6 @@ LFPiso F = iso (f+ ) f- f-+ f+- where
   f+- : (y : LFP F) → f+ (f- y) ≡ y
   f+- (lfp x) = refl (lfp x)
 
-lemmaμ1 : ∀ {n : ℕ} {X Y : Set} {ρ σ : Env n} → X ≃ Y → Env≃ ρ σ → Env≃ (extEnv X ρ) (extEnv Y σ)
-lemmaμ1 {.zero} {X = X} {Y = Y} {ρ = ρ} {σ = σ} xy ρσ (here zero) = xy
-lemmaμ1 {.(succ n)} {X = X} {Y = Y} {ρ = ρ} {σ = σ} xy ρσ (here (succ n)) = xy
-lemmaμ1 {succ n} {X = X} {Y = Y} {ρ = ρ} {σ = σ} xy ρσ (down x) = ρσ x
-
-lemmaμ1gen : ∀ {n : ℕ} {X Y : Set} {ρ σ : Env n} (fn : Fin (succ n)) → X ≃ Y → Env≃ ρ σ → Env≃ (extEnvGen fn X ρ) (extEnvGen fn Y σ)
-lemmaμ1gen {n} {X} {Y} {ρ} {σ} (here .n) XY ρ≃σ (here .n) = XY
-lemmaμ1gen {n} {X} {Y} {ρ} {σ} (here .n) XY ρ≃σ (down x) = ρ≃σ x
-lemmaμ1gen {.(succ n)} {X} {Y} {ρ} {σ} (down fn) XY ρ≃σ (here (succ n)) = ρ≃σ (here n)
-lemmaμ1gen {succ n} {X} {Y} {ρ} {σ} (down fn) XY ρ≃σ (down x) = lemmaμ1gen {ρ = ρ ∘ down } {σ = σ ∘ down } fn XY (λ x₁ → ρ≃σ (down x₁) ) x
-
 ⟦_⟧≃_ : ∀ {n : ℕ} → (e : ADT n) → ∀ {ρ σ : Env n} → Env≃ ρ σ → ⟦ e ⟧ ρ ≃ ⟦ e ⟧ σ
 ⟦ 𝕍 x ⟧≃ ρ≃σ = ρ≃σ x
 ⟦ 𝟎 ⟧≃ ρ≃σ = iso (λ x → x ) (λ x → x ) refl refl
@@ -171,11 +147,6 @@ lemmaμ1gen {succ n} {X} {Y} {ρ} {σ} (down fn) XY ρ≃σ (down x) = lemmaμ1g
   f x y xy with lemmaμ1 xy ρ≃σ
   ... | μ1 = ⟦ e ⟧≃ μ1
 
-skip : ∀ {n} → Fin (succ n) → Fin n → Fin (succ n)
-skip (here _) x = down x
-skip (down y) (here n) = here (succ n)
-skip (down y) (down x) = down (skip y x )
-
 wk : ∀ {n} → Fin (succ n) → ADT (n) → ADT (succ n)
 wk {n} f (𝕍 x) = 𝕍 (skip f x )
 wk {n} f 𝟎 = 𝟎
@@ -183,7 +154,6 @@ wk {n} f 𝟏 = 𝟏
 wk {n} f (e × e₁) = wk f e × wk f e₁
 wk {n} f (e ⊔ e₁) = wk f e ⊔ wk f e₁
 wk {n} f (μ e) = μ (wk (down f) e)
-
 
 subst-level : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → Fin (succ n) → ADT n
 subst-level {n} (𝕍 x) e' f = coskip 𝕍 f e' x
@@ -196,12 +166,6 @@ subst-level {n} (μ e) e' f = μ (subst-level e (wk (here _) e' ) (down f))
 subst : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
 subst e e' = subst-level e e' (here _)
 
-substlemmaNoADT : ∀ {n} {l1} {l2} {A : Set l1} {B : Set l2} (f : A → B) → (ρ : Fin n → A) → (y : Fin (succ n)) → (a : A) → (x : Fin (succ n)) → f (coskip ρ y a x) ≡ coskip (f ∘ ρ) y (f a) x
-substlemmaNoADT f ρ (here _) a (here _) = refl (f a)
-substlemmaNoADT {.(succ n)} f ρ (down y) a (here (succ n)) = refl (f (ρ (here n)))
-substlemmaNoADT f ρ (here _) a (down x) = refl (f (ρ x))
-substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f ((ρ ∘ down)) y a x
-
 
 
 -- ↓n : ∀ {n} → Fin (succ n) → Fin n
@@ -210,81 +174,11 @@ substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f ((ρ ∘ d
 -- ↓n {succ n} (down f) = down (↓n f )
 
 
-skip2 : ∀ {n} → (x : Fin (succ n)) (y : Fin (succ (succ n))) → Fin (succ n)
-skip2 {n} (here _) (here .(succ _)) = here _
-skip2 (here _) (down y) = y
-skip2 (down x) (here .(succ _)) = here _
-skip2 {succ n} (down x) (down y) = down (skip2 x y )
-
-skip2lemma1 : ∀ {n} (x : Fin (succ n)) → skip2 x (here (succ n)) ≡ here n
-skip2lemma1 {n} (here _) = refl (here n)
-skip2lemma1 {n} (down x) = refl (here n)
-
-unskip : ∀ {n} → (x : Fin (succ n)) (y : Fin (succ (succ n))) → Fin (succ (succ n))
-unskip {n} (here .n) (here .(succ n)) = down (here n)
-unskip {n} (here .n) (down y) = here (succ n)
-unskip {n} (down x) (here .(succ n)) = down (down x )
-unskip {succ n} (down x) (down y) = down (unskip x y )
-
-unskiplemma1 : ∀ {n} → (x : Fin (succ n)) → unskip x (here (succ n)) ≡ down x
-unskiplemma1 {n} (here .n) = refl (down (here n))
-unskiplemma1 {n} (down x) = refl (down (down x))
-
-enveqlemma1 : ∀ {n} (A A' : Set) (x : Fin (succ n)) (y : Fin (succ (succ n))) (ρ : Env n) → Env≃ (coskip (coskip ρ x A ) y A') (coskip (coskip ρ (skip2 x y ) A') (unskip x y ) A)
-enveqlemma1 {n} A A' (here _) (here _) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (down y) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (down y) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 A A' (down x) (here _) ρ (here .(succ _)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 A A' (down x) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {succ n} A A' (down x) (down y) ρ (here .(succ (succ n))) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {succ n} A A' (down x) (down y) ρ (down g) = enveqlemma1 A A' x y (ρ ∘ down) g
-
 _≡∧≡_ : ∀ {A B C D : Set₁} → A ≡ B → C ≡ D → (A ∧ C) ≡ (B ∧ D)
 refl A ≡∧≡ refl C = refl (A ∧ C)
 
 _≡∨≡_ : ∀ {A B C D : Set₁} → A ≡ B → C ≡ D → (A ∨ C) ≡ (B ∨ D)
 refl A ≡∨≡ refl C = refl (A ∨ C)
-
-
-{-
-weakeninglemma : ∀ {n} (x : Fin (succ n)) (A : ADT n) {A' : Set} (ρ : Env n) → ⟦ wk x A ⟧ (coskip ρ x A') ≡ ⟦ A ⟧ ρ
-weakeninglemma (here _) (𝕍 x₁) {A'} ρ = refl (ρ x₁)
-weakeninglemma (down x) (𝕍 (here n)) {A'} ρ = refl (ρ (here n))
-weakeninglemma (down x) (𝕍 (down x₁)) {A'} ρ = weakeninglemma x (𝕍 x₁) (ρ ∘ down)
-weakeninglemma x 𝟎 {A'} ρ = refl ⊥
-weakeninglemma x 𝟏 {A'} ρ = refl ⊤
-weakeninglemma x (A × A₁) {A'} ρ = weakeninglemma x A ρ ≡∧≡ weakeninglemma x A₁ ρ
-weakeninglemma x (A ⊔ A₁) {A'} ρ = weakeninglemma x A ρ ≡∨≡ weakeninglemma x A₁ ρ
-weakeninglemma {n} x (μ A) {A'} ρ with weakeninglemma (down x ) A {A'} (coskip ρ x A')
-... | r = {!   !}
--}
-
-skipcoskip : ∀ {n} (ρ : Env n) x v A → coskip ρ x A (skip x v) ≡ ρ v
-skipcoskip {n} ρ (here .n) v A = refl (ρ v)
-skipcoskip {.(succ n)} ρ (down x) (here n) A = refl (ρ (here n))
-skipcoskip {.(succ _)} ρ (down x) (down v) A = skipcoskip (λ x₁ → ρ (down x₁)) (x ) v A
-
-coskipLemma : ∀ {n} (x : Fin (succ n)) (y : Fin (succ (succ n))) (ρ : Env n) {A B : Set}
-  → coskip (coskip ρ x A) (here (succ n)) B y ≡ coskip (coskip ρ (here n) B) (down x) A y
-coskipLemma {n} (here .n) (here .(succ n)) ρ {A} {B} = refl B
-coskipLemma {n} (here .n) (down y) ρ {A} {B} = refl _
-coskipLemma {n} (down x) (here .(succ n)) ρ {A} {B} = refl B
-coskipLemma {n} (down x) (down y) ρ {A} {B} = refl _
-
-coskip≃lemma : ∀ {n : ℕ} {S1 S2 : Set} (ρ : Env n) (x : Fin (succ n)) → (S1 ≃ S2) → Env≃ (coskip ρ x S1) (coskip ρ x S2)
-coskip≃lemma {n} {S1} {S2} ρ x s1≃s2 y = lemmaμ1gen x s1≃s2 (reflEnv ρ ) y
-
-coskipEnv≃ : ∀ {n : ℕ} {ρ σ : Env n} (x : Fin (succ n)) → (A : Set) → (Env≃ ρ σ ) → Env≃ (coskip ρ x A) (coskip σ x A)
-coskipEnv≃ {n} {ρ} {σ} (here .n) A ρ≃σ (here .n) = iso (λ z → z) (λ z → z) refl refl
-coskipEnv≃ {n} {ρ} {σ} (here .n) A ρ≃σ (down f) = ρ≃σ f
-coskipEnv≃ {.(succ n)} {ρ} {σ} (down x) A ρ≃σ (here (succ n)) = ρ≃σ (here n)
-coskipEnv≃ {succ n} {ρ} {σ} (down x) A ρ≃σ (down f) = coskipEnv≃ x  A (λ x₁ → ρ≃σ (down x₁) ) f
-
--- iso {!   !} {!   !} {!   !} {!   !} where
---   f+ : (fn : Fin (succ n)) →  → coskip ρ fn S1 y → coskip ρ fn S2 y
---   f+ (here .n) cs = {!   !}
---   f+ (down fn) cs = {!   !}
 
 refl2iso : ∀ {A B} → A ≡ B → A ≃ B
 refl2iso (refl A) = id≃ A
@@ -340,45 +234,9 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl+- (μ e) y = _≃_.f+- (LFP≃ _ _
       (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ lemmaμ1 X≃Y (reflEnv ρ)) )) y
 
--- substlemmavarcase : ∀ {n : ℕ} → (fn x : Fin (succ n)) → ∀ (A : ADT n) → (ρ : Env n) → ⟦ coskip 𝕍 fn A x ⟧ ρ → coskip ρ fn (⟦ A ⟧ ρ) x
--- substlemmavarcase (here _) (here _) A ρ si = si
--- substlemmavarcase {.(succ n)} (down fn) (here (succ n)) A ρ si = si
--- substlemmavarcase (here _) (down x) A ρ si = si
--- substlemmavarcase {succ n} (down fn) (down x) A ρ si rewrite substlemmaNoADT (λ e → ⟦ e ⟧ ρ) (𝕍 ) (down fn) A (down x) = si
---
---
--- substlemma+gen : ∀ {n : ℕ} → (x : Fin (succ n)) → (a : ADT (succ n)) → (a' : ADT n) → (ρ : Env n) → ⟦ subst-level a a' x ⟧ ρ → ⟦ a ⟧ (extEnvGen x (⟦ a' ⟧ ρ) ρ)
--- substlemma+gen {n} fn (𝕍 x) a' ρ si = substlemmavarcase fn x a' ρ si
--- substlemma+gen fn 𝟏 a' ρ si = tt
--- substlemma+gen fn (a × a₁) a' ρ (x , x₁) = (substlemma+gen fn a a' ρ x) , (substlemma+gen fn a₁ a' ρ x₁)
--- substlemma+gen fn (a ⊔ a₁) a' ρ (in1 x) = in1 (substlemma+gen fn a a' ρ x)
--- substlemma+gen fn (a ⊔ a₁) a' ρ (in2 x) = in2 (substlemma+gen fn a₁ a' ρ x)
--- substlemma+gen {n} fn (μ a) a' ρ (lfp si) with substlemma+gen (down fn ) a (wk ((here _)) a' )
---   (extEnv (LFP (λ z → ⟦ subst-level a (wk (here n) a') (down fn) ⟧ extEnv z ρ)) ρ ) si | enveqlemma1 ((⟦ a' ⟧ ρ)) ((LFP (λ X → ⟦ a ⟧ coskip (coskip ρ fn (⟦ a' ⟧ ρ)) (here (succ n)) X))) fn ((here (succ n))) ρ
--- ... | r | enveq with ⟦_⟧≃_ a (λ x → enveq x iso∘ {!   !} )
--- ...    | i = lfp (_≃_.f- i r )
---
--- substlemma+ : {n : ℕ} → (a : ADT (succ n)) → (a' : ADT n) → (ρ : Env n) → ⟦ subst a a' ⟧ ρ → ⟦ a ⟧ (extEnv (⟦ a' ⟧ ρ) ρ)
--- substlemma+ e e' ρ si = substlemma+gen (here _) e e' ρ si
---
--- substlemma-gen : ∀ {n : ℕ} → (x : Fin (succ n)) → (a : ADT (succ n)) → (a' : ADT n) → (ρ : Env n) → ⟦ a ⟧ (extEnvGen x (⟦ a' ⟧ ρ) ρ) → ⟦ subst-level a a' x ⟧ ρ
--- substlemma-gen {n} fn (𝕍 x) a' ρ ix with substlemmaNoADT (λ x₁ → ⟦ x₁ ⟧ ρ ) 𝕍 fn a' x
--- ... | slm rewrite ~ slm = ix
--- substlemma-gen {n} fn 𝟏 a' ρ ix = tt
--- substlemma-gen {n} fn (a × a₁) a' ρ (x , x₁) = substlemma-gen fn a a' ρ x , substlemma-gen fn a₁ a' ρ x₁
--- substlemma-gen {n} fn (a ⊔ a₁) a' ρ (in1 x) = in1 (substlemma-gen fn a a' ρ x)
--- substlemma-gen {n} fn (a ⊔ a₁) a' ρ (in2 x) = in2 (substlemma-gen fn a₁ a' ρ x)
--- substlemma-gen {n} fn (μ a) a' ρ (lfp ix) with enveqlemma1 (⟦ a' ⟧ ρ) ((LFP (λ X → ⟦ a ⟧ (λ y₁ → coskip (λ y₂ → coskip ρ fn (⟦ a' ⟧ ρ) y₂) (here (succ n)) X y₁)))) fn (here (succ n)) ρ
--- ... | enveq rewrite skip2lemma1 fn rewrite unskiplemma1 fn with ⟦ a ⟧≃ (enveq enviso∘ {!   !} )
--- ...   | iso1@(iso f+ f- f-+ f+-) with substlemma-gen (down fn) a ((wk (here n) a')) (coskip ρ (here n)  (LFP  (λ X →  ⟦ subst-level a (wk (here n) a') (down fn) ⟧ coskip ρ (here n) X))) (f+ ix )
--- ...     | r = lfp r
---
--- -- with ⟦ a ⟧≃ enveqlemma1 (⟦ μ a ⟧ λ x → coskip ρ fn (⟦ a' ⟧ ρ) x ) (⟦ a' ⟧ ρ ) (here _) (down fn ) ρ
--- -- ... | iso f+ f- f-+ f+- with substlemma-gen (down fn) a (wk (here _) a' ) (extEnv ((LFP (λ X → ⟦ subst-level a (wk (here n) a') (down fn) ⟧ coskip ρ (here n) X))) ρ ) ({!   !}  )
--- -- ...   | r = lfp r
---
--- substlemma- : {n : ℕ} → (a : ADT (succ n)) → (a' : ADT n) → (ρ : Env n) → ⟦ a ⟧ (extEnv (⟦ a' ⟧ ρ) ρ) → ⟦ subst a a' ⟧ ρ
--- substlemma- e e' ρ ix = substlemma-gen (here _) e e' ρ ix
+
+_≡≃_ : ∀ {A B C : Set} → A ≡ B → B ≃ C → A ≃ C
+refl _ ≡≃ BC = BC
 
 substlemmagen : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → (ρ : Env n) → (x : Fin (succ n)) → ⟦ subst-level e e' x ⟧ ρ ≃ ⟦ e ⟧ (coskip ρ x (⟦ e' ⟧ ρ))
 substlemmagen {n} (𝕍 v) e' ρ x = refl2iso (substlemmaNoADT (λ e → ⟦ e ⟧ ρ) (𝕍) x e' v)
@@ -391,8 +249,22 @@ substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ subst-level e (wk (here
           (coskip (coskip ρ (here n) A) (down x)
           (⟦ wk (here n) e' ⟧ coskip ρ (here n) A))
           (coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) B)
-        cosk A B A≃B y rewrite (~ (coskipLemma x y ρ {⟦ e' ⟧ ρ} {B})) rewrite (~ (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})) with coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
-        ... | csl = csl iso∘ coskipEnv≃ (here _) B (coskip≃lemma ρ x (weakeningLemma≃ (here _) e' ρ ) ) y
+        -- cosk A B A≃B y = {!   !} -- (weakeningLemma≃ (here n) e' ρ)
+        cosk A B A≃B y = -- (weakeningLemma≃ (here n) e' ρ)
+          let e1 = (coskipLemma x y ρ {⟦ e' ⟧ ρ} {B})
+              e2 = (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})
+              e3 = coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
+              e4 =  (weakeningLemma≃ (here n) e' {A} ρ)
+              e5 = coskipEnv≃ {ρ = (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A))} {σ = (coskip ρ x (⟦ e' ⟧ ρ))}
+              e6 : coskip (coskip ρ (here n) B) (down x) (⟦ e' ⟧ ρ) y ≃ coskip (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here (succ n)) B y
+              e6 = {!   !} 
+           in (~ e2) ≡≃ (e3 iso∘ iso~ (e1 ≡≃ {!   !} ))
+           -- in (~ e2) ≡≃ (e3 iso∘ iso~ (e1 ≡≃ e5 y {!   !} (coskip≃lemma ρ x e4 ) {!   !}   ))
+-- coskipEnv≃ : ∀ {n : ℕ} {ρ σ : Env n} (x : Fin (succ n)) → (A : Set) → (Env≃ ρ σ ) → Env≃ (coskip ρ x A) (coskip σ x A)
+
+        -- cosk A B A≃B y rewrite (~ (coskipLemma x y ρ {⟦ e' ⟧ ρ} {B})) rewrite (~ (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})) with coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
+        -- ... | csl = {! csl iso∘ ?   !}
+        -- csl iso∘ coskipEnv≃ (here _) B (coskip≃lemma ρ x (weakeningLemma≃ (here _) e' ρ ) ) y
         isom : (A B : Set) → A ≃ B → (⟦ subst-level e (wk (here n) e') (down x) ⟧ coskip ρ (here n) A) ≃ (⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) B)
         isom A B AB with substlemmagen e (wk (here n) e' ) (coskip ρ (here n) A ) (down x)
         ... | r = r iso∘ (⟦ e ⟧≃ cosk A B AB )

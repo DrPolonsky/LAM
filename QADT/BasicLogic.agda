@@ -10,7 +10,7 @@ K : ∀ {A B : Set} → A → B → A
 K x y = x
 
 -- ∘ is \circ or \o
-_∘_ : ∀ {A B C : Set} → (B → C) → (A → B) → A → C
+_∘_ : ∀ {l} {A B C : Set l} → (B → C) → (A → B) → A → C
 (g ∘ f) x = g (f x)
 infixl 25 _∘_
 
@@ -72,7 +72,7 @@ DNE A = ¬ ¬ A → A
 
 -- Equality
 -- ≡ is \==
-data _≡_ {A : Set} : A → A → Set where
+data _≡_ {l} {A : Set l} : A → A → Set l where
   refl : ∀ (x : A) → x ≡ x
 {-# BUILTIN EQUALITY _≡_ #-}
 infix 19 _≡_
