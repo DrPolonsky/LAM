@@ -1,0 +1,441 @@
+open import BasicLogic
+open import BasicDatatypes
+open import Decidable
+open import SetOperations
+-- open LogicOps
+-- open import FiniteAutomata
+
+module RecursiveTypes where
+
+  data ∃ {A : Set} (B : A → Set) : Set where
+    exists : ∀ (x : A) → x ∈ B → ∃ B
+
+  skip : ∀ {n} → Fin (succ n) → Fin n → Fin (succ n)
+  skip (here _) x = down x
+  skip (down v) (here n) = here (succ n)
+  skip (down v) (down x) = down (skip v x)
+
+  elimFin : ∀ {n} {A : Set} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
+  elimFin {n} f (here n) a (here n) = a
+  elimFin {n} f (here n) a (down y) = f y
+  elimFin {(succ n)} f (down x) a (here (succ n)) = f (here n)
+  elimFin {succ n} f (down x) a (down y) = elimFin (f ∘ down) x a y
+
+  data 𝕋 (n : ℕ) : Set where
+    α : Fin n → 𝕋 n
+    _⇒_ : 𝕋 n → 𝕋 n → 𝕋 n
+
+  wk : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n)
+  wk a (α x) = α (skip a x)
+  wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
+
+  record 𝕋= (n : ℕ) : Set where
+    constructor con
+    field
+      lhs : 𝕋 n
+      rhs : 𝕋 n
+
+  𝕋=* : ℕ → Set
+  𝕋=* n = List (𝕋= n)
+
+  𝕋Sub : ℕ → Set
+  𝕋Sub n = List (Fin n ∧ 𝕋 n)
+
+  Unifier : ℕ → Set
+  Unifier n = Fin n → 𝕋 n
+
+  SubList : ℕ → Set
+  SubList n = Fin n → List (𝕋 n)
+
+  -- Well founded inversion
+  invertLemma : ∀ {n : ℕ} → 𝕋= n → 𝕋Sub n
+  invertLemma (con (α x) (α y)) = (x , α y ) ∷ []
+  invertLemma (con (α x) t@(rhs1 ⇒ rhs2)) = (x , t ) ∷ []
+  invertLemma (con l@(lhs1 ⇒ lhs2) (α x)) = (x , l) ∷ []
+  invertLemma (con (lhs1 ⇒ lhs2) (rhs1 ⇒ rhs2)) = invertLemma (con lhs1 rhs1) ++ invertLemma (con lhs2 rhs2)
+
+  invertAll : ∀ {n : ℕ} → 𝕋=* n → 𝕋Sub n
+  invertAll = bindList invertLemma
+
+  lookup : ∀ {n} → (x : Fin n) → 𝕋Sub n → List (𝕋 n)
+  lookup x [] = []
+  lookup {succ n} x ((y , c) ∷ cs) = elimFin (λ _ → rc) (x) (c ∷ rc) (y)
+    where rc = lookup x cs
+
+  𝕋Sub→SubList : ∀ {n} → 𝕋Sub n → SubList n
+  𝕋Sub→SubList ts = λ x → lookup x ts
+
+  filterAtom : ∀ {n} → Fin n → List (𝕋 n) → List (𝕋 n)
+  filterAtom x [] = []
+  filterAtom x (α y ∷ as) = case (λ _ → filterAtom x as) (λ _ → α y ∷ filterAtom x as) (decFin x y)
+  filterAtom x ((a ⇒ b) ∷ as) = (a ⇒ b) ∷ filterAtom x as
+
+  filterRefl : ∀ {n} → SubList n → SubList n
+  filterRefl s = λ x → filterAtom x (s x)
+
+  prepSub : ∀ {n} → 𝕋=* n → SubList n
+  prepSub eqs = filterRefl (𝕋Sub→SubList (invertAll eqs))
+
+  dupAtom : ∀ {n : ℕ} → Fin n ∧ 𝕋 n → 𝕋Sub n → List (𝕋= n)
+  dupAtom (x , τ) [] = []
+  dupAtom s@(x₁ , τ₁) ((x₂ , τ₂) ∷ eqs) = case (λ _ → con τ₁ τ₂ ∷ []) (λ _ → dupAtom s eqs) (decFin x₁ x₂)
+
+  -- Stuff for normal form translation
+  getAtomicSub : ∀ (n : ℕ) → 𝕋Sub n → List (Fin n ∧ 𝕋 n)
+  getAtomicSub n [] = []
+  getAtomicSub n (s@(x , α x₁) ∷ eqs) = s ∷ []
+  getAtomicSub n ((x , (τ₁ ⇒ τ₂)) ∷ eqs) = getAtomicSub n eqs
+
+  data Occurs𝕋 {n : ℕ} (v : Fin n) : 𝕋 n → Set where
+    inAtom : Occurs𝕋 v (α v)
+    inLeft : ∀ {t1} → Occurs𝕋 v t1 → ∀ t2 → Occurs𝕋 v (t1 ⇒ t2)
+    inRight : ∀ t1 {t2} → Occurs𝕋 v t2 → Occurs𝕋 v (t1 ⇒ t2)
+
+  -- Check if atom occurs in type and comprehensive occurs check
+  atomOccurs : ∀ {n : ℕ} → (a : Fin n) → 𝕋 n → 𝔹
+  atomOccurs a₁ (α a₂) = case (λ _ → true) (λ _ → false) (decFin a₁ a₂)
+  atomOccurs a (τ ⇒ τ₁) = or (atomOccurs a τ) (atomOccurs a τ₁)
+
+  atomOccursCorrect : ∀ {n} (v : Fin n) → decBy (Occurs𝕋 v) (atomOccurs v)
+  atomOccursCorrect v (α x) with decFin v x
+  ... | in1 v=x rewrite v=x = (λ _ → inAtom) , (λ x₂ → refl true)
+  ... | in2 v≠x = (λ t≡f → exFalso (¬t≡f (~ t≡f))) , λ {inAtom → exFalso (v≠x (refl v))}
+  atomOccursCorrect v t@(τ ⇒ τ₁) with atomOccurs v τ in p
+  ... | true  = (λ x → inLeft ((pr1 (atomOccursCorrect v τ)) p) τ₁) , λ x → refl true
+  ... | false = (λ x → inRight τ (((pr1 (atomOccursCorrect v τ₁)) x))) , λ {(inLeft x .τ₁) → exFalso (t≢f (atomOccurs v τ) ((pr2 (atomOccursCorrect v τ)) x) p)
+                                                                          ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x}
+
+  _≡⇒≡_ : ∀ {n} {A B C D : 𝕋 n} → A ≡ B → C ≡ D → (A ⇒ C) ≡ (B ⇒ D)
+  refl A ≡⇒≡ refl B = refl (A ⇒ B)
+
+  occCheckVar : ∀ {n} (x y : Fin (succ n)) → x ≡ y ∨ ∃ (λ z → (y ≡ skip x z))
+  occCheckVar (here _) (here _) = in1 (refl (here _))
+  occCheckVar (here _) (down y) = in2 (exists y (refl (down y)) )
+  occCheckVar {.(succ n)} (down x) (here (succ n)) = in2 (exists (here n) (refl (here (succ n)) ) )
+  occCheckVar {succ n} (down x) (down y) =
+    case (λ xy → in1 (ext down xy))
+         (λ { (exists z y=sxz) → in2 (exists (down z) (ext down y=sxz) ) })
+         (occCheckVar x y)
+
+  -- Either x occurs in the given type A, or the type A is the weakening (by x) of some type B.
+  occCheck : ∀ {n} (x : Fin (succ n)) (A : 𝕋 (succ n)) → Occurs𝕋 x A ∨ ∃ (λ B → A ≡ wk x B)
+  occCheck x (α y) = case (λ {(refl .x) → in1 (inAtom )})
+                          (λ {(exists z y=wkz) → in2 (exists (α z) (ext α y=wkz) ) } )
+                          (occCheckVar x y)
+  occCheck x (A1 ⇒ A2) with occCheck x A1 | occCheck x A2
+  ... | in1 oc | oc2 = in1 (inLeft oc A2)
+  ... | in2 ex | in1 oc = in1 (inRight A1 oc)
+  ... | in2 (exists B1 e1) | in2 (exists B2 e2) = in2 (exists (B1 ⇒ B2) (e1 ≡⇒≡ e2) )
+
+  atomOccursInList : ∀ {n} → Fin (succ n) → List (𝕋 (succ n)) → Set
+  atomOccursInList x As = ∃ (λ A → occurs A As ∧ Occurs𝕋 x A)
+
+  occCheckList : ∀ {n} (x : Fin (succ n)) (As : List (𝕋 (succ n)))
+                 → atomOccursInList x As ∨ ∃ (λ Bs → map (wk x) Bs ≡ As)
+  occCheckList x [] = in2 (exists [] (refl []) )
+  occCheckList x (A ∷ As) = case
+    (λ x∈A → in1 (exists A (atHead As , x∈A ) ) )
+    (λ {(exists B mapB=A) →
+          case (λ {(exists B (B∈As , x∈B))→ in1 (exists B (inTail A As B∈As , x∈B))})
+               (λ {(exists Bs mapwkBs=As) → in2 (exists (B ∷ Bs) (cons≡ (~ mapB=A) mapwkBs=As))})
+               (occCheckList x As)} )
+    (occCheck x A)
+
+  List∀ : ∀ {A : Set} (P : A → Set) → List A → Set
+  List∀ P [] = ⊤
+  List∀ P (x ∷ xs) = P x ∧ List∀ P xs
+
+  List∀map : ∀ {A B : Set} (f : A → B) (P : B → Set) (xs : List A)
+            → List∀ P (map f xs) → List∀ (λ z → P (f z)) xs
+  List∀map f P [] ps = tt
+  List∀map f P (x ∷ xs) (p , ps) = (p , List∀map f P xs ps )
+
+  decOccAtomList : ∀ {n} (x : Fin (succ n)) (As : List (𝕋 (succ n)))
+                     → (∃ (λ A → occurs A As ∧ ¬ (Occurs𝕋 x A))) ∨ List∀ (Occurs𝕋 x) As
+  decOccAtomList x [] = in2 tt
+  decOccAtomList x (x₁ ∷ As) with atomOccurs x x₁ in ao
+  ... | true  = case (λ {(exists x (p₁ , p₂)) → in1 (exists x ((inTail x₁ As p₁) , p₂))})
+                     (λ x₃ → in2 ((pr1 (atomOccursCorrect x x₁) ao) , x₃))
+                     (decOccAtomList x As)
+  ... | false = in1 (exists x₁ (atHead As , λ x₂ → t≢f (atomOccurs x x₁)
+                                                       (pr2 (atomOccursCorrect x x₁) x₂)
+                                                        ao))
+
+  SR : ℕ → Set
+  SR 0 = ⊥
+  SR (succ n) = ∃ (λ (s : SubList (succ n)) → ∀ (x : Fin (succ n)) → atomOccursInList x (s x))
+
+
+  properPred : ∀ {n} → SubList n → Fin n → Set
+  properPred s x = List∀ (Occurs𝕋 x) (s x)
+
+  isProperSR : ∀ {n} → SubList n → Set
+  isProperSR {0} _ = ⊥
+  isProperSR {succ n} s = ∀ x → properPred s x
+
+  -- WkSR : ∀
+
+  -- unify1 : ∀ {n m} → n ≤ m → Unifier m → (s : SubList n) →
+  --                            (isProperSR s ∨ ∃ (λ s' → s' ≡ WkSR s)) ∧ Unifier m
+
+
+
+  -- subst𝕋 a A B = B[A/a]
+  subst𝕋 : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n) → 𝕋 n
+  subst𝕋 a A (α b) = elimFin α a A b
+  subst𝕋 a A (τ₁ ⇒ τ₂) = (subst𝕋 a A τ₁) ⇒ (subst𝕋 a A τ₂)
+
+  -- subst[𝕋] x B [A1,..,Ak] = [A1[B/x],...,Ak[B/x]]
+  subst[𝕋] : ∀ {n} → Fin (succ n) → 𝕋 n → List (𝕋 (succ n)) → List (𝕋 n)
+  subst[𝕋] x A L = map (subst𝕋 x A) L
+
+  substSubList : ∀ {n} → Fin (succ n) → 𝕋 n → SubList (succ n) → SubList n
+  substSubList x B s = λ y → subst[𝕋] x B (s (skip x y))
+
+  {-
+  -- subst𝕋list a [A1,..,Ak] B = [B[A1/a],..,B[Ak/a]]
+  subst𝕋list : ∀ {n} → Fin (succ n) → List (𝕋 n) → 𝕋 (succ n) → List (𝕋 n)
+  subst𝕋list x As B = map (λ A → subst𝕋 x A B) As
+
+  -- subst[𝕋]list x [A1,..,Ak] [B1,..,Bl]
+  -- = [B1[A1/x],..,B1[Ak/x], B2[A1/x],..,B2[Ak/x], ... ,Bl[A1/x],..,Bl[Ak/x]]
+  subst[𝕋]list : ∀ {n} → Fin (succ n) → List (𝕋 n) → List (𝕋 (succ n)) → List (𝕋 n)
+  subst[𝕋]list x As = bindList (subst𝕋list x As)
+  -}
+  -- unify1 : ∀ {n} → (s : SubList (succ n)) → isProperSR s ∨ ∃ (λ s' → )
+
+  solverStep : ∀ {n} → (s : SubList (succ n)) → (x : Fin (succ n))
+                     → List∀ (Occurs𝕋 x) (s x) ∨ (𝕋 n ∧ SubList n)
+  solverStep {n} s x with decOccAtomList x (s x)
+  ... | in1 (exists A (A∈sx , x∉A)) =
+    case (λ x∈A → exFalso (x∉A x∈A) )
+         (λ {(exists B A≡wkB) → in2 (B , substSubList x B s ) } )
+         (occCheck x A)
+  ... | in2 yes = in1 yes
+
+  elemFinN : ∀ n → List (Fin n)
+  elemFinN zero = []
+  elemFinN (succ n) = here n ∷ map down (elemFinN n)
+
+  elemFinNtotal : ∀ {n} → (P : Fin n → Set) → List∀ P (elemFinN n) → ∀ (x : Fin n) → P x
+  elemFinNtotal {succ n} P (p , ps) (here .n) = p
+  elemFinNtotal {succ n} P (p , ps) (down x) = elemFinNtotal (λ z → P (down z))
+          (List∀map down P (elemFinN n) ps ) x
+
+  solutionSub : ℕ → Set
+  solutionSub zero = ⊥
+  solutionSub (succ n) = Fin (succ n) ∧ 𝕋 n
+
+  -- solverStep2 : ∀ {n} → (s : SubList (succ n)) → (xs : List (Fin n))
+  --                 → List∀ (properPred s) xs
+  --                 ∨ ∃ (λ x → occurs x xs ∧ ? )(solutionSub n ∧ 𝕋= n)
+  -- solverStep2 s = {!   !}
+
+
+
+
+
+
+
+
+
+
+  -- These two functions get any instance of atoms in a SubList which have (non reflexive)
+  -- equationson in their RHS
+  getPopAtomsHelper : ∀ {n} → Fin (succ n) → SubList (succ n) → List (Fin (succ n))
+  getPopAtomsHelper f s with s f
+  ... | [] = []
+  ... | x ∷ w = f ∷ []
+
+  -- test = {! elemFinN 1  !}
+
+  getPopAtoms : ∀ {n} → SubList (succ n) → List (Fin (succ n))
+  getPopAtoms {n} s = bindList (λ f → getPopAtomsHelper f s) (elemFinN (succ n))
+
+  -- NF in this context means no atom with equations appears on the RHS and each atom
+  -- has one or less RHS equations, and they must be arrow types
+  -- isNormalForm : ∀ {n} → SubList (succ n) → Set
+  -- isNormalForm {n} s = {!   !} ∧ {!   !} ∧ {!   !}
+
+  -- subWK : ∀ {n} → SubList n → List (𝕋 (succ n)) → SubList (succ n)
+  -- subWK = {!    !}
+
+  -- unify2 : ∀ {n} → (s : SubList (succ n)) → isNormalForm s ∨ ∃ (λ s' → )
+
+
+
+
+
+
+
+{-
+  incFin : ∀ (n : ℕ) → Fin n → Fin n
+  incFin .(succ n) (here n) = here n
+  incFin .(succ (succ n)) (down (here n)) = here (succ n)
+  incFin (succ (succ n)) (down (down f)) = down (incFin (succ n) (down f))
+
+  shiftUp : ∀ {n : ℕ} → Fin n → Fin n → Fin n
+  shiftUp (here n) (here .n) = here n
+  shiftUp (here n) (down g) = here n
+  shiftUp (down t) (here _) = incFin _ (down t)
+  shiftUp (down t) (down g) = down (shiftUp t g)
+
+  liftDown : ∀ (n : ℕ) → ¬ (n ≡ 0) → Fin (succ n) → Fin n
+  liftDown zero nne (here .zero) = exFalso (nne (refl _))
+  liftDown (succ n) nne (here .(succ n)) = here n
+  liftDown n nne (down f) = f
+
+  noccursWeak : ∀ {n} (a : Fin (succ n)) (A : 𝕋 (succ n)) → ¬ (Occurs𝕋 a A) → 𝕋 n
+  noccursWeak {zero} a@(here 0) A@(α x@(here 0)) ¬occ = subst a A (α (liftDown 0 (λ x₁ → ¬occ inAtom) (shiftUp x a)))
+  noccursWeak {succ n} a A@(α x) ¬occ = subst a A (α (liftDown ((succ n)) (λ {()}) (shiftUp x a)))
+  noccursWeak a (A ⇒ A₁) ¬occ = noccursWeak a A (λ x → ¬occ (inLeft x A₁))
+                                ⇒ noccursWeak a A₁ (λ x → ¬occ (inRight A x))
+
+  noV=noT : 𝕋 0 → ⊥
+  noV=noT (t ⇒ t₁) = noV=noT t
+
+  ⇒cong : ∀ {n} {A A' B B' : 𝕋 n} → A ≡ A' → B ≡ B' → A ⇒ B ≡ A' ⇒ B'
+  ⇒cong (refl _) (refl _) = refl _
+
+  occursVar : ∀ {n} (a b : Fin n) → Occurs𝕋 a (α b) → a ≡ b
+  occursVar a .a inAtom = refl a
+
+  fin1ref : ∀ (a b : Fin 1) → a ≡ b
+  fin1ref (here .0) (here .0) = refl _
+
+  noccursVar : ∀ {n} (a b : Fin (succ n)) → (ne : ¬ (a ≡ b)) → wk a (noccursWeak a (α b)  (ne ∘ occursVar a b)) ≡ α b
+  noccursVar {zero} a b ne = exFalso (ne (fin1ref a b))
+  noccursVar {succ n} (here .(succ n)) (here .(succ n)) ne = exFalso (ne (refl _))
+  noccursVar {succ n} (here .(succ n)) (down b) ne = refl _
+  noccursVar {succ n} (down a) (here .(succ n)) ne = refl _
+  noccursVar {succ n} (down a) (down b) ne = {!   !}
+
+  noccursWeakEq : ∀ {n} (a : Fin (succ n)) (A : 𝕋 (succ n)) → (ne : ¬ (Occurs𝕋 a A)) → wk a (noccursWeak a A ne) ≡ A
+  noccursWeakEq {zero} a A ne with noccursWeak a A ne
+  ... | d = exFalso (noV=noT d)
+  noccursWeakEq {succ n} (here .(succ n)) (α (here .(succ n))) ne = exFalso (ne inAtom)
+  noccursWeakEq {succ n} (down a) (α (here .(succ n))) ne = refl _
+  noccursWeakEq {succ n} (here .(succ n)) (α (down x)) ne = refl _
+  noccursWeakEq {succ n} (down a) (α (down x)) ne = noccursVar (down a) (down x) λ {(refl .(down a)) → ne  inAtom  }
+  noccursWeakEq {succ n} a (A ⇒ A₁) ne = ⇒cong (noccursWeakEq a A (λ x → ne (inLeft x A₁)))
+                                               (noccursWeakEq a A₁ (λ x → ne (inRight A x)))
+
+
+  occursCheck : ∀ {n} (a : Fin (succ n)) (A : 𝕋 (succ n)) → Occurs𝕋 a A ∨ ∃ (λ B → A ≡ wk a B)
+  occursCheck {n} a A with atomOccurs a A in p
+  ... | true = in1 ((pr1 (atomOccursCorrect a A)) p)
+  ... | false = in2 (exists (noccursWeak a A λ x → t≢f (atomOccurs a A) ((pr2 (atomOccursCorrect a A)) x) p)
+                            (~ (noccursWeakEq a A (λ x → t≢f (atomOccurs a A) ((pr2 (atomOccursCorrect a A)) x) p))))
+
+
+  -- Represent atoms by Fin, then should be able to kind of lift down the Fins for each step
+  -- of substitution towards our NF, since there will always be a decreasing number of unique
+  -- atoms on the right hand side of our equations.
+
+  record SR : Set where
+    field
+      num : ℕ
+      eq : Fin num → 𝕋 num
+
+  -- occursCheck : ∀ {n : ℕ} → 𝕋Sub n → 𝔹
+  -- occursCheck [] = false
+  -- occursCheck ((a , τ) ∷ eqs) = or (atomOccurs a τ) (occursCheck eqs)
+
+
+
+  -- Normal Form and nf helpers
+  -- nfHelper : ∀ (n i : ℕ) → 𝕋Sub n → 𝕋Sub n
+  -- nfHelper n zero eqs = eqs
+  -- nfHelper n (succ zero) eqs = {!   !}
+  -- nfHelper n (succ (succ i)) eqs = {!   !}
+
+  -- countXs : ∀ (n : ℕ) → 𝕋=* n → ℕ
+  -- countXs m eqs = {!   !}
+
+  -- nf : ∀ (n : ℕ) → 𝕋=* n → 𝕋Sub n
+  -- nf n eqs = nfHelper n (countXs n eqs) (lemma1 eqs)
+
+
+  -- Stuff for handling the decrease in atoms when atomic substitutions are done
+  pred : ℕ → ℕ
+  pred zero = zero
+  pred (succ x) = x
+
+  -- t for target g for gone
+  shiftDown : ∀ (n : ℕ) → Fin n → Fin n → Fin n
+  shiftDown .(succ n) (here n) (here .n) = here n
+  shiftDown .(succ (succ n)) (here (succ n)) (down g) = down (here n)
+  shiftDown .(succ _) (down t) (here _) = down t
+  shiftDown .(succ _) (down t) (down g) = down (shiftDown _ t g)
+
+  shiftUp𝕋 : ∀ (n : ℕ) → Fin n → 𝕋 n → 𝕋 n
+  shiftUp𝕋 n g (α x) = α (shiftUp x g)
+  shiftUp𝕋 n g (t ⇒ t₁) = shiftUp𝕋 n g t ⇒ shiftUp𝕋 n g t₁
+
+  liftDown𝕋 : ∀ (n : ℕ) → ¬ (n ≡ 0) → 𝕋 (succ n) → 𝕋 n
+  liftDown𝕋 zero ne (α x) = exFalso (ne (refl _))
+  liftDown𝕋 (succ n) ne (α x) = α (liftDown (succ n) ne x)
+  liftDown𝕋 n ne (τ ⇒ τ₁) = liftDown𝕋 n ne τ ⇒ liftDown𝕋 n ne τ₁
+
+  unDown𝕋Sub : ∀ (n : ℕ) → 𝕋Sub (succ n) → 𝕋Sub n
+  unDown𝕋Sub n [] = []
+  unDown𝕋Sub zero ((x , τ) ∷ eqs) = []
+  unDown𝕋Sub (succ n) ((x , τ) ∷ eqs) = (liftDown (succ n) (λ ()) x , liftDown𝕋 ((succ n)) ((λ ())) τ)
+                                        ∷ unDown𝕋Sub (succ n) eqs
+
+  -- ⊢ is \|-
+  -- data _⊢_ {𝔸 : Set} (ℰ : 𝕋=* 𝔸) : 𝕋= 𝔸 → Set where
+  --   -- ℰ is \McE
+  --   ax : ∀ (c : 𝕋= 𝔸) → occurs c ℰ → ℰ ⊢ c
+  --   refl : ∀ (t : 𝕋 𝔸) → ℰ ⊢ (con t t)
+  --   symm : ∀ (A B : 𝕋 𝔸) → ℰ ⊢ (con B A) → ℰ ⊢ (con A B)
+  --   tran : ∀ (A B C : 𝕋 𝔸) → ℰ ⊢ (con A C) → ℰ ⊢ (con C B) → ℰ ⊢ (con A B)
+  --   con→ : ∀ (A A' B B' : 𝕋 𝔸) → ℰ ⊢ (con A A') → ℰ ⊢ (con B B') → ℰ ⊢ con (A ⇒ B) (A' ⇒ B')
+
+  test : 𝕋= 3
+  test = con
+             (α (here 2)) -- lhs
+             ((α (here 2)) ⇒ (α (down (here 1)))) -- rhs
+
+  a : Fin 5
+  a = (down (down (down (down (here 0)))))
+
+  b : Fin 5
+  b = (down (down (down (here 1))))
+
+  c : Fin 5
+  c = (down (down (here 2)))
+
+  d : Fin 5
+  d = (down (here 3))
+
+  e : Fin 5
+  e = here 4
+
+  test2 : 𝕋=* 5
+  test2 = con ((α a) ⇒ ((α b) ⇒ (α c)))
+              ((α c) ⇒ ((α a) ⇒ ((α d) ⇒ (α e)))) ∷
+          con ((α d) ⇒ (α c))
+              ((α d) ⇒ (α b)) ∷ []
+
+  -- test3 = {! lemma1 test2  !}
+
+module IntersectionTypes where
+  data 𝕋∩ (𝔸 : Set) : Set where
+    atom∩ : 𝔸 → 𝕋∩ 𝔸
+    fun∩  : 𝕋∩ 𝔸 → 𝕋∩ 𝔸 → 𝕋∩ 𝔸 -- _⇒_
+    meet∩ : 𝕋∩ 𝔸 → 𝕋∩ 𝔸 → 𝕋∩ 𝔸 -- _⊓_
+
+  -- data Sub {𝔸 : Set} : 𝕋∩ 𝔸 → 𝕋∩ 𝔸 → Set where
+  --   refl : ∀ t → Sub t t
+  --   tran : ∀ s t u → Sub s t → Sub t u → Sub s u
+  --   lb1 : ∀ s t → Sub s (meet s t)
+  --   lb2 : ∀ s t → Sub t (meet s t)
+  --   glb : ∀ l s t → Sub l s → Sub l t → Sub l (meet s t)
+  --   contr : ∀ {s s' t t'} → Sub s' s → Sub t t' → Sub (fun s t) (fun s' t')
+  --   dist : ∀ {a b c} → Sub (meet (fun a b) (fun a c)) (fun a (meet b c))
+  --   idem : ∀ {t} → Sub t (meet t t)
+
+  -- mono : ∀ 𝔸 {s s' t t' : 𝕋∩ 𝔸} → Sub s t → Sub s' t' → Sub (meet s s') (meet t t')
+   -- mono st st' = {!   !}
+-}
