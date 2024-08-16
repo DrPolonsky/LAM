@@ -1,11 +1,35 @@
 \documentclass{scrartcl}
 
+\usepackage{amsmath}
+\usepackage{amssymb}
+
 \title{Intersection Type Algebras}
 \author{Aaron Frye, Andrew Polonsky}
+
+\newcommand{\types}{\mathbb{T}}
 
 \begin{document}
 
 \section{2024.08.16}
 
 A given set of equations can lead to multiple SR.  These are all equivalent.
+
+The \emph{recursive type entailment problem} is as follows.
+Given a set of equations between types $E$ and two types $A$ and $B$,
+determine whether $E \vdash A = B$.
+
+The \emph{unification problem} is: Given two types $A$ and $B$,
+determine whether there exists a substitution $\sigma$
+so that $\vdash A[\sigma] = B[\sigma]$.
+
+The \emph{unification problem up to constraints} is: Given a set of equations $E$,
+and two types $A$ and $B$, determine whether there exists a substitution $\sigma$
+so that $E \vdash A[\sigma] = B[\sigma]$.
+
+
+The \emph{general satisfiability problem} is as follows.
+
+Given sets of equations $E_1$, $E_2$, determine whether there exists
+a type algebra morphism $h : \types/E_1 \to \types/E_2$.
+
 \end{document}
