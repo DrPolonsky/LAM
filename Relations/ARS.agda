@@ -213,6 +213,7 @@ module Termination (R : 𝓡 A)  where
   is_-cofinal_ : 𝓟 A → Set
   is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
 
+  -- Cofinality Property
   CP : Set
   CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is R -increasing s) ×
                     (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
@@ -272,7 +273,7 @@ module Newmans-Lemma where
   -- Not provable, unless WN is global. [***]
   -- Derive it from (ii) below??
   WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
-  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b}{c} R*xb R*xc = {!   !}
+  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
 
   UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
                 → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
@@ -407,9 +408,22 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
   -- This seems very classical
+  {- 2024.08.09
+     Actually, it's false.
+     Counter-example: ℕ∞
+        AKA "the one-point compactification of ℕ"
+        AKA "Natural numbers with infinity added"
+     Define R : 𝓡 ℕ∞
+            R x y = x < y
+     Then R is well-founded, hence dominated by a a well-founded Q := R.
+     Also, R is ω-bounded: Every element of every sequence reduces to a := ∞.
+     But R is not SN, for it admits the infinite reduction 0 → 1 → 2 → ⋯
+  ---
   ii : ∀ Q → dominatedByWF R Q → ω-bounded R → SN R -- isWFacc (~R R)
   ii Q domRQ bddR = {!   !}
 
+  -- The same example shows the weaker version below to be unprovable
+  -- (Which is not surprising, since it's classicaly equivalent to the one above.)
   ii-seq : ∀ Q → dominatedByWF R Q → ω-bounded R → isWFseq- (~R R) -- isWFacc (~R R)
   ii-seq Q (QisWFacc , R⊆Q) bddR f f-inc =
     let QisWFseq- : isWFseq- (~R Q)
@@ -419,14 +433,20 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- ii-seq Q domRQ bddR f with bddR f {!   !}
   -- ... | c = {!   !}
 
+  The problem with the above goals is the hypothesis "dominatedByWF R Q".
+  It's not useful for proving strong normalization.
+  Intead, we need something that is nearly dual to "ω-bounded".
+  ω-continuous?
+  -}
+
   iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
   iii Q domRQ RisWCR RisWN = {!   !}
 
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
-  ... | f ,, f-inc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac 
-  ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ with seq-lemma2 f f-inc bₙ cₙ 
+  ... | f ,, f-inc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
+  ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ with seq-lemma2 f f-inc bₙ cₙ
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
-  ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ) 
-  
+  ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
+
 -- The end
