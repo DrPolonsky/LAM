@@ -57,12 +57,22 @@ decLFP F Fdec (lfp x) (lfp y) with Fdec (LFP F) (decLFP F Fdec) x y
 ... | in1 x=y = in1 (ext lfp x=y)
 ... | in2 x≠y = in2 (λ {  (refl .(lfp x)) → x≠y (refl x) })
 
-decADT : ∀ {n} (a : ADT n) (ρ : Env n) → decEnv ρ → dec≡ (⟦ a ⟧ ρ)
-decADT (𝕍 x) ρ de = {!   !}
-decADT 𝟎 ρ de = {!   !}
-decADT 𝟏 ρ de = {!   !}
-decADT (a × a₁) ρ de = {!   !}
-decADT (a ⊔ a₁) ρ de = {!   !}
+decADT : ∀ {n} (a : ADT n) (ρ : Env n) (de : decEnv ρ) → dec≡ (⟦ a ⟧ ρ)
+decADT (𝕍 x) ρ de = λ x₁ y → de x x₁ y
+decADT 𝟎 ρ de = λ x y → exFalso x
+decADT 𝟏 ρ de = λ {tt tt → in1 (refl tt) }
+decADT (a1 × a2) ρ de (x1 , x2) (y1 , y2) with decADT a1 ρ de x1 y1 | decADT a2 ρ de x2 y2
+... | in1 x | in1 x₁ = in1 (x ≡,≡ x₁ )
+... | in1 x | in2 x₁ = in2 (λ x₂ → x₁ (pr2≡,≡ x₂ ) )
+... | in2 x | d2 = in2 λ x₁ → x (pr1≡,≡ x₁ )
+decADT (a ⊔ a₁) ρ de (in1 x) (in1 x₁) with decADT a ρ de x x₁
+... | in1 x₂ = in1 (ext in1 x₂ )
+... | in2 x₂ = in2 (λ x₃ → x₂ (prin1≡ {A = ⟦ a ⟧ ρ} x₃ ) )
+decADT (a ⊔ a₁) ρ de (in1 x) (in2 x₁) = in2 (λ x₂ → in1≠in2 x₂ )
+decADT (a ⊔ a₁) ρ de (in2 x) (in1 x₁) = in2 (λ x₂ → in2≠in1 x₂ )
+decADT (a ⊔ a₁) ρ de (in2 x) (in2 x₁) with decADT a₁ ρ de x x₁
+... | in1 x₂ = in1 (ext (in2) x₂ )
+... | in2 x₂ = in2 (λ x₃ → x₂ (prin2≡ {B = ⟦ a₁ ⟧ ρ} x₃ ) )
 decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ extEnv X ρ)) (λ A dA → decADT a (extEnv A ρ) (decExtEnv ρ A de dA) )
 -- decADT (μ a) ρ de (lfp x) (lfp y) with decADT a (extEnv A ρ) (decExtEnv ρ A de deA) x y
 --                     where A = (LFP (λ X → ⟦ a ⟧ extEnv X ρ))
@@ -255,16 +265,9 @@ substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ subst-level e (wk (here
               e2 = (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})
               e3 = coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
               e4 =  (weakeningLemma≃ (here n) e' {A} ρ)
-              e5 = coskipEnv≃ {ρ = (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A))} {σ = (coskip ρ x (⟦ e' ⟧ ρ))}
-              e6 : coskip (coskip ρ (here n) B) (down x) (⟦ e' ⟧ ρ) y ≃ coskip (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here (succ n)) B y
-              e6 = {!   !} 
-           in (~ e2) ≡≃ (e3 iso∘ iso~ (e1 ≡≃ {!   !} ))
-           -- in (~ e2) ≡≃ (e3 iso∘ iso~ (e1 ≡≃ e5 y {!   !} (coskip≃lemma ρ x e4 ) {!   !}   ))
--- coskipEnv≃ : ∀ {n : ℕ} {ρ σ : Env n} (x : Fin (succ n)) → (A : Set) → (Env≃ ρ σ ) → Env≃ (coskip ρ x A) (coskip σ x A)
-
-        -- cosk A B A≃B y rewrite (~ (coskipLemma x y ρ {⟦ e' ⟧ ρ} {B})) rewrite (~ (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})) with coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
-        -- ... | csl = {! csl iso∘ ?   !}
-        -- csl iso∘ coskipEnv≃ (here _) B (coskip≃lemma ρ x (weakeningLemma≃ (here _) e' ρ ) ) y
+              e5 = coskip≃lemma (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) A≃B y
+              e6 = coskipEnv≃ (here (succ n)) A (coskip≃lemma ρ x e4) y
+           in (~ e2) ≡≃ (e6  iso∘ e5 )
         isom : (A B : Set) → A ≃ B → (⟦ subst-level e (wk (here n) e') (down x) ⟧ coskip ρ (here n) A) ≃ (⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) B)
         isom A B AB with substlemmagen e (wk (here n) e' ) (coskip ρ (here n) A ) (down x)
         ... | r = r iso∘ (⟦ e ⟧≃ cosk A B AB )
@@ -554,10 +557,18 @@ module M=1+M+M² where
   Munode m = lfp (in2 (in1 m) )
   Mbnode : MM → MM → MM
   Mbnode m1 m2 = lfp (in2 (in2 ((m1 , m2 )) ) )
+  MbnodeCurried : MM ∧ MM → MM
+  MbnodeCurried (m1 , m2) = lfp (in2 (in2 ((m1 , m2 )) ) )
 
 
   allM : ℕ → List MM
-  allM n = {!   !}
+  allM zero = []
+  allM (succ n) = let
+    un = List→ Munode (allM n)
+    allM² : List (MM ∧ MM)
+    allM² = lazyProd (allM n) (allM n)
+    bn = List→ MbnodeCurried allM²
+    in Mleaf ∷ merge un bn
 
   ==M : MM → MM → 𝔹
   ==M (lfp (in1 _)) (lfp (in1 _)) = true
@@ -598,21 +609,30 @@ module M=1+M+M² where
   bigM = cn 7 (Mbnode Mleaf) Mleaf
 
   check : Set
-  check = {! findm? bigM 5  !}
+  check = {! findm? Mtest3 5  !}
   -- check = {! findm? (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) Mleaf))) 4   !}
   -- check = {! ==M  (G→M (Gleaf)) Mleaf   !}
 
+  -- take 100 (allM 4) works
+  -- take 100 (allM 5) works
   20ms : List MM
-  20ms = take 20 (allM 4)
+  20ms = take 20 (allM 6)
 
   filter : ∀ {A} → (A → 𝔹) → List A → List A
-  filter = {!   !}
+  filter f [] = []
+  filter f (x ∷ xs) = if f x then (filter f xs) else x ∷ (filter f xs)
 
   pass1 : List MM
-  pass1 = filter (λ x → not (findm? x 3)) 20ms
+  pass1 = filter (λ x → (findm? x 3)) 20ms
 
   pass2 : List MM
-  pass2 = filter (λ x → findm? x 4) 20ms
+  pass2 = filter (λ x → findm? x 4) pass1
+
+  pass3 : List MM
+  pass3 = filter (λ x → findm? x 5) pass2
+
+  -- why does it stop at a number? agda limitation? or the way allM is generated?
+  -- test = {! length (filter (λ {(x , y) → ==M x y})  (zip (take 1000000 (allM 5)) (take 1000000 (allM 6))))  !}
 
 
   -- T→B : ⟦ T ⟧ EmptyEnv  → ⟦ B ⟧ EmptyEnv
