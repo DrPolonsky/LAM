@@ -102,3 +102,21 @@ f ≅ g = ∀ x → f x ≡ g x
 
 _≡,≡_ : ∀ {A B : Set} {x1 x2 : A} {y1 y2 : B} → x1 ≡ x2 → y1 ≡ y2 → x1 , y1 ≡ x2 , y2
 refl x ≡,≡ refl y = refl (x , y)
+
+pr1≡,≡ : ∀ {A B : Set} {x1 x2 : A} {y1 y2 : B} → (x1 , y1) ≡ (x2 , y2) → x1 ≡ x2
+pr1≡,≡ {x1 = x1} {x2 = x2} (refl .(_ , _)) = refl x1
+
+pr2≡,≡ : ∀ {A B : Set} {x1 x2 : A} {y1 y2 : B} → (x1 , y1) ≡ (x2 , y2) → y1 ≡ y2
+pr2≡,≡ {y1 = y1} {y2 = y2} (refl .(_ , _)) = refl y1
+
+prin1≡ : ∀ {A : Set} {B : Set} → {x y : A} → (in1 {B = B} x ≡ in1 y) → (x ≡ y)
+prin1≡ {A = A} {x = x} {y = .x} (refl .(in1 x)) = refl x
+
+prin2≡ : ∀ {A : Set} {B : Set} → {x y : B} → (in2 {A = A} x ≡ in2 y) → (x ≡ y)
+prin2≡ {B = B} {x = x} {y = .x} (refl .(in2 x)) = refl x
+
+in1≠in2 : ∀ {A : Set} {B : Set} → {x : A} {y : B} → in1 x ≡ in2 y → ⊥
+in1≠in2 ()
+
+in2≠in1 : ∀ {A : Set} {B : Set} → {x : A} {y : B} → in2 y ≡ in1 x → ⊥
+in2≠in1 ()
