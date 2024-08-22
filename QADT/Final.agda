@@ -20,20 +20,28 @@ data ADT (n : ℕ) : Set where
 infixr 28 _×_
 infixr 27 _⊔_
 
-
 {-# NO_POSITIVITY_CHECK  #-}
 data LFP (F : Set → Set) : Set where
   lfp : F (LFP F) → LFP F
 
+lfpInj : ∀ (F : Set → Set) {x1 x2 : F (LFP F)} → lfp {F} x1 ≡ lfp {F} x2 → x1 ≡ x2
+lfpInj F (refl (lfp f)) = refl f
+
 Functor : (Set → Set) → Set₁
 Functor F = ∀ {X Y : Set} → (X → Y) → F X → F Y
+
+FunctorInj : ∀ (F : Set → Set) → Functor F → Set₁
+FunctorInj F Fmap = ∀ {X Y : Set} (f : X → Y) → inj f → inj (Fmap f)
 
 {-# TERMINATING #-}
 fold : ∀ {F : Set → Set} (Fmap : Functor F) {A : Set} (a : F A → A) → LFP F → A
 fold Fmap a (lfp x) = a (Fmap (fold Fmap a) x )
 
-foldInj : ∀ {F : Set → Set} → (Fmap : Functor F) {A : Set} (a : F A → A) → inj a → inj (fold Fmap a)
-foldInj {F} Fmap {A} a inja = {!   !}
+{-# TERMINATING #-}
+foldInj : ∀ {F : Set → Set} (Fmap : Functor F) → FunctorInj F Fmap
+            → ∀ {A : Set} (α : F A → A) → inj α → inj (fold Fmap α)
+foldInj {F} Fmap Finj {A} α injα {lfp x} {lfp y} fx=fy =
+  ext lfp (Finj (fold Fmap α) (foldInj {F} Fmap Finj {A} α injα) (injα fx=fy))
 
 NatFun : Functor (λ X → X ∨ ⊤)
 NatFun f (in1 x) = in1 (f x)
@@ -97,6 +105,53 @@ LFP→ f g fmap fg = fold fmap (λ z → lfp (fg (LFP g) z) )
 (⟦ e1 ⊔ e2 ⟧→ ρσ) (in2 y) = in2 ((⟦ e2 ⟧→ ρσ) y)
 ⟦_⟧→_ (μ e) {ρ} {σ} ρσ = LFP→ (λ X → ⟦ e ⟧ extEnv X ρ) (λ X → ⟦ e ⟧ extEnv X σ)
   (λ f → ⟦ e ⟧→ ConsEnv→ f (reflEnv→ ρ ) ) λ X → (⟦ e ⟧→ ConsEnv→ I ρσ )
+
+ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : Env n} (ρ→σ : Env→ ρ σ)
+                  → Env→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
+ADTFunctorInj (𝕍 v) ρ→σ ρ→σInj = ρ→σInj v
+ADTFunctorInj 𝟏 ρ→σ ρ→σInj = λ z → z
+ADTFunctorInj (e1 × e2) ρ→σ ρ→σInj {x1 , x2} {y1 , y2} x12=y12 =
+   ADTFunctorInj e1 ρ→σ ρ→σInj (pr1≡,≡ x12=y12 ) ≡,≡ ADTFunctorInj e2 ρ→σ ρ→σInj (pr2≡,≡ x12=y12 )
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in1 y} x=y = ext in1 (ADTFunctorInj e1 ρ→σ ρ→σInj (prin1≡ x=y ) )
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in2 y} ()
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in1 y} ()
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in2 y} x=y = ext in2 (ADTFunctorInj e2 ρ→σ ρ→σInj (prin2≡ x=y ) )
+ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldinj x=y where
+      F : Set → Set
+      F = λ X → ⟦ e ⟧ (extEnv X ρ)
+      Fmap : Functor F
+      Fmap {X} {Y} f z = ⟦_⟧→_ {succ n} e {extEnv X ρ} {extEnv Y ρ} (ConsEnv→ f (reflEnv→ ρ) ) z
+      Finj : FunctorInj F Fmap
+      Finj {A} {B} f finj = ADTFunctorInj e {extEnv A ρ} {extEnv B ρ} (ConsEnv→ f (reflEnv→ ρ))
+           λ { (here .n) → finj ; (down z) → I }
+      A : Set
+      A = ⟦ μ e ⟧ σ
+      α : F A → A  
+      α = (λ z → lfp ((⟦ e ⟧→ ConsEnv→ (λ x₁ → x₁) ρ→σ) z))
+      αinj : inj α
+      αinj {z1} {z2} z12 with lfpInj (λ z → ⟦ e ⟧ extEnv z σ) z12
+      -- ... | c = {!   !}
+      ... | c = ADTFunctorInj e {extEnv A ρ} {extEnv A ρ} (reflEnv→ (extEnv A ρ)) (reflEnv→Inj (coskip ρ (here n) (LFP (λ z → ⟦ e ⟧ coskip σ (here n) z))) ) {!   !}
+        where g = {!   !}
+      foldinj = foldInj Fmap Finj α αinj
+
+   -- fold (λ f z → (⟦ e ⟧→ ConsEnv→ f (λ x₁ x₂ → x₂)) z)
+   --   (λ z → lfp ((⟦ e ⟧→ ConsEnv→ (λ x₁ → x₁) ρ→σ) z)) x
+   --   ≡
+   --   fold (λ f z → (⟦ e ⟧→ ConsEnv→ f (λ x₁ x₂ → x₂)) z)
+   --   (λ z → lfp ((⟦ e ⟧→ ConsEnv→ (λ x₁ → x₁) ρ→σ) z)) y
+   --
+   -- fold (λ f → ⟦ e ⟧→ ConsEnv→ f (λ x₁ x₂ → x₂))
+   --           (λ z → lfp ((⟦ e ⟧→ ConsEnv→ (λ x₁ → x₁) ρ→σ) z)) x
+   --           ≡
+   --           fold (λ f → ⟦ e ⟧→ ConsEnv→ f (λ x₁ x₂ → x₂))
+   --           (λ z → lfp ((⟦ e ⟧→ ConsEnv→ (λ x₁ → x₁) ρ→σ) z)) y
+
+-- ADTFunctorInj (μ e) ρ→σ ρ→σInj {x} {y} x=y = foldInj ? {!   !} {!   !} {!   !} {!   !}
+-- foldInj : ∀ {F : Set → Set} (Fmap : Functor F) → FunctorInj F Fmap
+--             → ∀ {A : Set} (α : F A → A) → inj α → inj (fold Fmap α)
+-- ConsEnv→ : ∀ {n} {X Y : Set} (f : X → Y) → {e1 e2 : Env n} (e12 : Env→ e1 e2)
+--              → Env→ (extEnv X e1) (extEnv Y e2)
 
 foldADT : ∀ {n} (a : ADT (succ n)) (ρ : Env n) (X : Set) (f : ⟦ a ⟧ (extEnv X ρ) → X)
           → ⟦ μ a ⟧ ρ → X

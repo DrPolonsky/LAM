@@ -343,7 +343,7 @@ module Newmans-Lemma where
   -- wCR→conf {R} wcR x (acc IH) R⋆xb R⋆xc = {!   !}
 
 
-module theorem-1-2-2 (R : 𝓡 A) where
+module Theorem-1-2-2 (R : 𝓡 A) where
   i-1 : confluent R → NFP R
   i-1 confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   ... | z ,, R⋆xz , ε⋆ = R⋆xz
@@ -403,7 +403,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
     g : ∀ k → (R ⋆) (f k) n
-    g k with theorem-1-2-2.ii R (RisWN , RisUN) (f 0 ,, R*f0n , (seq-lemma f f-inc k) )
+    g k with Theorem-1-2-2.ii R (RisWN , RisUN) (f 0 ,, R*f0n , (seq-lemma f f-inc k) )
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
@@ -438,6 +438,10 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   Intead, we need something that is nearly dual to "ω-bounded".
   ω-continuous?
   -}
+
+  ii- : WN R → UN R → ω-bounded R → SN R
+  ii- RisWN RisUN Risωbdd with Theorem-1-2-2.ii R (RisWN , RisUN)
+  ... | c = {!   !}
 
   iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
   iii Q domRQ RisWCR RisWN = {!   !}

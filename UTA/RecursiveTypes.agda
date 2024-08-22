@@ -73,6 +73,7 @@ module RecursiveTypes where
   filterRefl : ∀ {n} → SubList n → SubList n
   filterRefl s = λ x → filterAtom x (s x)
 
+  -- THE KEY PREPARATION FUNCTION
   prepSub : ∀ {n} → 𝕋=* n → SubList n
   prepSub eqs = filterRefl (𝕋Sub→SubList (invertAll eqs))
 

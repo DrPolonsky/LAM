@@ -1,10 +1,13 @@
 module Environment where
+-- module QADT.Environment where
 
 open import BasicLogic
 open import BasicDatatypes
 open import Functions
 open import Isomorphisms
 
+Pred : Set → Set₁
+Pred X = X → Set
 
 skip : ∀ {n} → Fin (succ n) → Fin n → Fin (succ n)
 skip (here _) x = down x
@@ -64,13 +67,24 @@ decExtEnv ρ A de da (down x) = de x
 Env→ : ∀ {n : ℕ} → Env n → Env n → Set
 Env→ ρ σ = ∀ x → ρ x → σ x
 
+Env→Inj : ∀ {n} {ρ σ : Env n} → Pred (Env→ ρ σ)
+Env→Inj ρ→σ = ∀ x → inj (ρ→σ x)
+
 ConsEnv→ : ∀ {n} {X Y : Set} (f : X → Y) → {e1 e2 : Env n} (e12 : Env→ e1 e2)
              → Env→ (extEnv X e1) (extEnv Y e2)
 ConsEnv→ f e12 (here _) = f
 ConsEnv→ f e12 (down x) = e12 x
 
+ConsEnv→Inj :  ∀ {n} {X Y : Set} (f : X → Y) → {e1 e2 : Env n} (e12 : Env→ e1 e2)
+                 → inj f → Env→Inj e12 → Env→Inj (ConsEnv→ f e12)
+ConsEnv→Inj f e12 injf inje12 (here _) = injf
+ConsEnv→Inj f e12 injf inje12 (down x) = inje12 x
+
 reflEnv→ : ∀ {n} (e : Env n) → Env→ e e
 reflEnv→ e x = I
+
+reflEnv→Inj : ∀ {n} (e : Env n) → Env→Inj (reflEnv→ e)
+reflEnv→Inj e = λ x → λ z → z
 
 Env≃ : ∀ {n : ℕ} → Env n → Env n → Set
 Env≃ ρ σ = ∀ x → ρ x ≃ σ x

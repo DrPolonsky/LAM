@@ -11,10 +11,12 @@ open import Lambda
 𝓟^ (succ n) A = A → 𝓟^ n A
 
 -- The type of unary predicates on A, AKA the powerset of A
+-- 𝓟 is \MCP
 𝓟 : Set → Set₁
 𝓟 = 𝓟^ 1
 
 -- The type of binary predicates, AKA relations, on A
+-- 𝓟 is \MCR
 𝓡 : Set → Set₁
 𝓡 = 𝓟^ 2
 
