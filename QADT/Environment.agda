@@ -9,20 +9,29 @@ open import Isomorphisms
 Pred : Set → Set₁
 Pred X = X → Set
 
+Env : ℕ → Set₁
+Env n = Fin n → Set
+
+EmptyEnv : Env 0
+EmptyEnv ()
+
+ρ₀ : Env 0
+ρ₀ = EmptyEnv
+
 skip : ∀ {n} → Fin (succ n) → Fin n → Fin (succ n)
 skip (here _) x = down x
 skip (down y) (here n) = here (succ n)
 skip (down y) (down x) = down (skip y x )
 
-skip2 : ∀ {n} → (x : Fin (succ n)) (y : Fin (succ (succ n))) → Fin (succ n)
-skip2 {n} (here _) (here .(succ _)) = here _
-skip2 (here _) (down y) = y
-skip2 (down x) (here .(succ _)) = here _
-skip2 {succ n} (down x) (down y) = down (skip2 x y )
-
-skip2lemma1 : ∀ {n} (x : Fin (succ n)) → skip2 x (here (succ n)) ≡ here n
-skip2lemma1 {n} (here _) = refl (here n)
-skip2lemma1 {n} (down x) = refl (here n)
+-- skip2 : ∀ {n} → (x : Fin (succ n)) (y : Fin (succ (succ n))) → Fin (succ n)
+-- skip2 {n} (here _) (here .(succ _)) = here _
+-- skip2 (here _) (down y) = y
+-- skip2 (down x) (here .(succ _)) = here _
+-- skip2 {succ n} (down x) (down y) = down (skip2 x y )
+--
+-- skip2lemma1 : ∀ {n} (x : Fin (succ n)) → skip2 x (here (succ n)) ≡ here n
+-- skip2lemma1 {n} (here _) = refl (here n)
+-- skip2lemma1 {n} (down x) = refl (here n)
 
 unskip : ∀ {n} → (x : Fin (succ n)) (y : Fin (succ (succ n))) → Fin (succ (succ n))
 unskip {n} (here .n) (here .(succ n)) = down (here n)
@@ -36,23 +45,17 @@ unskiplemma1 {n} (down x) = refl (down (down x))
 
 
 
-Env : ℕ → Set₁
-Env n = Fin n → Set
-
 decEnv : ∀ {n} → Env n → Set
 decEnv ρ = ∀ x → dec≡ (ρ x)
-
-EmptyEnv : Env 0
-EmptyEnv ()
-
-ρ₀ : Env 0
-ρ₀ = EmptyEnv
 
 coskip : ∀ {n} {k} {A : Set k} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
 coskip f (here _) a (here _) = a
 coskip f (here _) a (down y) = f y
 coskip {.(succ n)} f (down x) a (here (succ n)) = f (here n)
 coskip {succ n} f (down x) a (down y) = coskip (λ x₁ → f (down x₁ ) ) x a y
+
+_⅋_:=_ : ∀ {n} → Env n → Fin (succ n) → Set → Env (succ n)
+Γ ⅋ x := A = coskip Γ x A
 
 extEnvGen : ∀ {n : ℕ} → (Fin (succ n)) → Set → Env n → Env (succ n)
 extEnvGen {n} x A ρ y = coskip ρ x A y
@@ -113,15 +116,15 @@ substlemmaNoADT {.(succ n)} f ρ (down y) a (here (succ n)) = refl (f (ρ (here 
 substlemmaNoADT f ρ (here _) a (down x) = refl (f (ρ x))
 substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f (λ z → ρ (down z)) y a x
 
-enveqlemma1 : ∀ {n} (A A' : Set) (x : Fin (succ n)) (y : Fin (succ (succ n))) (ρ : Env n) → Env≃ (coskip (coskip ρ x A ) y A') (coskip (coskip ρ (skip2 x y ) A') (unskip x y ) A)
-enveqlemma1 {n} A A' (here _) (here _) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (down y) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {n} A A' (here _) (down y) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 A A' (down x) (here _) ρ (here .(succ _)) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 A A' (down x) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {succ n} A A' (down x) (down y) ρ (here .(succ (succ n))) = iso (λ z → z) (λ z → z) refl refl
-enveqlemma1 {succ n} A A' (down x) (down y) ρ (down g) = enveqlemma1 A A' x y (λ z → ρ (down z)) g
+-- enveqlemma1 : ∀ {n} (A A' : Set) (x : Fin (succ n)) (y : Fin (succ (succ n))) (ρ : Env n) → Env≃ (coskip (coskip ρ x A ) y A') (coskip (coskip ρ (skip2 x y ) A') (unskip x y ) A)
+-- enveqlemma1 {n} A A' (here _) (here _) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 {n} A A' (here _) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 {n} A A' (here _) (down y) ρ (here .(succ n)) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 {n} A A' (here _) (down y) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 A A' (down x) (here _) ρ (here .(succ _)) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 A A' (down x) (here _) ρ (down g) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 {succ n} A A' (down x) (down y) ρ (here .(succ (succ n))) = iso (λ z → z) (λ z → z) refl refl
+-- enveqlemma1 {succ n} A A' (down x) (down y) ρ (down g) = enveqlemma1 A A' x y (λ z → ρ (down z)) g
 
 skipcoskip : ∀ {n} (ρ : Env n) x v A → coskip ρ x A (skip x v) ≡ ρ v
 skipcoskip {n} ρ (here .n) v A = refl (ρ v)

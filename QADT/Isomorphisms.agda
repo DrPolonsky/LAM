@@ -14,6 +14,9 @@ infix 19 _≃_
 and≡ : ∀ {A B : Set} {w x : A} {y z : B} → w ≡ x → y ≡ z → (w , y) ≡ (x , z)
 and≡ {A} {B} {w} {.w} {y} {.y} (refl .w) (refl .y) = refl (w , y)
 
+-- cong, : ...
+-- cong, = cong2 _,_
+
 iso∧ : ∀ {A1 A2 B1 B2} → (A1 ≃ A2) → (B1 ≃ B2) → (A1 ∧ B1) ≃ (A2 ∧ B2)
 iso∧ {A1} {A2} {B1} {B2} (iso f+ f- f-+ f+-) (iso g+ g- g-+ g+-)
   = iso fg+ fg- fg-+ fg+- where
@@ -44,6 +47,13 @@ iso∨ {A1} {A2} {B1} {B2} (iso f+ f- f-+ f+-) (iso g+ g- g-+ g+-)
 
 id≃ : ∀ (A : Set) → A ≃ A
 id≃ A = iso (λ x → x ) (λ x → x ) refl refl
+
+
+_≡≃_ : ∀ {A B C : Set} → A ≡ B → B ≃ C → A ≃ C
+refl _ ≡≃ BC = BC
+
+refl2iso : ∀ {A B} → A ≡ B → A ≃ B
+refl2iso (refl A) = id≃ A
 
 _iso∘_ : ∀ {A B C : Set} → A ≃ B → B ≃ C → A ≃ C
 (iso f+ f- f-+ f+-) iso∘ (iso f+1 f-1 f-+1 f+-1) = iso (f+1 ∘ f+) (f- ∘ f-1 ) (forward  ) backward where
