@@ -151,7 +151,7 @@ foldInjADT {n} ρ t {A} a inja = {!   !}
 ⟦ e ⊔ e₁ ⟧≃ ρ≃σ = iso∨ (⟦ e ⟧≃ ρ≃σ) (⟦ e₁ ⟧≃ ρ≃σ)
 ⟦_⟧≃_ (μ e) {ρ = ρ} {σ = σ} ρ≃σ = LFP≃ (λ z → ⟦ e ⟧ extEnv z ρ) (λ z → ⟦ e ⟧ extEnv z σ) f where
   f : (x y : Set) → x ≃ y → (⟦ e ⟧ extEnv x ρ) ≃ (⟦ e ⟧ extEnv y σ)
-  f x y xy with lemmaμ1 xy ρ≃σ
+  f x y xy with coskipEnv≃Set≃ xy ρ≃σ
   ... | μ1 = ⟦ e ⟧≃ μ1
 
 wk : ∀ {n} → Fin (succ n) → ADT (n) → ADT (succ n)
@@ -178,12 +178,6 @@ e [ x := e' ] = subst-level e e' x
 
 _[_] : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
 e [ e' ] = subst e e'
-
--- _≡∧≡_ : ∀ {A B C D : Set₁} → A ≡ B → C ≡ D → (A ∧ C) ≡ (B ∧ D)
--- refl A ≡∧≡ refl C = refl (A ∧ C)
---
--- _≡∨≡_ : ∀ {A B C D : Set₁} → A ≡ B → C ≡ D → (A ∨ C) ≡ (B ∨ D)
--- refl A ≡∨≡ refl C = refl (A ∨ C)
 
 -- The following lemmas are used in the proofs of weakinglemma≃
 big~ : ∀ {l} {A : Set l} {a b : A} → a ≡ b → b ≡ a
@@ -214,7 +208,7 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl+ (e1 ⊔ e2) (in1 y1) = in1 (wkl+ e1 y1)
   wkl+ (e1 ⊔ e2) (in2 y2) = in2 (wkl+ e2 y2)
   wkl+ (μ e) y = _≃_.f+ (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ lemmaμ1 X≃Y (reflEnv ρ)) )) y
+      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ coskipEnv≃Set≃ X≃Y (reflEnv ρ)) )) y
   wkl- : (e : ADT n) → ⟦ e ⟧ ρ → ⟦ wk x e ⟧ coskip ρ x A'
   wkl- (𝕍 v) y = rewriteRoot (big~ (skipcoskip ρ x v A' ) ) y
   wkl- 𝟏 y = tt
@@ -222,7 +216,7 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl- (e ⊔ e₁) (in1 x) = in1 (wkl- e x )
   wkl- (e ⊔ e₁) (in2 x) = in2 (wkl- e₁ x )
   wkl- (μ e) y = _≃_.f- (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ lemmaμ1 X≃Y (reflEnv ρ)) )) y
+      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ coskipEnv≃Set≃ X≃Y (reflEnv ρ)) )) y
   wkl-+ : (e : ADT n) → ∀ z → wkl- e (wkl+ e z) ≡ z
   wkl-+ (𝕍 v) z = rewriteRoot-+ (skipcoskip ρ x v A' ) z
   wkl-+ 𝟏 tt = refl tt
@@ -230,7 +224,7 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl-+ (e ⊔ e₁) (in1 x) = ext in1 (wkl-+ e x )
   wkl-+ (e ⊔ e₁) (in2 x) = ext in2 (wkl-+ e₁ x )
   wkl-+ (μ e) y = _≃_.f-+ (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ lemmaμ1 X≃Y (reflEnv ρ)) )) y
+      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ coskipEnv≃Set≃ X≃Y (reflEnv ρ)) )) y
   wkl+- : (e : ADT n) → ∀ z → wkl+ e (wkl- e z) ≡ z
   wkl+- (𝕍 v) z = rewriteRoot+- (skipcoskip ρ x v A' ) z
   wkl+- 𝟏 tt = refl tt
@@ -238,16 +232,16 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl+- (e ⊔ e₁) (in1 x) = ext in1 (wkl+- e x )
   wkl+- (e ⊔ e₁) (in2 x) = ext in2 (wkl+- e₁ x )
   wkl+- (μ e) y = _≃_.f+- (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ lemmaμ1 X≃Y (reflEnv ρ)) )) y
+      (λ X Y X≃Y → ((⟦ wk (down x) e ⟧≃ λ z → refl2iso (coskipLemma x z ρ {A'} {X}) ) iso∘ (weakeningLemma≃ (down x) e (extEnv X ρ))) iso∘ (⟦ e ⟧≃ coskipEnv≃Set≃ X≃Y (reflEnv ρ)) )) y
 
 
-substlemmagen : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → (ρ : Env n) → (x : Fin (succ n)) → ⟦ subst-level e e' x ⟧ ρ ≃ ⟦ e ⟧ (coskip ρ x (⟦ e' ⟧ ρ))
+substlemmagen : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → (ρ : Env n) → (x : Fin (succ n)) → ⟦ e [ x := e' ] ⟧ ρ ≃ ⟦ e ⟧ (coskip ρ x (⟦ e' ⟧ ρ))
 substlemmagen {n} (𝕍 v) e' ρ x = refl2iso (substlemmaNoADT (λ e → ⟦ e ⟧ ρ) (𝕍) x e' v)
 substlemmagen {n} 𝟎 e' ρ x = iso (λ z → z) (λ z → z) refl refl
 substlemmagen {n} 𝟏 e' ρ x = iso (λ z → z) (λ z → z) refl refl
 substlemmagen {n} (e × e₁) e' ρ x = iso∧ (substlemmagen e e' ρ x ) (substlemmagen e₁ e' ρ x )
 substlemmagen {n} (e ⊔ e₁) e' ρ x = iso∨ (substlemmagen e e' ρ x) (substlemmagen e₁ e' ρ x)
-substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ subst-level e (wk (here n) e') (down x) ⟧ coskip ρ (here n) X)) ((λ X → ⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) X)) (isom ) where
+substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ e [ (down x) := (wk (here n) e') ] ⟧ coskip ρ (here n) X)) ((λ X → ⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) X)) (isom ) where
         cosk : (A B : Set) → A ≃ B → Env≃
           (coskip (coskip ρ (here n) A) (down x)
           (⟦ wk (here n) e' ⟧ coskip ρ (here n) A))
@@ -256,11 +250,11 @@ substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ subst-level e (wk (here
         cosk A B A≃B y = -- (weakeningLemma≃ (here n) e' ρ)
           let e1 = (coskipLemma x y ρ {⟦ e' ⟧ ρ} {B})
               e2 = (coskipLemma x y  ρ {⟦ wk (here n) e' ⟧ coskip ρ (here n) A} {A})
-              e3 = coskip≃lemma {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
+              e3 = coskipSet≃ {S1 = A} {S2 = B} (coskip ρ x (⟦ wk (here n) e' ⟧ coskip ρ (here n) A)) (here _) A≃B y
               e4 =  (weakeningLemma≃ (here n) e' {A} ρ)
-              e5 = coskip≃lemma (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) A≃B y
-              e6 = coskipEnv≃ (here (succ n)) A (coskip≃lemma ρ x e4) y
+              e5 = coskipSet≃ (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) A≃B y
+              e6 = coskipEnv≃ (here (succ n)) A (coskipSet≃ ρ x e4) y
            in big~ e2  ≡≃ (e6  iso∘ e5 )
-        isom : (A B : Set) → A ≃ B → (⟦ subst-level e (wk (here n) e') (down x) ⟧ coskip ρ (here n) A) ≃ (⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) B)
+        isom : (A B : Set) → A ≃ B → (⟦ e [ (down x) := (wk (here n) e') ] ⟧ coskip ρ (here n) A) ≃ (⟦ e ⟧ coskip (coskip ρ x (⟦ e' ⟧ ρ)) (here (succ n)) B)
         isom A B AB with substlemmagen e (wk (here n) e' ) (coskip ρ (here n) A ) (down x)
         ... | r = r iso∘ (⟦ e ⟧≃ cosk A B AB )

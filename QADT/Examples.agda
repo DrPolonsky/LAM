@@ -91,7 +91,7 @@ module M=1+M+M² where
   open G=1+2G+G²+G³
 
   gM : ADT 0
-  gM = subst g M
+  gM = g [ M ]
 
   gM=M : Iso gM M
   -- gM=M = ~~ (fix≃ m =!= += (~~ (=+ (c×= (dist3 =!= cong+= i×r (cong+= i×r ar i+r ) !! )) =!= a+= (+= e ) ) ) )
@@ -242,7 +242,7 @@ module 1+X²=1+X+X³ where
   T : ADT 0
   T = μ t
 
-  tB=B : Iso (subst t B) B
+  tB=B : Iso (t [ B ]) B
   tB=B = ~~ (fix≃ b =!= += (×= (fix≃ b) =!= dl= (=+ i×r ) ) )
 
   foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ EmptyEnv → X

@@ -29,8 +29,8 @@ data Iso {n} : ADT n → ADT n → Set where
   distrR≃ : ∀ {A B C} → Iso ((A ⊔ B) × C) ((A × C) ⊔ (B × C))
   annih×≃ : ∀ a → Iso (a × 𝟎) 𝟎
   -- Mu reduction rules
-  fix≃ : ∀ (e : ADT (succ n)) → Iso (μ e) (subst e (μ e))
-  subst≃ : ∀ {e1 e2 : ADT (succ n)} {d1 d2 : ADT n} → Iso e1 e2 → Iso d1 d2 → Iso (subst e1 d1) (subst e2 d2)
+  fix≃ : ∀ (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
+  subst≃ : ∀ {e1 e2 : ADT (succ n)} {d1 d2 : ADT n} → Iso e1 e2 → Iso d1 d2 → Iso (e1 [ d1 ]) (e2 [ d2 ])
 
 -- Groupoid operations
 !! : ∀ {n} {a : ADT n}   → Iso a a
@@ -182,8 +182,8 @@ dist3 = dl= (!+ dl)
 foil : ∀ {n} {A B : ADT n} → Iso ((A ⊔ B) ²) (A ² ⊔ (Num 2 × A × B) ⊔ B ²)
 foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×l) =!~ (+1× 1 (=+ (=× i+r))) ) ) ) ) ))
 
--- μiso : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (subst e (μ e))
-μiso : ∀ {n} (e : ADT (succ n)) (ρ : Env n) → ⟦ μ e ⟧ ρ ≃ ⟦ subst e (μ e) ⟧ ρ
+-- μiso : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
+μiso : ∀ {n} (e : ADT (succ n)) (ρ : Env n) → ⟦ μ e ⟧ ρ ≃ ⟦ e [ (μ e) ] ⟧ ρ
 μiso {n} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ extEnv (x  ) ρ )) | substlemmagen e (μ e) ρ (here _)
 ... | li | sl = li iso∘ iso~ sl
 
@@ -198,14 +198,14 @@ foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×
 ≃⟦ ∧≃ e e₁ ⟧ ρ = iso∧ (≃⟦ e ⟧ ρ ) (≃⟦ e₁ ⟧ ρ)
 ≃⟦ ∨≃ e e₁ ⟧ ρ = iso∨ (≃⟦ e ⟧ ρ) (≃⟦ e₁ ⟧ ρ)
 ≃⟦ μ≃ {e1} {e2} e12 ⟧ ρ = LFP≃ (λ X → ⟦ e1 ⟧ (extEnv X ρ)) ((λ X → ⟦ e2 ⟧ (extEnv X ρ)))
-                          λ X Y XY → ≃⟦ e12 ⟧≃ (lemmaμ1 XY (reflEnv ρ ) )
+                          λ X Y XY → ≃⟦ e12 ⟧≃ (coskipEnv≃Set≃ XY (reflEnv ρ ) )
 -- ≃⟦ ×≃ A x ⟧ ρ = iso∧ (⟦ refl≃ A ⟧iso ρ ) (≃⟦ x ⟧ ρ)
 -- ≃⟦ ⊔≃ A x ⟧ ρ = iso∨ (⟦ refl≃ A ⟧iso ρ) (≃⟦ x ⟧ ρ)
 ≃⟦ distrL≃ ⟧ ρ = isodistrL
 ≃⟦ distrR≃ ⟧ ρ = isodistrR
 ≃⟦ fix≃ e ⟧ ρ = μiso e ρ
 ≃⟦_⟧ {n} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ (here _) | substlemmagen e2 d2 ρ (here _)
-... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskip≃lemma ρ (here _) (≃⟦ j2 ⟧ ρ)) ) )
+... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (here _) (≃⟦ j2 ⟧ ρ)) ) )
 ≃⟦ assoc×≃ a b c ⟧ ρ = assoc∧
 ≃⟦ assoc⊔≃ a b c ⟧ ρ = assoc∨
 ≃⟦ comm⊔≃ a b ⟧ ρ = comm∨
