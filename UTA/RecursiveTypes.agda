@@ -10,21 +10,34 @@ module RecursiveTypes where
   data ∃ {A : Set} (B : A → Set) : Set where
     exists : ∀ (x : A) → x ∈ B → ∃ B
 
+  -- Takes a Fin n and a Fin n+1, say f₁ and f₂.
+  -- f₁ is mapped into Fin n+1 in such a way that it will not equal f₂, so f₂ is 'skipped'
+  -- in the mapping from Fin n to Fin n+1.
   skip : ∀ {n} → Fin (succ n) → Fin n → Fin (succ n)
   skip (here _) x = down x
   skip (down v) (here n) = here (succ n)
   skip (down v) (down x) = down (skip v x)
 
+  -- RENAME
+  -- Arguments:
+  -- f : Fin n → A
+  -- x : Fin (succ n)
+  -- a : 
+  -- y : Fin (succ n)
+  -- Returns:
+  -- The result of applying f to 
   elimFin : ∀ {n} {A : Set} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
   elimFin {n} f (here n) a (here n) = a
   elimFin {n} f (here n) a (down y) = f y
   elimFin {(succ n)} f (down x) a (here (succ n)) = f (here n)
   elimFin {succ n} f (down x) a (down y) = elimFin (f ∘ down) x a y
 
+  -- Types are either Atoms (represented by elements of Fin n) or function types
   data 𝕋 (n : ℕ) : Set where
     α : Fin n → 𝕋 n
     _⇒_ : 𝕋 n → 𝕋 n → 𝕋 n
 
+  -- 
   wk : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n)
   wk a (α x) = α (skip a x)
   wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
@@ -47,16 +60,26 @@ module RecursiveTypes where
   SubList : ℕ → Set
   SubList n = Fin n → List (𝕋 n)
 
-  -- Well founded inversion
+  -- Arguments:
+  -- T : 𝕋= n, a datatype representing an equation between types
+  -- Returns: 
+  -- A list of 𝕋Sub n ({Fin n, 𝕋 n} pairs) derived by recursively pairing up congruent terms
+  -- in T
   invertLemma : ∀ {n : ℕ} → 𝕋= n → 𝕋Sub n
   invertLemma (con (α x) (α y)) = (x , α y ) ∷ []
   invertLemma (con (α x) t@(rhs1 ⇒ rhs2)) = (x , t ) ∷ []
   invertLemma (con l@(lhs1 ⇒ lhs2) (α x)) = (x , l) ∷ []
   invertLemma (con (lhs1 ⇒ lhs2) (rhs1 ⇒ rhs2)) = invertLemma (con lhs1 rhs1) ++ invertLemma (con lhs2 rhs2)
 
+  -- Takes a list of 𝕋= and creates a single concatenated 𝕋Sub list using invertLemma
   invertAll : ∀ {n : ℕ} → 𝕋=* n → 𝕋Sub n
   invertAll = bindList invertLemma
 
+  -- Arguments:
+  -- x : Fin n
+  -- L : 𝕋Sub n
+  -- Returns:
+  -- A list of types for which the LHS in L is equal to x. 
   lookup : ∀ {n} → (x : Fin n) → 𝕋Sub n → List (𝕋 n)
   lookup x [] = []
   lookup {succ n} x ((y , c) ∷ cs) = elimFin (λ _ → rc) (x) (c ∷ rc) (y)
@@ -92,11 +115,14 @@ module RecursiveTypes where
     inLeft : ∀ {t1} → Occurs𝕋 v t1 → ∀ t2 → Occurs𝕋 v (t1 ⇒ t2)
     inRight : ∀ t1 {t2} → Occurs𝕋 v t2 → Occurs𝕋 v (t1 ⇒ t2)
 
-  -- Check if atom occurs in type and comprehensive occurs check
+  -- Takes an atom and a type and returns a boolean based on whether or not that atom occurs
+  -- in that type
   atomOccurs : ∀ {n : ℕ} → (a : Fin n) → 𝕋 n → 𝔹
   atomOccurs a₁ (α a₂) = case (λ _ → true) (λ _ → false) (decFin a₁ a₂)
   atomOccurs a (τ ⇒ τ₁) = or (atomOccurs a τ) (atomOccurs a τ₁)
 
+  -- Proof that atomOccurs is a decision algorithm for the Occurs𝕋 type, which axiomatizes
+  -- membership of an atom in a type.
   atomOccursCorrect : ∀ {n} (v : Fin n) → decBy (Occurs𝕋 v) (atomOccurs v)
   atomOccursCorrect v (α x) with decFin v x
   ... | in1 v=x rewrite v=x = (λ _ → inAtom) , (λ x₂ → refl true)
@@ -106,9 +132,11 @@ module RecursiveTypes where
   ... | false = (λ x → inRight τ (((pr1 (atomOccursCorrect v τ₁)) x))) , λ {(inLeft x .τ₁) → exFalso (t≢f (atomOccurs v τ) ((pr2 (atomOccursCorrect v τ)) x) p)
                                                                           ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x}
 
+  -- Congruence Lemma, probably should be moved
   _≡⇒≡_ : ∀ {n} {A B C D : 𝕋 n} → A ≡ B → C ≡ D → (A ⇒ C) ≡ (B ⇒ D)
   refl A ≡⇒≡ refl B = refl (A ⇒ B)
 
+  -- 
   occCheckVar : ∀ {n} (x y : Fin (succ n)) → x ≡ y ∨ ∃ (λ z → (y ≡ skip x z))
   occCheckVar (here _) (here _) = in1 (refl (here _))
   occCheckVar (here _) (down y) = in2 (exists y (refl (down y)) )
@@ -440,3 +468,4 @@ module IntersectionTypes where
   -- mono : ∀ 𝔸 {s s' t t' : 𝕋∩ 𝔸} → Sub s t → Sub s' t' → Sub (meet s s') (meet t t')
    -- mono st st' = {!   !}
 -}
+    
