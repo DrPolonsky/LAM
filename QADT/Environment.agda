@@ -65,22 +65,6 @@ reflEnv→ e x = I
 reflEnv→Inj : ∀ {n} (e : Env n) → Env→Inj (reflEnv→ e)
 reflEnv→Inj e = λ x → λ z → z
 
-Env≃ : ∀ {n : ℕ} → Env n → Env n → Set
-Env≃ ρ σ = ∀ x → ρ x ≃ σ x
-
-_enviso∘_ : ∀ {n : ℕ} {ρ σ ψ : Env n} → Env≃ ρ σ → Env≃ σ ψ → Env≃ ρ ψ
-_enviso∘_ {n} {ρ} {σ} {ψ} e1 e2 x with e1 x | e2 x
-... | e1x | e2x = e1x iso∘ e2x
-
-reflEnv : ∀ {n} (ρ : Env n)  → Env≃ ρ ρ
-reflEnv ρ x = id≃ (ρ x)
-
-substlemmaNoADT : ∀ {n} {l1} {l2} {A : Set l1} {B : Set l2} (f : A → B) → (ρ : Fin n → A) → (y : Fin (succ n)) → (a : A) → (x : Fin (succ n)) → f (coskip ρ y a x) ≡ coskip (λ z → f (ρ z)) y (f a) x
-substlemmaNoADT f ρ (here _) a (here _) = refl (f a)
-substlemmaNoADT {.(succ n)} f ρ (down y) a (here (succ n)) = refl (f (ρ (here n)))
-substlemmaNoADT f ρ (here _) a (down x) = refl (f (ρ x))
-substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f (λ z → ρ (down z)) y a x
-
 skipcoskip : ∀ {n} (ρ : Env n) x v A → coskip ρ x A (skip x v) ≡ ρ v
 skipcoskip {n} ρ (here .n) v A = refl (ρ v)
 skipcoskip {.(succ n)} ρ (down x) (here n) A = refl (ρ (here n))
@@ -92,6 +76,24 @@ coskipLemma {n} (here .n) (here .(succ n)) ρ {A} {B} = refl B
 coskipLemma {n} (here .n) (down y) ρ {A} {B} = refl _
 coskipLemma {n} (down x) (here .(succ n)) ρ {A} {B} = refl B
 coskipLemma {n} (down x) (down y) ρ {A} {B} = refl _
+
+substlemmaNoADT : ∀ {n} {l1} {l2} {A : Set l1} {B : Set l2} (f : A → B) → (ρ : Fin n → A) → (y : Fin (succ n)) → (a : A) → (x : Fin (succ n)) → f (coskip ρ y a x) ≡ coskip (λ z → f (ρ z)) y (f a) x
+substlemmaNoADT f ρ (here _) a (here _) = refl (f a)
+substlemmaNoADT {.(succ n)} f ρ (down y) a (here (succ n)) = refl (f (ρ (here n)))
+substlemmaNoADT f ρ (here _) a (down x) = refl (f (ρ x))
+substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f (λ z → ρ (down z)) y a x
+
+
+
+Env≃ : ∀ {n : ℕ} → Env n → Env n → Set
+Env≃ ρ σ = ∀ x → ρ x ≃ σ x
+
+_enviso∘_ : ∀ {n : ℕ} {ρ σ ψ : Env n} → Env≃ ρ σ → Env≃ σ ψ → Env≃ ρ ψ
+_enviso∘_ {n} {ρ} {σ} {ψ} e1 e2 x with e1 x | e2 x
+... | e1x | e2x = e1x iso∘ e2x
+
+reflEnv : ∀ {n} (ρ : Env n)  → Env≃ ρ ρ
+reflEnv ρ x = id≃ (ρ x)
 
 coskipSet≃ : ∀ {n : ℕ} {S1 S2 : Set} (ρ : Env n) (x : Fin (succ n)) → (S1 ≃ S2) → Env≃ (coskip ρ x S1) (coskip ρ x S2)
 coskipSet≃ {n} {S1} {S2} ρ (here .n) s1≃s2 (here .n) = s1≃s2

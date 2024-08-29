@@ -22,22 +22,28 @@ module RecursiveTypes where
   -- Arguments:
   -- f : Fin n → A
   -- x : Fin (succ n)
-  -- a : 
+  -- a :
   -- y : Fin (succ n)
   -- Returns:
-  -- The result of applying f to 
+  -- The result of applying f to
   elimFin : ∀ {n} {A : Set} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
   elimFin {n} f (here n) a (here n) = a
   elimFin {n} f (here n) a (down y) = f y
   elimFin {(succ n)} f (down x) a (here (succ n)) = f (here n)
   elimFin {succ n} f (down x) a (down y) = elimFin (f ∘ down) x a y
 
+  Env : ℕ → Set₁
+  Env n = Fin n → Set
+
+  _⅋_:=_ : ∀ {n} → Env n → Fin (succ n) → Set → Env (succ n)
+  Γ ⅋ x := A = elimFin Γ x A
+
   -- Types are either Atoms (represented by elements of Fin n) or function types
   data 𝕋 (n : ℕ) : Set where
     α : Fin n → 𝕋 n
     _⇒_ : 𝕋 n → 𝕋 n → 𝕋 n
 
-  -- 
+  --
   wk : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n)
   wk a (α x) = α (skip a x)
   wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
@@ -62,7 +68,7 @@ module RecursiveTypes where
 
   -- Arguments:
   -- T : 𝕋= n, a datatype representing an equation between types
-  -- Returns: 
+  -- Returns:
   -- A list of 𝕋Sub n ({Fin n, 𝕋 n} pairs) derived by recursively pairing up congruent terms
   -- in T
   invertLemma : ∀ {n : ℕ} → 𝕋= n → 𝕋Sub n
@@ -79,7 +85,7 @@ module RecursiveTypes where
   -- x : Fin n
   -- L : 𝕋Sub n
   -- Returns:
-  -- A list of types for which the LHS in L is equal to x. 
+  -- A list of types for which the LHS in L is equal to x.
   lookup : ∀ {n} → (x : Fin n) → 𝕋Sub n → List (𝕋 n)
   lookup x [] = []
   lookup {succ n} x ((y , c) ∷ cs) = elimFin (λ _ → rc) (x) (c ∷ rc) (y)
@@ -136,7 +142,7 @@ module RecursiveTypes where
   _≡⇒≡_ : ∀ {n} {A B C D : 𝕋 n} → A ≡ B → C ≡ D → (A ⇒ C) ≡ (B ⇒ D)
   refl A ≡⇒≡ refl B = refl (A ⇒ B)
 
-  -- 
+  --
   occCheckVar : ∀ {n} (x y : Fin (succ n)) → x ≡ y ∨ ∃ (λ z → (y ≡ skip x z))
   occCheckVar (here _) (here _) = in1 (refl (here _))
   occCheckVar (here _) (down y) = in2 (exists y (refl (down y)) )
@@ -468,4 +474,3 @@ module IntersectionTypes where
   -- mono : ∀ 𝔸 {s s' t t' : 𝕋∩ 𝔸} → Sub s t → Sub s' t' → Sub (meet s s') (meet t t')
    -- mono st st' = {!   !}
 -}
-    
