@@ -19,10 +19,10 @@
 \maketitle
 
 \section{Introduction}
-This is a report on the progress I have made during the summer of 2024 working with Dr. Polonsky \footnote{Assisstant Professor, Department of Computer Science, Appalachian State University.}. I have been writing on the topic of relations, working primarily from Term Rewriting Systems (TeReSe) \footnote{(Term Rewriting Systems. (2003). United Kingdom: Cambridge University Press.)}. 
+This is a report on the progress I have made during the summer of 2024 working with Dr. Polonsky \footnote{Assisstant Professor, Department of Computer Science, Appalachian State University.}. I have been writing on the topic of relations, working primarily from Term Rewriting Systems (TeReSe) \footnote{(Term Rewriting Systems. (2003). United Kingdom: Cambridge University Press.)}.
 The objective of this work has been to both develop a formal understanding of relations and to build a library in Agda \footnote{\href{https://github.com/DrPolonsky/LAM/tree/main/Relations}{Github repository for this project's code}} that will be used as a foundation to further work in theoretical computer science.
 \\
-I have been focussed on Chapter 1 of TeReSe which covers abstract reduction systems (ARS) as well as the appendix (sections 1-3) which provides the necessary mathematical background for the rest of the book (e.g. relations, ordinals, inductive definitions and the Knaster-Tarski lemma). Where the book has made use of classical logic I have investigated the possibility of using constructive alternatives. 
+I have been focussed on Chapter 1 of TeReSe which covers abstract reduction systems (ARS) as well as the appendix (sections 1-3) which provides the necessary mathematical background for the rest of the book (e.g. relations, ordinals, inductive definitions and the Knaster-Tarski lemma). Where the book has made use of classical logic I have investigated the possibility of using constructive alternatives.
 
 \section{Relations}
 
@@ -81,13 +81,13 @@ The following graphic illustrates the connections we have found between these de
     \draw[->, thick, red, bend left] (weak4) -- (weak3) node[pos=0.5, left, red] {?};
 \end{tikzpicture}
 
-As future work we want to know whether the missing reductions can be defined, or what the minimal additional requirements are for making those reductions. 
+As future work we want to know whether the missing reductions can be defined, or what the minimal additional requirements are for making those reductions.
 
 \subsection{Definitions}
 \textcolor{red}{Go through some of the main definitions formalised from Terese, focussing on where we have used constructive alternatives to the classically given definitions
 Could talk here about omega bounded stuff too!}
 \\
-One aspect of the project has been working through the definitions, propositions, and theorems in TeReSe and formalising them in Agda. 
+One aspect of the project has been working through the definitions, propositions, and theorems in TeReSe and formalising them in Agda.
 For example, in TeReSe the diamond property is defined:
 \begin{center}
     $a \in A$ has the \textit{diamond property} if $\forall b, c \in A (c \leftarrow a \rightarrow b \implies \exists d \in A c \rightarrow d \leftarrow b)$. The reduction relation $\rightarrow$ has the \textit{diamond property} if every $a \in A$ has the \textit{diamond property}.
@@ -102,7 +102,7 @@ The remainder of this section highlights definitions or proofs we hae expressed 
 
 \subsubsection{Strongly Normalizing}
 \begin{center}
-    In TeReSe: $a \in A$ is \textit{strongly normalizing} if every reduction sequence starting from $a$ is finite. The reduciton relation $\rightarrow$ is \textit{strongly normalizing} (SN) if every $a \in A$ is strongly normalizing. 
+    In TeReSe: $a \in A$ is \textit{strongly normalizing} if every reduction sequence starting from $a$ is finite. The reduciton relation $\rightarrow$ is \textit{strongly normalizing} (SN) if every $a \in A$ is strongly normalizing.
 \end{center}
 In Agda we have defined strongly normalizing as:
 
@@ -124,4 +124,15 @@ What it is and the different definitions again
 
 \subsection{}
 
+\section{Notes from 08.29}
+
+\begin{enumerate}
+  \item Try to ``fix'' CP by changing $R$ into $R^r$
+  \item Finish formulating the ``compactness property".  Two candidates:
+  \begin{itemize}
+    \item ``Every cocone for a given infinite sequence loops back to some point in the sequence"
+    \item ``If an $R^*$-sequence has a cocone then it's constant after some point on.''
+  \end{itemize}
+  \item Add the definition of "recurrent element"
+\end{enumerate}
 \end{document}

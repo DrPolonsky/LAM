@@ -147,7 +147,6 @@ module Proposition-1-1-11  where
     ... | R*cd with lemmaiii R⋄⊆R* b d R⋄*bd
     ... | R*bd = d ,, R*bd , R*cd
 
-
 open ClassicalImplications using (decMin)
 
 -- Notions related to termination in ARSs
@@ -170,6 +169,9 @@ module Termination (R : 𝓡 A)  where
 
   is_-UN_ : 𝓟 A
   is_-UN_ x = ∀ y → is_-NF_ y → (R ⋆) x y → ∀ z → is_-NF_ z → (R ⋆) x z → y ≡ z
+
+  is_-recurrent_ : 𝓟 A
+  is_-recurrent_ x = ∀ y → (R ⋆) x y → (R ⋆) y x
 
   CR : Set
   CR = confluent R
@@ -202,7 +204,7 @@ module Termination (R : 𝓡 A)  where
   -- Miscelaneous properties
   ω-bounded : Set
   ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (∀ n → (R ⋆) (f n) a)
-  
+
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
 
@@ -439,24 +441,40 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ω-continuous?
   -}
   -- ind + inc → no infinite sequence
+
+  -- Comp : Set
+  -- Comp = ∀ (f : ℕ → A) → is (R ⋆) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+  --           → Σ[ m ∈ ℕ ] ∀ k → f (add k m) ≡ f m
+
+  RP : Set
+  -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+  RP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+         → Σ[ m ∈ ℕ ] is R -recurrent (f m)
+
+  ii3- :  WN R → UN R → ω-bounded R → RP → isWFseq- (~R R)
+  ii3- wnR unR bdR rp = {!   !}
+
+  ii3 :  WN R → UN R → ω-bounded R → RP → SN R
+  ii3 wnR unR bdR rp = {!   !}
+
   inf→⊥ : ∀ (f : ℕ → A)  → ω-bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
-  inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc = 
+  inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc =
                                   let
-                                  a = f 0 
-                                  (b ,, fnb) = RisWb f FisRinc 
+                                  a = f 0
+                                  (b ,, fnb) = RisWb f FisRinc
                                     in {!   !}
 
   CR∧ω∧dom→SN : ∀ Q →  CR R → ω-bounded R → dominatedByWF R Q  → SN R
-  CR∧ω∧dom→SN Q RisCR Riswb (isWFaccQ , R⊆Q) x = let 
-                                                  inf→⊥ : ∀ (f :  ℕ → A) → is R -increasing f → ⊥ 
-                                                  inf→⊥ f fInc = let 
-                                                              (a ,, fna) = Riswb f fInc 
+  CR∧ω∧dom→SN Q RisCR Riswb (isWFaccQ , R⊆Q) x = let
+                                                  inf→⊥ : ∀ (f :  ℕ → A) → is R -increasing f → ⊥
+                                                  inf→⊥ f fInc = let
+                                                              (a ,, fna) = Riswb f fInc
                                                               yada : is Q -accessible fst (Riswb f fInc)
-                                                              yada = isWFaccQ a 
-                                                              in {!  !} 
+                                                              yada = isWFaccQ a
+                                                              in {!  !}
                                                   in {!   !}
 
-  CR∧ω→SN : CR R → ω-bounded R → SN R 
+  CR∧ω→SN : CR R → ω-bounded R → SN R
   CR∧ω→SN RisCR Riswb x = {!   !}
 
   ii- : WN R → UN R → ω-bounded R → SN R
@@ -473,12 +491,11 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
   ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
-  scratch→ : WN R → SN R → ∀ x → ((is R -WN x) → (is R -SN x))
-  scratch→ RisWN RisSN x RisWNelem with RisWN x 
-  ... | y ,, R*xy , y∈NF = {!   !}
-
-  scratch← : ∀ x → is R -WN x → is R -SN x → WN R → SN R 
-  scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
-
+  -- scratch→ : (WN R → SN R) → ∀ x → ((is R -WN x) → (is R -SN x))
+  -- scratch→ WN→SN x RisWNelem with RisWN x
+  -- ... | y ,, R*xy , y∈NF = {!   !}
+  --
+  -- scratch← : ∀ x → is R -WN x → is R -SN x → WN R → SN R
+  -- scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
+  --
 -- The end
-  
