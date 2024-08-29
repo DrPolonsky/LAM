@@ -43,7 +43,7 @@ module Confluence (Rα : 𝓡 A) where
     weakly-confluent =  ∀ {b}{c} → b ↙ Rα ↘ c → b ↘ Rα ⋆ ↙ c
     -- weakly-confluent = ∀ {a}{b}{c} → Rα a c → Rα a b → Σ[ d ∈ A ] ((Rα ⋆) c d × (Rα ⋆) b d)
 
-    -- Confluent and Weakly Church-Rosser (WCR) are used interchangeably in Terese
+    -- Confluent and Church-Rosser (CR) are used interchangeably in Terese
     confluent : Set
     confluent = ∀ {b}{c} → b ↙ Rα ⋆ ↘ c → b ↘ Rα ⋆ ↙ c
     -- confluent = ∀ {a}{b}{c} → (Rα ⋆) a c → (Rα ⋆) a b → Σ[ d ∈ A ] ((Rα ⋆) c d × (Rα ⋆) b d)
@@ -202,7 +202,7 @@ module Termination (R : 𝓡 A)  where
   -- Miscelaneous properties
   ω-bounded : Set
   ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (∀ n → (R ⋆) (f n) a)
-
+  
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
 
@@ -438,10 +438,30 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   Intead, we need something that is nearly dual to "ω-bounded".
   ω-continuous?
   -}
+  -- ind + inc → no infinite sequence
+  inf→⊥ : ∀ (f : ℕ → A)  → ω-bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
+  inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc = 
+                                  let
+                                  a = f 0 
+                                  (b ,, fnb) = RisWb f FisRinc 
+                                    in {!   !}
+
+  CR∧ω∧dom→SN : ∀ Q →  CR R → ω-bounded R → dominatedByWF R Q  → SN R
+  CR∧ω∧dom→SN Q RisCR Riswb (isWFaccQ , R⊆Q) x = let 
+                                                  inf→⊥ : ∀ (f :  ℕ → A) → is R -increasing f → ⊥ 
+                                                  inf→⊥ f fInc = let 
+                                                              (a ,, fna) = Riswb f fInc 
+                                                              yada : is Q -accessible fst (Riswb f fInc)
+                                                              yada = isWFaccQ a 
+                                                              in {!  !} 
+                                                  in {!   !}
+
+  CR∧ω→SN : CR R → ω-bounded R → SN R 
+  CR∧ω→SN RisCR Riswb x = {!   !}
 
   ii- : WN R → UN R → ω-bounded R → SN R
-  ii- RisWN RisUN Risωbdd with Theorem-1-2-2.ii R (RisWN , RisUN)
-  ... | c = {!   !}
+  ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
+  ... | RisCR = {!   !}
 
   iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
   iii Q domRQ RisWCR RisWN = {!   !}
@@ -453,4 +473,12 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
   ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
+  scratch→ : WN R → SN R → ∀ x → ((is R -WN x) → (is R -SN x))
+  scratch→ RisWN RisSN x RisWNelem with RisWN x 
+  ... | y ,, R*xy , y∈NF = {!   !}
+
+  scratch← : ∀ x → is R -WN x → is R -SN x → WN R → SN R 
+  scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
+
 -- The end
+  
