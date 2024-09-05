@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical-compatible #-}
+-- {-# OPTIONS --cubical-compatible #-}
 
 module Lifting where
 
@@ -62,7 +62,6 @@ i-nat f x = refl
 io-nat : ∀ {A B C : Set} (f : B → C) (g : A → B) (c : C) → io (f ∘ g) c ≅ io f c ∘ ↑→ g
 io-nat f g d (i x) = refl
 io-nat f g d o = refl
-
 
 -- INTEGERS AND FINITE SETS
 -- ℕ is \bN

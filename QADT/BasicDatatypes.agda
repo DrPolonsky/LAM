@@ -1,10 +1,10 @@
 -- Most of the stuff in this file is compiled from Lecture4,
 -- with some later additions and edits for consistency
 
-module BasicDatatypes where
+module QADT.BasicDatatypes where
 
-open import BasicLogic
-open import Functions
+open import Logic
+open import QADT.Functions
 
 -- 𝔹 is \bB
 -- 𝑩 is \MIB, ℬ is \McB
@@ -169,7 +169,7 @@ exFalsoFin : ∀ {A : Set} → Fin 0 → A
 exFalsoFin ()
 
 dec≡ : Set → Set
-dec≡ A = ∀ (x y : A) → EM (x ≡ y)
+dec≡ A = ∀ (x y : A) → EM (x ≡ y) where open import Classical using (EM)
 
 down≡ : ∀ n {x y : Fin n} → down x ≡ down y → x ≡ y
 down≡ n {x} {.x} (refl .(down x)) = refl x
@@ -179,7 +179,7 @@ decFin zero = λ x y → exFalsoFin x
 decFin (succ n) (here .n) (here .n) = in1 (refl (here n))
 decFin (succ n) (here .n) (down y) = in2 (λ {()} )
 decFin (succ n) (down x) (here .n) = in2 (λ ())
-decFin (succ n) (down x) (down y) = case (λ x₁ → in1 (Functions.ext down x₁) ) (λ y → in2 (λ z → y (down≡ n z ) ) )  (decFin n x y)
+decFin (succ n) (down x) (down y) = case (λ x₁ → in1 (cong down x₁) ) (λ y → in2 (λ z → y (down≡ n z ) ) )  (decFin n x y)
 
 -- ∷ is \::
 data List (A : Set) : Set where

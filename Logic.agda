@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical-compatible #-}
+-- {-# OPTIONS --cubical-compatible #-}
 
 module Logic where
 
@@ -13,7 +13,7 @@ KI : ∀ {l k} {A : Set l} {B : Set k} → A → B → B
 KI = K I
 
 -- ∘ is \o
-_∘_ : ∀ {A B C : Set} → (B → C) → (A → B) → A → C
+_∘_ : ∀ {l m n} {A : Set l} {B : Set m} {C : Set n} → (B → C) → (A → B) → A → C
 f ∘ g = λ x → f (g x)
 
 -- PROPOSITIONAL CONSTANTS AND CONNECTIVES
@@ -61,7 +61,7 @@ _↔!↔_ : ∀ {A B C} → A ↔ B → B ↔ C → A ↔ C
 
 -- EQUALITY
 -- ≡ is \== or \equiv
-data _≡_ {A : Set} (a : A) : A → Set where
+data _≡_ {l} {A : Set l} (a : A) : A → Set l where
   refl : a ≡ a
 {-# BUILTIN EQUALITY _≡_ #-}
 
@@ -148,5 +148,20 @@ open import Agda.Builtin.Sigma renaming (_,_ to _,,_) public
 Σ-syntax = Σ
 
 syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
+
+dec≡ : Set → Set
+dec≡ A = ∀ (x y : A) → (x ≡ y) ⊔ ¬ (x ≡ y)
+
+-- Injectivity of constructors of standard datatypes
+-- module InjectiveConstructors where
+
+in1inj : ∀ {A B} {a1 a2 : A} → in1 {B = B} a1 ≡ in1 a2 → a1 ≡ a2
+in1inj refl = refl
+
+in2inj : ∀ {A B} {a1 a2 : B} → in2 {A = A} a1 ≡ in2 a2 → a1 ≡ a2
+in2inj refl = refl
+
+in1≠in2 : ∀ {A B : Set} {a : A} {b : B} → in1 a ≡ in2 b → ⊥
+in1≠in2 ()
 
 -- THE END
