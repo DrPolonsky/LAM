@@ -452,7 +452,23 @@ module Theorem-1-2-3 (R : 𝓡 A) where
          → Σ[ m ∈ ℕ ] is R -recurrent (f m)
 
   ii3- :  WN R → UN R → ω-bounded R → RP → isWFseq- (~R R)
-  ii3- wnR unR bdR rp = {!   !}
+  ii3- wnR unR bdR rp s with wnR (s 0) -- Start by applying wnR to get an 'a' which is in normal form and a relation from start of sequence to a
+  ... | .(s 0) ,, a∈NF@(ε⋆ , a→⊥) = λ z → a→⊥ (s 1) (z zero) -- Break up the R * relation to get a single step relation R S0 S1 
+  ... | a ,, a∈NF@((Rs₀s₁ ,⋆ R*s₁a) , a→⊥) with bdR s {!   !} -- a is normal form reachable from S0
+  ... | b ,, bisωLimit with bisωLimit 0  -- b is ω limit
+  ... | R*s₀b with rp s {!   !} b bisωLimit   -- claiming the recurrent property where b is the common reduct
+  ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR) -- does c need to be related somehow to b?
+  ... | RisCR with RisCR ((s 0) ,, (Rs₀s₁ ,⋆ R*s₁a) , R*s₀b) 
+  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = λ _ → a→⊥ _ Raa₁ -- contradiction in reduction from normal form
+  ... | .a ,, ε⋆ , R*ba  with ScisRecurrent b (bisωLimit c) 
+  ... | R*bs_c with RisCR ((b),, R*ba , R*bs_c)
+  ... | e ,, (Raa₂ ,⋆ R*ae) , R*s_ce = λ _ → a→⊥ _ Raa₂
+  ... | .a ,, ε⋆ , R*s_ca with ScisRecurrent a R*s_ca 
+  ... | Raa₃ ,⋆ R*as_c = λ _ → a→⊥ _ Raa₃ 
+  ... | ε⋆ = λ z → a→⊥ (s (succ c)) (z c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
+
+ -- Above can probably be simplified. Also, need to show that we have an f increasing sequence.
+
 
   ii3 :  WN R → UN R → ω-bounded R → RP → SN R
   ii3 wnR unR bdR rp = {!   !}
@@ -499,3 +515,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
   --
 -- The end
+  
