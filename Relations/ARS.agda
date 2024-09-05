@@ -451,27 +451,52 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   RP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
          → Σ[ m ∈ ℕ ] is R -recurrent (f m)
 
-  ii3- :  WN R → UN R → ω-bounded R → RP → isWFseq- (~R R)
-  ii3- wnR unR bdR rp s with wnR (s 0) -- Start by applying wnR to get an 'a' which is in normal form and a relation from start of sequence to a
-  ... | .(s 0) ,, a∈NF@(ε⋆ , a→⊥) = λ z → a→⊥ (s 1) (z zero) -- Break up the R * relation to get a single step relation R S0 S1 
-  ... | a ,, a∈NF@((Rs₀s₁ ,⋆ R*s₁a) , a→⊥) with bdR s {!   !} -- a is normal form reachable from S0
-  ... | b ,, bisωLimit with bisωLimit 0  -- b is ω limit
-  ... | R*s₀b with rp s {!   !} b bisωLimit   -- claiming the recurrent property where b is the common reduct
+  NFisωBnd : WCR R → ∀ (f : ℕ → A) → is R -increasing f → ∀ a → is R -NF a
+               → (R ⋆) (f 0) a → ∀ n → (R ⋆) (f n) a
+  NFisωBnd RisWCR f f-inc a a∈NF R*f0a zero = R*f0a
+  NFisωBnd RisWCR f f-inc a a∈NF R*f0a (succ n)
+    with NFisωBnd RisWCR f f-inc a a∈NF R*f0a n
+  ... | ε⋆ = ∅ (a∈NF (f (succ n)) (f-inc n) )
+  ... | Rfny ,⋆ R*ya = {!   !}
+
+  -- False; see the usual counterexample to WCR→CR
+  iii-lemma1 : WCR R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
+  iii-lemma1 wcrR a .a b∈NF ε⋆ .a ε⋆ = ε⋆
+  iii-lemma1 wcrR a .a b∈NF ε⋆ c (Ray ,⋆ R*yc) = ∅ (b∈NF _ Ray )
+  iii-lemma1 wcrR a b b∈NF R*ab@(Ray ,⋆ R*yb) .a ε⋆ = R*ab
+  iii-lemma1 wcrR a b b∈NF (Ray ,⋆ R*yb) c (_,⋆_ {y = z} Raz R*zc)
+    with wcrR (a ,, Ray , Raz)
+  ... | (d ,, R*yd , R*zd) = {!    !}
+
+  iii-lemma2 : WCR R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
+  iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
+  iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
+  ... | (d ,, R*yd , R*cd) = {!   !}
+  -- with iii-lemma2 wcrR y b b∈NF R*yb
+  -- ... | z = {!   !}
+
+  ii3- :  WN R → UN R → RP → isWFseq- (~R R)
+  ii3- wnR unR rp s sIsRdec with i wnR unR
+  ... | bdR with wnR (s 0)
+  ... | a ,, R*s₀a , a∈NF with bdR s sIsRdec -- a is normal form reachable from S0
+  ... | b ,, bisωLimit with bisωLimit 0
+  ... | R*s₀b with rp s sIsRdec b bisωLimit
   ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR) -- does c need to be related somehow to b?
-  ... | RisCR with RisCR ((s 0) ,, (Rs₀s₁ ,⋆ R*s₁a) , R*s₀b) 
-  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = λ _ → a→⊥ _ Raa₁ -- contradiction in reduction from normal form
-  ... | .a ,, ε⋆ , R*ba  with ScisRecurrent b (bisωLimit c) 
-  ... | R*bs_c with RisCR ((b),, R*ba , R*bs_c)
-  ... | e ,, (Raa₂ ,⋆ R*ae) , R*s_ce = λ _ → a→⊥ _ Raa₂
-  ... | .a ,, ε⋆ , R*s_ca with ScisRecurrent a R*s_ca 
-  ... | Raa₃ ,⋆ R*as_c = λ _ → a→⊥ _ Raa₃ 
-  ... | ε⋆ = λ z → a→⊥ (s (succ c)) (z c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
+  ... | RisCR with RisCR ((s 0) ,, R*s₀a , seq-lemma s sIsRdec c)
+  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF _ Raa₁ -- contradiction in reduction from normal form
+  ... | .a ,, ε⋆ , R*sca with ScisRecurrent a (R*sca)
+  ... | Raa₃ ,⋆ R*as_c = a∈NF _ Raa₃
+  ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
- -- Above can probably be simplified. Also, need to show that we have an f increasing sequence.
+  iii-lemma :  WN R → WCR R → ω-bounded R
+  iii-lemma wnR wcrR f f-inc with wnR (f 0)
+  ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
+          ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
+          ρ zero = R*f0n
+          ρ (succ n) = iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n )
 
-
-  ii3 :  WN R → UN R → ω-bounded R → RP → SN R
-  ii3 wnR unR bdR rp = {!   !}
+  iii :  WN R → WCR R → RP → isWFseq- (~R R)
+  iii wnR wcrR rp s sIsRdec = {!   !}
 
   inf→⊥ : ∀ (f : ℕ → A)  → ω-bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
   inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc =
@@ -497,8 +522,8 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
   ... | RisCR = {!   !}
 
-  iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
-  iii Q domRQ RisWCR RisWN = {!   !}
+  -- iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
+  -- iii Q domRQ RisWCR RisWN = {!   !}
 
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
@@ -515,4 +540,3 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
   --
 -- The end
-  
