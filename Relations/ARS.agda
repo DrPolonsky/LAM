@@ -471,7 +471,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   iii-lemma2 : WCR R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
   iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
   iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
-  ... | (d ,, R*yd , R*cd) = {!   !}
+  ... | (d ,, R*yd , R*cd) = {! iii-lemma2 wcrR _ b b∈NF R*yb    !}
   -- with iii-lemma2 wcrR y b b∈NF R*yb
   -- ... | z = {!   !}
 
@@ -496,7 +496,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
           ρ (succ n) = iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n )
 
   iii :  WN R → WCR R → RP → isWFseq- (~R R)
-  iii wnR wcrR rp s sIsRdec = {!   !}
+  iii wnR wcrR rp s sIsRdec = {!  !}
 
   inf→⊥ : ∀ (f : ℕ → A)  → ω-bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
   inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc =
