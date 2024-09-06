@@ -57,6 +57,16 @@ EnvSubstLemma {n = succ n} Γ f a (i x) o = refl
 EnvSubstLemma Γ f a o (i x) = refl
 EnvSubstLemma Γ f a o o = refl
 
+-- -- f ((ρ ⅋ y := a) x) ≡ ((f ∘ ρ) ⅋ y := (f a)) x
+-- substlemmaNoADT : ∀ {n} {A : Set} (f : A → Set) → (ρ : Env {l} A n) →
+--                     (y : Fin (succ n)) → (a : A) → (x : Fin (succ n)) → f ((ρ ⅋ y := a) x) ≡ ((f ∘ ρ) ⅋ y := (f a)) x
+--                     -- f (coskip ρ y a x) ≡ coskip (f ∘ ρ) y (f a) x
+-- substlemmaNoADT f ρ y a x = EnvSubstLemma ρ f a y x
+-- substlemmaNoADT f ρ (here _) a (here _) = refl (f a)
+-- substlemmaNoADT {.(succ n)} f ρ (down y) a (here (succ n)) = refl (f (ρ (here n)))
+-- substlemmaNoADT f ρ (here _) a (down x) = refl (f (ρ x))
+-- substlemmaNoADT {succ n} f ρ (down y) a (down x) = substlemmaNoADT f ((ρ ∘ down)) y a x
+
 -- Morphisms  between environments
 -- Given ρ,σ : SetEnv n, Env→ ρ σ is an environment for the SetEnv ρ→σ = λ x → (ρ x → σ x)
 SetEnv→ : ∀ {n : ℕ} → SetEnv n → SetEnv n → Set
