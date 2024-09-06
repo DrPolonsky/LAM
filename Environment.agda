@@ -50,7 +50,7 @@ skipCons {succ n} Γ (i x) A (i y) = skipCons (λ v → Γ (i v)) x A y
 skipCons {succ n} Γ (i x) A o     = refl
 skipCons Γ o v A = refl
 
-EnvSubstLemma : ∀ {l} {n} {A B : Set l} (Γ : Env {l} A n) (f : A → B) (a : A) (x : Fin (succ n))
+EnvSubstLemma : ∀ {l} {m} {n} {A : Set l} {B : Set m} (Γ : Env A n) (f : A → B) (a : A) (x : Fin (succ n))
                   → Env≡ (f ∘ (Γ ⅋ x := a)) ((f ∘ Γ) ⅋ x := f a)
 EnvSubstLemma {n = succ n} Γ f a (i x) (i y) = EnvSubstLemma (λ z → Γ (i z)) f a x y
 EnvSubstLemma {n = succ n} Γ f a (i x) o = refl
