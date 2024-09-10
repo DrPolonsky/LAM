@@ -409,6 +409,15 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
+  -- Strengthening i 
+  i+ : WN R → UN→ R → ω-bounded R 
+  i+ RisWN RisUN→ f f-inc  with RisWN (f zero)
+  ... | (a ,, R*f0a , a∈NF) = a ,, g where 
+    g : ∀ k → (R ⋆) (f k) a 
+    g k with RisWN (f k) 
+    ... | b ,, R*fkb , b∈NF with RisUN→ a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
+    ... | refl = R*fkb
+
   -- This seems very classical
   {- 2024.08.09
      Actually, it's false.
@@ -478,12 +487,12 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ii3- :  WN R → UN R → RP → isWFseq- (~R R)
   ii3- wnR unR rp s sIsRdec with i wnR unR
   ... | bdR with wnR (s 0)
-  ... | a ,, R*s₀a , a∈NF with bdR s sIsRdec -- a is normal form reachable from S0
+  ... | a ,, R*s₀a , a∈NF with bdR s sIsRdec  
   ... | b ,, bisωLimit with bisωLimit 0
   ... | R*s₀b with rp s sIsRdec b bisωLimit
-  ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR) -- does c need to be related somehow to b?
+  ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR) 
   ... | RisCR with RisCR ((s 0) ,, R*s₀a , seq-lemma s sIsRdec c)
-  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF _ Raa₁ -- contradiction in reduction from normal form
+  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF _ Raa₁  
   ... | .a ,, ε⋆ , R*sca with ScisRecurrent a (R*sca)
   ... | Raa₃ ,⋆ R*as_c = a∈NF _ Raa₃
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
@@ -493,7 +502,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
           ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
           ρ zero = R*f0n
-          ρ (succ n) = iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n )
+          ρ (succ n) = iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n ) -- note iii-lemma2 is not yet proven
 
   iii :  WN R → WCR R → RP → isWFseq- (~R R)
   iii wnR wcrR rp s sIsRdec = {!  !}
@@ -525,6 +534,16 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
   -- iii Q domRQ RisWCR RisWN = {!   !}
 
+  -- A classical proof of iii (subbing RP for Inc)
+  open import Classical
+  -- iii-EM-lemma : Set 
+  -- iii-EM-lemma = ∀ {a n} → is R -NF n → (R ⋆) a n → is R -SN n → Σ[ b ∈ A ] ((¬ (is R -SN b)) × (R ⋆) a b × (R ⋆) b n )
+
+  iii-EM :  WN R → WCR R → RP → EM (SN R) → SN R 
+  iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
+  iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a 
+  ... | n ,, R*an , n∈NF = {!   !}
+  
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
   ... | f ,, f-inc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
@@ -532,11 +551,5 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
   ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
-  -- scratch→ : (WN R → SN R) → ∀ x → ((is R -WN x) → (is R -SN x))
-  -- scratch→ WN→SN x RisWNelem with RisWN x
-  -- ... | y ,, R*xy , y∈NF = {!   !}
-  --
-  -- scratch← : ∀ x → is R -WN x → is R -SN x → WN R → SN R
-  -- scratch← x RisWNx RisSNx RisWN x₁ = {!   !}
-  --
+ 
 -- The end

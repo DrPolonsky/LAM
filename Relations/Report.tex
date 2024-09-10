@@ -125,7 +125,7 @@ What it is and the different definitions again
 \subsection{}
 
 \section{Notes from 08.29}
-
+ 
 \begin{enumerate}
   \item Try to ``fix'' CP by changing $R$ into $R^r$
   \item Finish formulating the ``compactness property".  Two candidates:
@@ -161,6 +161,7 @@ What it is and the different definitions again
   \item It seems that part (i) of the theorem can be strengthened to only
   assume $\UNto(R)$ instead of $\UN(R)$:
   \[ \WN(R) \land \UNto(R) \to \omega{-}\text{bounded}(R) \tag{i} \]
+  \textcolor{red}{(See ARS.agda i+)}
   \item The analogue of part (ii) of the theorem is unprovable, namely
   \[ \omega{-}\text{bounded}(R) \land \RP(R) \to \SN(R) \tag{ii}\]
   For a countermodel, take the one-element loop $a \to a$.
@@ -230,5 +231,22 @@ What it is and the different definitions again
   But $r$ is a term in an infinite reduction sequence, and reduces to its successor.
 
   This yields a contradiction.
+
 \end{itemize}
+\subsection{09.10 (midweek updata)}
+Is it possible to weaken RP? A possible suggestion:
+
+$RP- :: \omega-bounded \to  \exists i. b \to^* f i$
+
+Does:
+
+$RP \to RP-$
+
+Does: 
+
+$RP- \land \; WCR \to RP$
+
+(what other property with $RP-$ would give us $RP$?).
+
+
 \end{document}
