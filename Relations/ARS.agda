@@ -403,11 +403,10 @@ module Miscelaneous (R : 𝓡 A) where
           → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
 
   RP→RP- : RP → RP-  
-  RP→RP- RisRP f f-inc b b∈RP with RisRP f f-inc b b∈RP 
-  ... | i ,, i∈RP = i ,, (i∈RP b (b∈RP i))
+  RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound 
+  ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
   
-
          
 open Miscelaneous public
 
