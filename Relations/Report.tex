@@ -5,9 +5,12 @@
 \usepackage{amsmath}
 \usepackage{pifont}
 \usepackage{mathrsfs}
+\usepackage{amssymb}
 \usetikzlibrary{arrows.meta, positioning}
 
 \definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+\newcommand{\tto}{\twoheadrightarrow}
 
 
 \title{Summer 2024 Report}
@@ -29,94 +32,128 @@ I have been focussed on Chapter 1 of TeReSe which covers abstract reduction syst
 \subsection{Well-foundedness}
 \textcolor{red}{Talk about the different types of wellfoundedness, starting with the one given in the book, the reason for thinking it is classical and not constructive, and provide an image showing the relation between the notions of wellfoundedness we have. Talk about future work in this area.}
 \\
-We have worked with four different notions of well-foundedness in order to explore the connections between them. These four notions each depend on one of the following four definitions:
+To date we have investigated the differences between four distinct notions of well-foundedness. The make clear the difference between these distinct notions of well-foundedness we first present the following defintiions for a given relation $R$.
 \begin{enumerate}
-    \item accessible \textcolor{red}{For these definitinos is it best to just use the code from agda which is clear, or should we be trying to provide a more 'human' definition to accompany the code?}
-    \item inductive predicate
-    \item minimal element
-    \item non-decreasing index
+    \item \textit{Accessible:} An element $x$ is \textit{R-accessible} if all elements that have an $R$ reduction to $x$ are themselves \textit{R-accessible}.  
+    \item \textit{Inductive predicate:} A predicate $\varphi$ is an inductive predicate if $\varphi \, x$ is true whenever $\varphi$ is true for all elements that have an $R$ reduction to $x$.
+    \item \textit{Minimal element:} An element $x$ is minimal for a given predicate $\varphi$ if $\varphi \, x$ is true and no other element for which $\varphi$ holds has an $R$ reduction to $x$. 
+    \item \textit{Decreasing:} A sequence $s$ is decreasing if every $R$ reduction decreases the size of $n$ (where $n \in \mathbb{N}$).   \textcolor{red}{bad defn. Improve.}
 \end{enumerate}
-The four main notions of a relation \textit{R} being well-founded a set \textit{S} we have worked with are:
+With the above definitions established we define the notions of well-foundedness we have been investigating. For a given relation $R$:
 \begin{enumerate}
-    \item \textit{R} is well-founded if every element is \textit{R}-accessible (where an element \textit{x} is \textit{R}-accessible if all elements \textit{R}-below \textit{x}  are themselves \textit{R}-accessible).
-    \item \textit{R} is well-founded if every inductive predicate is universally true (where a predicate $\varphi$ is inductive if $\varphi\,x$ is true whenever $\varphi\,y$ is true for all elements $y$ $R$-below $x$).
-    \item \textit{R} is well-founded if every non-empty subset of $S$ has a minimal element with respect to $R$.
+    \item \textit{R} is well-founded if every element is \textit{R}-accessible.
+    \item \textit{R} is well-founded if every inductive predicate is universally true.
+    \item \textit{R} is well-founded if every non-empty predicate has a minimal element with respect to $R$.
     \item \textit{R} is well-founded if every sequence contains a non-decreasing index.
 \end{enumerate}
-Further, we explored weaker variants of these notions of well-foundedness by defining well-foundedness using double negation:
+Further, we explored weaker variants of these notions of well-foundedness:
 \begin{enumerate}
     \item \textit{R} is well-founded if every element is $\lnot \lnot$  \textit{R}-accessible.
-    \item \textit{R} is well-founded if for every inductive predicate $\varphi \; \lnot \lnot \varphi \; x$.
-    \item \textit{R} is well-founded if for every non-empty subset of $S$ there is $\lnot \lnot$ a minimal element with respect to $R$.
-    \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence in $S$ (this is the definition of well-foundedness found in TeReSe).
+    \item \textit{R} is well-founded if for every inductive predicate $\varphi$, $\lnot \lnot \varphi$ is universally true.
+    \item \textit{R} is well-founded if it is not not the case that every non-empty predicate has a minimal element with respect to $R$. \textcolor{red}{is there a better way to express this double negation in english?} 
+    \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence (this is the definition of well-foundedness found in TeReSe).
 \end{enumerate}
 
-The following graphic illustrates the connections we have found between these definitions and those we are still seeking to find. Green arrows indicate that a definition can be translated into another, red arrows indicate that we believe a translation should be possible but we have not yet found it.
+The following graphic illustrates the implications we have found between these definitions and those we are still seeking to find. Green arrows indicate that one definition implies another, red arrows indicate that we believe an implication should be possible but we have not yet found it.
 
-\begin{tikzpicture}[node distance=2cm, auto]
+\begin{center}
+  \begin{tikzpicture}[node distance=2cm, auto]
     % Standard definitions
     \node (std1) [draw] {isWFacc};
     \node (std2) [below of=std1, draw] {isWFind};
     \node (std3) [below of=std2, draw] {isWFmin};
     \node (std4) [below of=std3, draw] {isWFseq};
-
+    
+    % Double negation definitions
+    \node (dn1) [right of=std1, xshift=2cm, draw] {$\lnot \lnot$ isWFacc};
+    \node (dn2) [right of=std2, xshift=2cm, draw] {$\lnot \lnot$ isWFind};
+    \node (dn3) [right of=std3, xshift=2cm, draw] {$\lnot \lnot$ isWFmin};
+    \node (dn4) [right of=std4, xshift=2cm, draw] {$\lnot \lnot$ isWFseq};
+    
     % Weaker definitions
-    \node (weak1) [right of=std1, xshift=4cm, draw] {isWFacc-};
-    \node (weak2) [below of=weak1, draw] {isWFind-};
-    \node (weak3) [below of=weak2, draw] {isWFmin-};
-    \node (weak4) [below of=weak3, draw] {isWFseq-};
-
+    \node (weak1) [right of=dn1, xshift=2cm, draw] {isWFacc-};
+    \node (weak2) [right of=dn2, xshift=2cm, draw] {isWFind-};
+    \node (weak3) [right of=dn3, xshift=2cm, draw] {isWFmin-};
+    \node (weak4) [right of=dn4, xshift=2cm, draw] {isWFseq-};
+    
     % Arrows
-    \draw[->, thick, darkgreen] (std1) -- (weak1);
+    \draw[->, thick, darkgreen] (std1) -- (dn1);
+    \draw[->, thick, darkgreen] (dn1) -- (weak1);
     \draw[<->, thick, darkgreen] (std1) -- (std2);
+    \draw[->, thick, darkgreen] (std2) -- (dn2);
+    \draw[->, thick, darkgreen] (dn2) -- (weak2);
     \draw[<->, thick, darkgreen] (weak1) -- (weak2);
-    \draw[->, thick, darkgreen] (std2) -- (weak2);
     \draw[->, thick, red] (std2) -- (std3) node[pos=0.5, right, red] {?};
+    \draw[->, thick, darkgreen] (std3) -- (dn3);
+    \draw[->, thick, darkgreen] (dn3) -- (weak3);
     \draw[->, thick, darkgreen] (weak2) -- (weak3);
-    \draw[->, thick, darkgreen] (std3) -- (weak3);
     \draw[->, thick, darkgreen, bend left] (std3) to (std4);
     \draw[->, thick, darkgreen, bend left] (weak3) to (weak4);
-    \draw[->, thick, darkgreen] (std4) to (weak4);
+    \draw[->, thick, darkgreen] (std4) -- (dn4);
+    \draw[->, thick, darkgreen] (dn4) -- (weak4);
     \draw[->, thick, red, bend left] (std4) -- (std3) node[pos=0.5, left, red] {?};
     \draw[->, thick, red, bend left] (weak4) -- (weak3) node[pos=0.5, left, red] {?};
-\end{tikzpicture}
+  \end{tikzpicture}
+\end{center}
 
-As future work we want to know whether the missing reductions can be defined, or what the minimal additional requirements are for making those reductions.
+  
+  
+  As future work we want to know whether the missing implications can be found, or what the minimal additional requirements are for making those implications.
 
 \subsection{Definitions}
 \textcolor{red}{Go through some of the main definitions formalised from Terese, focussing on where we have used constructive alternatives to the classically given definitions
 Could talk here about omega bounded stuff too!}
-\\
-One aspect of the project has been working through the definitions, propositions, and theorems in TeReSe and formalising them in Agda.
-For example, in TeReSe the diamond property is defined:
+
+The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, Theorem 1.2.2 and Theorem 1.2.3. Before exploring those proofs the following definitions are essential.
+\begin{itemize}
+  \item \textit{ARS:} An abstract reduction system (ARS) is a framework which we use to explore reduction relations on a set of objects.  
+\end{itemize}
+Throughout these definitions we use $A$ to denote the set which contains all the objects that can be reduced and $\to$ to denote a binary relation on $A$. This relation represents the reduction process. For example, if we let $\to$ be the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
+
+We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
+
+\begin{itemize}
+  \item \textit{Weakly confluent:} A reduction relation is weakly confluent (AKA weakly Church-Rosser (WCR)) if all single-step reductions from a given element can always converge via multi-step reductions to some common reduct. 
+\end{itemize}
 \begin{center}
-    $a \in A$ has the \textit{diamond property} if $\forall b, c \in A (c \leftarrow a \rightarrow b \implies \exists d \in A c \rightarrow d \leftarrow b)$. The reduction relation $\rightarrow$ has the \textit{diamond property} if every $a \in A$ has the \textit{diamond property}.
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node (top) {a};
+    \node (left) [below left of=top] {b};
+    \node (right) [below right of=top] {c};
+    \node (bottom) [below of=top, yshift=-1cm] {d};
+  
+    % Arrows
+    \draw[->] (top) -- (left);
+    \draw[->] (top) -- (right);
+    \draw[->>] (left) -- (bottom);
+    \draw[->>] (right) -- (bottom);
+\end{tikzpicture}
 \end{center}
-In Agda we have defined the diamond property as:
-\begin{flushleft}
-    \texttt{\ding{117} : Set}\\
-    \texttt{\ding{117} = $\forall a, b, c \rightarrow R_{\alpha} a b \rightarrow R_{\alpha} a c \rightarrow \Sigma[ d \in A ] (R_{\alpha} b d \times R_{\alpha} c d)$}
-\end{flushleft}
-In formalising the propostions and theorems we also provided solutions to them. \\
-The remainder of this section highlights definitions or proofs we hae expressed differently to TeReSe along with an explanation of why we have done so.
+
+\begin{itemize}
+  \item \textit{Confluent} A reduction relation is confluent (AKA Church-Rosser (CR)) if all multi-step redctions from a given element can always converge via multi-step reductions to some common reduct.
+\end{itemize}
+\begin{center}
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node (top) {a};
+    \node (left) [below left of=top] {b};
+    \node (right) [below right of=top] {c};
+    \node (bottom) [below of=top, yshift=-1cm] {d};
+  
+    % Arrows
+    \draw[->>] (top) -- (left);
+    \draw[->>] (top) -- (right);
+    \draw[->>] (left) -- (bottom);
+    \draw[->>] (right) -- (bottom);
+\end{tikzpicture}
+\end{center}
 
 \subsubsection{Strongly Normalizing}
 \begin{center}
     In TeReSe: $a \in A$ is \textit{strongly normalizing} if every reduction sequence starting from $a$ is finite. The reduciton relation $\rightarrow$ is \textit{strongly normalizing} (SN) if every $a \in A$ is strongly normalizing.
 \end{center}
-In Agda we have defined strongly normalizing as:
-
-\begin{flushleft}
-    \texttt{data is\_-accessible\_ : $\mathscr{P} A$ where}\\
-    \texttt{\ \ \ \ acc : $\forall$ \{x : A\} $\rightarrow$ ($\forall$ y $\rightarrow$ R y x $\rightarrow$ is\_-accessible\_ y) $\rightarrow$ \quad is\_-accessible\_ x}\\
-    \texttt{is\_SNacc\_ : $\mathscr{P} A$}\\
-    \texttt{is\_SNacc\_ x = is (\textasciitilde R R) -accessible x}\\
-    \texttt{is\_SN\_ : $\mathscr{P} A$}\\
-    \texttt{is\_SN\_ = is\_SNacc\_}
-\end{flushleft}
-
-
-\subsection{Knaster Tarski}
 Go through different proofs Here
 
 \subsection{Newmans lemma}
