@@ -406,7 +406,10 @@ module Miscelaneous (R : 𝓡 A) where
   RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound 
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
-  
+  RP-∧WCR→RP : RP- → WCR R → RP 
+  RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound 
+  ... | i ,, R*afᵢ with aisω-bound i 
+  ... | R*fᵢa = i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
          
 open Miscelaneous public
 
@@ -465,13 +468,14 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
   -- A classical proof of iii (subbing RP for Inc)
   open import Classical
-  -- iii-EM-lemma : Set 
-  -- iii-EM-lemma = ∀ {a n} → is R -NF n → (R ⋆) a n → is R -SN n → Σ[ b ∈ A ] ((¬ (is R -SN b)) × (R ⋆) a b × (R ⋆) b n )
+  lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
+  lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
   iii-EM :  WN R → WCR R → RP R → EM (SN R) → SN R 
   iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
   iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a 
-  ... | n ,, R*an , n∈NF = {!   !}
+  ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an 
+  ... | b₀ ,, b∉SN , (R*ab₀ , R*b₀n) = {!   !}
   
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
@@ -577,3 +581,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+ 
