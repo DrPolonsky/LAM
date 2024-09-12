@@ -35,8 +35,8 @@ module RecursiveTypes where
   Env : ℕ → Set₁
   Env n = Fin n → Set
 
-  _⅋_:=_ : ∀ {n} → Env n → Fin (succ n) → Set → Env (succ n)
-  Γ ⅋ x := A = elimFin Γ x A
+  -- _⅋_:=_ : ∀ {n} → Env n → Fin (succ n) → Set → Env (succ n)
+  -- Γ ⅋ x := A = elimFin Γ x A
 
   -- Types are either Atoms (represented by elements of Fin n) or function types
   data 𝕋 (n : ℕ) : Set where
