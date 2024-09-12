@@ -3,6 +3,7 @@ module Predicates where
 -- open import Logic-Levels
 open import Logic
 open import Lifting
+open import Datatypes
 open import Lambda
 
 -- The type of n-ary predicates on A

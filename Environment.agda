@@ -6,6 +6,7 @@ module Environment where
 open import Agda.Primitive using (lsuc)
 open import Logic
 open import Lifting
+open import Datatypes
 open import Predicates using (𝓟)
 open import QADT.Functions
 

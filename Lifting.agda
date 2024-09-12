@@ -63,17 +63,4 @@ io-nat : ∀ {A B C : Set} (f : B → C) (g : A → B) (c : C) → io (f ∘ g) 
 io-nat f g d (i x) = refl
 io-nat f g d o = refl
 
--- INTEGERS AND FINITE SETS
--- ℕ is \bN
-data ℕ : Set where
-  zero : ℕ
-  succ : ℕ → ℕ
-{-# BUILTIN NATURAL ℕ #-}
-
-Fin : ℕ → Set
-Fin zero = ⊥
-Fin (succ n) = ↑ (Fin n)
-
-∘^ : ∀ {A : Set} → ℕ → (A → A) → (A → A)
-∘^ zero f = I
-∘^ (succ n) f = f ∘ (∘^ n f)
+-- open import Datatypes public 

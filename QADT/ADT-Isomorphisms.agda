@@ -1,11 +1,14 @@
 module QADT.ADT-Isomorphisms where
 
 open import QADT.ADTs
-open import Logic
-open import QADT.BasicDatatypes
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
+open import Lifting
+open import Datatypes
+-- open import QADT.BasicDatatypes
 open import QADT.Functions
 open import QADT.Isomorphisms
-open import QADT.Environment
+open import Environment
+open import QADT.EnvIsomorphisms
 open import QADT.Functor
 
 -- A syntax of proof terms for isomorphisms between ADTs
@@ -60,13 +63,13 @@ cong×= :  ∀ {n} {a b c d e : ADT n} → Iso a b → Iso c d → Iso (b × d) 
 cong×= ab cd bde = cong× ab cd =!= bde
 
 !+ :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a ⊔ b) (a ⊔ c)
-!+ i = cong+ !! i
+!+ j = cong+ !! j
 +! :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b ⊔ a) (c ⊔ a)
-+! i = cong+ i !!
++! j = cong+ j !!
 !× :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a × b) (a × c)
-!× i = cong× !! i
+!× j = cong× !! j
 ×! :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b × a) (c × a)
-×! i = cong× i !!
+×! j = cong× j !!
 
 !+= :  ∀ {n} {a b c d : ADT n} → Iso b c → Iso (a ⊔ c) d → Iso (a ⊔ b) d
 !+= bc acd = !+ bc =!= acd
@@ -106,37 +109,37 @@ al : ∀ {n} {a : ADT n} → Iso (𝟎 × a) 𝟎
 al {n} {a} = c× =!= (annih×≃ a)
 
 a×= : ∀ {n} {a b c d : ADT n} → Iso (a × (b × c)) d → Iso ((a × b) × c) d
-a×= {n} {a} {b} {c} {d} i = assoc×≃ a b c ~!= i
+a×= {n} {a} {b} {c} {d} j = assoc×≃ a b c ~!= j
 a+= : ∀ {n} {a b c d : ADT n} → Iso (a ⊔ (b ⊔ c)) d → Iso ((a ⊔ b) ⊔ c) d
-a+= {n} {a} {b} {c} {d} i = assoc⊔≃ a b c ~!= i
+a+= {n} {a} {b} {c} {d} j = assoc⊔≃ a b c ~!= j
 c×= : ∀ {n} {a b c : ADT n} → Iso (b × a) c → Iso (a × b) c
-c×= {n} {a} {b} {c} i = comm×≃ b a ~!= i
+c×= {n} {a} {b} {c} j = comm×≃ b a ~!= j
 c+= : ∀ {n} {a b c : ADT n} → Iso (b ⊔ a) c → Iso (a ⊔ b) c
-c+= {n} {a} {b} {c} i = comm⊔≃ b a ~!= i
+c+= {n} {a} {b} {c} j = comm⊔≃ b a ~!= j
 i+l= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟎 ⊔ a) b
-i+l= {n} {a} {b} i = i+l =!= i
+i+l= {n} {a} {b} j = i+l =!= j
 i+r= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a ⊔ 𝟎) b
-i+r= {n} {a} {b} i = i+r =!= i
+i+r= {n} {a} {b} j = i+r =!= j
 i×l= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟏 × a) b
-i×l= {n} {a} {b} i = i×l =!= i
+i×l= {n} {a} {b} j = i×l =!= j
 i×r= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a × 𝟏) b
-i×r= {n} {a} {b} i = i×r =!= i
+i×r= {n} {a} {b} j = i×r =!= j
 
 dl= : ∀ {n} {a b c d : ADT n} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
-dl= {n} {a} {b} {c} {d} i = distrL≃ =!= i
+dl= {n} {a} {b} {c} {d} j = distrL≃ =!= j
 dr= : ∀ {n} {a b c d : ADT n} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
-dr= {n} {a} {b} {c} {d} i = distrR≃ =!= i
+dr= {n} {a} {b} {c} {d} j = distrR≃ =!= j
 ar= : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (a × 𝟎) b
-ar= {n} {a} {b} i = annih×≃ a =!= i
+ar= {n} {a} {b} j = annih×≃ a =!= j
 al= : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (𝟎 × a) b
-al= {n} {a} {b} i = c×= (annih×≃ a =!= i)
+al= {n} {a} {b} j = c×= (annih×≃ a =!= j)
 
 -- END RULES LIST
 
 r= : ∀ {n} {e : ADT n} → Iso e e
 r= {n} {e} = refl≃ e
 s= : ∀ {n} {a b : ADT n} → Iso a b → Iso b a
-s= {n} {a} {b} i = symm≃ i
+s= {n} {a} {b} j = symm≃ j
 t= : ∀ {n} {a b c : ADT n} → Iso a b → Iso b c → Iso a c
 t= = tran≃
 _t~_ : ∀ {n} {a b c : ADT n} → Iso a b → Iso c b → Iso a c
@@ -163,9 +166,9 @@ _~t_ {n} {a} {b} {c} i1 i2 = t= (s= i1) i2
 -- 1×R= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a × 𝟏) b
 -- dL= : ∀ {n} {a b c d : ADT n} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
 -- dR= : ∀ {n} {a b c d : ADT n} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
--- dR= {n} {a} {b} {c} {d} i = tran≃ (symm≃ distrR≃ ) i
+-- dR= {n} {a} {b} {c} {d} j = tran≃ (symm≃ distrR≃ ) j
 -- ah : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (a × 𝟎) b
--- ah {n} {a} {b} i = (annih×≃ a) ~t i
+-- ah {n} {a} {b} j = (annih×≃ a) ~t j
 
 
 -- Helpful lemmas
@@ -183,29 +186,29 @@ foil : ∀ {n} {A B : ADT n} → Iso ((A ⊔ B) ²) (A ² ⊔ (Num 2 × A × B) 
 foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×l) =!~ (+1× 1 (=+ (=× i+r))) ) ) ) ) ))
 
 -- μiso : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
-μiso : ∀ {n} (e : ADT (succ n)) (ρ : Env n) → ⟦ μ e ⟧ ρ ≃ ⟦ e [ (μ e) ] ⟧ ρ
-μiso {n} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ extEnv (x  ) ρ )) | substlemmagen e (μ e) ρ (here _)
+μiso : ∀ {n} (e : ADT (succ n)) (ρ : SetEnv n) → ⟦ μ e ⟧ ρ ≃ ⟦ e [ (μ e) ] ⟧ ρ
+μiso {n} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemmagen e (μ e) ρ o
 ... | li | sl = li iso∘ iso~ sl
 
-≃⟦_⟧ : ∀ {n} {A B : ADT n} → Iso A B → ( ρ : Env n) → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ
-≃⟦_⟧≃ : ∀ {n} {A B : ADT n} → Iso A B → {ρ ρ' : Env n} → Env≃ ρ ρ' → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ'
+≃⟦_⟧ : ∀ {n} {A B : ADT n} → Iso A B → ( ρ : SetEnv n) → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ
+≃⟦_⟧≃ : ∀ {n} {A B : ADT n} → Iso A B → {ρ ρ' : SetEnv n} → SetEnv≃ ρ ρ' → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ'
 
-≃⟦ refl≃ e ⟧ ρ = ⟦ e ⟧≃ reflEnv ρ
+≃⟦ refl≃ e ⟧ ρ = ⟦ e ⟧≃ reflSetEnv≃ ρ
 ≃⟦ symm≃ e ⟧ ρ with ≃⟦ e ⟧ ρ
 ... | r = iso~ r
 ≃⟦ tran≃ e1 e2 ⟧ ρ with ≃⟦ e1 ⟧ ρ | ≃⟦ e2 ⟧ ρ
 ... | r | r2 = r iso∘ r2
 ≃⟦ ∧≃ e e₁ ⟧ ρ = iso∧ (≃⟦ e ⟧ ρ ) (≃⟦ e₁ ⟧ ρ)
 ≃⟦ ∨≃ e e₁ ⟧ ρ = iso∨ (≃⟦ e ⟧ ρ) (≃⟦ e₁ ⟧ ρ)
-≃⟦ μ≃ {e1} {e2} e12 ⟧ ρ = LFP≃ (λ X → ⟦ e1 ⟧ (extEnv X ρ)) ((λ X → ⟦ e2 ⟧ (extEnv X ρ)))
-                          λ X Y XY → ≃⟦ e12 ⟧≃ (coskipEnv≃Set≃ XY (reflEnv ρ ) )
+≃⟦ μ≃ {e1} {e2} e12 ⟧ ρ = LFP≃ (λ X → ⟦ e1 ⟧ (ρ ⅋o:= X)) ((λ X → ⟦ e2 ⟧ (ρ ⅋o:= X)))
+                          λ X Y XY → ≃⟦ e12 ⟧≃ (coskipSetEnv≃Set≃ XY (reflSetEnv≃ ρ ) )
 -- ≃⟦ ×≃ A x ⟧ ρ = iso∧ (⟦ refl≃ A ⟧iso ρ ) (≃⟦ x ⟧ ρ)
 -- ≃⟦ ⊔≃ A x ⟧ ρ = iso∨ (⟦ refl≃ A ⟧iso ρ) (≃⟦ x ⟧ ρ)
 ≃⟦ distrL≃ ⟧ ρ = isodistrL
 ≃⟦ distrR≃ ⟧ ρ = isodistrR
 ≃⟦ fix≃ e ⟧ ρ = μiso e ρ
-≃⟦_⟧ {n} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ (here _) | substlemmagen e2 d2 ρ (here _)
-... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (here _) (≃⟦ j2 ⟧ ρ)) ) )
+≃⟦_⟧ {n} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ (o) | substlemmagen e2 d2 ρ (o)
+... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (o) (≃⟦ j2 ⟧ ρ)) ) )
 ≃⟦ assoc×≃ a b c ⟧ ρ = assoc∧
 ≃⟦ assoc⊔≃ a b c ⟧ ρ = assoc∨
 ≃⟦ comm⊔≃ a b ⟧ ρ = comm∨

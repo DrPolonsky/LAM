@@ -5,7 +5,7 @@ module QADT.ADTs where
 
 open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
 open import Lifting
--- open import QADT.BasicDatatypes
+open import Datatypes
 open import QADT.Functions
 open import QADT.Isomorphisms
 

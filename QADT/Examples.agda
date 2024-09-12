@@ -1,22 +1,24 @@
 module QADT.Examples where
 
-open import Logic
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
+open import Lifting
+open import Datatypes
 open import QADT.Functor
 open import QADT.Isomorphisms
 open import QADT.ADTs
-open import ADT-Isomorphisms
-open import QADT.Environment
+open import QADT.ADT-Isomorphisms
+open import Environment
 
 module G=1+2G+G²+G³ where
 
   g : ADT 1
-  g = 𝟏 ⊔ (Num 2 × (𝕍 (here 0))) ⊔ (𝕍 (here 0)) ² ⊔ (𝕍 (here 0)) ³
+  g = 𝟏 ⊔ (Num 2 × (𝕍 (o))) ⊔ (𝕍 (o)) ² ⊔ (𝕍 (o)) ³
 
   G : ADT 0
   G = μ g
 
   GG : Set
-  GG = ⟦ G ⟧ EmptyEnv
+  GG = ⟦ G ⟧ Γ₀
 
   Gleaf : GG
   Gleaf = lfp (in1 tt )
@@ -54,13 +56,13 @@ module G=1+2G+G²+G³ where
 module M=1+M+M² where
 
   m : ADT 1
-  m = 𝟏 ⊔ (𝕍 (here 0)) ⊔ (𝕍 (here 0)) ²
+  m = 𝟏 ⊔ (𝕍 (o)) ⊔ (𝕍 (o)) ²
 
   M : ADT 0
   M = μ m
 
   MM : Set
-  MM = ⟦ M ⟧ EmptyEnv
+  MM = ⟦ M ⟧ Γ₀
 
   Mleaf : MM
   Mleaf = lfp (in1 tt)
@@ -97,8 +99,8 @@ module M=1+M+M² where
   gM=M = ~~ (fix≃ m =!= += (~~ (=+ (c×= (dist3 =!= cong+= i×r (cong+= !! ar i+r) !! )) =!= a+= (+= e ) ) ) )
     where  e = dist3 ~!= ×= (~~ (fix≃ m ) )
 
-  G→M : ⟦ G ⟧ EmptyEnv  → ⟦ M ⟧ EmptyEnv
-  G→M = foldADT g (λ ()) (⟦ M ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ gM=M ⟧ EmptyEnv )))
+  G→M : ⟦ G ⟧ Γ₀  → ⟦ M ⟧ Γ₀
+  G→M = foldADT g (λ ()) (⟦ M ⟧ Γ₀) ((_≃_.f+ (≃⟦ gM=M ⟧ Γ₀ )))
 
   findm? : MM → ℕ → 𝔹
   findm? m n = elem ==M m (List→ G→M (allG n))
@@ -146,11 +148,11 @@ module M=1+M+M² where
   -- test = {! length (filter (λ {(x , y) → ==M x y})  (zip (take 1000000 (allM 5)) (take 1000000 (allM 6))))  !}
 
 
-  -- T→B : ⟦ T ⟧ EmptyEnv  → ⟦ B ⟧ EmptyEnv
-  -- T→B = foldADT t (λ ()) (⟦ B ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv )))
+  -- T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
+  -- T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
 
-  h : ⟦ G ⟧ ρ₀ → ⟦ M ⟧ ρ₀
-  h x = fold {λ X → ⟦ g ⟧ (extEnv X ρ₀)} (λ j →  ⟦ g ⟧→ (λ tt → j)) (_≃_.f+ (≃⟦ gM=M ⟧ ρ₀ ) ) x
+  h : ⟦ G ⟧ Γ₀ → ⟦ M ⟧ Γ₀
+  h x = fold {λ X → ⟦ g ⟧ (Γ₀ ⅋o:= X)} (λ j →  ⟦ g ⟧→ (λ tt → j)) (_≃_.f+ (≃⟦ gM=M ⟧ Γ₀ ) ) x
 
   M²=M+M²+M³ : Iso (M ²) (M ⊔ M ² ⊔ M ³)
   M²=M+M²+M³ = t= (t= (×= (fix≃ m)) (dist3) ) (∨≃ (c×= (i×l= r= ) ) r=  )  -- (s= {! dist3   !} )
@@ -199,24 +201,13 @@ module 1+X²=1+X+X³ where
   TT→BT (TUnode t) = BTnode (TT→BT t) BTleaf
   TT→BT (TTnode t1 t2 t3) = BTnode (TT→BT t1) (BTnode (TT→BT t2) (TT→BT t3) )
 
-  cong : ∀ {A B : Set} (f : A → B) {a1 a2 : A} → a1 ≡ a2 → f a1 ≡ f a2
-  cong f (refl _) = refl _
-
-  cong2 : ∀ {A B C : Set} (f : A → B → C)
-           {a1 a2 : A} → a1 ≡ a2 → {b1 b2 : B} → b1 ≡ b2 → f a1 b1 ≡ f a2 b2
-  cong2 f (refl _) (refl _) = (refl _)
-
-  cong3 : ∀ {A B C D : Set} (f : A → B → C → D) {a1 a2 b1 b2 c1 c2}
-            → a1 ≡ a2 → b1 ≡ b2 → c1 ≡ c2 → f a1 b1 c1 ≡ f a2 b2 c2
-  cong3 f (refl _) (refl _) (refl _) = refl _
-
   BT→TT→BT : ∀ b → TT→BT (BT→TT b) ≡ b
-  BT→TT→BT BTleaf = refl BTleaf
+  BT→TT→BT BTleaf = refl
   BT→TT→BT (BTnode b1 BTleaf) = cong (λ x → BTnode x BTleaf) (BT→TT→BT b1)
   BT→TT→BT (BTnode b1 (BTnode b2 b3)) = cong3 (λ x y z → BTnode x (BTnode y z)) (BT→TT→BT b1) (BT→TT→BT b2) (BT→TT→BT b3)
 
   TT→BT→TT : ∀ t → BT→TT (TT→BT t) ≡ t
-  TT→BT→TT TTleaf = refl TTleaf
+  TT→BT→TT TTleaf = refl
   TT→BT→TT (TUnode t) = cong TUnode (TT→BT→TT t)
   TT→BT→TT (TTnode t1 t2 t3) = cong3 TTnode (TT→BT→TT t1) (TT→BT→TT t2) (TT→BT→TT t3)
 
@@ -244,16 +235,16 @@ module 1+X²=1+X+X³ where
   tB=B : Iso (t [ B ]) B
   tB=B = ~~ (fix≃ b =!= += (×= (fix≃ b) =!= dl= (=+ i×r ) ) )
 
-  foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ EmptyEnv → X
+  foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ Γ₀ → X
   foldT X Xalg (lfp (in1 tt)) = Xalg (in1 tt)
   foldT X Xalg (lfp (in2 (in1 x))) = Xalg (in2 (in1 (foldT X Xalg x ) ) )
   foldT X Xalg (lfp (in2 (in2 (x1 , (x2 , x3)))))
     = Xalg (in2 (in2 ((fT x1) , ((fT x2) , fT x3 ) ) ) ) where fT = foldT X Xalg
   -- foldT X = fold {F = t-func} λ {A} {B} f → ⟦ t ⟧→ {!   !}
 
-  T→B : ⟦ T ⟧ EmptyEnv  → ⟦ B ⟧ EmptyEnv
-  T→B = foldADT t (λ ()) (⟦ B ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv )))
-  -- foldT (⟦ B ⟧ EmptyEnv) (_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv ) )
+  T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
+  T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
+  -- foldT (⟦ B ⟧ Γ₀) (_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ ) )
 
 
 -- Iso ((𝟏 ⊔ 𝟎) × A × B ⊔ A × B) ((𝟏 ⊔ 𝟏 ⊔ 𝟎) × A × B)
@@ -267,19 +258,19 @@ module 1+X²=1+X+X³ where
 -- 𝔹≃𝔹₂ = c+= (a+= (!+ c+ ) )
 
 iso≠lemma : ∀ {A B : Set} (i1 i2 : A ≃ B) → ∀ (a : A) → ¬ (_≃_.f+ i1 a ≡ _≃_.f+ i2 a) → ¬ (i1 ≡ i2)
-iso≠lemma i1 .i1 a neq (refl .i1) = neq (refl (_≃_.f+ i1 a) )
+iso≠lemma i1 .i1 a neq (refl) = neq (refl )
 
-𝔹1≠𝔹2 : ¬ (≃⟦ 𝔹≃𝔹₁ ⟧ EmptyEnv ≡ ≃⟦ 𝔹≃𝔹₂ ⟧ EmptyEnv)
-𝔹1≠𝔹2 i1=i2 = iso≠lemma (≃⟦ 𝔹≃𝔹₁ ⟧ EmptyEnv) (≃⟦ 𝔹≃𝔹₂ ⟧ EmptyEnv) (in1 tt) (λ {()} ) i1=i2
+𝔹1≠𝔹2 : ¬ (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀ ≡ ≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀)
+𝔹1≠𝔹2 i1=i2 = iso≠lemma (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀) (≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀) (in1 tt) (λ {()} ) i1=i2
 
 
 -- 1 + X + X^3
 FADT : ADT 1
-FADT = 𝟏 ⊔ (𝕍 (here 0) ⊔ (𝕍 (here 0) × (𝕍 (here 0) × 𝕍 (here 0) ) ) )
+FADT = 𝟏 ⊔ (𝕍 (o) ⊔ (𝕍 (o) × (𝕍 (o) × 𝕍 (o) ) ) )
 
 -- 1 + X^2
 GADT : ADT 1
-GADT = 𝟏 ⊔ (𝕍 (here 0) × 𝕍 (here 0) )
+GADT = 𝟏 ⊔ (𝕍 (o) × 𝕍 (o) )
 
 Iso1 : Iso FADT GADT
 Iso1 = {! fold   !}
@@ -287,37 +278,37 @@ Iso1 = {! fold   !}
 module X=X^4 where
 
   ∛1 : ADT 0
-  ∛1 = μ ((1+ (𝕍 (here 0))) ²)
+  ∛1 = μ ((1+ (𝕍 (o))) ²)
 
   X : ADT 0
   X = ∛1
 
   skel : ADT 1
-  skel = (1+ ((wk (here 0) X) × (𝕍 (here 0)))) ²
+  skel = (1+ ((wk (o) X) × (𝕍 (o)))) ²
 
   -- 1+X^2=1+X[1+X^2] : Iso (1+ (X ²)) (1+ (X × (1+ (X ²))))
-  -- 1+X^2=1+X[1+X^2] = subst≃ {0} {skel} {skel} {X} {1+ (X ²)} (refl≃ skel) (fix≃ ((1+ (𝕍 (here 0))) ²))
+  -- 1+X^2=1+X[1+X^2] = subst≃ {0} {skel} {skel} {X} {1+ (X ²)} (refl≃ skel) (fix≃ ((1+ (𝕍 (o))) ²))
 
   1+X²≃1+X[1+X²] : Iso (1+ (X ²)) (1+ (X × (1+ X ²)))
-  1+X²≃1+X[1+X²] = {!   !} -- subst≃ {0} {skel} {skel} {X} {1+ X ²} (refl≃ skel) (fix≃ ((1+ (𝕍 (here 0))) ²) )
+  1+X²≃1+X[1+X²] = {!   !} -- subst≃ {0} {skel} {skel} {X} {1+ X ²} (refl≃ skel) (fix≃ ((1+ (𝕍 (o))) ²) )
 
   X=1+X+X^2 : Iso X (1+ (X ⊔ (X ²)))
-  X=1+X+X^2 = fix≃ ((1+ (𝕍 (here 0))) ²) =!= {!   !}
+  X=1+X+X^2 = fix≃ ((1+ (𝕍 (o))) ²) =!= {!   !}
 
 exsub : ADT 1
-exsub = μ (𝟏 ⊔ (𝕍 (here 1) × 𝕍 (down (here 0 ) ) )) ⊔ (𝕍 (here 0))
+exsub = μ (𝟏 ⊔ (𝕍 (o) × 𝕍 (i (o ) ) )) ⊔ (𝕍 (o))
 
 ex2sub : ADT 1
-ex2sub = (𝟏 ⊔ 𝕍 (here 0))
+ex2sub = (𝟏 ⊔ 𝕍 (o))
 
 Nat' : ADT 0
-Nat' = μ (𝟏 ⊔ 𝕍 (here 0) )
+Nat' = μ (𝟏 ⊔ 𝕍 (o) )
 
 List' : ADT 1
-List' = μ (𝟏 ⊔ (𝕍 (down (here 0)) × 𝕍 (here 1) ) )
+List' = μ (𝟏 ⊔ (𝕍 (i (o)) × 𝕍 (o) ) )
 
 Nat : Set
-Nat = ⟦ Nat' ⟧ EmptyEnv
+Nat = ⟦ Nat' ⟧ Γ₀
 
 one : Nat
 one = lfp (in2 (lfp (in1 tt ) ) )
