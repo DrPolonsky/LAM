@@ -1,12 +1,12 @@
-module ADT-Isomorphisms where
+module QADT.ADT-Isomorphisms where
 
-open import ADTs
-open import BasicLogic
-open import BasicDatatypes
-open import Functions
-open import Isomorphisms
-open import Environment
-open import Functor
+open import QADT.ADTs
+open import Logic
+open import QADT.BasicDatatypes
+open import QADT.Functions
+open import QADT.Isomorphisms
+open import QADT.Environment
+open import QADT.Functor
 
 -- A syntax of proof terms for isomorphisms between ADTs
 data Iso {n} : ADT n → ADT n → Set where

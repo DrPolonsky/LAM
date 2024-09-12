@@ -1,12 +1,11 @@
-module Examples where
+module QADT.Examples where
 
-open import BasicLogic
-open import BasicDatatypes
-open import Functor
-open import Isomorphisms
-open import ADTs
+open import Logic
+open import QADT.Functor
+open import QADT.Isomorphisms
+open import QADT.ADTs
 open import ADT-Isomorphisms
-open import Environment
+open import QADT.Environment
 
 module G=1+2G+G²+G³ where
 

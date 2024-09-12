@@ -3,7 +3,8 @@
 
 module QADT.BasicDatatypes where
 
-open import Logic
+-- open import QADT.BasicLogic
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
 open import QADT.Functions
 
 -- 𝔹 is \bB
@@ -168,8 +169,8 @@ data Fin : ℕ → Set where
 exFalsoFin : ∀ {A : Set} → Fin 0 → A
 exFalsoFin ()
 
-dec≡ : Set → Set
-dec≡ A = ∀ (x y : A) → EM (x ≡ y) where open import Classical using (EM)
+-- dec≡ : Set → Set
+-- dec≡ A = ∀ (x y : A) → EM (x ≡ y) where open import Classical using (EM)
 
 down≡ : ∀ n {x y : Fin n} → down x ≡ down y → x ≡ y
 down≡ n {x} {.x} (refl .(down x)) = refl x
