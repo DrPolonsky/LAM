@@ -9,6 +9,11 @@ open import QADT.ADTs
 open import QADT.ADT-Isomorphisms
 open import Environment
 
+-- TODO
+-- implement convenient syntax for substitution inside isomorphisms
+-- automate search for ring isomorphisms proofs
+
+
 module G=1+2G+G²+G³ where
 
   g : ADT 1
@@ -172,12 +177,34 @@ module M=1+M+M² where
   X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
   -- X+X=2X A = s= (dl= (∨≃ (i×l r=) (dl= (t= (∨≃ (i×l r=) (c× (ar= r= ) ) ) (c+ (i+ r= ) ) ) ) ) )
 
+-- The binary strings
+module S=1+2S where
+
+  s : ADT 1
+  s = Num 2 × 𝕍 o ⊔ 𝟏
+
+  S : ADT 0
+  S = μ s
+
+  open M=1+M+M²
+
   M²=2M²+1 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
   -- M²=2M²+1 = t= e3 (s= {! t=   !} ) -- (s= (t= (=+ (t= (×= M²=M³+M²+M ) {!   !} )  ) {!   !} ) )
   M²=2M²+1 = t= e3 (s= (t= (=+ (t= (×= M²=M³+M²+M ) (s= (X+X=2X _ ) ) )  )
     (t= (a+= (a+= (+= (c+= (a+= (a+= (+= (a+= (+= (c+= (a+= (c+= (a+= (a+= (+= r= ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) e) ) )
     where e = s= (a+= (+= (+= (a+= (+= (+= (a+= r= ) ) ) ) ) ) )
   -- M²=2M²+1 = t= e3 (s= (t= (=+ (s= (X+X=2X (M ²) ) ) ) {!    !} ) )
+
+  sM² : ADT 0
+  sM² = s [ M ² ]
+
+  sM²=M² : Iso sM² (M ²)
+  sM²=M² = ~~ M²=2M²+1
+
+  S→M² : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
+  S→M² = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M² ⟧ Γ₀ ) )
+
+
 
 
 module 1+X²=1+X+X³ where
@@ -276,6 +303,8 @@ Iso1 : Iso FADT GADT
 Iso1 = {! fold   !}
 
 module X=X^4 where
+
+  -- Q: Can we prove X = X² or is that not a rig iso?
 
   ∛1 : ADT 0
   ∛1 = μ ((1+ (𝕍 (o))) ²)

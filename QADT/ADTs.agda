@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
-{-# OPTIONS --allow-unsolved-meta #-}
+-- {-# OPTIONS --allow-unsolved-meta #-}
 
 module QADT.ADTs where
 
@@ -88,18 +88,35 @@ decADT (a ⊔ a₁) ρ de (in2 x) (in2 x₁) with decADT a₁ ρ de x x₁
 decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ (ρ ⅋o:= X))) (λ A dA → decADT a ((ρ ⅋o:= A)) (decExtEnv ρ A de dA) )
 
 -- Injectivity of ADTs map functions
--- ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)
---                   → SetEnv→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
--- ADTFunctorInj (𝕍 v) ρ→σ ρ→σInj = ρ→σInj v
--- ADTFunctorInj 𝟏 ρ→σ ρ→σInj = λ z → z
--- ADTFunctorInj (e1 × e2) ρ→σ ρ→σInj {x1 , x2} {y1 , y2} x12=y12 = ?
---    ADTFunctorInj e1 ρ→σ ρ→σInj ((cong pr1) x12=y12 ) (cong2 _,_) ADTFunctorInj e2 ρ→σ ρ→σInj ((cong pr2) x12=y12 )
--- ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in1 y} x=y = cong in1 (ADTFunctorInj e1 ρ→σ ρ→σInj (in1inj x=y ) )
--- ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in2 y} ()
--- ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in1 y} ()
--- ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in2 y} x=y = cong in2 (ADTFunctorInj e2 ρ→σ ρ→σInj (in2inj x=y ) )
+ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)
+                  → SetEnv→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
+ADTFunctorInj (𝕍 v) ρ→σ ρ→σInj = ρ→σInj v
+ADTFunctorInj 𝟏 ρ→σ ρ→σInj = λ z → z
+ADTFunctorInj (e1 × e2) ρ→σ ρ→σInj {x1 , x2} {y1 , y2} x12=y12 = cong2 _,_ x1=y1 x2=y2 where
+  x1=y1 = ADTFunctorInj e1 ρ→σ ρ→σInj ((cong pr1) x12=y12 )
+  x2=y2 = ADTFunctorInj e2 ρ→σ ρ→σInj ((cong pr2) x12=y12 )
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in1 y} x=y = cong in1 (ADTFunctorInj e1 ρ→σ ρ→σInj (in1inj x=y ) )
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in1 x} {in2 y} ()
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in1 y} ()
+ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in2 y} x=y = cong in2 (ADTFunctorInj e2 ρ→σ ρ→σInj (in2inj x=y ) )
 -- ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj {lfp x} {lfp y} lx=ly with lfpInj (λ z → ⟦ e ⟧ (σ ⅋o:= z)) lx=ly
 -- ... | x=y = cong lfp (ADTFunctorInj e {!   !} {!   !} {!   !}  )
+ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldInj Fmap Finj α αinj x=y where
+      F : Set → Set
+      F = λ X → ⟦ e ⟧ ((ρ ⅋o:= X))
+      G : Set → Set
+      G = λ X → ⟦ e ⟧ ((σ ⅋o:= X))
+      Fmap : Functor F
+      Fmap {X} {Y} f z = ⟦_⟧→_ {succ n} e {(ρ ⅋o:= X)} {(ρ ⅋o:= Y)} (ConsSetEnv→ (reflSetEnv→ ρ) f o ) z
+      Finj : FunctorInj F Fmap
+      Finj {A} {B} f finj = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= B)} (ConsSetEnv→ (reflSetEnv→ ρ) f o)
+           λ { o → finj ; (i z) → I }
+      α : F (LFP G) → LFP G
+      α = (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ ρ→σ (λ x₁ → x₁) o) z))
+      αinj : inj α
+      αinj {u} {v} au=av =
+        ADTFunctorInj e (ConsSetEnv→ ρ→σ I o) (ConsSetEnv→Inj I ρ→σ I ρ→σInj ) (lfpInj G au=av)
+
 -- ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldinj x=y where
 --       F : Set → Set
 --       F = λ X → ⟦ e ⟧ ((ρ ⅋o:= X))
@@ -116,8 +133,8 @@ decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ (ρ ⅋o:= X))) (λ A dA → d
 --       αinj {z1} {z2} z12 with lfpInj (λ z → ⟦ e ⟧ (σ ⅋o:= z)) z12
 --       -- ... | c = {!   !}
 --       ... | c = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= A)} (reflSetEnv→ ((ρ ⅋o:= A))) (reflSetEnv→Inj (coskip ρ (o) (LFP (λ z → ⟦ e ⟧ coskip σ (o) z))) ) g
---         wo = {!   !}
---       foldinj = foldInj Fmap Finj α αinj
+      -- wo = {!   !}
+      -- foldinj = foldInj Fmap Finj α αinj
 
    -- fold (λ f z → (⟦ e ⟧→ ConsSetEnv→ f (λ x₁ x₂ → x₂)) z)
    --   (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z)) x
@@ -141,7 +158,8 @@ foldADT : ∀ {n} (a : ADT (succ n)) (ρ : SetEnv n) (X : Set) (f : ⟦ a ⟧ ((
           → ⟦ μ a ⟧ ρ → X
 foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f o )
 
-foldInjADT : ∀ {n} (ρ : SetEnv n) (t : ADT (succ n)) {A : Set} (a : ⟦ t ⟧ ((ρ ⅋o:= A)) → A) → inj a → inj (foldADT t ρ A a)
+foldInjADT : ∀ {n} (ρ : SetEnv n) (t : ADT (succ n)) {A : Set} (a : ⟦ t ⟧ ((ρ ⅋o:= A)) → A)
+             → inj a → inj (foldADT t ρ A a)
 foldInjADT {n} ρ t {A} a inja = {!   !}
 
 
