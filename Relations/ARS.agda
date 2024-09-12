@@ -217,7 +217,7 @@ module Termination (R : 𝓡 A)  where
 
   -- Cofinality Property
   CP : Set
-  CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is R -increasing s) ×
+  CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
                     (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
 
   NF→ε : ∀ {x} → x ∈ is_-NF_ → ∀ {y} → (R ⋆) x y → x ≡ y
@@ -236,10 +236,14 @@ module Termination (R : 𝓡 A)  where
 
   unormElement : 𝓟 A
   unormElement a = Σ[ n ∈ A ] ((is_-NF_ n) × (∀ y → (R ⋆) a y → (R ⋆) y n))
-  
+
 
 open Termination public
 
+module ReductionClosureProperties (R : 𝓡 A) where
+
+  SN↓⊆SN : ∀ {x} → is R -SN x → ∀ {y} → (R ⋆) x y → is R -SN y
+  SN↓⊆SN = {!   !}
 
 module Newmans-Lemma where
   -- If R is SN and WCR then R is CR
@@ -391,26 +395,26 @@ module Theorem-1-2-2 (R : 𝓡 A) where
       ... | d ,, Rʳxd , axʳ x₁ with f d y _ x₁ R*y₁y
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
-module Miscelaneous (R : 𝓡 A) where 
+module Miscelaneous (R : 𝓡 A) where
   -- Recurrent property
   RP : Set
   -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
   RP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
          → Σ[ m ∈ ℕ ] is R -recurrent (f m)
 
-  RP- : Set 
+  RP- : Set
   RP- = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
           → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
 
-  RP→RP- : RP → RP-  
-  RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound 
+  RP→RP- : RP → RP-
+  RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
-  RP-∧WCR→RP : RP- → WCR R → RP 
-  RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound 
-  ... | i ,, R*afᵢ with aisω-bound i 
+  RP-∧WCR→RP : RP- → WCR R → RP
+  RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
+  ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
-         
+
 open Miscelaneous public
 
 module Theorem-1-2-3 (R : 𝓡 A) where
@@ -424,6 +428,31 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   seq-lemma2 f f-inc (succ n) zero = in2 (seq-lemma f f-inc (succ n))
   seq-lemma2 f f-inc (succ n) (succ m) = seq-lemma2 (f ∘ succ) (λ k → f-inc (succ k) ) n m
 
+  -- data _ʳ (R : 𝓡 U) : 𝓡 U where
+  --   axʳ : ∀ {x y : U} → R x y → (R ʳ) x y
+  --   εʳ  : ∀ {x} → (R ʳ) x x
+
+  refl-closure-lemma : ∀ (Φ : (∀ x y → (R ʳ) x y → Set))
+                         (Φax  : ∀ x y (ρ : R x y) → Φ x y (axʳ ρ))
+                         (Φeps : ∀ x y (p : x ≡ y) → Φ x y (transp ((R ʳ) x) p εʳ) )
+                         → ∀ x y (ρ : (R ʳ) x y) → Φ x y ρ
+  refl-closure-lemma Φ Φax Φeps x y (axʳ ρ) = Φax x y ρ
+  refl-closure-lemma Φ Φax Φeps x .x εʳ = Φeps x x refl
+
+  wseq-lemma : ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ n → (R ⋆) (f zero) (f n)
+  wseq-lemma f f-winc zero = ε⋆
+  wseq-lemma f f-winc (succ n) =
+    let Φ = λ x y Rʳxy → (R ⋆) y (f (succ n)) → (R ⋆) x (f (succ n))
+        Φax = λ x y → _,⋆_
+        Φeps = λ { x .x refl → I }
+        rcl = refl-closure-lemma Φ Φax Φeps (f zero) (f (succ zero)) (f-winc zero)
+      in rcl (wseq-lemma (f ∘ succ) (λ k → f-winc (succ k)) n)
+
+  wseq-lemma2 : ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
+  wseq-lemma2 f f-winc zero m = in1 (wseq-lemma f f-winc m)
+  wseq-lemma2 f f-winc (succ n) zero = in2 (wseq-lemma f f-winc (succ n))
+  wseq-lemma2 f f-winc (succ n) (succ m) = wseq-lemma2 (f ∘ succ) (λ k → f-winc (succ k) ) n m
+
   i : WN R → UN R → ω-bounded R
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
@@ -432,12 +461,12 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
-  -- Strengthening i 
-  i+ : WN R → UN→ R → ω-bounded R 
+  -- Strengthening i
+  i+ : WN R → UN→ R → ω-bounded R
   i+ RisWN RisUN→ f f-inc  with RisWN (f zero)
-  ... | (a ,, R*f0a , a∈NF) = a ,, g where 
-    g : ∀ k → (R ⋆) (f k) a 
-    g k with RisWN (f k) 
+  ... | (a ,, R*f0a , a∈NF) = a ,, g where
+    g : ∀ k → (R ⋆) (f k) a
+    g k with RisWN (f k)
     ... | b ,, R*fkb , b∈NF with RisUN→ a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
 
@@ -445,17 +474,17 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ii3- :  WN R → UN R → RP R → isWFseq- (~R R)
   ii3- wnR unR rp s sIsRdec with i wnR unR
   ... | bdR with wnR (s 0)
-  ... | a ,, R*s₀a , a∈NF with bdR s sIsRdec  
+  ... | a ,, R*s₀a , a∈NF with bdR s sIsRdec
   ... | b ,, bisωLimit with bisωLimit 0
   ... | R*s₀b with rp s sIsRdec b bisωLimit
-  ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR) 
+  ... | c ,, ScisRecurrent with Theorem-1-2-2.ii R (wnR , unR)
   ... | RisCR with RisCR ((s 0) ,, R*s₀a , seq-lemma s sIsRdec c)
-  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF _ Raa₁  
+  ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF _ Raa₁
   ... | .a ,, ε⋆ , R*sca with ScisRecurrent a (R*sca)
   ... | Raa₃ ,⋆ R*as_c = a∈NF _ Raa₃
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
-  
+
   iii :  WN R → WCR R → RP R → isWFseq- (~R R)
   iii wnR wcrR rp s sIsRdec = {!  !}
 
@@ -468,24 +497,30 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
   -- A classical proof of iii (subbing RP for Inc)
   open import Classical
+  preSN : 𝓟 A
+  preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
+
   lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  iii-EM :  WN R → WCR R → RP R → EM (SN R) → SN R 
-  iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
-  iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a 
-  ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an 
-  ... | b₀ ,, b∉SN , (R*ab₀ , R*b₀n) = {!   !}
-  
+  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq R
+  iii-EM RisWN RisWCR rp s = {!   !}
+  -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
+  -- iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a
+  -- ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an
+  -- ... | b₀ ,, b∉SN , (R*ab₀ , R*b₀n) = {!   !}
+
+
+
   iv : CP R → CR R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
-  ... | f ,, f-inc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
-  ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ with seq-lemma2 f f-inc bₙ cₙ
+  ... | f ,, f-winc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
+  ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ
+    with wseq-lemma2 f f-winc bₙ cₙ
   ... | in1 R*fbₙfcₙ = (f cₙ) ,, ((R*bfbₙ ⋆!⋆ R*fbₙfcₙ) , R*cfcₙ)
-  ... | in2 R*fcₙfbₙ =  (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
+  ... | in2 R*fcₙfbₙ = (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
- 
--- Useful dead-ends 
+-- Useful dead-ends
 
   NFisωBnd : WCR R → ∀ (f : ℕ → A) → is R -increasing f → ∀ a → is R -NF a
                → (R ⋆) (f 0) a → ∀ n → (R ⋆) (f n) a
@@ -581,4 +616,3 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
- 
