@@ -4,7 +4,7 @@ module Relations.ARS {A : Set} where
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Lifting using (ℕ ; zero; succ; Fin)
+open import Datatypes using (ℕ ; zero; succ; Fin)
 
 {-
 What we want to do:
@@ -240,10 +240,10 @@ module Termination (R : 𝓡 A)  where
 
 open Termination public
 
-module ReductionClosureProperties (R : 𝓡 A) where
-
+module ReductionClosureProperties (R : 𝓡 A) where  
   SN↓⊆SN : ∀ {x} → is R -SN x → ∀ {y} → (R ⋆) x y → is R -SN y
-  SN↓⊆SN = {!   !}
+  SN↓⊆SN isR-SNx ε⋆ = isR-SNx
+  SN↓⊆SN (acc xacc) (Rxx₁ ,⋆ R*x₁y) = SN↓⊆SN (xacc _ Rxx₁) R*x₁y 
 
 module Newmans-Lemma where
   -- If R is SN and WCR then R is CR
