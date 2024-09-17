@@ -243,8 +243,24 @@ open Termination public
 module ReductionClosureProperties (R : 𝓡 A) where  
   SN↓⊆SN : ∀ {x} → is R -SN x → ∀ {y} → (R ⋆) x y → is R -SN y
   SN↓⊆SN isR-SNx ε⋆ = isR-SNx
-  SN↓⊆SN (acc xacc) (Rxx₁ ,⋆ R*x₁y) = SN↓⊆SN (xacc _ Rxx₁) R*x₁y 
+  SN↓⊆SN isR-SNx@(acc xacc) (Rxx₁ ,⋆ R*x₁y) = SN↓⊆SN (xacc _ Rxx₁) R*x₁y 
 
+  NF↓⊆NF : ∀ {x} → is R -NF x → ∀ {y} → (R ⋆) x y → is R -NF y
+  NF↓⊆NF isR-NFx ε⋆ = isR-NFx
+  NF↓⊆NF isR-NFx (Rxx₁ ,⋆ R*x₁y) = λ y _ → isR-NFx _ Rxx₁
+
+  -- SA: This shouldn't be true. Counter: x ->> n and x ->> y (x ∈ WN). y -> z and z -> y and y and z have no other reductions. 
+  WN↓⊆WN : ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  WN↓⊆WN isR-WNx ε⋆ = isR-WNx
+  WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
+
+  UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
+  UN↓⊆UN isR-UNx R*xy y n∈NF R*yn z z∈NF R*yz = isR-UNx _ n∈NF (R*xy ⋆!⋆ R*yn) z z∈NF (R*xy ⋆!⋆ R*yz)
+
+  rec↓⊆rec : ∀ {x} → is R -recurrent x → ∀ {y} → (R ⋆) x y → is R -recurrent y
+  rec↓⊆rec isR-recx R*xy z R*yz with isR-recx z (R*xy ⋆!⋆ R*yz) 
+  ... | R*zx  = R*zx ⋆!⋆ R*xy
+  
 module Newmans-Lemma where
   -- If R is SN and WCR then R is CR
 
@@ -616,3 +632,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+ 
