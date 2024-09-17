@@ -4,6 +4,7 @@ open import Logic
 open import Lifting
 open import Predicates
 open import Relations.Core
+open import Datatypes
 
 {- 2024.06.28.
   Questions to investigate.
