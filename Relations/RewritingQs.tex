@@ -1,0 +1,98 @@
+\documentclass{scrartcl}
+
+\begin{document}
+
+\section{2024.09.12}
+\begin{itemize}
+  \item Investigate \texttt{iii-lemma}.  (Is it false, or is there a classical proof?)
+  (No constructive proof?)
+  \item Look at variations of RP.
+  \item What happens if properties involving sequences are reformulated for
+  $R^r$? (Cannot decide whether the given sequence is finite or infinite.)
+  \item Look at RP- and WCR implies RP!
+  \item Can "sequential" properties like RP, RP-, isWFseq, isWFseq-, $\omega$-bounded, etc.,
+  be related to the cofinality property.
+\end{itemize}
+
+\section{Relations, ARS}
+
+
+\begin{enumerate}
+  \item Define logical and structurual operations on relations, proving laws about them.
+  \item Define closure operations on realtions, proving laws about them
+  \item Define properties such as transtivity etc.
+\end{enumerate}
+
+\subsection{Well-foundedness}
+
+Four notions:
+\begin{itemize}
+  \item Based on every element being accessible
+  \item Every inductive relation is universally true
+  \item Every non-empty set has a minimal element
+  \item No infinite sequence is decreasing
+\end{itemize}
+
+
+
+\section{Open research questions}
+\begin{enumerate}
+  \item Sufficient conditions for reversing the implications between notions of
+  well-foundedness?
+  \item Knaster-Tarski Lemma: Most general form? Alternative formulations?
+  \item Syntax for closure operators allowing to prove the needed properties
+  uniformly/generically
+\end{enumerate}
+
+\section{To Do}
+\begin{enumerate}
+  \item Clean up the current development
+  \item More laws about closure operations: Monotonicity, idempotency
+  \item Refactor the ARS formalized results with the new development
+  \item Knaster--Tarski in a well-founded setting: what additional
+  hypotheses are necessary?
+\end{enumerate}
+
+\subsection{Questions about well-foundedness}
+
+\begin{enumerate}
+  \item For a given element $x$, is the property of
+  being accessible $\lnot\lnot$-closed? I.E.,
+  Does $x$ being $\lnot\lnot$-accessible imply that $x$ is accessible?
+  (Conjecture: No.)
+
+  \item As a special case, does being weakly (accessible) well-founded imply being $\lnot\lnot$-wellfounded?
+  (Conjecture: No.)
+
+  Also: Same question about inductive notion of well-foundedness.
+
+  \item ($\star$) Given a well-founded relation, does every non-empty subset
+  have a minimal element?
+
+  \emph{Problem.} Need to decide whether, for a given $x \in U$,
+   the set $\{y | Ryx\}$ is empty.
+
+   \item IF every non-empty subset has a minimal element, does this imply
+   either of the weak forms of well-foundedness: $\mathtt{isWFacc-}$ or
+   $\mathtt{isWFind-}$ ?
+
+   \item Does $\mathtt{isWFmin-}$ imply $\mathtt{isWFacc-}$ or $\mathtt{isWFind-}$?
+
+   \emph{Problem.} Need to go from $\lnot (\forall y. R y d \to \phi y)$
+   and $\forall y. R y d \to \lnot \lnot \phi y$ to $\bot$.
+
+   In terms of accessibility, it should suffices to assume accessibility is
+   $\lnot\lnot$-closed, since being related to y is not relevant for that. (?)
+
+   \item Does sequential well-foundedness (no decreasing sequence) imply
+   any of the other notions, e.g., \texttt{WFmin-} ?
+
+   \emph{Note.}  This seems to require the most classical assumptions:
+   $\lnot\lnot$-closure of $\phi$, relativized De Morgan law,
+   Markov's principle, etc.
+\end{enumerate}
+
+\textsc{Remark.}
+$\lnot\lnot$-closure of accessibility should solve problems 1 and 4.
+
+\end{document}
