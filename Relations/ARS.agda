@@ -516,11 +516,15 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   preSN : 𝓟 A
   preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
 
-  lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
-  lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
+  -- preSN has replaced this we think
+  -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
+  -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq R
-  iii-EM RisWN RisWCR rp s = {!   !}
+  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)  -- SA: Changed to (~R)
+  iii-EM RisWN RisWCR rp- decSN s with decSN (s 0) 
+  ... | in1 RisSN₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero))) 
+  ... | RisUNs₀ = {!    !}
+  iii-EM RisWN RisWCR rp decSN s | in2 x = {!   !}
   -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
   -- iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a
   -- ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an
@@ -632,4 +636,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
- 
+   
