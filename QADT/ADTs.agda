@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
--- {-# OPTIONS --allow-unsolved-meta #-}
+{-# OPTIONS --allow-unsolved-meta #-}
 
 module QADT.ADTs where
 
