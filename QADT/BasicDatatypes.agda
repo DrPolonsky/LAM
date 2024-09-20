@@ -186,6 +186,7 @@ decFin (succ n) (down x) (down y) = case (λ x₁ → in1 (cong down x₁) ) (λ
 data List (A : Set) : Set where
   [] : List A
   _∷_ : A → List A → List A
+{-# BUILTIN LIST List #-}
 
 infixr 21 _∷_
 
