@@ -44,6 +44,7 @@ not x = if x then false else true
 data List (A : Set) : Set where
   [] : List A
   _∷_ : A → List A → List A
+{-# BUILTIN LIST List #-}
 
 infixr 21 _∷_
 
