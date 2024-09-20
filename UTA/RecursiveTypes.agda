@@ -200,7 +200,6 @@ module RecursiveTypes where
   SR 0 = ⊥
   SR (succ n) = ∃ (λ (s : SubList (succ n)) → ∀ (x : Fin (succ n)) → atomOccursInList x (s x))
 
-
   properPred : ∀ {n} → SubList n → Fin n → Set
   properPred s x = List∀ (Occurs𝕋 x) (s x)
 
@@ -227,6 +226,15 @@ module RecursiveTypes where
   substSubList : ∀ {n} → Fin (succ n) → 𝕋 n → SubList (succ n) → SubList n
   substSubList x B s = λ y → subst[𝕋] x B (s (skip x y))
 
+  substVarList : ∀ {n} → Fin (succ n) → 𝕋 n → SubList (succ n) → SubList n
+  substVarList x B s = prepSub (map (con B) (subst[𝕋] x B (s x)))
+    -- let xList  = subst[𝕋] x B (s x)
+    --     eqList = map (con B) xList
+    --  in  prepSub eqList
+
+  ++SubList : ∀ {n} → SubList n → SubList n → SubList n
+  ++SubList cs1 cs2 = λ z → cs1 z ++ cs2 z
+
   {-
   -- subst𝕋list a [A1,..,Ak] B = [B[A1/a],..,B[Ak/a]]
   subst𝕋list : ∀ {n} → Fin (succ n) → List (𝕋 n) → 𝕋 (succ n) → List (𝕋 n)
@@ -239,14 +247,19 @@ module RecursiveTypes where
   -}
   -- unify1 : ∀ {n} → (s : SubList (succ n)) → isProperSR s ∨ ∃ (λ s' → )
 
-  solverStep : ∀ {n} → (s : SubList (succ n)) → (x : Fin (succ n))
+  solverStep1 : ∀ {n} → (s : SubList (succ n)) → (x : Fin (succ n))
                      → List∀ (Occurs𝕋 x) (s x) ∨ (𝕋 n ∧ SubList n)
-  solverStep {n} s x with decOccAtomList x (s x)
+  solverStep1 {n} s x with decOccAtomList x (s x)
   ... | in1 (exists A (A∈sx , x∉A)) =
     case (λ x∈A → exFalso (x∉A x∈A) )
-         (λ {(exists B A≡wkB) → in2 (B , substSubList x B s ) } )
+         (λ {(exists B A≡wkB) → in2 (B , ++SubList (substSubList x B s) (substVarList x B s) )} )
          (occCheck x A)
   ... | in2 yes = in1 yes
+
+  solverStep2 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
+                →   (∀ (x : Fin (succ n)) → List∀ (Occurs𝕋 x) (s x))
+                  ∨ (SubList n ∧ (Fin (succ m) → 𝕋 n))
+  solverStep2 {n} sr sub = {!   !} 
 
   elemFinN : ∀ n → List (Fin n)
   elemFinN zero = []
