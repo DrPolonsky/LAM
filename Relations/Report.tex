@@ -52,7 +52,7 @@ I have been focussed on Chapter 1 of TeReSe which covers abstract reduction syst
 
 \apcomment{Mention that, for a set $A$, we will use "subset of $A$" and "predicate on $A$" interchangeably,
 with subsets being represented in the Agda code using predicates, which are in turn formalized as
-dependent types over $A$, i.e. maps $\varphi : A \to \bset$ }
+dependent types over $A$, i.e. maps $\phi : A \to \bset$ }
 
 Working in constructive logic introduces subtle differences between notions of well-foundedness of relations
 which are not present in classical logic.  In our investigation, we have focused on four distinct definitions of well-foundedness, with minor variations of each. To spell these out, we first define some preliminary notions.
@@ -60,29 +60,33 @@ which are not present in classical logic.  In our investigation, we have focused
 
 \begin{dfn} Let $A$ be a set and $R \sse A \times A$ be a relation.
 \begin{enumerate}
-  \item Let $\phi \sse A$.  An element $x$ is $R$-minimal for $\varphi$ if $\varphi(x)$ is true and no other element for which $\varphi$ holds is $R$-related to $x$.
+  \item Let $\phi$ be a predicate on $A$. An element $x \in A$ is $R$-minimal for $\phi$ if $\phi(x)$ is true and no other element for which $\phi$ holds is $R$-related to $x$.
   \item An element $x \in A$ is \textit{$R$-accessible} if every element $R$-related to $x$ is \textit{$R$-accessible}.  (This should be understood as an inductive definition, with base case consisting of $R$-minimal elements for the whole of $A$.)
-    \item A predicate $\varphi$ on $A$ is \emph{inductive} if it holds on a given element $x \in A$ whenever it holds on all elements $R$-related to $x$:
+    \item A predicate $\phi$ on $A$ is \emph{inductive} if it holds on a given element $x \in A$ whenever it holds on all elements $R$-related to $x$:
     \[ (\forall y. Ryx \to \phi(y)) \to \phi(x) \]
     \item A sequence $s = (s_0,s_1,\dots)$ of elements of $A$ is $R$-decreasing
     if every element is related to its predecessor.  That is, $Rs_{n+1}s_n$ for all $n$.
 \end{enumerate}
 \end{dfn}
-With the above definitions established we define the notions of well-foundedness we have been investigating. For a given relation $R$:
-\begin{enumerate}
+With the above definitions established we define the notions of well-foundedness we have been investigating. 
+\begin{dfn} \hfil
+  \begin{enumerate}
     \item \textit{R} is well-founded if every element is \textit{R}-accessible.
     \item \textit{R} is well-founded if every inductive predicate is universally true.
     \item \textit{R} is well-founded if every non-empty predicate has a minimal element with respect to $R$.
     \item \textit{R} is well-founded if every sequence contains a non-decreasing index.
-\end{enumerate}
-Further, we explored weaker variants of these notions of well-foundedness:
-\begin{enumerate}
-    \item \textit{R} is well-founded if every element is $\lnot \lnot$  \textit{R}-accessible.
-    \item \textit{R} is well-founded if for every inductive predicate $\varphi$, $\lnot \lnot \varphi$ is universally true.
-    \item \textit{R} is well-founded if it is not not the case that every non-empty predicate has a minimal element with respect to $R$. \textcolor{red}{is there a better way to express this double negation in english?}
-    \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence (this is the definition of well-foundedness found in TeReSe).
-\end{enumerate}
-
+  \end{enumerate}
+\end{dfn}
+  Further, we explored weaker variants of these notions of well-foundedness.
+  \begin{dfn} \hfil
+    \begin{enumerate}
+      \item \textit{R} is well-founded if every element is $\lnot \lnot$  \textit{R}-accessible.
+      \item \textit{R} is well-founded if for every inductive predicate $\phi$, $\lnot \lnot \phi$ is universally true.
+      \item \textit{R} is well-founded if it is not not the case that every non-empty predicate has a minimal element with respect to $R$. \textcolor{red}{is there a better way to express this double negation in english?}
+      \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence (this is the definition of well-foundedness found in TeReSe).
+    \end{enumerate}
+    
+\end{dfn}
 The following graphic illustrates the implications we have found between these definitions and those we are still seeking to find. Green arrows indicate that one definition implies another, red arrows indicate that we believe an implication should be possible but we have not yet found it.
 
 \begin{center}
@@ -133,17 +137,17 @@ The following graphic illustrates the implications we have found between these d
 \textcolor{red}{Go through some of the main definitions formalised from Terese, focussing on where we have used constructive alternatives to the classically given definitions
 Could talk here about omega bounded stuff too!}
 
-The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, Theorem 1.2.2 and Theorem 1.2.3. Before exploring those proofs the following definitions are essential.
-\begin{itemize}
-  \item \textit{ARS:} An abstract reduction system (ARS) is a framework which we use to explore reduction relations on a set of objects.
-\end{itemize}
-Throughout these definitions we use $A$ to denote the set which contains all the objects that can be reduced and $\to$ to denote a binary relation on $A$. This relation represents the reduction process. For example, if we let $\to$ be the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
+The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, theorem 1.2.2 and theorem 1.2.3. Before exploring those proofs the following definitions are essential.
+\begin{dfn}
+  An abstract reduction system (\emph{ARS}) is a framework which we use to explore reduction relations on a set of objects.
+\end{dfn}
+Throughout these definitions we use $A$ to denote the set and $\to$ to denote a binary relation on $A$. This relation represents the reduction process. For example, if we specify $\to$ as the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
 
 We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
 
-\begin{itemize}
-  \item \textit{Weakly confluent:} A reduction relation is weakly confluent (AKA weakly Church-Rosser (WCR)) if all single-step reductions from a given element can always converge via multi-step reductions to some common reduct.
-\end{itemize}
+\begin{dfn}
+    A reduction relation is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if all single-step reductions from a given element can always converge via multi-step reductions to some common reduct.
+\end{dfn}
 \begin{center}
   \begin{tikzpicture}[node distance=2cm, auto]
     % Nodes
@@ -160,9 +164,9 @@ We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
 \end{tikzpicture}
 \end{center}
 
-\begin{itemize}
-  \item \textit{Confluent} A reduction relation is confluent (AKA Church-Rosser (CR)) if all multi-step redctions from a given element can always converge via multi-step reductions to some common reduct.
-\end{itemize}
+\begin{dfn}
+    A reduction relation is \emph{confluent} (AKA Church-Rosser (CR)) if all multi-step redctions from a given element can always converge via multi-step reductions to some common reduct.
+\end{dfn}
 \begin{center}
   \begin{tikzpicture}[node distance=2cm, auto]
     % Nodes
@@ -178,6 +182,10 @@ We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
     \draw[->>] (right) -- (bottom);
 \end{tikzpicture}
 \end{center}
+
+\begin{dfn}
+  
+\end{dfn}
 
 \subsubsection{Strongly Normalizing}
 \begin{center}

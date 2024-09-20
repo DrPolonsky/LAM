@@ -4,7 +4,7 @@ module Relations.ARS {A : Set} where
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Lifting using (ℕ ; zero; succ; Fin)
+open import Datatypes using (ℕ ; zero; succ; Fin)
 
 {-
 What we want to do:
@@ -241,9 +241,26 @@ module Termination (R : 𝓡 A)  where
 open Termination public
 
 module ReductionClosureProperties (R : 𝓡 A) where
-
   SN↓⊆SN : ∀ {x} → is R -SN x → ∀ {y} → (R ⋆) x y → is R -SN y
-  SN↓⊆SN = {!   !}
+  SN↓⊆SN isR-SNx ε⋆ = isR-SNx
+  SN↓⊆SN isR-SNx@(acc xacc) (Rxx₁ ,⋆ R*x₁y) = SN↓⊆SN (xacc _ Rxx₁) R*x₁y
+
+  NF↓⊆NF : ∀ {x} → is R -NF x → ∀ {y} → (R ⋆) x y → is R -NF y
+  NF↓⊆NF isR-NFx ε⋆ = isR-NFx
+  NF↓⊆NF isR-NFx (Rxx₁ ,⋆ R*x₁y) = λ y _ → isR-NFx _ Rxx₁
+
+  -- SA: This shouldn't be true. Counter: x ->> n and x ->> y (x ∈ WN). y -> z and z -> y and y and z have no other reductions.
+  -- should follow with the assumption of UN→
+  WN↓⊆WN : ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  WN↓⊆WN isR-WNx ε⋆ = isR-WNx
+  WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
+
+  UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
+  UN↓⊆UN isR-UNx R*xy y n∈NF R*yn z z∈NF R*yz = isR-UNx _ n∈NF (R*xy ⋆!⋆ R*yn) z z∈NF (R*xy ⋆!⋆ R*yz)
+
+  rec↓⊆rec : ∀ {x} → is R -recurrent x → ∀ {y} → (R ⋆) x y → is R -recurrent y
+  rec↓⊆rec isR-recx R*xy z R*yz with isR-recx z (R*xy ⋆!⋆ R*yz)
+  ... | R*zx  = R*zx ⋆!⋆ R*xy
 
 module Newmans-Lemma where
   -- If R is SN and WCR then R is CR
@@ -278,6 +295,7 @@ module Newmans-Lemma where
 
 
   -- Not provable, unless WN is global. [***]
+  -- FIND a counterexample and delete?
   -- Derive it from (ii) below??
   WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
   WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
@@ -500,11 +518,19 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   preSN : 𝓟 A
   preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
 
-  lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
-  lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
+  -- preSN has replaced this we think
+  -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
+  -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq R
-  iii-EM RisWN RisWCR rp s = {!   !}
+  preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
+                          → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
+  preSNlemma1 SNdec {x} {n} x∉SN n∈NF R⋆xn = {!   !}
+
+  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
+  iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)
+  ... | in1 RisSN₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero)))
+  ... | RisUNs₀ = {!    !}
+  iii-EM RisWN RisWCR rp decSN s | in2 s₀∉SN = {!   !}
   -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
   -- iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a
   -- ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an

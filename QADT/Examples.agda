@@ -78,7 +78,6 @@ module M=1+M+M² where
   MbnodeCurried : MM ∧ MM → MM
   MbnodeCurried (m1 , m2) = lfp (in2 (in2 ((m1 , m2 )) ) )
 
-
   allM : ℕ → List MM
   allM zero = []
   allM (succ n) = let
@@ -126,8 +125,8 @@ module M=1+M+M² where
   bigM : MM
   bigM = cn 7 (Mbnode Mleaf) Mleaf
 
-  check : Set
-  check = {! findm? Mtest3 5  !}
+  -- check : Set
+  -- check = {! findm? Mtest3 5  !}
   -- check = {! findm? (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) Mleaf))) 4   !}
   -- check = {! ==M  (G→M (Gleaf)) Mleaf   !}
 
@@ -373,18 +372,6 @@ iso≠lemma i1 .i1 a neq (refl) = neq (refl )
 𝔹1≠𝔹2 : ¬ (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀ ≡ ≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀)
 𝔹1≠𝔹2 i1=i2 = iso≠lemma (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀) (≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀) (in1 tt) (λ {()} ) i1=i2
 
-
--- 1 + X + X^3
-FADT : ADT 1
-FADT = 𝟏 ⊔ (𝕍 (o) ⊔ (𝕍 (o) × (𝕍 (o) × 𝕍 (o) ) ) )
-
--- 1 + X^2
-GADT : ADT 1
-GADT = 𝟏 ⊔ (𝕍 (o) × 𝕍 (o) )
-
-Iso1 : Iso FADT GADT
-Iso1 = {! fold   !}
-
 module X=X^4 where
 
   -- Q: Can we prove X = X² or is that not a rig iso?
@@ -411,10 +398,10 @@ exsub : ADT 1
 exsub = μ (𝟏 ⊔ (𝕍 (o) × 𝕍 (i (o ) ) )) ⊔ (𝕍 (o))
 
 ex2sub : ADT 1
-ex2sub = (𝟏 ⊔ 𝕍 (o))
+ex2sub = (𝟏 ⊔ 𝕧₀)
 
 Nat' : ADT 0
-Nat' = μ (𝟏 ⊔ 𝕍 (o) )
+Nat' = μ (𝟏 ⊔ 𝕧₀ )
 
 List' : ADT 1
 List' = μ (𝟏 ⊔ (𝕍 (i (o)) × 𝕍 (o) ) )
