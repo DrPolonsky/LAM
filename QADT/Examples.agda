@@ -193,7 +193,9 @@ module S=1+2S where
   M²=2M²+1 = t= e3 (s= (t= (=+ (t= (×= M²=M³+M²+M ) (s= (X+X=2X _ ) ) )  )
     (t= (a+= (a+= (+= (c+= (a+= (a+= (+= (a+= (+= (c+= (a+= (c+= (a+= (a+= (+= r= ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) e) ) )
     where e = s= (a+= (+= (+= (a+= (+= (+= (a+= r= ) ) ) ) ) ) )
-  -- M²=2M²+1 = t= e3 (s= (t= (=+ (s= (X+X=2X (M ²) ) ) ) {!    !} ) )
+
+  M²=2M²+1v2 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
+  M²=2M²+1v2 = c× =!= M²=2M²+1
 
   sM² : ADT 0
   sM² = s [ M ² ]
@@ -201,9 +203,90 @@ module S=1+2S where
   sM²=M² : Iso sM² (M ²)
   sM²=M² = ~~ M²=2M²+1
 
+  sM²=M²v2 : Iso sM² (M ²)
+  sM²=M²v2 = ~~ M²=2M²+1v2
+
+  preimg :  ⟦ sM² ⟧ Γ₀
+  preimg = _≃_.f- (≃⟦ sM²=M²v2 ⟧ Γ₀) ((lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt))))))
+
+  what? : Set
+  what? = {! _≃_.f-  (≃⟦ sM²=M²v2 ⟧ Γ₀) (Mleaf , Munode Mleaf) !}
+
   S→M² : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
   S→M² = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M² ⟧ Γ₀ ) )
 
+  S→M²v2 : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
+  S→M²v2 = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M²v2 ⟧ Γ₀ ) )
+
+  stuff? : ⟦ M ² ⟧ Γ₀
+  stuff? = S→M²v2 (lfp ( in1 {! lfp (in1 tt , in2 )  !} ))
+
+  SS : Set
+  SS = ⟦ S ⟧ Γ₀
+
+  Sleaf : SS
+  Sleaf = lfp (in2 tt)
+  Sunode1 : SS → SS
+  Sunode1 s' = lfp (in1 ((in1 tt) , s' ) )
+  Sunode2 : SS → SS
+  Sunode2 s' = lfp (in1 ((in2 (in1 tt) ) , s' ) )
+
+  allS : ℕ → List SS
+  allS 0 = []
+  allS (succ n) = let
+    un1 = List→ Sunode1 (allS n)
+    un2 = List→ Sunode2 (allS n)
+    in Sleaf ∷ merge un1 un2
+
+  M²_t : Set
+  M²_t = ⟦ M ² ⟧ Γ₀
+
+  allM² : ℕ → List M²_t
+  allM² n = lazyProd (allM n) (allM n)
+
+
+  ==S : SS → SS → 𝔹
+  ==S (lfp (in1 (in1 tt , pr2))) (lfp (in1 (in1 tt , pr6))) = ==S pr2 pr6
+  ==S (lfp (in1 (in1 tt , pr4))) (lfp (in1 (in2 (in1 x) , pr6))) = false
+  ==S (lfp (in1 (in2 (in1 x) , pr4))) (lfp (in1 (in1 tt , pr6))) = false
+  ==S (lfp (in1 (in2 (in1 tt) , pr4))) (lfp (in1 (in2 (in1 tt) , pr6))) = ==S pr4 pr6
+  ==S (lfp (in1 x)) (lfp (in2 y)) = false
+  ==S (lfp (in2 x)) (lfp (in1 y)) = false
+  ==S (lfp (in2 tt)) (lfp (in2 tt)) = true
+
+  StoString : SS → List ℕ
+  StoString (lfp (in1 (in1 tt , pr4))) = 0 ∷ StoString pr4
+  StoString (lfp (in1 (in2 (in1 tt) , pr4))) = 1 ∷ StoString pr4
+  StoString (lfp (in2 tt)) = []
+
+  ==M² : M²_t → M²_t → 𝔹
+  ==M² (pr3 , pr4) (pr5 , pr6) = and (==M pr3 pr5) (==M pr4 pr6)
+
+  findm²? : M²_t → ℕ → 𝔹
+  findm²? m² n = elem ==M² m² (List→ S→M² (allS n))
+
+  some_m² : List M²_t
+  some_m² = take 20 (allM² 2)
+
+  pass1m² : List M²_t
+  pass1m² = filter (λ x → (findm²? x 3)) some_m²
+
+  pass2m² : List M²_t
+  pass2m² = filter (λ x → findm²? x 4) pass1m²
+
+  pass3m² : List M²_t
+  pass3m² = filter (λ x → findm²? x 5) pass2m²
+
+  passN : ℕ → List M²_t
+  passN zero = some_m²
+  passN (succ n) = filter (λ x → findm²? x (succ n)) (passN n)
+
+
+  an_M² : M²_t
+  an_M² = (lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt)))))
+
+  check' : Set
+  check' = {! findm²? an_M² 15  !}
 
 
 

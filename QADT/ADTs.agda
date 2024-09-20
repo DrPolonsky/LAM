@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
--- {-# OPTIONS --allow-unsolved-meta #-}
+{-# OPTIONS --allow-unsolved-meta #-}
 
 module QADT.ADTs where
 
@@ -158,9 +158,12 @@ foldADT : ∀ {n} (a : ADT (succ n)) (ρ : SetEnv n) (X : Set) (f : ⟦ a ⟧ ((
           → ⟦ μ a ⟧ ρ → X
 foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f o )
 
+-- ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)
+--                   → SetEnv→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
+
 foldInjADT : ∀ {n} (ρ : SetEnv n) (t : ADT (succ n)) {A : Set} (a : ⟦ t ⟧ ((ρ ⅋o:= A)) → A)
              → inj a → inj (foldADT t ρ A a)
-foldInjADT {n} ρ t {A} a inja = {!   !}
+foldInjADT {n} ρ t {A} a inja {lfp x} {lfp y} foldx=foldy = {!   !}
 
 
 open import QADT.EnvIsomorphisms
