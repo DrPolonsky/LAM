@@ -1,6 +1,0 @@
-WF⁺+ : ∀ {A} (R : 𝓡 A) → isWF R → isWF (R ⁺)
-Not been successful so far. We tried using 
-inductive₊ : ∀ {A} (R : 𝓡 A) (φ : 𝓟 A) → is (R ₊) -inductive φ → is R -inductive φ
-as part of the puzzle.
-Our next step might be to try an include a notion  of a R-minimal element and build an inductive proof.
-
