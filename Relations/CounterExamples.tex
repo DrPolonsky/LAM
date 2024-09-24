@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{tikz-cd}
+
+\title{Counterexamples in Mathematical Relations}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This document contains diagrams of counterexamples commonly encountered when exploring the properties of mathematical relations.
+
+\section{Counterexamples}
+
+\subsection{Counterexample 1}
+\begin{center}
+    
+    \begin{tikzcd}[node distance=2cm, auto]
+        % Nodes
+        \node (a) {a};
+        \node (b) [right of=a, xshift=1cm] {b};
+        \node (c) [right of=b, xshift=1cm] {c};
+        \node (d) [right of=c, xshift=1cm] {d};
+        
+        % Arrows
+        \draw[->] (b) to [bend left] (c);
+        \draw[->] (c) to [bend left] (b);
+        \draw[->] (b) -- (a);
+        \draw[->] (c) -- (d);
+    \end{tikzcd}
+    
+\end{center}
+Counterexample to:
+\begin{itemize}
+    \item WCR $\to$ CR
+    \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ (R *) a c $\to$ (R *) c b}
+\end{itemize}
+
+\subsection{Counterexample 2}
+\begin{center}
+    \begin{tikzcd}
+        % Nodes
+        \node (x) {x};
+        \node (n) [below left of=x, xshift=-1cm, yshift=-1cm] {n \in NF};
+        \node (y) [below right of=x, xshift=1cm, yshift=-1cm] {y};
+        \node (z) [below of=y, yshift=-1cm] {z};
+
+        % Arrows
+        \draw[->>] (x) -- (n);
+        \draw[->>] (x) -- (y);
+        \draw[->] (y) to [bend left] (z);
+        \draw[->] (z) to [bend left] (y);
+    \end{tikzcd}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+    \item  $\forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
+
+\end{itemize}
+
+
+
+\end{document}
