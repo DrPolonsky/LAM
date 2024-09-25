@@ -18,14 +18,18 @@ module RecursiveTypes where
   skip (down v) (here n) = here (succ n)
   skip (down v) (down x) = down (skip v x)
 
-  -- RENAME
   -- Arguments:
-  -- f : Fin n → A
-  -- x : Fin (succ n)
-  -- a :
+  -- f : Fin n → A, a mapping from Fin n into some set A.
+  -- x : Fin (succ n), an element of Fin (succ n).
+  -- a : An element of some set A
   -- y : Fin (succ n)
   -- Returns:
-  -- The result of applying f to
+  -- An element of A.
+  -- Notes:
+  -- The partial application of this function that ommits y is a function from Fin (succ n) to A, call it f'.
+  -- f' can be though of as the result of adding an element to the domain of f. This is accomplished by defining f'
+  -- in such a way that f'(x) = a, but for any other y, f'(y) is derived from f(y') where y' is a corresponding
+  -- element of Fin n.
   elimFin : ∀ {n} {A : Set} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
   elimFin {n} f (here n) a (here n) = a
   elimFin {n} f (here n) a (down y) = f y
@@ -43,23 +47,35 @@ module RecursiveTypes where
     α : Fin n → 𝕋 n
     _⇒_ : 𝕋 n → 𝕋 n → 𝕋 n
 
-  --
+  -- Congruence Lemma
+  _≡⇒≡_ : ∀ {n} {A B C D : 𝕋 n} → A ≡ B → C ≡ D → (A ⇒ C) ≡ (B ⇒ D)
+  refl A ≡⇒≡ refl B = refl (A ⇒ B)
+
+  -- Arguments:
+  -- a: Fin (succ n), an atom to be added to our algebra
+  -- τ: 𝕋 n, a type in our algebra
+  -- Returns:
+  -- The result of mapping τ into 𝕋 (succ n) by lifting all of it's atoms into Fin (succ n) by skipping a. 
   wk : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n)
   wk a (α x) = α (skip a x)
   wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
 
+  -- Record representing equations between types
   record 𝕋= (n : ℕ) : Set where
     constructor con
     field
       lhs : 𝕋 n
       rhs : 𝕋 n
 
+  -- A list of equations between types
   𝕋=* : ℕ → Set
   𝕋=* n = List (𝕋= n)
 
+  -- A list of pairs of atoms and types, generally used to represent equations where one side is an atom
   𝕋Sub : ℕ → Set
   𝕋Sub n = List (Fin n ∧ 𝕋 n)
 
+  -- A solution to the unification problem, a mapping from 
   Unifier : ℕ → Set
   Unifier n = Fin n → 𝕋 n
 
@@ -86,14 +102,18 @@ module RecursiveTypes where
   -- L : 𝕋Sub n
   -- Returns:
   -- A list of types for which the LHS in L is equal to x.
+  -- Note that this uses the elimFin function. elimFin will return the recursive call whenever x != y, 
+  -- but when x == y it will return (c ∷ rc)
   lookup : ∀ {n} → (x : Fin n) → 𝕋Sub n → List (𝕋 n)
   lookup x [] = []
   lookup {succ n} x ((y , c) ∷ cs) = elimFin (λ _ → rc) (x) (c ∷ rc) (y)
     where rc = lookup x cs
 
+  -- 
   𝕋Sub→SubList : ∀ {n} → 𝕋Sub n → SubList n
   𝕋Sub→SubList ts = λ x → lookup x ts
 
+  --
   filterAtom : ∀ {n} → Fin n → List (𝕋 n) → List (𝕋 n)
   filterAtom x [] = []
   filterAtom x (α y ∷ as) = case (λ _ → filterAtom x as) (λ _ → α y ∷ filterAtom x as) (decFin x y)
@@ -136,13 +156,17 @@ module RecursiveTypes where
   atomOccursCorrect v t@(τ ⇒ τ₁) with atomOccurs v τ in p
   ... | true  = (λ x → inLeft ((pr1 (atomOccursCorrect v τ)) p) τ₁) , λ x → refl true
   ... | false = (λ x → inRight τ (((pr1 (atomOccursCorrect v τ₁)) x))) , λ {(inLeft x .τ₁) → exFalso (t≢f (atomOccurs v τ) ((pr2 (atomOccursCorrect v τ)) x) p)
-                                                                          ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x}
+                                                                          ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x} 
 
-  -- Congruence Lemma, probably should be moved
-  _≡⇒≡_ : ∀ {n} {A B C D : 𝕋 n} → A ≡ B → C ≡ D → (A ⇒ C) ≡ (B ⇒ D)
-  refl A ≡⇒≡ refl B = refl (A ⇒ B)
-
-  --
+  -- Arguments:
+  -- x : Fin (succ n)
+  -- y : Fin (succ n)
+  -- Returns:
+  -- A lemma showing that for x,y ∈ Fin (n+1) either x ≡ y or there is some z ∈ Fin n for which y ≡ skip x z.
+  -- Notes:
+  -- This lemma can be thought of as checking whether or not x occurs in y, i.e. the two are equal, in which case it
+  -- provides a proof of this fact. If x and y are not equal, then y will not be "skipped" in the mapping (skip x),
+  -- We provide a proof that there is some value in Fin n for which skip x z ≡ y, which we use in our proof of occCheck.
   occCheckVar : ∀ {n} (x y : Fin (succ n)) → x ≡ y ∨ ∃ (λ z → (y ≡ skip x z))
   occCheckVar (here _) (here _) = in1 (refl (here _))
   occCheckVar (here _) (down y) = in2 (exists y (refl (down y)) )
@@ -153,6 +177,12 @@ module RecursiveTypes where
          (occCheckVar x y)
 
   -- Either x occurs in the given type A, or the type A is the weakening (by x) of some type B.
+  -- Arguments:
+  -- x : Fin (succ n), an element of the underlying set for our type algebra
+  -- A : 𝕋 (succ n), an element of our type algebra
+  -- Returns:
+  -- A proof that either x occurs in A, or that A is a weakening of some other type B. This formulation means that
+  -- we also get the type B which is a strengthening of A.
   occCheck : ∀ {n} (x : Fin (succ n)) (A : 𝕋 (succ n)) → Occurs𝕋 x A ∨ ∃ (λ B → A ≡ wk x B)
   occCheck x (α y) = case (λ {(refl .x) → in1 (inAtom )})
                           (λ {(exists z y=wkz) → in2 (exists (α z) (ext α y=wkz) ) } )
@@ -162,9 +192,22 @@ module RecursiveTypes where
   ... | in2 ex | in1 oc = in1 (inRight A1 oc)
   ... | in2 (exists B1 e1) | in2 (exists B2 e2) = in2 (exists (B1 ⇒ B2) (e1 ≡⇒≡ e2) )
 
+  -- Arguments:
+  -- x : Fin (succ n), an element of the underlying set for our type algebra
+  -- As : List (𝕋 (succ n)), a list of elements of our algebra
+  -- Returns:
+  -- A 
+  -- Notes:
+  -- This is a predicate that admits pairs of x and As s.t. x appears in an element of As in accordance with
+  -- the Occurs𝕋 datatype
   atomOccursInList : ∀ {n} → Fin (succ n) → List (𝕋 (succ n)) → Set
   atomOccursInList x As = ∃ (λ A → occurs A As ∧ Occurs𝕋 x A)
 
+  -- Arguments:
+  -- x : Fin (succ n), an element of the underlying set of the type algebra
+  -- As : List (𝕋 (succ n)), a list of types in the algebra
+  -- Returns:
+  -- A proof that either x does occur in some type in As or that the entire list can be strengthened
   occCheckList : ∀ {n} (x : Fin (succ n)) (As : List (𝕋 (succ n)))
                  → atomOccursInList x As ∨ ∃ (λ Bs → map (wk x) Bs ≡ As)
   occCheckList x [] = in2 (exists [] (refl []) )
@@ -185,6 +228,12 @@ module RecursiveTypes where
   List∀map f P [] ps = tt
   List∀map f P (x ∷ xs) (p , ps) = (p , List∀map f P xs ps )
 
+  -- Arguments:
+  -- x : Fin (succ n), an element of the underlying set for the algebra
+  -- As : List (𝕋 (succ n)), a list of Types from our algebra
+  -- Returns:
+  -- A proof that either there is a type A in As for which x does not occur in A, or a proof that
+  -- each type in the list contains an occurance of x.
   decOccAtomList : ∀ {n} (x : Fin (succ n)) (As : List (𝕋 (succ n)))
                      → (∃ (λ A → occurs A As ∧ ¬ (Occurs𝕋 x A))) ∨ List∀ (Occurs𝕋 x) As
   decOccAtomList x [] = in2 tt
@@ -200,9 +249,20 @@ module RecursiveTypes where
   SR 0 = ⊥
   SR (succ n) = ∃ (λ (s : SubList (succ n)) → ∀ (x : Fin (succ n)) → atomOccursInList x (s x))
 
+  -- Arguments:
+  -- s : SubList n, An SR
+  -- x : Fin n, an "atom"
+  -- Returns:
+  -- A type admitting s and x pairs such that x occurs in each of the types that s
+  -- relates x to.
   properPred : ∀ {n} → SubList n → Fin n → Set
   properPred s x = List∀ (Occurs𝕋 x) (s x)
 
+  -- Arguments:
+  -- s : SubList n, an SR
+  -- Returns:
+  -- A type admitting s, s.t. for each x ∈ Dom(s), s is properPred w.r.t. x. An SR for which
+  -- this is the case is called Proper
   isProperSR : ∀ {n} → SubList n → Set
   isProperSR {0} _ = ⊥
   isProperSR {succ n} s = ∀ x → properPred s x
@@ -213,7 +273,7 @@ module RecursiveTypes where
   --                            (isProperSR s ∨ ∃ (λ s' → s' ≡ WkSR s)) ∧ Unifier m
 
 
-
+  
   -- subst𝕋 a A B = B[A/a]
   subst𝕋 : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n) → 𝕋 n
   subst𝕋 a A (α b) = elimFin α a A b
@@ -247,6 +307,12 @@ module RecursiveTypes where
   -}
   -- unify1 : ∀ {n} → (s : SubList (succ n)) → isProperSR s ∨ ∃ (λ s' → )
 
+  -- Arguments:
+  -- s : SubList (succ n)
+  -- x : Fin (succ n)
+  -- Returns:
+  -- If s is proper w.r.t. x, returns a proof that this is the case.
+  -- Otherwise there is a type in s x s.t. 
   solverStep1 : ∀ {n} → (s : SubList (succ n)) → (x : Fin (succ n))
                      → List∀ (Occurs𝕋 x) (s x) ∨ (𝕋 n ∧ SubList n)
   solverStep1 {n} s x with decOccAtomList x (s x)
@@ -259,7 +325,7 @@ module RecursiveTypes where
   solverStep2 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
                 →   (∀ (x : Fin (succ n)) → List∀ (Occurs𝕋 x) (s x))
                   ∨ (SubList n ∧ (Fin (succ m) → 𝕋 n))
-  solverStep2 {n} sr sub = {!   !} 
+  solverStep2 {n} sr sub = {!   !}
 
   elemFinN : ∀ n → List (Fin n)
   elemFinN zero = []
@@ -276,7 +342,7 @@ module RecursiveTypes where
 
   -- solverStep2 : ∀ {n} → (s : SubList (succ n)) → (xs : List (Fin n))
   --                 → List∀ (properPred s) xs
-  --                 ∨ ∃ (λ x → occurs x xs ∧ ? )(solutionSub n ∧ 𝕋= n)
+  --                 ∨ ∃ (λ x → occurs x xs ∧ ? ) (solutionSub n ∧ 𝕋= n)
   -- solverStep2 s = {!   !}
 
 
