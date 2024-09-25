@@ -23,7 +23,7 @@ WNind⊆WN t (NF⊆WN t∈NF) = t ,, ε⋆ , t∈NF
 WNind⊆WN t (redWN s t→βs s∈WNind) with WNind⊆WN s s∈WNind
 ... | n ,, s⟶β⋆n , n∈NF = n ,, (t→βs ,⋆ s⟶β⋆n) , n∈NF
 
-WN⊆WNind : ∀ {X} → WN {X} ⊆ WNind
+WN⊆WNind : ∀ {X} → WN {X} ⊆ WNind 
 WN⊆WNind t (.t ,, ε⋆ , n∈NF) = NF⊆WN n∈NF
 WN⊆WNind t (n ,, (t⟶βy ,⋆ y⟶β⋆n) , n∈NF) = redWN _ t⟶βy (WN⊆WNind _ (n ,, y⟶β⋆n , n∈NF ) )
 

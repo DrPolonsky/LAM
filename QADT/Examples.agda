@@ -1,23 +1,29 @@
-module Examples where
+module QADT.Examples where
 
-open import BasicLogic
-open import BasicDatatypes
-open import Functor
-open import Isomorphisms
-open import ADTs
-open import ADT-Isomorphisms
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
+open import Lifting
+open import Datatypes
+open import QADT.Functor
+open import QADT.Isomorphisms
+open import QADT.ADTs
+open import QADT.ADT-Isomorphisms
 open import Environment
+
+-- TODO
+-- implement convenient syntax for substitution inside isomorphisms
+-- automate search for ring isomorphisms proofs
+
 
 module G=1+2G+G²+G³ where
 
   g : ADT 1
-  g = 𝟏 ⊔ (Num 2 × (𝕍 (here 0))) ⊔ (𝕍 (here 0)) ² ⊔ (𝕍 (here 0)) ³
+  g = 𝟏 ⊔ (Num 2 × (𝕍 (o))) ⊔ (𝕍 (o)) ² ⊔ (𝕍 (o)) ³
 
   G : ADT 0
   G = μ g
 
   GG : Set
-  GG = ⟦ G ⟧ EmptyEnv
+  GG = ⟦ G ⟧ Γ₀
 
   Gleaf : GG
   Gleaf = lfp (in1 tt )
@@ -55,13 +61,13 @@ module G=1+2G+G²+G³ where
 module M=1+M+M² where
 
   m : ADT 1
-  m = 𝟏 ⊔ (𝕍 (here 0)) ⊔ (𝕍 (here 0)) ²
+  m = 𝟏 ⊔ (𝕍 (o)) ⊔ (𝕍 (o)) ²
 
   M : ADT 0
   M = μ m
 
   MM : Set
-  MM = ⟦ M ⟧ EmptyEnv
+  MM = ⟦ M ⟧ Γ₀
 
   Mleaf : MM
   Mleaf = lfp (in1 tt)
@@ -71,7 +77,6 @@ module M=1+M+M² where
   Mbnode m1 m2 = lfp (in2 (in2 ((m1 , m2 )) ) )
   MbnodeCurried : MM ∧ MM → MM
   MbnodeCurried (m1 , m2) = lfp (in2 (in2 ((m1 , m2 )) ) )
-
 
   allM : ℕ → List MM
   allM zero = []
@@ -98,8 +103,8 @@ module M=1+M+M² where
   gM=M = ~~ (fix≃ m =!= += (~~ (=+ (c×= (dist3 =!= cong+= i×r (cong+= !! ar i+r) !! )) =!= a+= (+= e ) ) ) )
     where  e = dist3 ~!= ×= (~~ (fix≃ m ) )
 
-  G→M : ⟦ G ⟧ EmptyEnv  → ⟦ M ⟧ EmptyEnv
-  G→M = foldADT g (λ ()) (⟦ M ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ gM=M ⟧ EmptyEnv )))
+  G→M : ⟦ G ⟧ Γ₀  → ⟦ M ⟧ Γ₀
+  G→M = foldADT g (λ ()) (⟦ M ⟧ Γ₀) ((_≃_.f+ (≃⟦ gM=M ⟧ Γ₀ )))
 
   findm? : MM → ℕ → 𝔹
   findm? m n = elem ==M m (List→ G→M (allG n))
@@ -120,8 +125,8 @@ module M=1+M+M² where
   bigM : MM
   bigM = cn 7 (Mbnode Mleaf) Mleaf
 
-  check : Set
-  check = {! findm? Mtest3 5  !}
+  -- check : Set
+  -- check = {! findm? Mtest3 5  !}
   -- check = {! findm? (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) (Mbnode (Munode Mleaf) Mleaf))) 4   !}
   -- check = {! ==M  (G→M (Gleaf)) Mleaf   !}
 
@@ -147,11 +152,11 @@ module M=1+M+M² where
   -- test = {! length (filter (λ {(x , y) → ==M x y})  (zip (take 1000000 (allM 5)) (take 1000000 (allM 6))))  !}
 
 
-  -- T→B : ⟦ T ⟧ EmptyEnv  → ⟦ B ⟧ EmptyEnv
-  -- T→B = foldADT t (λ ()) (⟦ B ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv )))
+  -- T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
+  -- T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
 
-  h : ⟦ G ⟧ ρ₀ → ⟦ M ⟧ ρ₀
-  h x = fold {λ X → ⟦ g ⟧ (extEnv X ρ₀)} (λ j →  ⟦ g ⟧→ (λ tt → j)) (_≃_.f+ (≃⟦ gM=M ⟧ ρ₀ ) ) x
+  h : ⟦ G ⟧ Γ₀ → ⟦ M ⟧ Γ₀
+  h x = fold {λ X → ⟦ g ⟧ (Γ₀ ⅋o:= X)} (λ j →  ⟦ g ⟧→ (λ tt → j)) (_≃_.f+ (≃⟦ gM=M ⟧ Γ₀ ) ) x
 
   M²=M+M²+M³ : Iso (M ²) (M ⊔ M ² ⊔ M ³)
   M²=M+M²+M³ = t= (t= (×= (fix≃ m)) (dist3) ) (∨≃ (c×= (i×l= r= ) ) r=  )  -- (s= {! dist3   !} )
@@ -171,12 +176,117 @@ module M=1+M+M² where
   X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
   -- X+X=2X A = s= (dl= (∨≃ (i×l r=) (dl= (t= (∨≃ (i×l r=) (c× (ar= r= ) ) ) (c+ (i+ r= ) ) ) ) ) )
 
+-- The binary strings
+module S=1+2S where
+
+  s : ADT 1
+  s = Num 2 × 𝕍 o ⊔ 𝟏
+
+  S : ADT 0
+  S = μ s
+
+  open M=1+M+M²
+
   M²=2M²+1 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
   -- M²=2M²+1 = t= e3 (s= {! t=   !} ) -- (s= (t= (=+ (t= (×= M²=M³+M²+M ) {!   !} )  ) {!   !} ) )
   M²=2M²+1 = t= e3 (s= (t= (=+ (t= (×= M²=M³+M²+M ) (s= (X+X=2X _ ) ) )  )
     (t= (a+= (a+= (+= (c+= (a+= (a+= (+= (a+= (+= (c+= (a+= (c+= (a+= (a+= (+= r= ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) e) ) )
     where e = s= (a+= (+= (+= (a+= (+= (+= (a+= r= ) ) ) ) ) ) )
-  -- M²=2M²+1 = t= e3 (s= (t= (=+ (s= (X+X=2X (M ²) ) ) ) {!    !} ) )
+
+  M²=2M²+1v2 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
+  M²=2M²+1v2 = c× =!= M²=2M²+1
+
+  sM² : ADT 0
+  sM² = s [ M ² ]
+
+  sM²=M² : Iso sM² (M ²)
+  sM²=M² = ~~ M²=2M²+1
+
+  sM²=M²v2 : Iso sM² (M ²)
+  sM²=M²v2 = ~~ M²=2M²+1v2
+
+  preimg :  ⟦ sM² ⟧ Γ₀
+  preimg = _≃_.f- (≃⟦ sM²=M²v2 ⟧ Γ₀) ((lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt))))))
+
+  what? : Set
+  what? = {! _≃_.f-  (≃⟦ sM²=M²v2 ⟧ Γ₀) (Mleaf , Munode Mleaf) !}
+
+  S→M² : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
+  S→M² = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M² ⟧ Γ₀ ) )
+
+  S→M²v2 : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
+  S→M²v2 = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M²v2 ⟧ Γ₀ ) )
+
+  stuff? : ⟦ M ² ⟧ Γ₀
+  stuff? = S→M²v2 (lfp ( in1 {! lfp (in1 tt , in2 )  !} ))
+
+  SS : Set
+  SS = ⟦ S ⟧ Γ₀
+
+  Sleaf : SS
+  Sleaf = lfp (in2 tt)
+  Sunode1 : SS → SS
+  Sunode1 s' = lfp (in1 ((in1 tt) , s' ) )
+  Sunode2 : SS → SS
+  Sunode2 s' = lfp (in1 ((in2 (in1 tt) ) , s' ) )
+
+  allS : ℕ → List SS
+  allS 0 = []
+  allS (succ n) = let
+    un1 = List→ Sunode1 (allS n)
+    un2 = List→ Sunode2 (allS n)
+    in Sleaf ∷ merge un1 un2
+
+  M²_t : Set
+  M²_t = ⟦ M ² ⟧ Γ₀
+
+  allM² : ℕ → List M²_t
+  allM² n = lazyProd (allM n) (allM n)
+
+
+  ==S : SS → SS → 𝔹
+  ==S (lfp (in1 (in1 tt , pr2))) (lfp (in1 (in1 tt , pr6))) = ==S pr2 pr6
+  ==S (lfp (in1 (in1 tt , pr4))) (lfp (in1 (in2 (in1 x) , pr6))) = false
+  ==S (lfp (in1 (in2 (in1 x) , pr4))) (lfp (in1 (in1 tt , pr6))) = false
+  ==S (lfp (in1 (in2 (in1 tt) , pr4))) (lfp (in1 (in2 (in1 tt) , pr6))) = ==S pr4 pr6
+  ==S (lfp (in1 x)) (lfp (in2 y)) = false
+  ==S (lfp (in2 x)) (lfp (in1 y)) = false
+  ==S (lfp (in2 tt)) (lfp (in2 tt)) = true
+
+  StoString : SS → List ℕ
+  StoString (lfp (in1 (in1 tt , pr4))) = 0 ∷ StoString pr4
+  StoString (lfp (in1 (in2 (in1 tt) , pr4))) = 1 ∷ StoString pr4
+  StoString (lfp (in2 tt)) = []
+
+  ==M² : M²_t → M²_t → 𝔹
+  ==M² (pr3 , pr4) (pr5 , pr6) = and (==M pr3 pr5) (==M pr4 pr6)
+
+  findm²? : M²_t → ℕ → 𝔹
+  findm²? m² n = elem ==M² m² (List→ S→M² (allS n))
+
+  some_m² : List M²_t
+  some_m² = take 20 (allM² 2)
+
+  pass1m² : List M²_t
+  pass1m² = filter (λ x → (findm²? x 3)) some_m²
+
+  pass2m² : List M²_t
+  pass2m² = filter (λ x → findm²? x 4) pass1m²
+
+  pass3m² : List M²_t
+  pass3m² = filter (λ x → findm²? x 5) pass2m²
+
+  passN : ℕ → List M²_t
+  passN zero = some_m²
+  passN (succ n) = filter (λ x → findm²? x (succ n)) (passN n)
+
+
+  an_M² : M²_t
+  an_M² = (lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt)))))
+
+  check' : Set
+  check' = {! findm²? an_M² 15  !}
+
 
 
 module 1+X²=1+X+X³ where
@@ -200,24 +310,13 @@ module 1+X²=1+X+X³ where
   TT→BT (TUnode t) = BTnode (TT→BT t) BTleaf
   TT→BT (TTnode t1 t2 t3) = BTnode (TT→BT t1) (BTnode (TT→BT t2) (TT→BT t3) )
 
-  cong : ∀ {A B : Set} (f : A → B) {a1 a2 : A} → a1 ≡ a2 → f a1 ≡ f a2
-  cong f (refl _) = refl _
-
-  cong2 : ∀ {A B C : Set} (f : A → B → C)
-           {a1 a2 : A} → a1 ≡ a2 → {b1 b2 : B} → b1 ≡ b2 → f a1 b1 ≡ f a2 b2
-  cong2 f (refl _) (refl _) = (refl _)
-
-  cong3 : ∀ {A B C D : Set} (f : A → B → C → D) {a1 a2 b1 b2 c1 c2}
-            → a1 ≡ a2 → b1 ≡ b2 → c1 ≡ c2 → f a1 b1 c1 ≡ f a2 b2 c2
-  cong3 f (refl _) (refl _) (refl _) = refl _
-
   BT→TT→BT : ∀ b → TT→BT (BT→TT b) ≡ b
-  BT→TT→BT BTleaf = refl BTleaf
+  BT→TT→BT BTleaf = refl
   BT→TT→BT (BTnode b1 BTleaf) = cong (λ x → BTnode x BTleaf) (BT→TT→BT b1)
   BT→TT→BT (BTnode b1 (BTnode b2 b3)) = cong3 (λ x y z → BTnode x (BTnode y z)) (BT→TT→BT b1) (BT→TT→BT b2) (BT→TT→BT b3)
 
   TT→BT→TT : ∀ t → BT→TT (TT→BT t) ≡ t
-  TT→BT→TT TTleaf = refl TTleaf
+  TT→BT→TT TTleaf = refl
   TT→BT→TT (TUnode t) = cong TUnode (TT→BT→TT t)
   TT→BT→TT (TTnode t1 t2 t3) = cong3 TTnode (TT→BT→TT t1) (TT→BT→TT t2) (TT→BT→TT t3)
 
@@ -245,16 +344,16 @@ module 1+X²=1+X+X³ where
   tB=B : Iso (t [ B ]) B
   tB=B = ~~ (fix≃ b =!= += (×= (fix≃ b) =!= dl= (=+ i×r ) ) )
 
-  foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ EmptyEnv → X
+  foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ Γ₀ → X
   foldT X Xalg (lfp (in1 tt)) = Xalg (in1 tt)
   foldT X Xalg (lfp (in2 (in1 x))) = Xalg (in2 (in1 (foldT X Xalg x ) ) )
   foldT X Xalg (lfp (in2 (in2 (x1 , (x2 , x3)))))
     = Xalg (in2 (in2 ((fT x1) , ((fT x2) , fT x3 ) ) ) ) where fT = foldT X Xalg
   -- foldT X = fold {F = t-func} λ {A} {B} f → ⟦ t ⟧→ {!   !}
 
-  T→B : ⟦ T ⟧ EmptyEnv  → ⟦ B ⟧ EmptyEnv
-  T→B = foldADT t (λ ()) (⟦ B ⟧ EmptyEnv) ((_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv )))
-  -- foldT (⟦ B ⟧ EmptyEnv) (_≃_.f+ (≃⟦ tB=B ⟧ EmptyEnv ) )
+  T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
+  T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
+  -- foldT (⟦ B ⟧ Γ₀) (_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ ) )
 
 
 -- Iso ((𝟏 ⊔ 𝟎) × A × B ⊔ A × B) ((𝟏 ⊔ 𝟏 ⊔ 𝟎) × A × B)
@@ -268,57 +367,47 @@ module 1+X²=1+X+X³ where
 -- 𝔹≃𝔹₂ = c+= (a+= (!+ c+ ) )
 
 iso≠lemma : ∀ {A B : Set} (i1 i2 : A ≃ B) → ∀ (a : A) → ¬ (_≃_.f+ i1 a ≡ _≃_.f+ i2 a) → ¬ (i1 ≡ i2)
-iso≠lemma i1 .i1 a neq (refl .i1) = neq (refl (_≃_.f+ i1 a) )
+iso≠lemma i1 .i1 a neq (refl) = neq (refl )
 
-𝔹1≠𝔹2 : ¬ (≃⟦ 𝔹≃𝔹₁ ⟧ EmptyEnv ≡ ≃⟦ 𝔹≃𝔹₂ ⟧ EmptyEnv)
-𝔹1≠𝔹2 i1=i2 = iso≠lemma (≃⟦ 𝔹≃𝔹₁ ⟧ EmptyEnv) (≃⟦ 𝔹≃𝔹₂ ⟧ EmptyEnv) (in1 tt) (λ {()} ) i1=i2
-
-
--- 1 + X + X^3
-FADT : ADT 1
-FADT = 𝟏 ⊔ (𝕍 (here 0) ⊔ (𝕍 (here 0) × (𝕍 (here 0) × 𝕍 (here 0) ) ) )
-
--- 1 + X^2
-GADT : ADT 1
-GADT = 𝟏 ⊔ (𝕍 (here 0) × 𝕍 (here 0) )
-
-Iso1 : Iso FADT GADT
-Iso1 = {! fold   !}
+𝔹1≠𝔹2 : ¬ (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀ ≡ ≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀)
+𝔹1≠𝔹2 i1=i2 = iso≠lemma (≃⟦ 𝔹≃𝔹₁ ⟧ Γ₀) (≃⟦ 𝔹≃𝔹₂ ⟧ Γ₀) (in1 tt) (λ {()} ) i1=i2
 
 module X=X^4 where
 
+  -- Q: Can we prove X = X² or is that not a rig iso?
+
   ∛1 : ADT 0
-  ∛1 = μ ((1+ (𝕍 (here 0))) ²)
+  ∛1 = μ ((1+ (𝕍 (o))) ²)
 
   X : ADT 0
   X = ∛1
 
   skel : ADT 1
-  skel = (1+ ((wk (here 0) X) × (𝕍 (here 0)))) ²
+  skel = (1+ ((wk (o) X) × (𝕍 (o)))) ²
 
   -- 1+X^2=1+X[1+X^2] : Iso (1+ (X ²)) (1+ (X × (1+ (X ²))))
-  -- 1+X^2=1+X[1+X^2] = subst≃ {0} {skel} {skel} {X} {1+ (X ²)} (refl≃ skel) (fix≃ ((1+ (𝕍 (here 0))) ²))
+  -- 1+X^2=1+X[1+X^2] = subst≃ {0} {skel} {skel} {X} {1+ (X ²)} (refl≃ skel) (fix≃ ((1+ (𝕍 (o))) ²))
 
   1+X²≃1+X[1+X²] : Iso (1+ (X ²)) (1+ (X × (1+ X ²)))
-  1+X²≃1+X[1+X²] = {!   !} -- subst≃ {0} {skel} {skel} {X} {1+ X ²} (refl≃ skel) (fix≃ ((1+ (𝕍 (here 0))) ²) )
+  1+X²≃1+X[1+X²] = {!   !} -- subst≃ {0} {skel} {skel} {X} {1+ X ²} (refl≃ skel) (fix≃ ((1+ (𝕍 (o))) ²) )
 
   X=1+X+X^2 : Iso X (1+ (X ⊔ (X ²)))
-  X=1+X+X^2 = fix≃ ((1+ (𝕍 (here 0))) ²) =!= {!   !}
+  X=1+X+X^2 = fix≃ ((1+ (𝕍 (o))) ²) =!= {!   !}
 
 exsub : ADT 1
-exsub = μ (𝟏 ⊔ (𝕍 (here 1) × 𝕍 (down (here 0 ) ) )) ⊔ (𝕍 (here 0))
+exsub = μ (𝟏 ⊔ (𝕍 (o) × 𝕍 (i (o ) ) )) ⊔ (𝕍 (o))
 
 ex2sub : ADT 1
-ex2sub = (𝟏 ⊔ 𝕍 (here 0))
+ex2sub = (𝟏 ⊔ 𝕧₀)
 
 Nat' : ADT 0
-Nat' = μ (𝟏 ⊔ 𝕍 (here 0) )
+Nat' = μ (𝟏 ⊔ 𝕧₀ )
 
 List' : ADT 1
-List' = μ (𝟏 ⊔ (𝕍 (down (here 0)) × 𝕍 (here 1) ) )
+List' = μ (𝟏 ⊔ (𝕍 (i (o)) × 𝕍 (o) ) )
 
 Nat : Set
-Nat = ⟦ Nat' ⟧ EmptyEnv
+Nat = ⟦ Nat' ⟧ Γ₀
 
 one : Nat
 one = lfp (in2 (lfp (in1 tt ) ) )

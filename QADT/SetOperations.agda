@@ -1,6 +1,6 @@
-module SetOperations where
+module QADT.SetOperations where
 
-open import BasicLogic
+open import Logic
 
 -- The type of predicates on a given set A, AKA the powerset of A
 -- (Note that the output A → Set is a type in a bigger universe Set₁)

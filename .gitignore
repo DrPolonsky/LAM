@@ -1,2 +1,9 @@
 *.agdai
 MAlonzo/**
+*.aux
+*.fdb_latexmk
+*.fls
+*.log 
+*.pdf 
+*.gz 
+*.out 

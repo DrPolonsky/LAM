@@ -3,6 +3,7 @@ module Lambda where
 
 open import Logic
 open import Lifting
+open import Datatypes
 
 -- Lambda terms as a type constructor
 -- For a set X, Λ X = terms whose free variables come from the set X

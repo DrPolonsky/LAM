@@ -1,4 +1,4 @@
-module BasicLogic where
+module QADT.BasicLogic where
 
 
 -- Basic Combinators

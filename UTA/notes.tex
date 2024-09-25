@@ -10,6 +10,27 @@
 
 \begin{document}
 
+\section{2024.09.12}
+
+Questions we still need to figure out:
+\begin{itemize}
+  \item What to do about reflexive constraints?
+  \item What if the list of types equal to the variable is empty?
+  Should its solution be $\top$?
+  \item If $e = e \to e$ is the "terminal" type algebra
+  (any algebra can be mapped to it), admitting solution of any equation,
+  does having a constraint like that in a given system mean we can simulate
+  $\top = e$?
+  \item If we have $e = e \to e$, and we also have a constraint $c = e \to c$,
+  this is like saying $c = \top \to c$.  And $d = d \to e$ is "equivalent" to
+   $d = d \to \top$?  Does this imply that every term can be typed as $d$ as well?
+   (Probably the answer is no.)
+   \item Supposing we substitute every variable that we can,
+   being left with a system in which every type a variable is constrained to,
+   contains that variable.  This might not yet be the proper SR, because we
+   might still need to equate individual types in the list for each variable.
+\end{itemize}
+
 \section{2024.08.16}
 
 A given set of equations can lead to multiple SR.  These are all equivalent.
