@@ -255,6 +255,10 @@ module ReductionClosureProperties (R : 𝓡 A) where
   WN↓⊆WN isR-WNx ε⋆ = isR-WNx
   WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
 
+  WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  WN↓UN→⊆WN RisUN→ isR-WNx ε⋆ = isR-WNx
+  WN↓UN→⊆WN RisUN→ (n ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = {!   !}  
+  
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
   UN↓⊆UN isR-UNx R*xy y n∈NF R*yn z z∈NF R*yz = isR-UNx _ n∈NF (R*xy ⋆!⋆ R*yn) z z∈NF (R*xy ⋆!⋆ R*yz)
 
@@ -431,7 +435,7 @@ module Miscelaneous (R : 𝓡 A) where
   RP-∧WCR→RP : RP- → WCR R → RP
   RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
   ... | i ,, R*afᵢ with aisω-bound i
-  ... | R*fᵢa = i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
+  ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
 
 open Miscelaneous public
 
@@ -522,14 +526,56 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
+  ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥ 
+  ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy))) 
+
+  Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch. 
+  Rxy→y {x} {y} Rxy = y ,, refl 
+
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
-  preSNlemma1 SNdec {x} {n} x∉SN n∈NF R⋆xn = {!   !}
+  preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→¬ x∉SN x∈NF)
+  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with Rxy→y Rxx₁
+  ... | x₁ ,, x₁≡x₁ with SNdec x₁ 
+  ... | in1 x₁∈SN = x ,, ((x∉SN , (x₁ ,, (x₁∈SN , {!   !}))) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))   -- Why isn't Rxx₁ the solution here?
+  ... | in2 x₁∉SN = preSNlemma1 SNdec {!   !} n∈NF {!   !} -- Why can't we take the recursive call from x₁ here?
+
+  x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
+  x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
+  
+  SN→WFacc : SN R → isWFacc (~R R) 
+  SN→WFacc RisSN x with RisSN x 
+  ... | acc accx = acc accx
+
+  acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y)
+  acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
+
+  WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
+  WFacc→WFSeq RisWFacc s with RisWFacc (s 0) 
+  ... | acc accs₀ = {!   !}
+  
+  SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
+  SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
+  ... | acc xacc with RisWN (s 0) 
+  ... | n ,, R*s₀n , n∈NF = {!   !}
+
+
+  iii-EMSN : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R 
+  iii-EMSN RisWN RisWCR rp- decSN x with decSN x 
+  ... | in1 x∈SN = x∈SN
+  ... | in2 x∉SN with RisWN x
+  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN x∉SN n∈NF R*xn 
+  ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN 
+  ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀) 
+  ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
+  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact n is normal form common to all elements in the sequence. 
 
   iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
   iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)
-  ... | in1 RisSN₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero)))
-  ... | RisUNs₀ = {!    !}
+  ... | in1 RisSNs₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero)))
+  ... | RisUNs₀ with ReductionClosureProperties.SN↓⊆SN R RisSNs₀ 
+  ... | z with RisWN (s 0) 
+  ... | n ,, R*s₀n , n∈NF = {!   !}
   iii-EM RisWN RisWCR rp decSN s | in2 s₀∉SN = {!   !}
   -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
   -- iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a
@@ -642,3 +688,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+ 
