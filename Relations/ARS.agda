@@ -417,7 +417,7 @@ module Theorem-1-2-2 (R : 𝓡 A) where
       ... | d ,, Rʳxd , axʳ x₁ with f d y _ x₁ R*y₁y
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
-module Miscelaneous (R : 𝓡 A) where
+module Miscellaneous (R : 𝓡 A) where
   -- Recurrent property
   RP : Set
   -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
@@ -437,7 +437,7 @@ module Miscelaneous (R : 𝓡 A) where
   ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
 
-open Miscelaneous public
+open Miscellaneous public
 
 module Theorem-1-2-3 (R : 𝓡 A) where
 
