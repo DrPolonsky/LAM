@@ -1,6 +1,36 @@
 \documentclass{scrartcl}
 
+\usepackage{xcolor}
+
 \begin{document}
+
+\section{2024.10.10}
+
+\begin{itemize}
+  \item Look at restricting WFmin to $\lnot\lnot$-closed predicates
+  \item Status of important hypotheses:
+    \begin{itemize}
+      \item Deciding whether a given element $x$ reduces to a given element $y$
+      (Is $R$ itself decidable?)
+      \item Deciding whether a given element $x$ reduces to some element $y$
+      (Is being an $R$-normal form decidable?)
+
+      {\textcolor{red}{This is needed to show that SN $\Rightarrow$ WN.}}
+
+      \item If a given element $x$ is \emph{not} a normal form,
+      exhibiting some element $y$ that it reduces to.
+      (This is related to DeMorgan/Markov/etc. properties that came up in WF file.)
+
+      \item Does UN-lemma \emph{require} the decidability assumption?
+    \end{itemize}
+  \item META questions: Which of the ARS theorems can be made ``local/pointwise'',
+  for example,
+  \begin{itemize}
+    \item NL+: $WCR(R) \land SN(x) \to CR(x)$?  (Yes?)
+    \item NL++: $WCR(x) \land SN(x) \to CR(x)$? (No.)
+  \end{itemize}
+  \item When time permits, uniformize the notation (variable names, etc.) to the extent possible.
+\end{itemize}
 
 \section{2024.09.19}
 
@@ -94,6 +124,12 @@ Four notions:
    \emph{Note.}  This seems to require the most classical assumptions:
    $\lnot\lnot$-closure of $\phi$, relativized De Morgan law,
    Markov's principle, etc.
+
+   \item (2024.10.10) Is being $R$-WN inductive?
+   \item (2024.10.10) Does $R$ being finitely branching imply
+   that, for an inductive $\phi$, if $\lnot \phi(x)$ then
+   $\exists y. Rxy \land \lnot \phi(y)$?
+
 \end{enumerate}
 
 \textsc{Remark.}

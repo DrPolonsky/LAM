@@ -33,7 +33,8 @@ module Confluence (Rα : 𝓡 A) where
 
     commute : 𝓡 A → Set
     -- commute Rβ = Rα ⋆ ~∘ Rβ ⋆ ⊆₂ Rβ ⋆ ∘~ Rα ⋆
-    commute Rβ = ∀ {a}{b}{c} → (Rα ⋆) a b → (Rβ ⋆) a c → Σ[ d ∈ A ] ((Rβ ⋆) b d × (Rα ⋆) c d)
+    -- commute Rβ = ∀ {a}{b}{c} → (Rα ⋆) a b → (Rβ ⋆) a c → Σ[ d ∈ A ] ((Rβ ⋆) b d × (Rα ⋆) c d)
+    commute Rβ =  ∀ {a}{b}{c} → (Rα ⋆) a b → (Rβ ⋆) a c → (Rβ ⋆ ∘~ Rα ⋆) b c
 
     self-commuting : Set
     self-commuting = commute Rα
@@ -54,7 +55,8 @@ module Confluence (Rα : 𝓡 A) where
 
     -- Diamond property (◆ is \di)
     ◆ : Set
-    ◆ = ∀ {a}{b}{c} → Rα a b → Rα a c → Σ[ d ∈ A ] (Rα b d × Rα c d)
+    ◆ = ∀ {a}{b}{c} → Rα a b → Rα a c → (Rα ∘~ Rα) b c
+    -- ◆ = ∀ {a}{b}{c} → Rα a b → Rα a c → Σ[ d ∈ A ] (Rα b d × Rα c d)
 
 open Confluence public
 
@@ -101,10 +103,10 @@ module Proposition-1-1-10 {R : 𝓡 A} where
     iv→i subcomR* peak@(a ,, R*ac , R*ab)  with subcomR* peak
     ... | d ,, R*=cd , R*=bd = d ,, *ʳ→* R R*=cd , *ʳ→* R R*=bd
 
-    i→v : confluent R → ~R R ∘R (R ⋆) ⊆ (R ⋆) ∘R ~R (R ⋆)
+    i→v : confluent R → R ~∘ (R ⋆) ⊆ (R ⋆) ∘~ (R ⋆)
     i→v confR b c (a ,, Rab , R*ac) = confR (a ,, ax⋆ R Rab , R*ac)
 
-    v→vi : (~R R ∘R (R ⋆) ⊆ (R ⋆) ∘R ~R (R ⋆)) → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
+    v→vi : (R ~∘ R ⋆) ⊆ (R ⋆ ∘~ R ⋆) → R ⁼ ⊆ (R ⋆ ∘~ R ⋆)
     v→vi v a .a ε⋆ = a ,, ε⋆ , ε⋆
     v→vi v a b (Rˢac ,⋆ EQRcb) with v→vi v _ b EQRcb
     ... | d ,, R*cd , R*bd with Rˢac
@@ -112,14 +114,14 @@ module Proposition-1-1-10 {R : 𝓡 A} where
     ... | axˢ- Rya with v a d (_ ,, (Rya , R*cd))
     ... | e ,, R*ae , R*de = e ,, (R*ae , ( R*bd ⋆!⋆ R*de ))
 
-    vi→i : R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R
+    vi→i : R ⁼ ⊆ (R ⋆ ∘~ R ⋆) → confluent R
     vi→i vi {b}{c} peak@(a ,, R*ab , R*ac)  with vi b c ((~⁼ (⋆⊆⁼ R R*ab)) ⁼!⁼ (⋆⊆⁼ R R*ac))
     ... | d ,, R*cd , R*bd = d ,, (R*cd , R*bd)
 
-    i→vi : confluent R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
+    i→vi : confluent R → R ⁼ ⊆ (R ⋆ ∘~ R ⋆)
     i→vi confR = v→vi (i→v confR)
 
-    v→i : ~R R ∘R (R ⋆) ⊆ (R ⋆) ∘R ~R (R ⋆) → confluent R
+    v→i : (R ~∘ R ⋆) ⊆ (R ⋆ ∘~ R ⋆) → confluent R
     v→i v = vi→i (v→vi v)
 -- open Proposition-1-1-10 public
 
@@ -168,16 +170,22 @@ module Termination (R : 𝓡 A)  where
   is_-SN_ = is_-SNacc_
 
   is_-UN_ : 𝓟 A
-  is_-UN_ x = ∀ y → is_-NF_ y → (R ⋆) x y → ∀ z → is_-NF_ z → (R ⋆) x z → y ≡ z
+  is_-UN_ x = ∀ {y} {z} → is_-NF_ y → is_-NF_ z → (R ⋆) x y → (R ⋆) x z → y ≡ z
+
+  is_-CR_ : 𝓟 A
+  is_-CR_ x = ∀ {b c} → (R ⋆) x b → (R ⋆) x c → b ↘ R ⋆ ↙ c
+
+  is_-WCR_ : 𝓟 A
+  is_-WCR_ x = ∀ {b c} → R x b → R x c → b ↘ R ⋆ ↙ c
 
   is_-recurrent_ : 𝓟 A
   is_-recurrent_ x = ∀ y → (R ⋆) x y → (R ⋆) y x
 
   CR : Set
-  CR = confluent R
+  CR = ∀ x → is_-CR_ x
 
   WCR : Set
-  WCR = weakly-confluent R
+  WCR = ∀ x → is_-WCR_ x
 
   WN : Set
   WN = ∀ x → is_-WN_ x
@@ -190,9 +198,10 @@ module Termination (R : 𝓡 A)  where
 
   UN : Set
   UN = ∀ {a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_ → (R ⁼) a b → a ≡ b
+  -- NB. This is stronger than global UN, which is UN→ below
 
   UN→ : Set
-  UN→ = ∀ {x a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_  → (R ⋆) x a → (R ⋆) x b → a ≡ b
+  UN→ = ∀ x → is_-UN_ x
 
   -- AKA Convergent
   isComplete : Set
@@ -211,6 +220,7 @@ module Termination (R : 𝓡 A)  where
   isFinitelyBranching : Set
   isFinitelyBranching = ∀ (a : A)
     → Σ[ n ∈ ℕ ] (Σ[ f ∈ (Fin n → A) ] (∀ b → R a b → Σ[ j ∈ Fin n ] (b ≡ f j)))
+  -- Alternative formulation: using lists instead of Fin n
 
   is_-cofinal_ : 𝓟 A → Set
   is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
@@ -224,19 +234,11 @@ module Termination (R : 𝓡 A)  where
   NF→ε {x} x∈NF {.x} ε⋆ = refl
   NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
 
-
   SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
   SNdec→WN decR x (acc accx) with decR x
   ... | in2 y∈NF = x ,, (ε⋆ , y∈NF)
   ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
   ... | (n ,, R*yn , n∈NF) = (n ,, (Rxy ,⋆ R*yn) , n∈NF)
-
-  confluentElement : 𝓟 A
-  confluentElement a = ∀ {b c} → (R ⋆) a b → (R ⋆) a c → Σ[ d ∈ A ] ((R ⋆) b d × (R ⋆) c d)
-
-  unormElement : 𝓟 A
-  unormElement a = Σ[ n ∈ A ] ((is_-NF_ n) × (∀ y → (R ⋆) a y → (R ⋆) y n))
-
 
 open Termination public
 
@@ -255,12 +257,13 @@ module ReductionClosureProperties (R : 𝓡 A) where
   WN↓⊆WN isR-WNx ε⋆ = isR-WNx
   WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
 
+  -- Also refutable, but z is not a NF
   WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
   WN↓UN→⊆WN RisUN→ isR-WNx ε⋆ = isR-WNx
-  WN↓UN→⊆WN RisUN→ (n ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = {!   !}  
-  
+  WN↓UN→⊆WN RisUN→ (n ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = {!   !}
+
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
-  UN↓⊆UN isR-UNx R*xy y n∈NF R*yn z z∈NF R*yz = isR-UNx _ n∈NF (R*xy ⋆!⋆ R*yn) z z∈NF (R*xy ⋆!⋆ R*yz)
+  UN↓⊆UN isR-UNx R*xy n∈NF z∈NF R*yn R*yz = isR-UNx n∈NF z∈NF (R*xy ⋆!⋆ R*yn) (R*xy ⋆!⋆ R*yz)
 
   rec↓⊆rec : ∀ {x} → is R -recurrent x → ∀ {y} → (R ⋆) x y → is R -recurrent y
   rec↓⊆rec isR-recx R*xy z R*yz with isR-recx z (R*xy ⋆!⋆ R*yz)
@@ -269,16 +272,7 @@ module ReductionClosureProperties (R : 𝓡 A) where
 module Newmans-Lemma where
   -- If R is SN and WCR then R is CR
 
-  -- Three proofs in Therese.
-  -- i) By SN, every a ∈ A reduces to at least one normal form. For CR it suffices to show that every a ∈ A has at most one normal form.
-  -- ii) As → is SN, ← is WF, and hence ←⁺ is a well founded order...
-  -- iii)
-
-  -- Proof i
-  -- Requires being able to decide whether a given element is already a NF.
-
-
-  CR-lemma : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x
+  CR-lemma : ∀ (R : 𝓡 A) → weakly-confluent R → ∀ x → is R -SN x
                → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
   CR-lemma R wcR x (acc xacc) .x y∈NF ε⋆ .x ε⋆ = ε⋆
   CR-lemma R wcR x (acc xacc) .x y∈NF ε⋆ z (Rxy ,⋆ R⋆yz) = ∅ (y∈NF _ Rxy )
@@ -288,74 +282,11 @@ module Newmans-Lemma where
   ... | (w ,, R⋆y₀w , R⋆z₀w) with CR-lemma R wcR _ (xacc _ Rxy₀) y y∈NF R⋆y₀y w R⋆y₀w
   ... | c = CR-lemma R wcR _ (xacc _ Rxz₀) y y∈NF (R⋆z₀w ⋆!⋆ c) z R⋆z₀z
 
-  WCR∧SN→UN : ∀ (R : 𝓡 A) → WCR R → ∀ x → is R -SN x → is R -UN x
-  WCR∧SN→UN R wcR x xa y y∈NF R⋆xy z z∈NF R⋆xz with CR-lemma R wcR x xa y y∈NF R⋆xy z R⋆xz
+  WCR∧SN→UN : ∀ (R : 𝓡 A) → weakly-confluent R → ∀ x → is R -SN x → is R -UN x
+  WCR∧SN→UN R wcR x xa y∈NF z∈NF R⋆xy R⋆xz with CR-lemma R wcR x xa _ y∈NF R⋆xy _ R⋆xz
   ... | R⋆zy = ~ (NF→ε R z∈NF R⋆zy)
 
-  -- ***
-
-  CR→CRelem : ∀ (R : 𝓡 A) → (CR R) → (∀ x → confluentElement R x)
-  CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
-
-
-  -- Not provable, unless WN is global. [***]
-  -- FIND a counterexample and delete?
-  -- Derive it from (ii) below??
-  WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → confluentElement R x
-  WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
-
-  UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
-                → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
-  UN-lemma R decNF x x∈SN x∈UN y y∈NF R*xy .x ε⋆ = R*xy
-  UN-lemma R decNF x (acc xacc) x∈UN y y∈NF R*xy z (Rxz₀ ,⋆ R*z₀z)
-    with SNdec→WN R decNF _ (xacc _ Rxz₀)
-  ... | z' ,, R*z₀z' , z'∈NF with x∈UN y y∈NF R*xy z' z'∈NF (Rxz₀ ,⋆ R*z₀z')
-  ... | refl = UN-lemma R decNF _ (xacc _ Rxz₀) z₀∈UN y y∈NF R*z₀z' z R*z₀z
-    where z₀∈UN = λ a a∈NF R*z₀a b b∈NF R*z₀b → x∈UN a a∈NF (Rxz₀ ,⋆ R*z₀a) b b∈NF (Rxz₀ ,⋆ R*z₀b)
-
-  SN∧UN→CRelem : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x → confluentElement R x
-  SN∧UN→CRelem R decNF x x∈SN x∈UN {b} {c} R*xb R*xc with SNdec→WN R decNF x x∈SN
-  ... | (z ,, R*xz , z∈NF) = (z ,, UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz b R*xb
-                                 , UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz c R*xc )
-
-  {- First proof of NL
-  is-ambiguous_-WN_ : ∀ (R : 𝓡 A) → 𝓟 A
-  is-ambiguous R -WN  x = Σ[ n₁ ∈ A ] Σ[ n₂ ∈ A ] ((((R ⋆) x n₁ × is R -NF n₁) × ((R ⋆) x n₂ × is R -NF n₂)) × (n₁ ≡ n₂ → ⊥) )
-
-  ambiguous-reduces-ambiguous : ∀ {R : 𝓡 A} {a b : A} → is-ambiguous R -WN a → R a b → is-ambiguous R -WN b
-  ambiguous-reduces-ambiguous (n₁ ,, n₂ ,, ((R*an₁ , n₁∈NF) , (R*an₂ , n₂∈NF)) , n₁≢₂) Rab
-            =  n₁ ,, n₂ ,, ((({!   !} , n₁∈NF) , ({!   !} , n₂∈NF)) , n₁≢₂)
-
-  lemmanorm : ∀ {R : 𝓡 A} → ∀ (a : A) → ∀ (b : A) → R a b → is R -WN b →
-                              Σ A (λ n → ((y : A) → R n y → ⊥) ×
-                                ((y : A) → (R ⋆) a y → (R ⋆) y n))
-  lemmanorm a b Rab (n ,, R*bn , n∈NF) = n ,, (n∈NF , (λ y R*ay → {!   !}))
-
-  lemmaWN : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (a : A) → (∀ b → R a b → is R -WN b) → is R -WN a
-  lemmaWN wcR a IH = {!   !}
-
-  NFPel : ∀ {R : 𝓡 A} → decMin (~R R) → weakly-confluent R
-            → ∀ a → is (~R R) -accessible a → unormElement R a
-  NFPel {R} Rdec wcR a (acc IH) with Rdec a
-  ... | in2 a∈NF = a ,, (a∈NF , λ { y ε⋆ → ε⋆ ; y (Raz ,⋆ R*zy) → ∅ (a∈NF _ Raz)})
-  ... | in1 (b ,, Rab) with NFPel Rdec wcR b (IH b Rab)
-  ... | n ,, n∈NF , n∈cofb = -- lemmanorm a b Rab (n ,, ((n∈cofb b ε⋆) , n∈NF))
-                            n ,, n∈NF , λ y R*ay → {!   !}  where
-    f : ∀ (y : A) → (R ⋆) a y → (R ⋆) y n
-    f y ε⋆ = Rab ,⋆ n∈cofb b ε⋆
-    f y (Raz ,⋆ R*zy) = {!   !}
-
-  -- NLemmai : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
-  -- NLemmai SNR WCR with SN→NFelement SNR {!   !}
-  -- ... | n ,, R*an , NFn = {!   !}
-  -}
-
-  -- Proof ii
-
-  -- SNisWFacc : ∀ {R : 𝓡 A} {x : A} → is R -SN x → is (~R R) -accessible x
-  -- SNisWFacc = I
-
-  wCR→conflInd : ∀ {R : 𝓡 A} → weakly-confluent R → (x : A) → (∀ y → R x y → confluentElement R y) → confluentElement R x
+  wCR→conflInd : ∀ {R : 𝓡 A} → weakly-confluent R → is (~R R) -inductive (λ x → is R -CR x)
   wCR→conflInd WCR a IND ε⋆ R*ac = _ ,, R*ac , ε⋆
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) ε⋆ = _ ,, ε⋆ , (Ray ,⋆ R*yb)
   wCR→conflInd WCR a IND (Ray ,⋆ R*yb) (Raz ,⋆ R*zc) with WCR (a ,, (Ray , Raz))
@@ -363,14 +294,11 @@ module Newmans-Lemma where
   ... | e ,, R*be , R*de with IND _ Raz R*zc (R*zd ⋆!⋆ R*de)
   ... | f ,, R*cf , R*ef = f ,, (R*be ⋆!⋆ R*ef , R*cf)
 
-  NLemmaii : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
-  NLemmaii {R} RisSN RisWCR (a ,, R*ab , R*ac) =
-    isWFacc→isWFind (~R R) RisSN (confluentElement R) (wCR→conflInd RisWCR) a R*ab R*ac
+  wCR→conf : ∀ {R : 𝓡 A} → weakly-confluent R → ∀ (x : A) → is (~R R) -accessible x → is R -CR x
+  wCR→conf {R} wcR = acc⊆ind (~R R) (λ x → is R -CR x) (wCR→conflInd wcR )
 
-  -- wCR→conf : ∀ {R : 𝓡 A} → weakly-confluent R
-  --              → ∀ (x : A) → is (~R R) -accessible x → confluentElement R x
-  -- wCR→conf {R} wcR x (acc IH) R⋆xb R⋆xc = {!   !}
-
+  NewmansLemma : ∀ {R : 𝓡 A} → SN R → weakly-confluent R → confluent R
+  NewmansLemma RisSN RisWCR (a ,, R*ab , R*ac) = wCR→conf RisWCR a (RisSN a) R*ab R*ac
 
 module Theorem-1-2-2 (R : 𝓡 A) where
   i-1 : confluent R → NFP R
@@ -390,6 +318,7 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   i-4 : confluent R → NFP R → UN R
   i-4 confR nfpR = pr2 (i-3 confR)
 
+  -- This belongs in the relations file. Revisit next time.
   ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
   ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
 
@@ -399,13 +328,14 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   ... | nʸ ,, R*ynʸ , nʸ∈NF with unR nˣ∈NF nʸ∈NF (⋆~!⁼!⋆ R*xnˣ R⁼xy R*ynʸ)
   ... | refl = nʸ ,, R*xnˣ , R*ynʸ
 
-  ii : WN R × UN R → CR R
+  ii : WN R × UN R → confluent R
   ii (wnR , unR) {b}{c} peak@(a ,, R*ab , R*ac) with wnR a
   ... | n ,, R*an , n∈NF with Proposition-1-1-10.vi→i (lemmaii wnR unR) peak
   ... | d ,, R*bd , R*cd = d ,, R*bd , R*cd
 
+  -- Move to counterexamples; delete
   -- Not provable: n <- x -> z
-  -- WN∧UN→CRelem : ∀ x → is R -WN x → is R -UN x → confluentElement R x
+  -- WN∧UN→CRelem : ∀ x → is R -WN x → is R -UN x → is R -CR x
   -- WN∧UN→CRelem x x∈WN x∈UN  = Newmans-Lemma.CR→CRelem R (ii ({! x∈WN  !} , {!   !})) x -- Can we do this or am I being too bullheaded in comparing x∈UN and UN etc?
 
   iii : subcommutative R → confluent R
@@ -436,6 +366,31 @@ module Miscellaneous (R : 𝓡 A) where
   RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
   ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
+
+  module OldProofOfNL where
+    -- This is actually an if-and-only-if...
+    CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R
+    CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
+
+    -- Not provable, unless WN is global. [***]
+    -- FIND a counterexample and delete?
+    -- Derive it from (ii) below??
+    WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → is R -CR x
+    WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
+
+    UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
+                  → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
+    UN-lemma R decNF x x∈SN x∈UN y y∈NF R*xy .x ε⋆ = R*xy
+    UN-lemma R decNF x (acc xacc) x∈UN y y∈NF R*xy z (Rxz₀ ,⋆ R*z₀z)
+      with SNdec→WN R decNF _ (xacc _ Rxz₀)
+    ... | z' ,, R*z₀z' , z'∈NF with x∈UN y∈NF z'∈NF R*xy (Rxz₀ ,⋆ R*z₀z')
+    ... | refl = UN-lemma R decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y y∈NF R*z₀z' z R*z₀z
+      where z₀∈UN = λ {a} {b} a∈NF b∈NF R*z₀a R*z₀b → x∈UN a∈NF b∈NF (Rxz₀ ,⋆ R*z₀a) (Rxz₀ ,⋆ R*z₀b)
+
+    SN∧UN→CRelem : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x → is R -CR x
+    SN∧UN→CRelem R decNF x x∈SN x∈UN {b} {c} R*xb R*xc with SNdec→WN R decNF x x∈SN
+    ... | (z ,, R*xz , z∈NF) = (z ,, UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz b R*xb
+                                   , UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz c R*xc )
 
 open Miscellaneous public
 
@@ -489,7 +444,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | (a ,, R*f0a , a∈NF) = a ,, g where
     g : ∀ k → (R ⋆) (f k) a
     g k with RisWN (f k)
-    ... | b ,, R*fkb , b∈NF with RisUN→ a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
+    ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
 
 
@@ -526,59 +481,59 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥ 
-  ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy))) 
+  ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
+  ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
 
   ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
-  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !} 
+  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !}
 
-  Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch. 
-  Rxy→y {x} {y} Rxy = y ,, refl 
+  Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch.
+  Rxy→y {x} {y} Rxy = y ,, refl
 
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
   preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→¬ x∉SN x∈NF)
   preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with Rxy→y Rxx₁
-  ... | x₁ ,, x₁≡x₁ with SNdec x₁ 
+  ... | x₁ ,, x₁≡x₁ with SNdec x₁
   ... | in1 x₁∈SN = x ,, ((x∉SN , (x₁ ,, (x₁∈SN , {!   !}))) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))   -- Why isn't Rxx₁ the solution here?
   ... | in2 x₁∉SN = preSNlemma1 SNdec {!   !} n∈NF {!   !} -- Why can't we take the recursive call from x₁ here?
 
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
   x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
-  
-  SN→WFacc : SN R → isWFacc (~R R) 
+
+  SN→WFacc : SN R → isWFacc (~R R)
   SN→WFacc RisSN x = RisSN x
 
   acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
   WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
-  WFacc→WFSeq RisWFacc s with RisWFacc (s 0) 
+  WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
   ... | acc accs₀ = {!   !}
-  
+
   SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
   SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
-  ... | acc xacc with RisWN (s 0) 
+  ... | acc xacc with RisWN (s 0)
   ... | n ,, R*s₀n , n∈NF = {!   !}
 
-  
 
 
-  iii-EMSN : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R 
-  iii-EMSN RisWN RisWCR rp- decSN x with decSN x 
+
+  iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
+  iii-EMSN RisWN RisWCR rp- decSN x with decSN x
   ... | in1 x∈SN = x∈SN
   ... | in2 x∉SN with RisWN x
-  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN x∉SN n∈NF R*xn 
-  ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN 
-  ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀) 
+  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN x∉SN n∈NF R*xn
+  ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN
+  ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
   ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
-  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact n is normal form common to all elements in the sequence. 
+  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact n is normal form common to all elements in the sequence.
 
-  iii-EM :  WN R → WCR R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
+  iii-EM :  WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
   iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)
   ... | in1 RisSNs₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero)))
-  ... | RisUNs₀ with ReductionClosureProperties.SN↓⊆SN R RisSNs₀ 
-  ... | z with RisWN (s 0) 
+  ... | RisUNs₀ with ReductionClosureProperties.SN↓⊆SN R RisSNs₀
+  ... | z with RisWN (s 0)
   ... | n ,, R*s₀n , n∈NF = {!   !}
   iii-EM RisWN RisWCR rp decSN s | in2 s₀∉SN = {!   !}
   -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
@@ -588,7 +543,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
 
 
-  iv : CP R → CR R
+  iv : CP R → confluent R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
   ... | f ,, f-winc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
   ... | bₙ ,, R*bfbₙ | cₙ ,, R*cfcₙ
@@ -607,7 +562,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | Rfny ,⋆ R*ya = {!   !}
 
 -- False; see the usual counterexample to WCR→CR
-  iii-lemma1 : WCR R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
+  iii-lemma1 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
   iii-lemma1 wcrR a .a b∈NF ε⋆ .a ε⋆ = ε⋆
   iii-lemma1 wcrR a .a b∈NF ε⋆ c (Ray ,⋆ R*yc) = ∅ (b∈NF _ Ray )
   iii-lemma1 wcrR a b b∈NF R*ab@(Ray ,⋆ R*yb) .a ε⋆ = R*ab
@@ -616,14 +571,14 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | (d ,, R*yd , R*zd) = {!    !}
 
 
-  iii-lemma2 : WCR R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
+  iii-lemma2 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
   iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
   iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
   ... | (d ,, R*yd , R*cd) = {! iii-lemma2 wcrR _ b b∈NF R*yb    !}
   -- with iii-lemma2 wcrR y b b∈NF R*yb
   -- ... | z = {!   !}
 
-  iii-lemma :  WN R → WCR R → ω-bounded R
+  iii-lemma :  WN R → weakly-confluent R → ω-bounded R
   iii-lemma wnR wcrR f f-inc with wnR (f 0)
   ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
           ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
@@ -692,4 +647,3 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
- 
