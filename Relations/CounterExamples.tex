@@ -16,21 +16,21 @@ This document contains diagrams of counterexamples commonly encountered when exp
 
 \subsection{Counterexample 1}
 \begin{center}
-    
+
     \begin{tikzcd}[node distance=2cm, auto]
         % Nodes
         \node (a) {a};
         \node (b) [right of=a, xshift=1cm] {b};
         \node (c) [right of=b, xshift=1cm] {c};
         \node (d) [right of=c, xshift=1cm] {d};
-        
+
         % Arrows
         \draw[->] (b) to [bend left] (c);
         \draw[->] (c) to [bend left] (b);
         \draw[->] (b) -- (a);
         \draw[->] (c) -- (d);
     \end{tikzcd}
-    
+
 \end{center}
 Counterexample to:
 \begin{itemize}
@@ -61,6 +61,47 @@ Counterexample to:
 
 \end{itemize}
 
+\subsection{ARS in Agda}
+Important counterexamples:
+\begin{enumerate}
+  \item $a,b,c,d$ with sinks $a$ and $d$ and a 2-cycle between $b$ and $c$.
+  Counterexample to:
+  \begin{itemize}
+      \item WCR and WN implies CR.
+  \end{itemize}
+  \item Loop $a \to a$.
+  Counterexample to:
+  \begin{itemize}
+    \item $\omega$-bounded and RP implies SN
+    \item $\omega$-bounded and RP implies WN
+  \end{itemize}
+  \item Infinite sequence $a_0 \to a_1 \to \cdots$. Falsifies:
+  \begin{itemize}
+    \item $WN$
+    \item $\omega$-bounded
+    \item $WCR \to WN$
+    \item $CR \to WN$
+    \item $CR, CP \to WN$
+    \item $CR, CP \to \omega$-bounded
+  \end{itemize}
+  \item Infinite sequence $a_0 \to a_1 \to \cdots$ with a colimit $a_\infty$,
+  with each $a_n \to a_\infty$ and $a_\infty$ a normal form.
+  \item Infinite sequence $a_0 \to a_1 \to \cdots$, together with links
+  $a_n \to a_0$, for each $n$.
+  \item The combination of the last two.
+  Counterexample to
+  \begin{itemize}
+    \item RP
+  \end{itemize}
+  \item An ``infinite haircomb''. Infinite sequence $a_0 \to a_1 \to \cdots$, together with
+  a disjoint, discrete set $b_0, b_1, \dots$, and links $a_n \to b_n$.
+  Counterexample to:
+  \begin{itemize}
+    \item $WN\to WCR$
+    \item $WN \to SN$
+  \end{itemize}
+  \item A variation of the above with backlinks $a_n \to a_0$ for all $n$.
+\end{enumerate}
 
 
 \end{document}
