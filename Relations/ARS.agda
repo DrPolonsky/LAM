@@ -529,6 +529,9 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥ 
   ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy))) 
 
+  ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
+  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !} 
+
   Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch. 
   Rxy→y {x} {y} Rxy = y ,, refl 
 
@@ -544,10 +547,9 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
   
   SN→WFacc : SN R → isWFacc (~R R) 
-  SN→WFacc RisSN x with RisSN x 
-  ... | acc accx = acc accx
+  SN→WFacc RisSN x = RisSN x
 
-  acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y)
+  acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
   WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
@@ -558,6 +560,8 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
   ... | acc xacc with RisWN (s 0) 
   ... | n ,, R*s₀n , n∈NF = {!   !}
+
+  
 
 
   iii-EMSN : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R 
