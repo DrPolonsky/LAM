@@ -67,6 +67,9 @@ infix 50 _³
 -- ⟦_⟧→refl : ∀ {n : ℕ} (e : ADT n) (Γ : SetEnv n) x → ⟦ e ⟧→ (reflSetEnv→ Γ) x ≡ x
 -- ⟦ e ⟧→refl Γ x = ?
 
+decΓ₀ : decSetEnv Γ₀
+decΓ₀ ()
+
 -- Decidability of ADTs
 decADT : ∀ {n} (a : ADT n) (ρ : SetEnv n) (de : decSetEnv ρ) → dec≡ (⟦ a ⟧ ρ)
 decADT (𝕍 x) ρ de = λ x₁ y → de x x₁ y
@@ -86,6 +89,16 @@ decADT (a ⊔ a₁) ρ de (in2 x) (in2 x₁) with decADT a₁ ρ de x x₁
 ... | in1 x₂ = in1 (cong (in2) x₂ )
 ... | in2 x₂ = in2 (λ x₃ → x₂ (in2inj x₃) )
 decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ (ρ ⅋o:= X))) (λ A dA → decADT a ((ρ ⅋o:= A)) (decExtEnv ρ A de dA) )
+
+==ADT : ∀ {A : ADT 0} → (⟦ A ⟧ Γ₀ → ⟦ A ⟧ Γ₀ → 𝔹)
+==ADT {A} x y with decADT A Γ₀ decΓ₀ x y
+... | in1 _ = true
+... | in2 _ = false
+
+==ADT-correct : (A : ADT 0) → (x y : ⟦ A ⟧ Γ₀) → (x ≡ y) ↔ ==ADT {A} x y ≡ true
+==ADT-correct A x y with decADT A Γ₀ decΓ₀ x y in r
+... | in1 x₁ = K refl , K x₁
+... | in2 x₁ = (λ x₂ → ∅ (x₁ x₂) ) , λ {()}
 
 -- Injectivity of ADTs map functions
 ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)

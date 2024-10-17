@@ -139,14 +139,14 @@ module M=1+M+M² where
   filter f [] = []
   filter f (x ∷ xs) = if f x then (filter f xs) else x ∷ (filter f xs)
 
-  pass1 : List MM
-  pass1 = filter (λ x → (findm? x 3)) 20ms
+  pass0 : List MM
+  pass0 = filter (λ x → (findm? x 3)) 20ms
 
-  pass2 : List MM
-  pass2 = filter (λ x → findm? x 4) pass1
+  pass1 : List MM
+  pass1 = filter (λ x → findm? x 4) pass0
 
   pass3 : List MM
-  pass3 = filter (λ x → findm? x 5) pass2
+  pass3 = filter (λ x → findm? x 5) pass1
 
   -- why does it stop at a number? agda limitation? or the way allM is generated?
   -- test = {! length (filter (λ {(x , y) → ==M x y})  (zip (take 1000000 (allM 5)) (take 1000000 (allM 6))))  !}
@@ -212,11 +212,17 @@ module S=1+2S where
   sM²=M²v2 : Iso sM² (M ²)
   sM²=M²v2 = ~~ M²=2M²+1v2
 
-  preimg :  ⟦ sM² ⟧ Γ₀
-  preimg = _≃_.f- (≃⟦ sM²=M²v2 ⟧ Γ₀) ((lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt))))))
+  sM²=M²v3 : Iso sM² (M ²)
+  sM²=M²v3 = =+ (dr= (cong+= i×l (dr= (cong+= i×l al i+r) ) r=) ) =!= a+= (=+ (×= (fix≃ m) =!= dl= (cong+= i×r (dl ) r=) ) =!= a+= (+= (a+ ) =!= c+= (a+= (+= (a+= (+= (a+= (c+= (a+= (~~ (fix≃ m) ) ) ) ) ) ) =!= c+= (a+= (=+ (=× (fix≃ m) =!= dr= (cong+= i×l (dr= (+= (c×= (a×) ) ) ) r=) ) =!= a+= (+= (a+= (c+= (a+= (+= (a+) =!= (a+ ~!= (=+ (c+) =!= a+= (+= (c+= (a+= (cong+= (~~ i×r) (cong+= (~~ a×) (~~ a× ) (~~ dl)) (dl ~!= (×= (~~ (fix≃ m)) =!= a×) )) ) ) ) ) ) ) ) ) ) =!= c+= (a+= (+= c+ =!= cong+= (~~ i×r) (~~ dl ) (dl ~!= ×= (~~ (fix≃ m) ) ) ) ) ) ) ) ) )  ) )
+  M²_t : Set
+  M²_t = ⟦ M ² ⟧ Γ₀
 
-  what? : Set
-  what? = {! _≃_.f-  (≃⟦ sM²=M²v2 ⟧ Γ₀) (Mleaf , Munode Mleaf) !}
+  preimg :  M²_t → ⟦ sM² ⟧ Γ₀
+  preimg mmmm = _≃_.f- (≃⟦ sM²=M² ⟧ Γ₀) mmmm
+
+  what : Set
+  what = {! _≃_.f-  (≃⟦ sM²=M²v2 ⟧ Γ₀) (Mleaf , Munode Mleaf) !}
+
 
   S→M² : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
   S→M² = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M² ⟧ Γ₀ ) )
@@ -224,28 +230,28 @@ module S=1+2S where
   S→M²v2 : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
   S→M²v2 = foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M²v2 ⟧ Γ₀ ) )
 
-  stuff? : ⟦ M ² ⟧ Γ₀
-  stuff? = S→M²v2 (lfp ( in1 {! lfp (in1 tt , in2 )  !} ))
+  S→M²v3 : ⟦ S ⟧ Γ₀ → ⟦ M ² ⟧ Γ₀
+  S→M²v3 =  foldADT s (λ ()) (⟦ M ² ⟧ Γ₀) (_≃_.f+ (≃⟦ sM²=M²v3 ⟧ Γ₀ ) )
 
   SS : Set
   SS = ⟦ S ⟧ Γ₀
 
-  Sleaf : SS
-  Sleaf = lfp (in2 tt)
-  Sunode1 : SS → SS
-  Sunode1 s' = lfp (in1 ((in1 tt) , s' ) )
-  Sunode2 : SS → SS
-  Sunode2 s' = lfp (in1 ((in2 (in1 tt) ) , s' ) )
+  Sλ : SS
+  Sλ = lfp (in2 tt)
+  S0 : SS → SS
+  S0 s' = lfp (in1 ((in1 tt) , s' ) )
+  S1 : SS → SS
+  S1 s' = lfp (in1 ((in2 (in1 tt) ) , s' ) )
+
+  stuff? : ⟦ M ² ⟧ Γ₀
+  stuff? = {! S→M² (S0 (S0 (S0 Sλ)))  !}
 
   allS : ℕ → List SS
   allS 0 = []
   allS (succ n) = let
-    un1 = List→ Sunode1 (allS n)
-    un2 = List→ Sunode2 (allS n)
-    in Sleaf ∷ merge un1 un2
-
-  M²_t : Set
-  M²_t = ⟦ M ² ⟧ Γ₀
+    un1 = List→ S0 (allS n)
+    un2 = List→ S1 (allS n)
+    in Sλ ∷ merge un1 un2
 
   allM² : ℕ → List M²_t
   allM² n = lazyProd (allM n) (allM n)
@@ -268,20 +274,30 @@ module S=1+2S where
   ==M² : M²_t → M²_t → 𝔹
   ==M² (pr3 , pr4) (pr5 , pr6) = and (==M pr3 pr5) (==M pr4 pr6)
 
+  hasBnode : MM → 𝔹
+  hasBnode (lfp (in1 tt)) = false
+  hasBnode (lfp (in2 (in1 (lfp x)))) = hasBnode (lfp x)
+  hasBnode (lfp (in2 (in2 (pr3 , pr4)))) = true
+
+
   findm²? : M²_t → ℕ → 𝔹
-  findm²? m² n = elem ==M² m² (List→ S→M² (allS n))
+  findm²? m² n = elem ==M² m² (List→ S→M²v3 (allS n))
+
 
   some_m² : List M²_t
-  some_m² = take 20 (allM² 2)
+  some_m² = take 1000 (allM² 10)
+
+  notPass : ℕ → List M²_t
+  notPass q = filter (λ x → not (findm²? x q)) some_m²
+
+  pass0m² : List M²_t
+  pass0m² = filter (λ x → (findm²? x 3)) some_m²
 
   pass1m² : List M²_t
-  pass1m² = filter (λ x → (findm²? x 3)) some_m²
-
-  pass2m² : List M²_t
-  pass2m² = filter (λ x → findm²? x 4) pass1m²
+  pass1m² = filter (λ x → findm²? x 4) pass0m²
 
   pass3m² : List M²_t
-  pass3m² = filter (λ x → findm²? x 5) pass2m²
+  pass3m² = filter (λ x → findm²? x 5) pass1m²
 
   passN : ℕ → List M²_t
   passN zero = some_m²
@@ -292,8 +308,94 @@ module S=1+2S where
   an_M² = (lfp (in1 tt) , lfp (in2 (in2 (lfp (in1 tt) , lfp (in1 tt)))))
 
   check' : Set
-  check' = {! findm²? an_M² 15  !}
+  check' = {! List→ StoString (filter (λ z → f (S→M²v3 z)) (allS 10)) !} where
+    f : M²_t → 𝔹
+    f (m1 , m2) = not (hasBnode m2)
 
+module prettyPrint where
+  data 𝕄 : Set where
+    l : 𝕄
+    u : 𝕄 → 𝕄
+    b : 𝕄 → 𝕄 → 𝕄
+
+  open M=1+M+M²
+  open S=1+2S
+
+  M→𝕄 : MM → 𝕄
+  M→𝕄 (lfp (in1 tt)) = l
+  M→𝕄 (lfp (in2 (in1 x))) = u (M→𝕄 x)
+  M→𝕄 (lfp (in2 (in2 (pr3 , pr4)))) = b (M→𝕄 pr3 ) (M→𝕄 pr4)
+
+  𝕄→M : 𝕄 → MM
+  𝕄→M l = lfp (in1 tt)
+  𝕄→M (u mm) = lfp (in2 (in1 (𝕄→M mm) ))
+  𝕄→M (b mm1 mm2) = lfp (in2 (in2 ((𝕄→M mm1) , 𝕄→M mm2 ) ))
+
+  M²→𝕄² : M²_t → 𝕄 ∧ 𝕄
+  M²→𝕄² (pr3 , pr4) = (M→𝕄 pr3) , (M→𝕄 pr4)
+
+  𝕄²→M² : 𝕄 ∧ 𝕄 → M²_t
+  𝕄²→M² (pr3 , pr4) = (𝕄→M pr3 ) , 𝕄→M pr4
+
+  check37 : Set
+  check37 = {! List→ M²→𝕄² (notPass 6)  !}
+
+  check4 : Set
+  check4 = {! List→ (f ∘ preimg) (passN 5)  !} where
+    f : ⟦ sM² ⟧ Γ₀ → ↑ (𝔹 ∧ (𝕄 ∧ 𝕄))
+    f (in1 (in1 tt , m2)) = i (false , M²→𝕄² m2 )
+    f (in1 (in2 (in1 tt) , pr4)) = i (true , M²→𝕄² pr4 )
+    f (in2 tt) = o
+
+
+module JX=1+2X+X² where
+  j : ADT 1
+  j = 𝟏 ⊔ (𝕍 o) ⊔ (𝕍 o) ⊔ (𝕍 o) ²
+
+  J : ADT 0
+  J = μ j
+
+  JJ : Set
+  JJ = ⟦ J ⟧ Γ₀
+
+  Jleaf : JJ
+  Jleaf = lfp (in1 tt)
+  Junode1 : JJ → JJ
+  Junode1 x = lfp (in2 (in1 x ) )
+  Junode2 : JJ → JJ
+  Junode2 x = lfp (in2 (in2 (in1 x)))
+  Jbnode : JJ → JJ → JJ
+  Jbnode x1 x2 = lfp (in2 (in2 (in2 (x1 , x2))))
+  JbnodeCurried : JJ ∧ JJ → JJ
+  JbnodeCurried (x1 , x2) = lfp (in2 (in2 (in2 (x1 , x2))))
+
+  allJ : ℕ → List JJ
+  allJ zero = []
+  allJ (succ n) = let
+    un1 = List→ Junode1 (allJ n)
+    un2 = List→ Junode2 (allJ n)
+    allJ² : List (JJ ∧ JJ)
+    allJ² = lazyProd (allJ n) (allJ n)
+    bn = List→ JbnodeCurried allJ²
+    in Jleaf ∷ merge (merge un1 un2) bn
+
+  ==J : JJ → JJ → 𝔹
+  ==J (lfp (in1 x)) (lfp (in1 x₁)) = true
+  ==J (lfp (in1 x)) (lfp (in2 x₁)) = false
+  ==J (lfp (in2 x)) (lfp (in1 x₁)) = false
+  ==J (lfp (in2 (in1 x))) (lfp (in2 (in1 x₁))) = ==J x x₁
+  ==J (lfp (in2 (in1 x))) (lfp (in2 (in2 x₁))) = false
+  ==J (lfp (in2 (in2 (in1 x)))) (lfp (in2 (in1 x₁))) = ==J x x₁
+  ==J (lfp (in2 (in2 (in1 x)))) (lfp (in2 (in2 x₁))) = false
+  ==J (lfp (in2 (in2 (in2 x)))) (lfp (in2 (in1 x₁))) = false
+  ==J (lfp (in2 (in2 (in2 x)))) (lfp (in2 (in2 (in1 x₁)))) = false
+  ==J (lfp (in2 (in2 (in2 (pr3 , pr4))))) (lfp (in2 (in2 (in2 (pr5 , pr6))))) = and (==J pr3 pr5) (==J pr4 pr6)
+
+  jJ²=J² : Iso (j [ J ² ]) (J ²)
+  jJ²=J² = += (=+ (×= (fix≃ j ) =!= dl= (cong+= i×r (dl= (+= (dl) ) ) r=) ) =!= += (=+ (×= (fix≃ j) =!= dl= (cong+= i×r (dl= (+= (dl) ) ) r=) ) ) ) =!= (+= (a+= (+= (a+= (+= (a+= (+= (+= (a+= (+= (a+=  (+= (a+= (+= (+= (a× ) ) ) ) ) ) ) ) ) ) ) )  ) ) ) =!=  (+= (+= (+= (c+= (=+ (c+= (a+= (+= (a+= (+= (c+= (a+ ~!= (a+ ~!= (=+ (=+ c+ ) =!= a+= (a+= (cong+= (~~ i×r) (cong+= (~~ a×) (cong+ (~~ a×) (~~ a×) ) (+= (~~ dl) =!= ~~ dl )) (dl ~!= ×= (~~ (fix≃ j) ) )) ) ) )  ) ) ) ) ) ) ) ) ) ) ) =!= ( (a+ ~!= (a+ ~!= (a+ ~!= =+ (a+ ~!= =+ (a+= (a+= (+= (+= c+ ) =!= ~~ (fix≃ j) ) ) ) ) ) ) ) =!= a+= (+= (c+= (cong+= r= (+= a× =!= ~~ dl ) (~~ dl)) ) =!= (=+ (~~ i×r) =!= (dl ~!= ×= (~~ (fix≃ j) ) )  ) ) ) ) )
+
+  jJ²→J² : ⟦ J ⟧ Γ₀ → ⟦ J ² ⟧ Γ₀
+  jJ²→J² = foldADT j Γ₀ (⟦ J ² ⟧ Γ₀) (_≃_.f+ (≃⟦ jJ²=J² ⟧ Γ₀))
 
 
 module 1+X²=1+X+X³ where
