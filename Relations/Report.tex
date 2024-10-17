@@ -13,6 +13,7 @@
 \newcommand{\tto}{\twoheadrightarrow}
 \newcommand{\sse}{\subseteq}
 \newcommand{\bset}{\mathbf{Set}}
+\newcommand{\nat}{\mathbb{N}}
 
 \newcommand{\sacomment}[1]{\textcolor{red}{#1}}
 \newcommand{\apcomment}[1]{\textcolor{blue}{#1}}
@@ -68,7 +69,7 @@ which are not present in classical logic.  In our investigation, we have focused
     if every element is related to its predecessor.  That is, $Rs_{n+1}s_n$ for all $n$.
 \end{enumerate}
 \end{dfn}
-With the above definitions established we define the notions of well-foundedness we have been investigating. 
+With the above definitions established we define the notions of well-foundedness we have been investigating.
 \begin{dfn} \hfil
   \begin{enumerate}
     \item \textit{R} is well-founded if every element is \textit{R}-accessible.
@@ -85,7 +86,7 @@ With the above definitions established we define the notions of well-foundedness
       \item \textit{R} is well-founded if it is not not the case that every non-empty predicate has a minimal element with respect to $R$. \textcolor{red}{is there a better way to express this double negation in english?}
       \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence (this is the definition of well-foundedness found in TeReSe).
     \end{enumerate}
-    
+
 \end{dfn}
 The following graphic illustrates the implications we have found between these definitions and those we are still seeking to find. Green arrows indicate that one definition implies another, red arrows indicate that we believe an implication should be possible but we have not yet found it.
 
@@ -184,7 +185,7 @@ We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
 \end{center}
 
 \begin{dfn}
-  
+
 \end{dfn}
 
 \subsubsection{Strongly Normalizing}
@@ -321,5 +322,29 @@ Does:
 $RP- \land \; WCR \to RP$
 
 (what other property with $RP-$ would give us $RP$?).
+
+\section{Classical Principles}
+Principles we are considering
+\begin{itemize}
+  \item Decidability of equality on $A$
+  \item Decidability of the relation $R$
+  \item When relevant, decidability of the given precicate $P$
+  \item Not-not-closure of being accessible
+  \item Not-not-closure of $R$
+  \item Not-not-closure of $P$
+  \item Decidability of whether a given element is an $R$-normal form
+  \item When relevant, local/element-wise versions of the above
+  \item Markov's principle:
+  \begin{itemize}
+    \item In $wfMin_0 \to wfSeq$.
+
+    Given a sequence $s : \nat \to A$, let $E(a) = \exists n \in \nat. s n \equiv a$.
+
+    Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
+    \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
+          \to \big(\exists n \in \nat. s n \equiv a\big)\]
+
+  \end{itemize}
+\end{itemize}
 
 \end{document}
