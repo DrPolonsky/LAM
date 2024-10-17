@@ -185,6 +185,13 @@ module S=1+2S where
   S : ADT 0
   S = μ s
 
+  2+S : ADT 0
+  2+S = 1+ (1+ S)
+
+  S+3=2S+4 : Iso (1+ 2+S) (2+S ⊔ 2+S)
+  S+3=2S+4 = += (+= (+= (fix≃ s) )) =!= ~~ (a+= (+= (a+= (+= (c+= (a+= (+= (c+= (a+ ~!= c+= e ) ) ) ) ) ) ) ) )
+    where e = a+ ~!= =+ (~~ (c×= (dist3 =!= cong+= i×r (cong+= i×r ar i+r) !! ) ) )
+
   open M=1+M+M²
 
   M²=2M²+1 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
