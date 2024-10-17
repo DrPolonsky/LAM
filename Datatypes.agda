@@ -48,6 +48,10 @@ data List (A : Set) : Set where
 
 infixr 21 _∷_
 
+any : ∀ {A} → (A → 𝔹) → List A → 𝔹
+any f [] = false
+any f (x ∷ xs) = if f x then true else any f xs
+
 exList : List ℕ
 exList = 1 ∷ 2 ∷ 3 ∷ []
 
