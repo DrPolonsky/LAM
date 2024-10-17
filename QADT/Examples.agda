@@ -192,6 +192,9 @@ module S=1+2S where
   S+3=2S+4 = += (+= (+= (fix≃ s) )) =!= ~~ (a+= (+= (a+= (+= (c+= (a+= (+= (c+= (a+ ~!= c+= e ) ) ) ) ) ) ) ) )
     where e = a+ ~!= =+ (~~ (c×= (dist3 =!= cong+= i×r (cong+= i×r ar i+r) !! ) ) )
 
+  3+S→ : ⟦ 1+ 2+S ⟧ Γ₀ → ⟦ 2+S ⊔ 2+S ⟧ Γ₀
+  3+S→ = _≃_.f+ (≃⟦ S+3=2S+4 ⟧ Γ₀)
+
   open M=1+M+M²
 
   M²=2M²+1 : Iso (M ²) ((Num 2) × M ² ⊔ 𝟏)
@@ -256,7 +259,6 @@ module S=1+2S where
   allM² : ℕ → List M²_t
   allM² n = lazyProd (allM n) (allM n)
 
-
   ==S : SS → SS → 𝔹
   ==S (lfp (in1 (in1 tt , pr2))) (lfp (in1 (in1 tt , pr6))) = ==S pr2 pr6
   ==S (lfp (in1 (in1 tt , pr4))) (lfp (in1 (in2 (in1 x) , pr6))) = false
@@ -265,6 +267,21 @@ module S=1+2S where
   ==S (lfp (in1 x)) (lfp (in2 y)) = false
   ==S (lfp (in2 x)) (lfp (in1 y)) = false
   ==S (lfp (in2 tt)) (lfp (in2 tt)) = true
+
+  ==2+S : ⟦ 2+S ⊔ 2+S ⟧ Γ₀ → ⟦ 2+S ⊔ 2+S ⟧ Γ₀ → 𝔹
+  ==2+S = ==ADT {2+S ⊔ 2+S}
+
+  some2+S : List (⟦ 1+ 2+S ⟧ Γ₀)
+  some2+S = in1 tt ∷ in2 (in1 tt) ∷ in2 (in2 (in1 tt)) ∷ List→ (in2 ∘ (in2 ∘ in2)) (allS 10)
+
+  find-the-y : List (⟦ 1+ 2+S ⟧ Γ₀)
+  find-the-y = filter p some2+S where
+    p : ⟦ 1+ 2+S ⟧ Γ₀ → 𝔹
+    p (in1 y) = false
+    p (in2 y) = not (or (==2+S (3+S→ (in2 y)) (in1 y)) (==2+S (3+S→ (in2 y)) (in2 y)))
+
+  checky : Set
+  checky = {! find-the-y  !}
 
   StoString : SS → List ℕ
   StoString (lfp (in1 (in1 tt , pr4))) = 0 ∷ StoString pr4
