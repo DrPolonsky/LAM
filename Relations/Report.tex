@@ -112,6 +112,7 @@ The following graphic illustrates the implications we have found between these d
 
     % Arrows
     \draw[->, thick, darkgreen] (std1) -- (dn1);
+    \draw[->, thick, darkgreen] (std1.west) to[out=180, in=90, bend right] (std4);
     \draw[->, thick, darkgreen] (dn1) -- (weak1);
     \draw[<->, thick, darkgreen] (std1) -- (std2);
     \draw[->, thick, darkgreen] (std2) -- (dn2);
