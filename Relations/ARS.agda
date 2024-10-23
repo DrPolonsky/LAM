@@ -257,10 +257,13 @@ module ReductionClosureProperties (R : 𝓡 A) where
   WN↓⊆WN isR-WNx ε⋆ = isR-WNx
   WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
 
+  -- SA: Double check and delete above Counterexample 2 
+
   -- Also refutable, but z is not a NF
   WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
   WN↓UN→⊆WN RisUN→ isR-WNx ε⋆ = isR-WNx
   WN↓UN→⊆WN RisUN→ (n ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = {!   !}
+  -- SA: double check and delete above Counterexample 2
 
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
   UN↓⊆UN isR-UNx R*xy n∈NF z∈NF R*yn R*yz = isR-UNx n∈NF z∈NF (R*xy ⋆!⋆ R*yn) (R*xy ⋆!⋆ R*yz)
@@ -362,11 +365,17 @@ module Miscellaneous (R : 𝓡 A) where
   RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
+  RP-→RP : RP- → RP 
+  RP-→RP RP- f f-inc a aisω-bound with RP- f f-inc a aisω-bound 
+  ... | i ,, R*ai = i ,, (λ y R*fᵢy → {!   !})
+
   RP-∧WCR→RP : RP- → WCR R → RP
   RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
   ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
 
+  -- SA: Both the above are disproven by counterexample 3 I think. If so, we can delete/move. 
+  
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
     CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R
@@ -377,6 +386,8 @@ module Miscellaneous (R : 𝓡 A) where
     -- Derive it from (ii) below??
     WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → is R -CR x
     WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
+
+    --  SA: Counterexample 2 works for this problem as well. Delete/move?
 
     UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
                   → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
@@ -517,7 +528,8 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | n ,, R*s₀n , n∈NF = {!   !}
 
 
-
+  x∉SN→infSeq : ∀ {x} → ¬ (is R -SN x) → Σ[ s ∈ (ℕ → A) ] (is R -increasing s)
+  x∉SN→infSeq {x} x∉SN = {!   !}
 
   iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
   iii-EMSN RisWN RisWCR rp- decSN x with decSN x
@@ -527,7 +539,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN
   ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
   ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
-  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact n is normal form common to all elements in the sequence.
+  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact it is R-increasing,  the fact n is normal form common to all elements in the sequence.
 
   iii-EM :  WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
   iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)
@@ -647,3 +659,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+ 
