@@ -1,5 +1,9 @@
 \documentclass{article}
 \usepackage{tikz-cd}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+
+\usetikzlibrary{positioning,shapes.geometric,fit}
 
 \title{Counterexamples in Mathematical Relations}
 \author{}
@@ -57,10 +61,53 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-    \item  $\forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
+    \item WN$\downarrow\subseteq$WN :  $\forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
+    \item WN$\downarrow$UN$\rightarrow\subseteq$WN : 
+    
+    UN$\rightarrow\,$R $\to \forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
+
+    \textcolor{red}{SA: The above is a bit messy, can we make it cleaner?}
+    \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
 
 \end{itemize}
 
+\subsection{Counterexample 3}
+\begin{center}
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (fi) at (3, 0) {$f_i$};
+      \node (fi+1) at (4, 0) {$f_{i+1}$};
+      \node (dots) at (2, 0) {$...$};
+      \node (dots2) at (5, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (dots) -- (fi);
+      \draw[->] (fi) -- (fi+1);
+      \draw[->] (fi+1) -- (dots2);
+
+      % Define the region f
+      \node[draw, ellipse, fit=(f0) (dots2), label=left:$f$] {};
+
+      % Define the nodes outside the region f
+      \node (a) [below=of fi, yshift=-.5cm] {\parbox{2cm}{\centering $a$ \\ $\omega-bound$}};
+      \node (y) [above right=of fi, yshift=.5cm] {$y$};
+
+      % Draw the arrows between the nodes inside and outside the region f
+      \draw[->>] (fi) -- (a);
+      \draw[->>] (fi+1) -- (a);
+      \draw[->>] (dots2) -- (a);
+      \draw[->>] (y) -- (fi);
+  \end{tikzpicture}
+\end{center}
+Counterexample to: 
+\begin{itemize}
+  \item RP-$\to$RP
+  \item RP-$\land$WCR$\to$RP
+\end{itemize}
 \subsection{ARS in Agda}
 Important counterexamples:
 \begin{enumerate}
