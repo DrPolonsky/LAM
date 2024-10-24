@@ -62,8 +62,8 @@ Counterexample to:
 Counterexample to:
 \begin{itemize}
     \item WN$\downarrow\subseteq$WN :  $\forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
-    \item WN$\downarrow$UN$\rightarrow\subseteq$WN : 
-    
+    \item WN$\downarrow$UN$\rightarrow\subseteq$WN :
+
     UN$\rightarrow\,$R $\to \forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
 
     \textcolor{red}{SA: The above is a bit messy, can we make it cleaner?}
@@ -103,11 +103,19 @@ Counterexample to:
       \draw[->>] (y) -- (fi);
   \end{tikzpicture}
 \end{center}
-Counterexample to: 
+Counterexample to:
 \begin{itemize}
   \item RP-$\to$RP
   \item RP-$\land$WCR$\to$RP
 \end{itemize}
+
+\subsection{Other questions}
+\begin{enumerate}
+  \item If WCR holds, is WN$\downarrow\subseteq$WN ?
+  \item Same question for next bullet in 2.2
+  \item Same for bullet 3 in 2.2 (but pointwise!)
+  \item Do RP- $\land$ WCR imply RP?
+\end{enumerate}
 \subsection{ARS in Agda}
 Important counterexamples:
 \begin{enumerate}

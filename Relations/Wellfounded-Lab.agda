@@ -194,7 +194,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     ... | in1  Ryx with f (s ∘ succ) (s 1) (xa (s 1) Ryx) refl
     ... | i ,, p = succ i ,, p
 
-  isWFind→isWFseq : isDec →  isWFind R → isWFseq R 
+  isWFind→isWFseq : isDec →  isWFind R → isWFseq R
   isWFind→isWFseq dR wfInd = isWFacc→isWFseq dR (isWFind→isWFacc R wfInd)
 
   -- Even with the global decidability assumption, this is not yet provable
@@ -265,7 +265,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     where ¬¬CP = {!   !}
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-   
+
 
 
   dMseq : decMin → A → ℕ → A
