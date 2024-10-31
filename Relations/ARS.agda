@@ -368,7 +368,8 @@ module Miscellaneous (R : 𝓡 A) where
   ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
 
-  -- SA: Both the above are disproven by counterexample 3 I think. If so, we can delete/move.
+
+  -- Update: counterexample 3 doesn't apply but surely some other counterexample does!
 
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
@@ -444,6 +445,11 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
+  
+  WN→ω : WN R → ω-bounded R  -- Does this rely on a classical assumption that it is decidable whether a given element of the sequence is at the end of the sequence? If so, then delete. 
+  WN→ω RisWN f f-inc with RisWN (f zero) 
+  ... | n ,, R*f0n , n∈NF = n ,, (λ n₁ → {!   !}) -- for every element i, if there is another element in the sequence i + 1 , then all prior elements can reduce to the normal form connected to i + 1
+
   -- Strengthening i
   i+ : WN R → UN→ R → ω-bounded R
   i+ RisWN RisUN→ f f-inc  with RisWN (f zero)
@@ -497,19 +503,13 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
   ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
 
-  Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch.
-  Rxy→y {x} {y} Rxy = y ,, refl
-
-  -- THIS LOOKS LIKE IT SHOULD BE PROVABLE. Try without Rxy→y
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
   preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→¬ x∉SN x∈NF)
-  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with Rxy→y Rxx₁
-  ... | x₁ ,, x₁≡x₁ with SNdec x₁
-  ... | in1 x₁∈SN = x ,, ((x∉SN , (x₁ ,, (x₁∈SN , transp (R x) x₁≡x₁ Rxx₁))) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))   -- Why isn't Rxx₁ the solution here?
-  -- ... | in2 x₁∉SN = preSNlemma1 SNdec {!   !} n∈NF {!   !} -- Why can't we take the recursive call from x₁ here?
-  ... | in2 x₁∉SN with preSNlemma1 SNdec {x₁} {n} x₁∉SN n∈NF (transp (~R (R ⋆) n) x₁≡x₁ R⋆x₁n )
-  ... | z ,, p1 , (p2 , p3) = z ,, p1 , (({! Rxx₁ but transport   !} ,⋆ p2) , p3 )
+  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _ 
+  ... | in1 x₁∈SN = x ,, ((x∉SN , (_ ,, x₁∈SN , Rxx₁)) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))
+  ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n  
+  ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn)) 
 
   -- This reminds me of deMorgan from early WF file
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
