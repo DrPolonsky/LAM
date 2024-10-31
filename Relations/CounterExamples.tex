@@ -39,7 +39,10 @@ This document contains diagrams of counterexamples commonly encountered when exp
 Counterexample to:
 \begin{itemize}
     \item WCR $\to$ CR
+    \item WCR and WN $\to$ CR
+    \item WCR and WN $\to$ SN
     \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ (R *) a c $\to$ (R *) c b}
+    \item IOW, WCR $\to$ WNFP
 \end{itemize}
 
 \subsection{Counterexample 2}
@@ -104,9 +107,10 @@ Counterexample to:
           \draw[->>] (fi) -- (y);
       \end{tikzpicture}
     \end{center}
-    Counterexample to: 
+    Counterexample to:
     \begin{itemize}
-      \item RP-$\to$RP
+      \item ***** DOES NOT WORK ******
+      \item RP-$\to$RP 
       \item RP-$\land$WCR$\to$RP \textcolor{red}{NO< NEEDS A NEW CE}
 \end{itemize}
 
@@ -135,6 +139,7 @@ Important counterexamples:
   \begin{itemize}
     \item $WN$
     \item $\omega$-bounded
+    \item RP $\to$ $\omega$-bounded
     \item $WCR \to WN$
     \item $CR \to WN$
     \item $CR, CP \to WN$
@@ -142,6 +147,14 @@ Important counterexamples:
   \end{itemize}
   \item Infinite sequence $a_0 \to a_1 \to \cdots$ with a colimit $a_\infty$,
   with each $a_n \to a_\infty$ and $a_\infty$ a normal form.
+
+  Counterexample to:
+  \begin{itemize}
+    \item WN $\to$ SN
+    \item WN, CR $\to$ SN
+    \item WN, CR, $\omega$-bounded $\to$ SN
+  \end{itemize}
+
   \item Infinite sequence $a_0 \to a_1 \to \cdots$, together with links
   $a_n \to a_0$, for each $n$.
   \item The combination of the last two.
@@ -154,7 +167,9 @@ Important counterexamples:
   Counterexample to:
   \begin{itemize}
     \item $WN\to WCR$
+    \item $WN\to \omega-bounded$
     \item $WN \to SN$
+    \item $WN,RP \to SN$
   \end{itemize}
   \item A variation of the above with backlinks $a_n \to a_0$ for all $n$.
 \end{enumerate}

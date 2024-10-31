@@ -445,11 +445,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
-  
-  WN→ω : WN R → ω-bounded R  -- Does this rely on a classical assumption that it is decidable whether a given element of the sequence is at the end of the sequence? If so, then delete. 
-  WN→ω RisWN f f-inc with RisWN (f zero) 
-  ... | n ,, R*f0n , n∈NF = n ,, (λ n₁ → {!   !}) -- for every element i, if there is another element in the sequence i + 1 , then all prior elements can reduce to the normal form connected to i + 1
-
   -- Strengthening i
   i+ : WN R → UN→ R → ω-bounded R
   i+ RisWN RisUN→ f f-inc  with RisWN (f zero)
@@ -458,7 +453,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     g k with RisWN (f k)
     ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
-
 
   ii3- :  WN R → UN R → RP R → isWFseq- (~R R)
   ii3- wnR unR rp s sIsRdec with i wnR unR
@@ -500,16 +494,16 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
-  ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
+  ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
+  ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
 
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
-  preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→¬ x∉SN x∈NF)
-  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _ 
+  preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→⊥ x∉SN x∈NF)
+  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _
   ... | in1 x₁∈SN = x ,, ((x∉SN , (_ ,, x₁∈SN , Rxx₁)) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))
-  ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n  
-  ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn)) 
+  ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n
+  ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn))
 
   -- This reminds me of deMorgan from early WF file
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
@@ -522,19 +516,29 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
   -- have this
-  WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
-  WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
-  ... | acc accs₀ = {!   !}
+  -- WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
+  -- WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
+  -- ... | acc accs₀ = {!   !}
 
   -- SN(R) IS WFacc (~R R)
-  SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
-  SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
-  ... | acc xacc with RisWN (s 0)
-  ... | n ,, R*s₀n , n∈NF = {!   !}
-
+  -- SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
+  -- SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
+  -- ... | acc xacc with RisWN (s 0)
+  -- ... | n ,, R*s₀n , n∈NF = {!   !}
 
   x∉SN→infSeq : ∀ {x} → ¬ (is R -SN x) → Σ[ s ∈ (ℕ → A) ] (is R -increasing s)
-  x∉SN→infSeq {x} x∉SN = {!   !}
+  x∉SN→infSeq {x} x∉SN = (s ,, sIsRinc) where
+    s : ℕ → A
+    s⊆∁SN : ∀ n → ¬ (is R -SN (s n))
+    s zero = x
+    s (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = y
+    s⊆∁SN zero = x∉SN
+    s⊆∁SN (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = y∉SN
+    sIsRinc : is R -increasing s
+    sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = Rsny 
 
   iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
   iii-EMSN RisWN RisWCR rp- decSN x with decSN x
