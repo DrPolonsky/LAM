@@ -96,17 +96,18 @@ Counterexample to:
       \node (a) [below=of fi, yshift=-.5cm] {\parbox{2cm}{\centering $a$ \\ $\omega-bound$}};
       \node (y) [above right=of fi, yshift=.5cm] {$y$};
 
-      % Draw the arrows between the nodes inside and outside the region f
-      \draw[->>] (fi) -- (a);
-      \draw[->>] (fi+1) -- (a);
-      \draw[->>] (dots2) -- (a);
-      \draw[->>] (y) -- (fi);
-  \end{tikzpicture}
-\end{center}
-Counterexample to:
-\begin{itemize}
-  \item RP-$\to$RP
-  \item RP-$\land$WCR$\to$RP
+          % Draw the arrows between the nodes inside and outside the region f
+          \draw[->>] (fi) to [bend right=15] (a);
+          \draw[->>] (a) to [bend right=15] (fi);
+          \draw[->>] (fi+1) -- (a);
+          \draw[->>] (dots2) -- (a);
+          \draw[->>] (fi) -- (y);
+      \end{tikzpicture}
+    \end{center}
+    Counterexample to: 
+    \begin{itemize}
+      \item RP-$\to$RP
+      \item RP-$\land$WCR$\to$RP \textcolor{red}{NO< NEEDS A NEW CE}
 \end{itemize}
 
 \subsection{Other questions}
