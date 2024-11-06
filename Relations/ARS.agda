@@ -251,16 +251,13 @@ module ReductionClosureProperties (R : 𝓡 A) where
   NF↓⊆NF isR-NFx ε⋆ = isR-NFx
   NF↓⊆NF isR-NFx (Rxx₁ ,⋆ R*x₁y) = λ y _ → isR-NFx _ Rxx₁
 
-  -- SA: This shouldn't be true. Counter: x ->> n and x ->> y (x ∈ WN). y -> z and z -> y and y and z have no other reductions.
-  -- should follow with the assumption of UN→
-  WN↓⊆WN : ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
-  WN↓⊆WN isR-WNx ε⋆ = isR-WNx
-  WN↓⊆WN (x ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = WN↓⊆WN ({!   !} ,, {!   !}) R*x₁y
+  -- Not provable:
+  -- WN↓⊆WN : ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  -- Counter: x ->> n and x ->> y (x ∈ WN). y -> z and z -> y and y and z have no other reductions.
 
-  -- Also refutable, but z is not a NF
-  WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
-  WN↓UN→⊆WN RisUN→ isR-WNx ε⋆ = isR-WNx
-  WN↓UN→⊆WN RisUN→ (n ,, R*xn , n∈NF) (Rxx₁ ,⋆ R*x₁y) = {!   !}
+  -- Also the assumption of UN→ is insufficient
+  -- WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  -- Same counterexample
 
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
   UN↓⊆UN isR-UNx R*xy n∈NF z∈NF R*yn R*yz = isR-UNx n∈NF z∈NF (R*xy ⋆!⋆ R*yn) (R*xy ⋆!⋆ R*yz)
@@ -362,21 +359,31 @@ module Miscellaneous (R : 𝓡 A) where
   RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
+  -- Not provable, see counterexample
+  -- RP-→RP : RP- → RP
+
+  -- Sam believes there is a counterexample!
   RP-∧WCR→RP : RP- → WCR R → RP
   RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
   ... | i ,, R*afᵢ with aisω-bound i
   ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
+
+
+  -- Update: counterexample 3 doesn't apply but surely some other counterexample does!
 
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
     CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R
     CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
 
-    -- Not provable, unless WN is global. [***]
-    -- FIND a counterexample and delete?
-    -- Derive it from (ii) below??
-    WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → is R -CR x
-    WN∧UN→CRelem R x (z ,, R*xz , z∈NF) x∈UN {b} {c} R*xb R*xc = {!   !}
+    -- Not provable, cite the counterexample 2 here
+    -- WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → is R -CR x
+
+    -- Question: what if WN is global?      [***]
+    WNg∧UN→CRelem : ∀ (R : 𝓡 A) → WN R → ∀ x → is R -UN x → is R -CR x
+    WNg∧UN→CRelem R wnR x x∈UN = {!   !}
+
+    -- Question: WN ∧ (∀ x → UN(x)) → UN(R) ?
 
     UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
                   → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
@@ -447,7 +454,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
 
-
   ii3- :  WN R → UN R → RP R → isWFseq- (~R R)
   ii3- wnR unR rp s sIsRdec with i wnR unR
   ... | bdR with wnR (s 0)
@@ -462,42 +468,44 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
 
-  iii :  WN R → WCR R → RP R → isWFseq- (~R R)
-  iii wnR wcrR rp s sIsRdec = {!  !}
-
+  -- Want to prove or disprove!            [***]
   ii- : WN R → UN R → ω-bounded R → SN R
   ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
   ... | RisCR = {!   !}
 
-  -- iii : ∀ Q → dominatedByWF R Q → WCR R → WN R → SN R
-  -- iii Q domRQ RisWCR RisWN = {!   !}
 
   -- A classical proof of iii (subbing RP for Inc)
   open import Classical
+
+  -- A classical assumption which nonetheless may be necessary to assume
+  ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
+  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !}
+
+  -- Classical proof in the report
+  iii :  WN R → WCR R → RP R → isWFseq- (~R R)
+  iii wnR wcrR rp s sIsRdec = {!  !}
+
   preSN : 𝓟 A
   preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
+  -- Note that if x is preSN, and R is WCR,
+  -- then each 1-step reduct of x, reduces to a SN term.
 
   -- preSN has replaced this we think
   -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  ¬SN∧NF→¬ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
-  ¬SN∧NF→¬ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
-
-  ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
-  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !}
-
-  Rxy→y : ∀ {x y} → R x y → Σ[ z ∈ A ] (y ≡ z)  -- This is such a horrible botch.
-  Rxy→y {x} {y} Rxy = y ,, refl
+  ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
+  ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
 
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
-  preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→¬ x∉SN x∈NF)
-  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with Rxy→y Rxx₁
-  ... | x₁ ,, x₁≡x₁ with SNdec x₁
-  ... | in1 x₁∈SN = x ,, ((x∉SN , (x₁ ,, (x₁∈SN , {!   !}))) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))   -- Why isn't Rxx₁ the solution here?
-  ... | in2 x₁∉SN = preSNlemma1 SNdec {!   !} n∈NF {!   !} -- Why can't we take the recursive call from x₁ here?
+  preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→⊥ x∉SN x∈NF)
+  preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _
+  ... | in1 x₁∈SN = x ,, ((x∉SN , (_ ,, x₁∈SN , Rxx₁)) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))
+  ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n
+  ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn))
 
+  -- This reminds me of deMorgan from early WF file
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
   x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
 
@@ -507,17 +515,30 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
-  WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
-  WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
-  ... | acc accs₀ = {!   !}
+  -- have this
+  -- WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
+  -- WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
+  -- ... | acc accs₀ = {!   !}
 
-  SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
-  SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
-  ... | acc xacc with RisWN (s 0)
-  ... | n ,, R*s₀n , n∈NF = {!   !}
+  -- SN(R) IS WFacc (~R R)
+  -- SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
+  -- SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
+  -- ... | acc xacc with RisWN (s 0)
+  -- ... | n ,, R*s₀n , n∈NF = {!   !}
 
-
-
+  x∉SN→infSeq : ∀ {x} → ¬ (is R -SN x) → Σ[ s ∈ (ℕ → A) ] (is R -increasing s)
+  x∉SN→infSeq {x} x∉SN = (s ,, sIsRinc) where
+    s : ℕ → A
+    s⊆∁SN : ∀ n → ¬ (is R -SN (s n))
+    s zero = x
+    s (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = y
+    s⊆∁SN zero = x∉SN
+    s⊆∁SN (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = y∉SN
+    sIsRinc : is R -increasing s
+    sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+    ... | (y ,, y∉SN , Rsny) = Rsny 
 
   iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
   iii-EMSN RisWN RisWCR rp- decSN x with decSN x
@@ -527,7 +548,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN
   ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
   ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
-  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact n is normal form common to all elements in the sequence.
+  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact it is R-increasing,  the fact n is normal form common to all elements in the sequence.
 
   iii-EM :  WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
   iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)

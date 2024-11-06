@@ -1,8 +1,72 @@
 \documentclass{scrartcl}
 
-\usepackage{xcolor}
+\input{macros}
+
 
 \begin{document}
+
+\textbf{Primary Goal: A technical report that focuses on
+Abstract Rewriting in Constructive Setting }
+
+\section{2024.10.31}
+
+Rewriting properties.
+Elementwise
+\begin{itemize}
+  \item NF
+  \item WN
+  \item SN
+  \item WCR
+  \item CR
+  \item NFP
+  \item UN$\to$
+  \item UN
+  \item RP
+  \item RP$-$
+  \item $\omega$-bound
+  \item Recurrent
+  \item CP (Cofinality property)
+  \item FB (Finite branching of rewrite steps)
+  \item DominatedByWF (Needed?)
+  \item Define WNFP to be:
+  \[\forall a b c \to b \in NF \to a R^* b \to a R^* c \to c R^* b \]
+  \item Does WNFP and WN imply CR?  Looks like it!
+  \item Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$.)
+
+  Could even consider $SN^*$, $CR^*$ etc.
+\end{itemize}
+Most of these properties $P$ have a ``global'' version $P^\forall$, asserting that $\forall x. P(x)$ holds.
+
+Other properties that show up in classical ARS theory:
+\begin{itemize}
+  \item Inc
+  \item Ind
+  \item $\mathrm{CR}^{\le 1}$
+\end{itemize}
+Want to discuss these, and why we may or may not include them in our
+development.
+
+Outline of the document:
+\begin{enumerate}
+  \item Create a diagram with implications between these, and
+  combinations of these, similar to the one in TeReSe.
+  \item Formalization of valid implications
+  \item Counterexamples: Compile a list/chart/graph of those relationships
+  which can be disproved. (A big part!!)
+  \item A list of classical properties, and elaboration of their meaning
+  and whether it's reasonable to assume them in a rewriting context.
+  (Discuss each, and its role in ARS theory.)
+  \item Well-foundedness: different constructive formulations, and relationships between them
+  \item ``Guide'' to the formalization code, GitHub repo
+  \item Discussion of open problems (Add a subsection of these at the end of each section?)
+  \item Conclusion
+\end{enumerate}
+
+\section{Established implications:}
+
+\begin{itemize}
+  \item SN implies $\omega$-bounded
+\end{itemize}
 
 \section{2024.10.10}
 
@@ -134,5 +198,23 @@ Four notions:
 
 \textsc{Remark.}
 $\lnot\lnot$-closure of accessibility should solve problems 1 and 4.
+
+\section{Open problems}
+
+\begin{itemize}
+  \item The infinite haircomb refutes $WN \land RP \to \omega$-bounded.  But it is not WCR.
+
+  So, does $WN, RP, WCR$ imply $\omega$-bounded?
+  Answer: yes, that is what we have proved classically.
+
+  \item Wait, does RP- actually imply RP????
+
+  \item RP- and $\omega$-bounded implies RP?
+  \item RP- and WCR imply RP?
+  \item
+  \[ WNg \land UN \to CRelem :
+  \forall (R : \mathscr{R} A) \to WN R \to \forall x \to is R -UN x \to is R -CR x \]
+  \item $WN R \to UN R \to \omega-bdd R \to SN R$ (1.2.3.ii-)
+\end{itemize}
 
 \end{document}

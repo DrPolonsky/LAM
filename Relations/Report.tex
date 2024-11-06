@@ -1,36 +1,10 @@
 \documentclass{scrartcl}
-% Packages
-\usepackage{hyperref}
-\usepackage{tikz}
-\usepackage{amsmath}
-\usepackage{pifont}
-\usepackage{mathrsfs}
-\usepackage{amssymb}
+% \input{packages}
+\input{macros}
+
 \usetikzlibrary{arrows.meta, positioning}
 
-\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
 
-\newcommand{\tto}{\twoheadrightarrow}
-\newcommand{\sse}{\subseteq}
-\newcommand{\bset}{\mathbf{Set}}
-\newcommand{\nat}{\mathbb{N}}
-
-\newcommand{\sacomment}[1]{\textcolor{red}{#1}}
-\newcommand{\apcomment}[1]{\textcolor{blue}{#1}}
-
-\usepackage{amsthm}
-
-\newtheorem{thm}{Theorem}
-\newtheorem{dfn}[thm]{Definition}
-\newtheorem{prop}[thm]{Proposition}
-\newtheorem{cor}[thm]{Corollary}
-\newtheorem{lemma}[thm]{Lemma}
-\newtheorem{rmk}[thm]{Remark}
-\newtheorem{expl}[thm]{Example}
-\newtheorem{notn}[thm]{Notation}
-%\theoremstyle{nonumberplain}
-%\theoremsymbol{\Box}
-% \newtheorem{proof}{Proof}
 
 \title{Summer 2024 Report}
 \author{Sam Arkle}
@@ -112,6 +86,7 @@ The following graphic illustrates the implications we have found between these d
 
     % Arrows
     \draw[->, thick, darkgreen] (std1) -- (dn1);
+    \draw[->, thick, darkgreen] (std1.west) to[out=180, in=90, bend right] (std4);
     \draw[->, thick, darkgreen] (dn1) -- (weak1);
     \draw[<->, thick, darkgreen] (std1) -- (std2);
     \draw[->, thick, darkgreen] (std2) -- (dn2);
