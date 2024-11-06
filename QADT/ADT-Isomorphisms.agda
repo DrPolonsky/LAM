@@ -185,6 +185,9 @@ dist3 = dl= (!+ dl)
 foil : ∀ {n} {A B : ADT n} → Iso ((A ⊔ B) ²) (A ² ⊔ (Num 2 × A × B) ⊔ B ²)
 foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×l) =!~ (+1× 1 (=+ (=× i+r))) ) ) ) ) ))
 
+X+X=2X : ∀ {n} (X : ADT n) → Iso (X ⊔ X) (Num 2 × X)
+X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
+
 -- μiso : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
 μiso : ∀ {n} (e : ADT (succ n)) (ρ : SetEnv n) → ⟦ μ e ⟧ ρ ≃ ⟦ e [ (μ e) ] ⟧ ρ
 μiso {n} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemmagen e (μ e) ρ o
@@ -218,3 +221,6 @@ foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×
 ≃⟦ annih×≃ a ⟧ ρ = annih∧
 
 ≃⟦_⟧≃ {A = A} {B = B} e {ρ} {ρ'} ρρ' = ≃⟦ e ⟧ ρ iso∘ (⟦ B ⟧≃ ρρ')
+
+RigFold : ∀ (A : ADT 1) → (B : ADT 0) → Iso (A [ B ]) B → ⟦ μ A ⟧ Γ₀ → ⟦ B ⟧ Γ₀
+RigFold A B rigiso = foldADT {0} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (substlemmagen A B Γ₀ o ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
