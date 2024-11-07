@@ -27,8 +27,4 @@ module X=nPX+X {n : ℕ} (a : ADT (succ n)) (ρ₀ : SetEnv n) where
   FisG X zero fX=X = iso∨ (comm∧ ≃!≃ annih∧ ) (id≃ X ) ≃!≃ iso~ id∨
   FisG X (succ k) fX=X =
     let reccall = FisG X k fX=X
-        e1 = isodistrR
-        e2 = {!   !}
-        e3 = {!   !}
-        e4 = {!   !}
-     in e1 ≃!≃ (e4 ≃!≃ reccall)
+     in ((iso∨ isodistrR (id≃ _) iso∘ iso∨ (iso∨ (iso~ id∧) (id≃ _) ) (id≃ _)  ) iso∘ (iso~ assoc∨  ≃!≃ (iso∨ (id≃ _ ) comm∨ ≃!≃ (assoc∨ ≃!≃ (iso∨ fX=X (id≃ _) ≃!≃ (comm∨ ≃!≃ iso∨ (id≃ _) (id≃ _) ) ) )) ) ) ≃!≃ reccall
