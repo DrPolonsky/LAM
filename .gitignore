@@ -7,3 +7,4 @@ MAlonzo/**
 *.pdf 
 *.gz 
 *.out 
+.DS_Store
