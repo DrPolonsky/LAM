@@ -211,11 +211,11 @@ module Termination (R : 𝓡 A)  where
   isSemicomplete = UN × WN
 
   -- Miscelaneous properties
-  is_ω-bound_ : (f : ℕ → A) → A → Set
-  is_ω-bound_ f a = ∀ n → (R ⋆) (f n) a 
+  is_-_bound_ : (f : ℕ → A) → A → Set
+  is_-_bound_ f a = ∀ n → (R ⋆) (f n) a
 
   ω-bounded : Set
-  ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (∀ n → (R ⋆) (f n) a)
+  ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
 
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
@@ -351,37 +351,28 @@ module Miscellaneous (R : 𝓡 A) where
   -- Recurrent property
   RP : Set
   -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
-  RP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+  RP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is R - f bound a)
          → Σ[ m ∈ ℕ ] is R -recurrent (f m)
 
   RP- : Set
-  RP- = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+  RP- = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is R - f bound a)
           → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
 
   RP→RP- : RP → RP-
   RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
-  RP-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
-          → Σ[ i ∈ ℕ ] ((R ⋆) a (f i) → ∀ x → (R ⋆) (f i) x → is_ω-bound_ R f x )
-  RP-lemma f f-inc a aisω-bound = 0 ,, (λ R*af₀ y R*f₀y n → (aisω-bound n) ⋆!⋆ (R*af₀ ⋆!⋆ R*f₀y)) 
+  RP-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is R - f bound a)
+          →  ∀ i → (R ⋆) a (f i) → ∀ x → (R ⋆) (f i) x → is R - f bound x
+  RP-lemma f f-inc a aisf-bound i R*afᵢ y R*fᵢy n = (aisf-bound n ⋆!⋆ R*afᵢ) ⋆!⋆ R*fᵢy
 
-  -- Not provable? Make a counterexample
-  RP-→RP : RP- → RP                                                     -- want to show that any y reachable by fi must be an omega bound, and therefore (by rp-) rp holds
-  RP-→RP RP- f f-inc a aisω-bound with RP- f f-inc a aisω-bound 
-  ... | i ,, R*ai = i ,, proof
-    where   proof : (x : A) (R*fᵢx : (R ⋆) (f i) x) → (R ⋆) x (f i)
-            proof  with RP-lemma f f-inc a aisω-bound
-            ... | j ,, rplem = {!  RP-→RP !} 
-
-  -- Sam believes there is a counterexample!
-  RP-∧WCR→RP : RP- → WCR R → RP
-  RP-∧WCR→RP RisRP- RisWCR f f-inc a aisω-bound with RisRP- f f-inc a aisω-bound
-  ... | i ,, R*afᵢ with aisω-bound i
-  ... | R*fᵢa = {!   !} -- i ,, (λ y R*fᵢy → {!  !}) -- probably not the right step. Y isn't in sequence and so can't force it back to fᵢ via a
-
-
-  -- Update: counterexample 3 doesn't apply but surely some other counterexample does!
+  RP-→RP : RP- → RP
+  RP-→RP RP- f f-inc a aisf-bound with RP- f f-inc a aisf-bound
+  ... | i ,, R*afᵢ = i ,, proof
+    where   proof : (y : A) (R*fᵢy : (R ⋆) (f i) y) → (R ⋆) y (f i)
+            proof y R*fᵢy with RP-lemma f f-inc a aisf-bound i R*afᵢ y R*fᵢy
+            ... | yisf-bound with RP- f f-inc y yisf-bound
+            ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
 
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
@@ -480,7 +471,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
 
-  -- Want to prove or disprove!            [***]
+  -- Want to prove or disprove!            [ Try to find a counterexample! ***]
   ii- : WN R → UN R → ω-bounded R → SN R
   ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
   ... | RisCR = {!   !}
@@ -550,7 +541,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | (y ,, y∉SN , Rsny) = y∉SN
     sIsRinc : is R -increasing s
     sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-    ... | (y ,, y∉SN , Rsny) = Rsny 
+    ... | (y ,, y∉SN , Rsny) = Rsny
 
   iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
   iii-EMSN RisWN RisWCR rp- decSN x with decSN x
@@ -560,7 +551,10 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN
   ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
   ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
-  ... | d₀∈SN = {!   !} -- Need to capture the sequence we have formed, the fact it is infinite, the fact it is ω-bounded by n, the fact it is R-increasing,  the fact n is normal form common to all elements in the sequence.
+  ... | d₀∈SN with x∉SN→infSeq x∉SN
+  ... | (s ,, sIsRInc) with rp- s sIsRInc n {!   !}
+  ... | i ,, ε⋆ = ∅ (n∈NF (s (succ i)) (sIsRInc i) )
+  ... | i ,, (Rny ,⋆ R*ysᵢ) = ∅ (n∈NF _ Rny )
 
   iii-EM :  WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
   iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)

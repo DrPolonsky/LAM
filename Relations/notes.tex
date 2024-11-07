@@ -1,11 +1,22 @@
 \documentclass{scrartcl}
 
-\input{macros}   
+\input{macros}
 
 
 \begin{document}
 
-This document aims to bring together the various notes from report, rewriting qs, and counterexamples. 
+This document aims to bring together the various notes from report, rewriting qs, and counterexamples.
+
+\section{Todo}
+\begin{enumerate}
+  \item In the report, give a classical proof that the $Inc$ Property
+  implies that no $R$-increasing sequence is bounded.
+
+  Conclude that every relation satisfying $Inc$ also satisfies $RP$.
+
+  Therefore, the proof of Theorem 1.2.3(iii) using $RP$ instead of $Inc$
+  is generalizing the claim of the theorem (as stated in [TeReSe]).
+\end{enumerate}
 
 
 \section{Definitions and implications}
@@ -141,13 +152,13 @@ Counterexample to:
           \draw[->>] (a) to [bend right=15] (fi);
           \draw[->>] (fi+1) -- (a);
           \draw[->>] (dots2) -- (a);
-          \draw[->>] (fi) -- (y);   
+          \draw[->>] (fi) -- (y);
       \end{tikzpicture}
     \end{center}
     Counterexample to:
     \begin{itemize}
       \item ***** DOES NOT WORK ******
-      \item RP-$\to$RP 
+      \item RP-$\to$RP
       \item RP-$\land$WCR$\to$RP \textcolor{red}{NO< NEEDS A NEW CE}
 \end{itemize}
 
@@ -243,44 +254,44 @@ Principles we are considering
     being accessible $\lnot\lnot$-closed? I.E.,
     Does $x$ being $\lnot\lnot$-accessible imply that $x$ is accessible?
     (Conjecture: No.)
-  
+
     \item As a special case, does being weakly (accessible) well-founded imply being $\lnot\lnot$-wellfounded?
     (Conjecture: No.)
-  
+
     Also: Same question about inductive notion of well-foundedness.
-  
+
     \item ($\star$) Given a well-founded relation, does every non-empty subset
     have a minimal element?
-  
+
     \emph{Problem.} Need to decide whether, for a given $x \in U$,
      the set $\{y | Ryx\}$ is empty.
-  
+
      \item IF every non-empty subset has a minimal element, does this imply
      either of the weak forms of well-foundedness: $\mathtt{isWFacc-}$ or
      $\mathtt{isWFind-}$ ?
-  
+
      \item Does $\mathtt{isWFmin-}$ imply $\mathtt{isWFacc-}$ or $\mathtt{isWFind-}$?
-  
+
      \emph{Problem.} Need to go from $\lnot (\forall y. R y d \to \phi y)$
      and $\forall y. R y d \to \lnot \lnot \phi y$ to $\bot$.
-  
+
      In terms of accessibility, it should suffices to assume accessibility is
      $\lnot\lnot$-closed, since being related to y is not relevant for that. (?)
-  
+
      \item Does sequential well-foundedness (no decreasing sequence) imply
      any of the other notions, e.g., \texttt{WFmin-} ?
-  
+
      \emph{Note.}  This seems to require the most classical assumptions:
      $\lnot\lnot$-closure of $\phi$, relativized De Morgan law,
      Markov's principle, etc.
-  
-     
-  
+
+
+
   \end{enumerate}
-  
+
   \textsc{Remark.}
   $\lnot\lnot$-closure of accessibility should solve problems 1 and 4.
-  
+
 \newpage
 \section{Guide to the code}
 \section{Open problems}
@@ -292,13 +303,13 @@ Principles we are considering
         (Is $R$ itself decidable?)
         \item Deciding whether a given element $x$ reduces to some element $y$
         (Is being an $R$-normal form decidable?)
-  
+
         {\textcolor{red}{This is needed to show that SN $\Rightarrow$ WN.}}
-  
+
         \item If a given element $x$ is \emph{not} a normal form,
         exhibiting some element $y$ that it reduces to.
         (This is related to DeMorgan/Markov/etc. properties that came up in WF file.)
-  
+
         \item Does UN-lemma \emph{require} the decidability assumption?
       \end{itemize}
     \item META questions: Which of the ARS theorems can be made ``local/pointwise'',
@@ -327,9 +338,9 @@ Principles we are considering
 
      So, does $WN, RP, WCR$ imply $\omega$-bounded?
      Answer: yes, that is what we have proved classically.
-   
+
      \item Wait, does RP- actually imply RP????
-   
+
      \item RP- and $\omega$-bounded implies RP?
      \item RP- and WCR imply RP?
      \item
@@ -343,7 +354,7 @@ Principles we are considering
        $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $.
     \item  Make the first argument to "being a normal form" implicit?
     \item Write up the classical proof to theorem 1-2-3 iii
-     
+
 
 \end{itemize}
 \section{Conclusions}
