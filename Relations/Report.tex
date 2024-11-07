@@ -2,10 +2,6 @@
 % \input{packages}
 \input{macros}
 
-\usetikzlibrary{arrows.meta, positioning}
-
-
-
 \title{Summer 2024 Report}
 \author{Sam Arkle}
 \date{\today}
@@ -62,9 +58,9 @@ With the above definitions established we define the notions of well-foundedness
     \end{enumerate}
 
 \end{dfn}
-The following graphic illustrates the implications we have found between these definitions and those we are still seeking to find. Green arrows indicate that one definition implies another, red arrows indicate that we believe an implication should be possible but we have not yet found it.
 
-\begin{center}
+\begin{figure}[h]
+  \centering
   \begin{tikzpicture}[node distance=2cm, auto]
     % Standard definitions
     \node (std1) [draw] {isWFacc};
@@ -103,7 +99,12 @@ The following graphic illustrates the implications we have found between these d
     \draw[->, thick, red, bend left] (std4) -- (std3) node[pos=0.5, left, red] {?};
     \draw[->, thick, red, bend left] (weak4) -- (weak3) node[pos=0.5, left, red] {?};
   \end{tikzpicture}
-\end{center}
+  \caption{A graphic illustrating the implications we have found between the above 
+  definitions and those we are still seeking to find. Green arrows indicate that one 
+  definition implies another, red arrows indicate that we believe an implication should 
+  be possible but we have not yet found it.
+  }
+\end{figure}
 
 
 
@@ -115,22 +116,23 @@ Could talk here about omega bounded stuff too!}
 
 The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, theorem 1.2.2 and theorem 1.2.3. Before exploring those proofs the following definitions are essential.
 \begin{dfn}
-  An abstract reduction system (\emph{ARS}) is a framework which we use to explore reduction relations on a set of objects.
+  An abstract reduction system (\emph{ARS}) is a structure $\mathcal{A} = (A, \to_\alpha)$ where $A$ is a set and $\to_\alpha$ is a set of binary relations.    
 \end{dfn}
-Throughout these definitions we use $A$ to denote the set and $\to$ to denote a binary relation on $A$. This relation represents the reduction process. For example, if we specify $\to$ as the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
+A relation $\to$ from the set $\to_\alpha$ is refered to as a reduction (or rewrite) relation. For example, if we specify $\to$ as the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
 
 We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
 
 \begin{dfn}
     A reduction relation is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if all single-step reductions from a given element can always converge via multi-step reductions to some common reduct.
 \end{dfn}
-\begin{center}
-  \begin{tikzpicture}[node distance=2cm, auto]
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[node distance=1.5cm, auto]
     % Nodes
     \node (top) {a};
     \node (left) [below left of=top] {b};
     \node (right) [below right of=top] {c};
-    \node (bottom) [below of=top, yshift=-1cm] {d};
+    \node (bottom) [below of=top] {d};
 
     % Arrows
     \draw[->] (top) -- (left);
@@ -138,36 +140,171 @@ We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
     \draw[->>] (left) -- (bottom);
     \draw[->>] (right) -- (bottom);
 \end{tikzpicture}
-\end{center}
+\caption{An example of a weakly confluent relation.}
+\end{figure}
 
 \begin{dfn}
-    A reduction relation is \emph{confluent} (AKA Church-Rosser (CR)) if all multi-step redctions from a given element can always converge via multi-step reductions to some common reduct.
+  A reduction relation is \emph{confluent} (AKA Church-Rosser (CR)) if all multi-step redctions from a given element can always converge via multi-step reductions to some common reduct.
 \end{dfn}
-\begin{center}
-  \begin{tikzpicture}[node distance=2cm, auto]
-    % Nodes
-    \node (top) {a};
-    \node (left) [below left of=top] {b};
-    \node (right) [below right of=top] {c};
-    \node (bottom) [below of=top, yshift=-1cm] {d};
+    \begin{figure}
+      \centering
+      \begin{tikzpicture}[node distance=1.5cm, auto]
+        % Nodes
+        \node (top) {a};
+        \node (left) [below left of=top] {b};
+        \node (right) [below right of=top] {c};
+        \node (bottom) [below of=top] {d};
+        
+        % Arrows
+        \draw[->>] (top) -- (left);
+        \draw[->>] (top) -- (right);
+        \draw[->>] (left) -- (bottom);
+        \draw[->>] (right) -- (bottom);
+      \end{tikzpicture}
+    \caption{An example of a confluent relation.}
+    \end{figure}
+    
+\begin{dfn}
+  \emph An element $a \in A$ is a {normal form} if there exists no reduction relation to any other element in $A$.
+\end{dfn}
+    
+\begin{dfn}
+  $a \in A$ is \emph{weakly normalizing} if $a \tto b$ for some normal form $b \in A$. 
+  $\to$ is weakly normalizing (WN) if every $a \in A$ is weakly normalizing.  
+\end{dfn}
+\sacomment{A lot of these are near word for word from TeReSe, is that okay?}
+    
+\begin{dfn}
+  $a \in A$ is \emph{strongly normalizing} if every reduction sequence starting from $a$ is finite. $\to$ is strongly normalizing (SN) if every 
+  $a \in A$ is strongly normalizing. 
+\end{dfn}
 
-    % Arrows
-    \draw[->>] (top) -- (left);
-    \draw[->>] (top) -- (right);
-    \draw[->>] (left) -- (bottom);
-    \draw[->>] (right) -- (bottom);
-\end{tikzpicture}
-\end{center}
+The above definition of SN is taken from TeReSe. We make use of the alternative definition presented in TeReSe ($\leftarrow$ is accessibly well founded) when working in Agda.  
+
+If $\to$ is a reflexive, transitive and symmetric relation we denote it $\to^=$.
 
 \begin{dfn}
-
+  A reduction relation $\to$ has the \emph{normal form property} (NFP) if 
+ $a \to^= b$  $\implies$
+ $a \tto b$, for all $a \in A$ and any normal form $b \in A$. 
 \end{dfn}
 
-\subsubsection{Strongly Normalizing}
-\begin{center}
-    In TeReSe: $a \in A$ is \textit{strongly normalizing} if every reduction sequence starting from $a$ is finite. The reduciton relation $\rightarrow$ is \textit{strongly normalizing} (SN) if every $a \in A$ is strongly normalizing.
-\end{center}
-Go through different proofs Here
+$a, b \in A$ being equivalent is denoted $a \equiv b$. 
+
+\begin{dfn}
+  $\to$ has the \emph{unique normal form property} (UN) if 
+  $a \to^= b$  $\implies$
+  $a \equiv b$, for all $a \in A$ and any normal form $b \in A$. 
+\end{dfn}
+
+\begin{dfn}
+  $\to$ has the \emph{unique normal form property with respect to reduction} (UN$^ \to$) if 
+  $a \twoheadleftarrow  \cdot  \tto b$  $\implies$ $a \equiv b$, for all normal forms $a,b \in A$. 
+\end{dfn}
+
+\begin{dfn}
+  A \emph{sequence} is a relation from the natural numbers onto a set: $\nat \to A$.
+\end{dfn}
+
+\begin{dfn}
+  A sequence is \emph{increasing} if every term is greater than (\sacomment{or equal to?}) its previous term.
+\end{dfn}
+
+\begin{dfn}
+  A sequence is \emph{$\omega$-bounded} if there exists an element $a$ to which all elements of the sequence 
+  reduce. 
+\end{dfn}
+
+\begin{figure}[h]
+  \centering 
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
+
+
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $a$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+      \caption{An example of an $\omega$-bounded sequence.}
+
+    \end{figure}
+
+
+\begin{dfn}
+  $a \in A$ has the \emph{recurrence property} if $a \tto b \implies b \tto a$ for all $b \in A$. 
+\end{dfn}
+\sacomment{I've been using $\tto$ as interchangable with $R *$ (as in the above definition). 
+Is that okay or am I going to have to clarify why they are interchangable (are they not interchangable?)?}
+
+\begin{dfn}
+  $\to$ has the \emph{recurrence property} (RP) if there is an increasing sequence $f$ in $A$ with an $\omega$-bound and 
+  there is an element of the sequence that has the recurrence property. 
+\end{dfn}
+
+    \begin{figure}[h]
+      \centering 
+      \begin{tikzpicture}
+          % Define the nodes inside the region f
+          \node (f0) at (0, 0) {$f_0$};
+          \node (f1) at (1, 0) {$f_1$};
+          \node (dots) at (2, 0) {$...$};
+          \node (fi) at (3, 0) {$f_i$};
+          \node (fi+1) at (4, 0) {$f_{i+1}$};
+          \node (dots2) at (5,0) {$...$};
+    
+          % Draw the arrows between the nodes inside the region f
+          \draw[->] (f0) -- (f1);
+          \draw[->] (f1) -- (dots);
+          \draw[->] (dots) -- (fi);
+          \draw[->] (fi) -- (fi+1);
+          \draw[->] (fi+1) -- (dots2);
+        
+    
+          % Define the nodes outside the region f
+          \node (a) [below=of dots, yshift=-.25cm] {\parbox{1cm}{\centering $a$ }};
+    
+              % Draw the arrows between the nodes inside and outside the region f sds
+    
+              \draw[->>] (f0) to [bend right] (a);
+              \draw[->>] (f1) to [bend right] (a);
+              \draw[->>] (dots) -- (a);
+              \draw[->>] (fi) to [bend left=10] (a);
+              \draw[->>] (fi+1) to [bend left] (a);
+              \draw[->>] (dots2) to [bend left] (a); 
+              \draw[->>] (a) to [bend left=10] (fi);
+    
+          \end{tikzpicture}
+          \caption{An example of a relation with the recurrence property.}
+
+        \end{figure}
+\begin{dfn}
+  $\to$ has the \emph{recurrence property -} (RP-)  if there is an increasing sequence $f$ in $A$ with an $\omega$-bound $a$ and 
+  there is an element $i$ of the sequence such that $a \tto f (i)$.
+\end{dfn}
+    
+    
+\begin{dfn}
+  \emph{Cofinality property}
+\end{dfn}
+\sacomment{Still not sure on how to define cofinality.}
+
+\begin{dfn}
+  $\to$ is \emph{finitely branching} (FB) if, for all $a \in A$, the set of one step reducts of $a$ is finite. 
+\end{dfn}
+
 
 \subsection{Newmans lemma}
 What it is and the different definitions again
