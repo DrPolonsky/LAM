@@ -10,6 +10,15 @@ data ℕ : Set where
   succ : ℕ → ℕ
 {-# BUILTIN NATURAL ℕ #-}
 
+add : ℕ → ℕ → ℕ
+add zero y = y
+add (succ x) y = succ (add x y)
+
+max : ℕ → ℕ → ℕ
+max zero y = y
+max x zero = x
+max (succ x) (succ y) = succ (max x y)
+
 Fin : ℕ → Set
 Fin zero = ⊥
 Fin (succ n) = ↑ (Fin n)
@@ -26,6 +35,11 @@ data 𝔹 : Set where
   true : 𝔹
   false : 𝔹
 
+le : ℕ → ℕ → 𝔹
+le zero y = true
+le (succ x) zero = false
+le (succ x) (succ y) = le x y
+
 if_then_else_ : ∀ {A : Set} → 𝔹 → A → A → A
 if true  then x else y = x
 if false then x else y = y
@@ -38,6 +52,8 @@ or x y = if x then true else y
 not : 𝔹 → 𝔹
 not x = if x then false else true
 
+eqℕ : ℕ → ℕ → 𝔹
+eqℕ x y = and (le x y) (le y x)
 
 -- Lists
 -- ∷ is \::
@@ -59,6 +75,10 @@ List→ : ∀ {A B : Set} → (A →  B) → List A → List B
 List→ f [] = []
 List→ f (x ∷ xs) = f x ∷ List→ f xs
 
+[1-n] : ℕ → List ℕ
+[1-n] zero = []
+[1-n] (succ n) = (succ n) ∷ [1-n] 0
+
 foldList : ∀ {A B : Set} → B → (A → B → B) → List A → B
 foldList z f [] = z
 foldList z f (x ∷ xs) = f x (foldList z f xs)
@@ -77,6 +97,10 @@ lazyProd xs [] = []
 lazyProd [] ys = []
 lazyProd (x ∷ xs) (y ∷ ys) = (x , y) ∷ merge (lazyProd xs (y ∷ ys))
                   (List→ (λ z → (x , z)) ys)
+
+filter : ∀ {A} → (A → 𝔹) → List A → List A
+filter f [] = []
+filter f (x ∷ xs) = if f x then (filter f xs) else x ∷ (filter f xs)
 
 elem : ∀ {A} → (A → A → 𝔹) → A → List A → 𝔹
 elem dA a [] = false
