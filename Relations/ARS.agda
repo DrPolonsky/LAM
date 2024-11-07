@@ -211,6 +211,9 @@ module Termination (R : 𝓡 A)  where
   isSemicomplete = UN × WN
 
   -- Miscelaneous properties
+  is_ω-bound_ : (f : ℕ → A) → A → Set
+  is_ω-bound_ f a = ∀ n → (R ⋆) (f n) a 
+
   ω-bounded : Set
   ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (∀ n → (R ⋆) (f n) a)
 
@@ -359,8 +362,17 @@ module Miscellaneous (R : 𝓡 A) where
   RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
   ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
 
-  -- Not provable, see counterexample
-  -- RP-→RP : RP- → RP
+  RP-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
+          → Σ[ i ∈ ℕ ] ((R ⋆) a (f i) → ∀ x → (R ⋆) (f i) x → is_ω-bound_ R f x )
+  RP-lemma f f-inc a aisω-bound = 0 ,, (λ R*af₀ y R*f₀y n → (aisω-bound n) ⋆!⋆ (R*af₀ ⋆!⋆ R*f₀y)) 
+
+  -- Not provable? Make a counterexample
+  RP-→RP : RP- → RP                                                     -- want to show that any y reachable by fi must be an omega bound, and therefore (by rp-) rp holds
+  RP-→RP RP- f f-inc a aisω-bound with RP- f f-inc a aisω-bound 
+  ... | i ,, R*ai = i ,, proof
+    where   proof : (x : A) (R*fᵢx : (R ⋆) (f i) x) → (R ⋆) x (f i)
+            proof  with RP-lemma f f-inc a aisω-bound
+            ... | j ,, rplem = {!  RP-→RP !} 
 
   -- Sam believes there is a counterexample!
   RP-∧WCR→RP : RP- → WCR R → RP
