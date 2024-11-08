@@ -453,6 +453,102 @@ module JX=1+2X+X² where
   check'' : Set
   check'' = {! List→ J²→𝕁² (List→ J→J²v7 (take 100 (allJ 6)))  !}
 
+module N=N+N where
+  f : ADT 1
+  f = 𝟏 ⊔ 𝕧₀
+
+  g : ADT 1
+  g = 𝟏 ⊔ 𝟏 ⊔ 𝕧₀
+
+  F : ADT 0
+  F = μ f
+
+  G : ADT 0
+  G = μ g
+
+  gF=F : Iso (g [ F ]) F
+  gF=F = ~~ (fix≃ _ =!= += (fix≃ _) )
+
+  gF=Fv2 : Iso (g [ F ]) F
+  gF=Fv2 = a+ ~!= (=+ c+ =!= a+= gF=F )
+
+  gF=Fv3 : Iso (g [ F ]) F
+  gF=Fv3 = {!   !}
+
+  G→F : ⟦ G ⟧ Γ₀ → ⟦ F ⟧ Γ₀
+  G→F = RigFold g F gF=F
+
+  G→Fv2 : ⟦ G ⟧ Γ₀ → ⟦ F ⟧ Γ₀
+  G→Fv2 = RigFold g F gF=Fv2
+
+  data 𝔾 : Set where
+    Z : 𝔾
+    Z' : 𝔾
+    S : 𝔾 → 𝔾
+
+  𝔾→G : 𝔾 → ⟦ G ⟧ Γ₀
+  𝔾→G Z = lfp (in2 (in1 tt))
+  𝔾→G Z' = lfp (in1 tt)
+  𝔾→G (S x) = lfp (in2 (in2 (𝔾→G x) ) )
+
+  F→ℕ : ⟦ F ⟧ Γ₀ → ℕ
+  F→ℕ (lfp (in1 tt)) = 0
+  F→ℕ (lfp (in2 x)) = succ (F→ℕ x)
+
+  ℕ→𝔾 : ℕ → 𝔾
+  ℕ→𝔾 zero = Z
+  ℕ→𝔾 (succ zero) = Z'
+  ℕ→𝔾 (succ (succ n)) = S (ℕ→𝔾 n )
+
+  ℕ→G : ℕ → ⟦ G ⟧ Γ₀
+  ℕ→G = 𝔾→G ∘ ℕ→𝔾
+
+  [1-n]G : ℕ → List (⟦ G ⟧ Γ₀)
+  [1-n]G zero = []
+  [1-n]G (succ n) = ℕ→G n ∷ [1-n]G n
+
+  check5 : Set
+  check5 = {! List→ (F→ℕ ∘ G→F) ([1-n]G 30)  !}
+
+module PX=X^2+1 where
+  p : ADT 1
+  p = 𝕧₀ ² ⊔ 𝟏
+
+  Ψ : ADT 1
+  Ψ = p ⊔ 𝕧₀
+
+  ϕ : ADT 1
+  ϕ = Num 3 × p ⊔ 𝕧₀
+
+  μϕ : ADT 0
+  μϕ = μ ϕ
+
+  μΨ : ADT 0
+  μΨ = μ Ψ
+
+  ϕμΨ=μΨ : Iso (ϕ [ μΨ ]) (μΨ)
+  ϕμΨ=μΨ = =+ (dr= (cong+= i×l (dr= (cong+= i×l (dr= (cong+= i×l al i+r) ) !!) ) !!) ) =!= a+= (+= (a+= (+= (a+= (~~ (fix≃ Ψ =!= a+ ) ) ) =!= ~~ (fix≃ Ψ) ) ) =!= ~~ (fix≃ Ψ) )
+
+  μϕ→μΨ : ⟦ μϕ ⟧ Γ₀ → ⟦ μΨ ⟧ Γ₀
+  μϕ→μΨ = RigFold ϕ μΨ ϕμΨ=μΨ
+
+  Enum : Set → Set
+  Enum A = List A
+
+  EnumEnv : ∀ {n} → SetEnv n → Set
+  EnumEnv Γ = ∀ x → Enum (Γ x)
+
+  {-# TERMINATING #-}
+  EnumADT : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → Enum (⟦ e ⟧ Γ)
+  EnumADT (𝕍 x) Γ GG = GG x
+  EnumADT 𝟎 Γ GG = []
+  EnumADT 𝟏 Γ GG = tt ∷ []
+  EnumADT (e1 × e2) Γ GG = lazyProd (EnumADT e1 Γ GG) ((EnumADT e2 Γ GG))
+  EnumADT (e1 ⊔ e2) Γ GG = (List→ in1 (EnumADT e1 Γ GG)) ++ (List→ in2 (EnumADT e2 Γ GG))
+  EnumADT (μ e) Γ GG with EnumADT e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ) ) (io𝓟 _ GG (EnumADT (μ e) Γ GG))
+    -- where f = λ { (i x) → GG x ; o → EnumADT (μ e) Γ GG }
+  ... | c = List→ lfp c
+
 module 1+X²=1+X+X³ where
   -- The explicitly defined version
   data BT : Set where
