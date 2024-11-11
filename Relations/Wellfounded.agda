@@ -1,9 +1,9 @@
 {-# OPTIONS --allow-unsolved-metas #-}
-
 open import Logic
 open import Predicates
 open import Relations.Core
 open import Datatypes
+open import Classical
 
 {- 2024.06.28.
   Questions to investigate.
@@ -51,6 +51,10 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFmin : Set₁
   isWFmin = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∈ P → Σ[ m ∈ A ] is_-_-minimal_ P m
 
+  -- Like isWFmin, but restricted to ¬¬-closed predicates
+  isWFmin₀ : Set₁
+  isWFmin₀ = ∀ (P : 𝓟 A) → ¬¬Closed P → ∀ {a : A} → a ∈ P → Σ[ m ∈ A ] is_-_-minimal_ P m
+
   is_-increasing_ : 𝓟 (ℕ → A)
   is_-increasing_ s = ∀ n → R (s n) (s (succ n)) -- xₙ < xₙ₊₁
 
@@ -76,7 +80,7 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFseq- = ∀ (s : ℕ → A) → ¬ (is_-decreasing_ s)
 
   -- A positive variation of isWFmin
-  -- What about restricting P to ¬¬-closed predicates?
+  -- What about restricting P to ¬¬-closed predicates instead?
   isWFmin+ : Set₁
   isWFmin+ = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∉ P → Σ[ m ∈ A ] (m ∉ P × (∀ x → R x m → P x) )
 
@@ -105,12 +109,16 @@ module WFImplications {A : Set} (R : 𝓡 A) where
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-  isWFacc→isWFmin+ : isWFind R → isWFmin+ R
-  isWFacc→isWFmin+ RisWFacc P {a} a∉P = {!   !}
+  -- The status of isWFmin+ ??
+  isWFmin+→isWFmin₀ : isWFmin+ R → isWFmin₀ R
+  isWFmin+→isWFmin₀ RisWFmin+ P ∁∁P⊆P {a} a∈P with RisWFmin+ (∁ P) (λ a∉P → a∉P a∈P)
+  ... | x ,, ¬¬x∈P , xmin = (x ,, ∁∁P⊆P x ¬¬x∈P , λ y y∈P Ryx → xmin y Ryx y∈P )
 
+  -- Remark.  The converse of this is exactly the DNS for accessibility
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc R) → isWFacc- R
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx     → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )
 
+  -- Remark.  The converse of this is exactly the DNS for φ
   ¬¬isWFind→isWFind- : ¬¬ isWFind R → isWFind- R
   ¬¬isWFind→isWFind- ¬¬WFiR   = λ φ φind x ¬φx → ¬¬WFiR (λ isWFiR → ¬φx (isWFiR φ φind x) )
 
@@ -164,13 +172,31 @@ open WFImplications public
 module ClassicalImplications {A : Set} (R : 𝓡 A) where
   -- 1. Implications relying on decidability of minimality
 
+  isDec : Set
+  isDec = ∀ x y → R x y ⊔ ¬ R x y
+
+  isMin : 𝓟 A
+  isMin x = (∀ y → ¬ R y x)
+
   -- Decidability of being R-minimal, for a given element
   isMinDec : A → Set
-  isMinDec x = (Σ[ y ∈ A ] R y x) ⊔ (∀ y → ¬ R y x)
+  isMinDec x = (Σ[ y ∈ A ] R y x) ⊔ isMin x
 
   -- Decidability of being R-minimal, globally
   decMin : Set
   decMin = ∀ x → isMinDec x
+
+  isWFacc→isWFseq : isDec → isWFacc R → isWFseq R
+  isWFacc→isWFseq dR wfAcc s = f s (s zero) (wfAcc (s zero)) refl where
+    f : ∀ (s : ℕ → A) (x : A) (x-acc : is R -accessible x) (x=s0 : x ≡ s zero)
+              → Σ[ k ∈ ℕ ] (¬ R (s (succ k)) (s k))
+    f s x (acc xa) x=s0 with dR (s 1) x
+    ... | in2 ¬Ryx = 0 ,, λ Rs1s0 → ¬Ryx (transp (R (s 1)) (~ x=s0) Rs1s0)
+    ... | in1  Ryx with f (s ∘ succ) (s 1) (xa (s 1) Ryx) refl
+    ... | i ,, p = succ i ,, p
+
+  isWFind→isWFseq : isDec →  isWFind R → isWFseq R
+  isWFind→isWFseq dR wfInd = isWFacc→isWFseq dR (isWFind→isWFacc R wfInd)
 
   -- Even with the global decidability assumption, this is not yet provable
   isWFacc→isWFmin : decMin → isWFacc R → isWFmin R
@@ -180,16 +206,48 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     ... | in1 (y ,, Ryx) = {! f y (xac y Ryx)   !}
     ... | in2 xIsMin = λ x∈P → (x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx ))
 
-  -- -- An additional condition for proving the above implication
+  decMin→isWFacc→isWFmin₀ : decMin → isWFacc R → isWFmin₀ R
+  decMin→isWFacc→isWFmin₀ dM RisWFacc P ¬¬P→P {d} d∈P = f d (RisWFacc d) d∈P where
+    f : ∀ x → is R -accessible x → x ∈ P → Σ[ a ∈ A ] is R - P -minimal a
+    f x (acc xac) x∈P with dM x
+    ... | in2 xIsMin = x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx)
+    -- ... | in1 (y ,, Ryx) = λ px → f y (xac y Ryx) (¬¬P→P {!   !} {!   !} )
+    ... | in1 (y ,, Ryx) = f y (xac y Ryx) (¬¬P→P y λ ¬Py → {!   !} )
+    -- Missing piece: deciding whether ∃y.(Rxy × Py)
+    -- If yes, that would give the rec. call.  Otherwise, the min. elt. is x.
+    -- Don't see how decidability of P can be avoided if we want an explicit witness.
+
+  -- -- An additional condition for proving the converse implication
   CoInd : 𝓟 A → Set
   CoInd P = ∀ x → ¬ (P x) → Σ[ y ∈ A ] (R y x × ¬ P y)
-
-  open import Classical
 
   CoInd→Ind : ∀ (P : 𝓟 A) → ¬¬Closed P → CoInd P → is R -inductive P
   CoInd→Ind P ¬¬cP ciP x IHx = ¬¬cP x (λ ¬px → f (ciP x ¬px) ) where
     f : Σ[ y ∈ A ] (R y x × ¬ P y) → ⊥
     f (y ,, Ryx , ¬Py) = ¬Py (IHx y Ryx)
+
+  isWFmin₀→isWFind- : isWFmin₀ R → isWFind- R
+  isWFmin₀→isWFind- RisWFmin φ φ-ind a₀ ¬φa₀
+    with RisWFmin (∁ φ) (λ x ¬¬¬φx φx → ¬¬¬φx (λ n → n φx)) ¬φa₀
+  ... | (a ,, ¬φa , Rxa→¬¬φx) = {!   !}
+    -- Missing piece: double-negation shift to go from
+    --  ¬(∀y.Ryx→φy) to ¬(∀y.Ryx→¬¬φy)
+
+  isWFmin₀→Coind→∀¬¬φ : isWFmin₀ R → ∀ (φ : 𝓟 A) → CoInd φ → ∀ a → ¬¬ φ a
+  isWFmin₀→Coind→∀¬¬φ RisWFmin φ φ-coind a₀ ¬φa₀
+    with RisWFmin (∁ φ) (λ x ¬¬¬φx φx → ¬¬¬φx (λ n → n φx)) ¬φa₀
+  ... | (a ,, ¬φa , Rxa→¬¬φx) with φ-coind a ¬φa
+  ... | (b ,, Rba , ¬φb) = Rxa→¬¬φx b ¬φb Rba
+
+  -- isWFind→isWFmin₀ : isWFind R → ∀ (P : 𝓟 A) → CoInd P → ¬¬
+  -- isWFind→isWFmin₀ RisWFi P ¬¬P→P {a₀} =
+  --   let φ = ∁ P
+  --       ¬¬φ→φ : ¬¬Closed φ
+  --       ¬¬φ→φ = λ x z z₁ → z (λ z₂ → z₂ z₁)
+  --       φ-ind : is R -inductive φ
+  --       φ-ind a H pa =  ¬¬φ→φ a (λ ¬¬pa → {!   !} ) pa
+  --       WFφ = {! RisWFi φ φ-ind   !}
+  --    in {!   !}
 
   isWFind→isWFmin : decMin → isWFind R → isWFmin R
   isWFind→isWFmin dM RisWFind P d∈P = RisWFind φ φ-ind _ d∈P where
@@ -202,6 +260,13 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
         φ-ind x H x∈P with dM x
         ... | in1 (y ,, Ryx) = {!   !}
         ... | in2 xRmin = x ,, x∈P , (λ x _ → xRmin x)
+
+  isWFmin₀→isWFseq : isWFmin₀ R → isWFseq R
+  isWFmin₀→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) ¬¬CP {s zero } (zero ,, refl)
+    where ¬¬CP = {!   !}
+  ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
+
+
 
 
   dMseq : decMin → A → ℕ → A
