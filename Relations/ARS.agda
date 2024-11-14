@@ -263,7 +263,7 @@ module ReductionClosureProperties (R : 𝓡 A) where
   -- Same counterexample
 
   -- WCR∧WN↓→WN : WCR R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
-  -- WCR∧WN↓→WN R-WCR R- x₂ = {!   !} 
+  -- WCR∧WN↓→WN R-WCR R- x₂ = {!   !}
 
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
   UN↓⊆UN isR-UNx R*xy n∈NF z∈NF R*yn R*yz = isR-UNx n∈NF z∈NF (R*xy ⋆!⋆ R*yn) (R*xy ⋆!⋆ R*yz)
@@ -471,9 +471,17 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
   ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !}
 
-  -- Classical proof in the report
-  iii :  WN R → WCR R → RP R → isWFseq- (~R R)
-  iii wnR wcrR rp s sIsRdec = {!  !}
+  -- Stronger version of the above
+  -- This reminds me of deMorgan from early WF file
+  x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
+  x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
+
+  ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
+  ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
+
+  -- -- Classical proof in the report
+  -- iii :  WN R → WCR R → RP R → isWFseq- (~R R)
+  -- iii wnR wcrR rp s sIsRdec = {!  !}
 
   preSN : 𝓟 A
   preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
@@ -484,9 +492,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
   -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
 
-  ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
-  ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
-
   preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
                           → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
   preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→⊥ x∉SN x∈NF)
@@ -495,15 +500,37 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n
   ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn))
 
-  -- This reminds me of deMorgan from early WF file
-  x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
-  x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
-
   SN→WFacc : SN R → isWFacc (~R R)
   SN→WFacc RisSN x = RisSN x
 
   acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
+
+  preSNlemma2 : dec (is_-SN_ R) → ∀ {x} {n} → preSN x → is R -NF n → (R ⋆) x n
+                → Σ[ y ∈ A ] (preSN y × ((R ⁺) x y × (R ⋆) y n))
+  preSNlemma2 SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF R*xn
+    with preSNlemma1 SNdec x∉SN n∈NF R*xn
+  ... | y ,, y∉SN , ((Rxz ,⋆ R*zy) , R*yn) = y ,, y∉SN , (RR⋆⊆R⁺ R Rxz R*zy , R*yn)
+  ... | y ,, y∉SN , (ε⋆ , R*yn) with x∉SN→∃y∉SN {x} x∉SN
+  ... | z ,, z∉SN , Rxz with preSNlemma1 SNdec z∉SN n∈NF R*zn
+    where R*zn = ? 
+  ... | w ,, w∉SN , (R*zw , R*wn) = w ,, w∉SN , (RR⋆⊆R⁺ R Rxz R*zw , R*wn)
+
+  -- x∉SN→preSNseq : ∀ {x n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
+  --   → Σ[ s ∈ (ℕ → A) ] (is (R ⁺) -increasing s × (∀ i → (R ⋆) (s i) n × preSN (s i)))
+  -- x∉SN→preSNseq {x} x∉SN = (s ,, sIsRinc) where
+  --   s : ℕ → A
+  --   s⊆∁SN : ∀ n → ¬ (is R -SN (s n))
+  --   s zero = x
+  --   s (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+  --   ... | (y ,, y∉SN , Rsny) = y
+  --   s⊆∁SN zero = x∉SN
+  --   s⊆∁SN (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+  --   ... | (y ,, y∉SN , Rsny) = y∉SN
+  --   sIsRinc : is R -increasing s
+  --   sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
+  --   ... | (y ,, y∉SN , Rsny) = Rsny
+
 
   -- have this
   -- WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
@@ -567,6 +594,18 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
 -- Useful dead-ends
 
+-- ** AN INTERESTING ONE!!
+  iii-lemma :  WN R → weakly-confluent R → bounded R
+  iii-lemma wnR wcrR f f-inc with wnR (f 0)
+  ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
+          ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
+          ρ zero = R*f0n
+          ρ (succ n) = {!   !}
+          -- iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n ) -- note iii-lemma2 is not yet proven
+
+
+-- The rest go into "counterexamples"
+-- A variation of the below, with the second normal form being a loop
   NFisωBnd : WCR R → ∀ (f : ℕ → A) → is R -increasing f → ∀ a → is R -NF a
                → (R ⋆) (f 0) a → ∀ n → (R ⋆) (f n) a
   NFisωBnd RisWCR f f-inc a a∈NF R*f0a zero = R*f0a
@@ -574,6 +613,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     with NFisωBnd RisWCR f f-inc a a∈NF R*f0a n
   ... | ε⋆ = ∅ (a∈NF (f (succ n)) (f-inc n) )
   ... | Rfny ,⋆ R*ya = {!   !}
+  --  NFisωBnd RisWCR (f ∘ succ) (λ i → f-inc (succ i) ) a a∈NF {!   !} {!   !}
 
 -- False; see the usual counterexample to WCR→CR
   iii-lemma1 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
@@ -584,20 +624,13 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     with wcrR (a ,, Ray , Raz)
   ... | (d ,, R*yd , R*zd) = {!    !}
 
-
+  -- Same; see counterexample to WCR→CR
   iii-lemma2 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
   iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
   iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
   ... | (d ,, R*yd , R*cd) = {! iii-lemma2 wcrR _ b b∈NF R*yb    !}
   -- with iii-lemma2 wcrR y b b∈NF R*yb
   -- ... | z = {!   !}
-
-  iii-lemma :  WN R → weakly-confluent R → bounded R
-  iii-lemma wnR wcrR f f-inc with wnR (f 0)
-  ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
-          ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
-          ρ zero = R*f0n
-          ρ (succ n) = iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n ) -- note iii-lemma2 is not yet proven
 
 
  -- To be deleted?
@@ -661,4 +694,3 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
- 

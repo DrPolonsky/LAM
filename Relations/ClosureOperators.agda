@@ -141,6 +141,10 @@ module ClosureOpsInclusions (R : 𝓡 U) where
     TC- x y (in2 (axʳ Rxy)) = ax⋆ R Rxy
     TC- a .a (in2 εʳ) = ε⋆
 
+  RR⋆⊆R⁺ : ∀ {x} {y} {z} → R x y → (R ⋆) y z → (R ⁺) x z
+  RR⋆⊆R⁺ {x} {y} {.y} Rxy ε⋆ = ax⁺ Rxy
+  RR⋆⊆R⁺ {x} {y} {z}  Rxy (Ryw ,⋆ R*wz) = Rxy ,⁺ RR⋆⊆R⁺ Ryw R*wz
+
 open ClosureOpsInclusions public
 
 -- Closure operations and groupoid operations
@@ -168,7 +172,7 @@ module ClosureAndGroupoidOps {R : 𝓡 U} where
   ~⁼ :  ∀ {x y : U} → (R ⁼) x y → (R ⁼) y x
   ~⁼ ε⋆ = ε⋆
   ~⁼ (Rˢxy₁ ,⋆ Rˢ*y₁y) = ( ~⁼ Rˢ*y₁y) ⁼!⁼ ˢ⊆⁼ R (~ˢ Rˢxy₁)
-  
+
   ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
   ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
 

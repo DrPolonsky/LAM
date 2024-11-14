@@ -2,6 +2,9 @@
 
 \input{macros}
 
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\quad\ding{51}}%
+\newcommand{\xmark}{\quad\ding{55}}%
 
 \begin{document}
 
@@ -10,7 +13,7 @@ This document aims to bring together the various notes from report, rewriting qs
 \section{Todo}
 \subsection*{Week starting 11th November}
 \begin{enumerate}
-  \item In the report, give a classical proof that the $Inc$ Property
+  \item[\cmark] In the report, give a classical proof that the $Inc$ Property
   implies that no $R$-increasing sequence is bounded.
 
   Conclude that every relation satisfying $Inc$ also satisfies $RP$.
@@ -20,13 +23,13 @@ This document aims to bring together the various notes from report, rewriting qs
   \item Complete the proof in ARS.agda of Theorem 1.2.3.(iii)
   \item Organize notes.tex into three sections: TODO, Open Qs, What we've proved. Make sure all notes from the other
   tex files are sorted here correctly.
-  \item Tidy up and standardize the notation used in ars.agda and other agda files 
-  \item Carry on working through report.tex.  
-  \item 
+  \item Tidy up and standardize the notation used in ars.agda and other agda files
+  \item Carry on working through report.tex.
+  \item
 \end{enumerate}
 \subsection*{General todo}
 \begin{enumerate}
-   
+
   \item  Make the first argument to "being a normal form" implicit?
   \item Define WNFP to be:
   \[\forall a b c \to b \in NF \to a R^* b \to a R^* c \to c R^* b \]
@@ -37,7 +40,7 @@ This document aims to bring together the various notes from report, rewriting qs
   \item Define: Inc
   \item Define: Ind
   \item Define: $\mathrm{CR}^{\le 1}$
-  \item capture all classical properties/asssumptions we might want to use and justify their use. 
+  \item capture all classical properties/asssumptions we might want to use and justify their use.
   \item Principles we are considering
   \begin{itemize}
     \item Decidability of equality on $A$
@@ -51,13 +54,13 @@ This document aims to bring together the various notes from report, rewriting qs
     \item Markov's principle:
     \begin{itemize}
       \item In $wfMin_0 \to wfSeq$.
-  
+
       Given a sequence $s : \nat \to A$, let $E(a) = \exists n \in \nat. s n \equiv a$.
-  
+
       Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
       \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
             \to \big(\exists n \in \nat. s n \equiv a\big)\]
-  
+
     \end{itemize}
   \end{itemize}
   \item Write a guide to the code
@@ -152,28 +155,28 @@ This document aims to bring together the various notes from report, rewriting qs
    Markov's principle, etc.
    \textsc{Remark.}
    $\lnot\lnot$-closure of accessibility should solve problems 1 and 4.
- 
+
 
 
 \end{enumerate}
 
-\newpage 
+\newpage
 \section{What has been proven}
 \begin{itemize}
   \item \sacomment{List all the constructive proofs we've put together!}
   \item SN implies bounded
   \item RP- implies RP
   \item The infinite haircomb refutes $WN \land RP \to \omega$-bounded.  But it is not WCR.
-  \item We have formalized proposition 1.1.9, 1.1.10, 1.1.11 from [TeReSe]. 
+  \item We have formalized proposition 1.1.9, 1.1.10, 1.1.11 from [TeReSe].
   \item We have a proof for Theorem 1.2.1 (Newlman's Lemma) (though we have just one proof of multiple possible proofs).
   \item We have a proof for all parts of Theorem 1.2.2
-  \item We have a proof for Theorem 1.2.3 i, iv. 
-  \item Reduction closure properties for SN, NF, UN, recurrent property. 
+  \item We have a proof for Theorem 1.2.3 i, iv.
+  \item Reduction closure properties for SN, NF, UN, recurrent property.
 
   So, does $WN, RP, WCR$ imply $\omega$-bounded?
   Answer: yes, that is what we have proved classically.
 \end{itemize}
-  
+
 
 
 

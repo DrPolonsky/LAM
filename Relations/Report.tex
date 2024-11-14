@@ -31,7 +31,7 @@ with minimal adaptations for consistency.
 A relation $R$ from the set $R_\alpha$ is refered to as a reduction (or rewrite) relation. For example, if we specify $R$ as the relation of being 'less than' ($<$) then $R\, 4\, 2$. \textcolor{red}{Right?}
 \apcomment{Yes, but move this to a(n eventual) list of examples.}
 
-We use $R$ or $\to$ for a single-step reduction and $R^*$ or $\tto$ for a multi-step reduction. 
+We use $R$ or $\to$ for a single-step reduction and $R^*$ or $\tto$ for a multi-step reduction.
 
 \sacomment{Should we be using $R^+$ rather than $R^*$?}
 
@@ -41,14 +41,14 @@ When $(a,b) \in \tto_\alpha$, we say that there is a multi-step $\alpha$-reducti
 from $a$ to $b$.}
 
 \begin{dfn}
-  An element $a \in A$ is \emph{R-weakly confluent} ($WCR_R$) if all single step reductions from $a$ can always converge 
-  via multi-step reductions to some common reduct.  
+  An element $a \in A$ is \emph{R-weakly confluent} ($WCR_R$) if all single step reductions from $a$ can always converge
+  via multi-step reductions to some common reduct.
   A relation $R$ is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if every $a \in A$ is R-weakly confluent.
 \end{dfn}
 
 \begin{dfn}
-  An element $a \in A$ is \emph{R-confluent} ($CR_R$) if all multi-step reductions from $a$ can always converge 
-  via multi-step reductions to some common reduct.  
+  An element $a \in A$ is \emph{R-confluent} ($CR_R$) if all multi-step reductions from $a$ can always converge
+  via multi-step reductions to some common reduct.
   A relation $R$ is \emph{confluent} (AKA Church-Rosser (CR)) if every $a \in A$ is R-confluent.
 \end{dfn}
 
@@ -81,7 +81,7 @@ from $a$ to $b$.}
   \draw[->>] (left) -- (bottom);
   \draw[->>] (right) -- (bottom);
 \end{tikzpicture}
-\] 
+\]
 \caption{On the left is an example of a weakly confluent relation. On the right is an example of a confluent relation.}
 \end{figure}
 
@@ -109,17 +109,17 @@ The above definition of SN is taken from [TeReSe]. When working in Agda, we make
 
 A relation $R$ has the following properties when the stated conditions are met:
 \begin{dfn}
-  \emph{reflexive} {- $\forall x \in A : x \to x $}    
+  \emph{reflexive} {- $\forall x \in A : x \to x $}
 \end{dfn}
 \begin{dfn}
-  \emph{transitive} {- $\forall x, y, z \in A : ( x \to y \land y \to z ) \implies x \to z $}    
+  \emph{transitive} {- $\forall x, y, z \in A : ( x \to y \land y \to z ) \implies x \to z $}
 \end{dfn}
 \begin{dfn}
-  \emph{symmetric} {- $\forall x, y \in A : x \to y \implies y \to x$}    
+  \emph{symmetric} {- $\forall x, y \in A : x \to y \implies y \to x$}
 \end{dfn}
 
 \begin{dfn}
-  The \emph{closure} of $R$ is the smallest relation that contains $\to$ and satisfies a given property. 
+  The \emph{closure} of $R$ is the smallest relation that contains $\to$ and satisfies a given property.
 \end{dfn}
 
 \begin{dfn}
@@ -129,10 +129,10 @@ A relation $R$ has the following properties when the stated conditions are met:
   The \emph{symmetric closure} of $R$ is the smallest relation $R^s$ that contains $R$ and is symmetric.
 \end{dfn}
 \begin{dfn}
-  The \emph{transitive closure} of $R$ is the smallest relation $R^+$ that contains $R$ and is transitive. 
+  The \emph{transitive closure} of $R$ is the smallest relation $R^+$ that contains $R$ and is transitive.
 \end{dfn}
 \begin{dfn}
-  The \emph{reflexive transitive closure} of $R$ is the smallest relation $R^*$ that contains $R$ and is both reflexive and transitive. 
+  The \emph{reflexive transitive closure} of $R$ is the smallest relation $R^*$ that contains $R$ and is both reflexive and transitive.
 \end{dfn}
 \begin{dfn}
   The \emph{equivalence relation} of $R$ is the smallest relation $R^=$ that contains $R$ and is reflexive, transitive, and symmetric.
@@ -266,6 +266,32 @@ Is that okay or am I going to have to clarify why they are interchangable (are t
   A relation $R$ is \emph{finitely branching} (FB) if, for all $a \in A$, the set of one step reducts of $a$ is finite.
 \end{dfn}
 
+\subsection{Recurrence property and increasing relations}
+
+In [TeReSe], a relation $R \sse A \times A$ is called \emph{increasing} if there
+exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $x, y \in A$,
+ \[ Rxy \to |x| < |y| \]
+
+\begin{prop}
+  If $R$ is increasing, then no infinite $R$-increasing sequence is bounded.
+\end{prop}
+\begin{proof}
+  Let $(a_i) = a_0 \to a_1 \to a_2 \to \cdots$ be an $R$-increasing sequence
+  and suppose that $(a_i)$ is bounded.  Let $b$ be the bound, so that $a_i \to b$ for all $i$.
+
+  If $m = |b|$ then we have
+  \[ 0 \le |a_0| < |a_1| < |a_2| < \cdots < |a_m| < |b| = m \]
+  % \[ m > |a_m| > |a_{m-1}| > \cdots > |a_0| \ge 0 \]
+  which is a contradiction, since there are only $m-1$ integers strictly less than $m$.
+\end{proof}
+
+It follows that every relation that is increasing in the sense of [TeReSe]
+vacuously satisfies the RP condition.
+
+\begin{cor}
+  If $R$ is increasing, then $R$ has the recurrence property.
+\end{cor}
+
 
 \section{Classical Principles}
 Principles we are considering
@@ -292,11 +318,11 @@ Principles we are considering
 \end{itemize}
 
 \section{Implications}
-We now look into the interrelation of the various properties defined in Section 2. Our aim is to expand on the 
-connections made in Figure 1.8 of [TeReSe] (p.19). 
+We now look into the interrelation of the various properties defined in Section 2. Our aim is to expand on the
+connections made in Figure 1.8 of [TeReSe] (p.19).
 
 \section{Counterexamples}
-The following counterexamples are used to rule out certain implications between properties from holding. 
+The following counterexamples are used to rule out certain implications between properties from holding.
 \sacomment{How should we present this section. Is it enough to have diagrams and a list of what they are a counter to?}
 \subsection*{Counterexample 1}
 \begin{center}
@@ -360,7 +386,7 @@ Counterexample to:
   \begin{tikzcd}
       % Nodes
       \node (x) {x};
-     
+
       % Arrows
       \draw[->, loop] (x) to (x);
   \end{tikzcd}
@@ -374,11 +400,11 @@ Counterexample to:
 \subsection*{Counterexample 4}
   \begin{center}
       \begin{tikzpicture}
-      % Define the nodes 
+      % Define the nodes
       \node (a) at (0, 0) {$a$};
       \node (b) at (1, 0) {$b$};
       \node (dots) at (2, 0) {$...$};
-      
+
       % Draw the arrows
       \draw[->] (a) -- (b);
       \draw[->] (b) -- (dots);
@@ -583,7 +609,7 @@ With the above definitions established we define the notions of well-foundedness
 
   By RP, some term $r$ in the sequence is recurrent.
 
-  Since $r \to^* n$ and $r$ is recurrent, also $n \to^* r$. 
+  Since $r \to^* n$ and $r$ is recurrent, also $n \to^* r$.
 
   But $n$ is a normal form.  So this sequence is empty and $r=n$.
 
