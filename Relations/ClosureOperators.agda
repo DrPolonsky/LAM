@@ -168,6 +168,10 @@ module ClosureAndGroupoidOps {R : 𝓡 U} where
   ~⁼ :  ∀ {x y : U} → (R ⁼) x y → (R ⁼) y x
   ~⁼ ε⋆ = ε⋆
   ~⁼ (Rˢxy₁ ,⋆ Rˢ*y₁y) = ( ~⁼ Rˢ*y₁y) ⁼!⁼ ˢ⊆⁼ R (~ˢ Rˢxy₁)
+  
+  ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
+  ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
+
 open ClosureAndGroupoidOps public
 
 ~ˢ⋆ : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x

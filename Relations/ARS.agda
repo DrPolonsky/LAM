@@ -214,8 +214,8 @@ module Termination (R : 𝓡 A)  where
   is_-_bound_ : (f : ℕ → A) → A → Set
   is_-_bound_ f a = ∀ n → (R ⋆) (f n) a
 
-  ω-bounded : Set
-  ω-bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+  bounded : Set
+  bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
 
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
@@ -262,6 +262,9 @@ module ReductionClosureProperties (R : 𝓡 A) where
   -- WN↓UN→⊆WN : UN→ R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
   -- Same counterexample
 
+  -- WCR∧WN↓→WN : WCR R → ∀ {x} → is R -WN x → ∀ {y} → (R ⋆) x y → is R -WN y
+  -- WCR∧WN↓→WN R-WCR R- x₂ = {!   !} 
+
   UN↓⊆UN : ∀ {x} → is R -UN x → ∀ {y} → (R ⋆) x y → is R -UN y
   UN↓⊆UN isR-UNx R*xy n∈NF z∈NF R*yn R*yz = isR-UNx n∈NF z∈NF (R*xy ⋆!⋆ R*yn) (R*xy ⋆!⋆ R*yz)
 
@@ -269,8 +272,7 @@ module ReductionClosureProperties (R : 𝓡 A) where
   rec↓⊆rec isR-recx R*xy z R*yz with isR-recx z (R*xy ⋆!⋆ R*yz)
   ... | R*zx  = R*zx ⋆!⋆ R*xy
 
-module Newmans-Lemma where
-  -- If R is SN and WCR then R is CR
+module Newmans-Lemma where -- SN ∧ WCR → CR
 
   CR-lemma : ∀ (R : 𝓡 A) → weakly-confluent R → ∀ x → is R -SN x
                → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
@@ -318,10 +320,6 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   i-4 : confluent R → NFP R → UN R
   i-4 confR nfpR = pr2 (i-3 confR)
 
-  -- This belongs in the relations file. Revisit next time.
-  ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
-  ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
-
   lemmaii : WN R → UN R → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
   lemmaii wnR unR x y R⁼xy with wnR x
   ... | nˣ ,, R*xnˣ , nˣ∈NF with wnR y
@@ -332,11 +330,6 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   ii (wnR , unR) {b}{c} peak@(a ,, R*ab , R*ac) with wnR a
   ... | n ,, R*an , n∈NF with Proposition-1-1-10.vi→i (lemmaii wnR unR) peak
   ... | d ,, R*bd , R*cd = d ,, R*bd , R*cd
-
-  -- Move to counterexamples; delete
-  -- Not provable: n <- x -> z
-  -- WN∧UN→CRelem : ∀ x → is R -WN x → is R -UN x → is R -CR x
-  -- WN∧UN→CRelem x x∈WN x∈UN  = Newmans-Lemma.CR→CRelem R (ii ({! x∈WN  !} , {!   !})) x -- Can we do this or am I being too bullheaded in comparing x∈UN and UN etc?
 
   iii : subcommutative R → confluent R
   iii scR {b}{c} peak = Proposition-1-1-10.v→i (λ { b c (a ,, Rab , R*ac) → f b c a Rab R*ac } ) peak  where
@@ -359,8 +352,8 @@ module Miscellaneous (R : 𝓡 A) where
           → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
 
   RP→RP- : RP → RP-
-  RP→RP- RisRP f f-inc b bisω-bound with RisRP f f-inc b bisω-bound
-  ... | i ,, i∈RP = i ,, (i∈RP b (bisω-bound i))
+  RP→RP- RisRP f f-inc b bis-bound with RisRP f f-inc b bis-bound
+  ... | i ,, i∈RP = i ,, (i∈RP b (bis-bound i))
 
   RP-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is R - f bound a)
           →  ∀ i → (R ⋆) a (f i) → ∀ x → (R ⋆) (f i) x → is R - f bound x
@@ -378,9 +371,6 @@ module Miscellaneous (R : 𝓡 A) where
     -- This is actually an if-and-only-if...
     CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R
     CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
-
-    -- Not provable, cite the counterexample 2 here
-    -- WN∧UN→CRelem : ∀ (R : 𝓡 A) → ∀ x → is R -WN x → is R -UN x → is R -CR x
 
     -- Question: what if WN is global?      [***]
     WNg∧UN→CRelem : ∀ (R : 𝓡 A) → WN R → ∀ x → is R -UN x → is R -CR x
@@ -415,9 +405,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   seq-lemma2 f f-inc (succ n) zero = in2 (seq-lemma f f-inc (succ n))
   seq-lemma2 f f-inc (succ n) (succ m) = seq-lemma2 (f ∘ succ) (λ k → f-inc (succ k) ) n m
 
-  -- data _ʳ (R : 𝓡 U) : 𝓡 U where
-  --   axʳ : ∀ {x y : U} → R x y → (R ʳ) x y
-  --   εʳ  : ∀ {x} → (R ʳ) x x
 
   refl-closure-lemma : ∀ (Φ : (∀ x y → (R ʳ) x y → Set))
                          (Φax  : ∀ x y (ρ : R x y) → Φ x y (axʳ ρ))
@@ -440,7 +427,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   wseq-lemma2 f f-winc (succ n) zero = in2 (wseq-lemma f f-winc (succ n))
   wseq-lemma2 f f-winc (succ n) (succ m) = wseq-lemma2 (f ∘ succ) (λ k → f-winc (succ k) ) n m
 
-  i : WN R → UN R → ω-bounded R
+  i : WN R → UN R → bounded R
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
     g : ∀ k → (R ⋆) (f k) n
@@ -449,7 +436,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF _ Rnn₀ )
 
   -- Strengthening i
-  i+ : WN R → UN→ R → ω-bounded R
+  i+ : WN R → UN→ R → bounded R
   i+ RisWN RisUN→ f f-inc  with RisWN (f zero)
   ... | (a ,, R*f0a , a∈NF) = a ,, g where
     g : ∀ k → (R ⋆) (f k) a
@@ -472,7 +459,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
 
   -- Want to prove or disprove!            [ Try to find a counterexample! ***]
-  ii- : WN R → UN R → ω-bounded R → SN R
+  ii- : WN R → UN R → bounded R → SN R
   ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
   ... | RisCR = {!   !}
 
@@ -552,7 +539,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
   ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
   ... | d₀∈SN with x∉SN→infSeq x∉SN
-  ... | (s ,, sIsRInc) with rp- s sIsRInc n {!   !}
+  ... | (s ,, sIsRInc) with rp- s sIsRInc n {!   !} -- Need to find a way to connect this normal form n to the sequence.
   ... | i ,, ε⋆ = ∅ (n∈NF (s (succ i)) (sIsRInc i) )
   ... | i ,, (Rny ,⋆ R*ysᵢ) = ∅ (n∈NF _ Rny )
 
@@ -605,7 +592,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- with iii-lemma2 wcrR y b b∈NF R*yb
   -- ... | z = {!   !}
 
-  iii-lemma :  WN R → weakly-confluent R → ω-bounded R
+  iii-lemma :  WN R → weakly-confluent R → bounded R
   iii-lemma wnR wcrR f f-inc with wnR (f 0)
   ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
           ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
@@ -623,27 +610,27 @@ module Theorem-1-2-3 (R : 𝓡 A) where
      Define R : 𝓡 ℕ∞
             R x y = x < y
      Then R is well-founded, hence dominated by a a well-founded Q := R.
-     Also, R is ω-bounded: Every element of every sequence reduces to a := ∞.
+     Also, R is bounded: Every element of every sequence reduces to a := ∞.
      But R is not SN, for it admits the infinite reduction 0 → 1 → 2 → ⋯
   ---
-  ii : ∀ Q → dominatedByWF R Q → ω-bounded R → SN R -- isWFacc (~R R)
+  ii : ∀ Q → dominatedByWF R Q → bounded R → SN R -- isWFacc (~R R)
   ii Q domRQ bddR = {!   !}
 
   -- The same example shows the weaker version below to be unprovable
   -- (Which is not surprising, since it's classicaly equivalent to the one above.)
-  ii-seq : ∀ Q → dominatedByWF R Q → ω-bounded R → isWFseq- (~R R) -- isWFacc (~R R)
+  ii-seq : ∀ Q → dominatedByWF R Q → bounded R → isWFseq- (~R R) -- isWFacc (~R R)
   ii-seq Q (QisWFacc , R⊆Q) bddR f f-inc =
     let QisWFseq- : isWFseq- (~R Q)
         QisWFseq- = isWFmin-→isWFseq- (~R Q) (isWFacc-→isWFmin- (~R Q) (¬¬isWFacc→isWFacc- (~R Q) λ z → z {!   !} ) )
      in QisWFseq- f (λ n → R⊆Q (f n) (f (succ n)) (f-inc n) )
-  -- ii-seq : ∀ Q → dominatedByWF R Q → ω-bounded R → isWFseq (~R R) -- isWFacc (~R R)
+  -- ii-seq : ∀ Q → dominatedByWF R Q → bounded R → isWFseq (~R R) -- isWFacc (~R R)
   -- ii-seq Q domRQ bddR f with bddR f {!   !}
   -- ... | c = {!   !}
 
   The problem with the above goals is the hypothesis "dominatedByWF R Q".
   It's not useful for proving strong normalization.
-  Intead, we need something that is nearly dual to "ω-bounded".
-  ω-continuous?
+  Intead, we need something that is nearly dual to "bounded".
+  -continuous?
   -}
   -- ind + inc → no infinite sequence
 
@@ -653,14 +640,14 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
   ------------------------
 
-  -- inf→⊥ : ∀ (f : ℕ → A)  → ω-bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
+  -- inf→⊥ : ∀ (f : ℕ → A)  → bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
   -- inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc =
   --                                 let
   --                                 a = f 0
   --                                 (b ,, fnb) = RisWb f FisRinc
   --                                   in {!   !}
 
-  -- CR∧ω∧dom→SN : ∀ Q →  CR R → ω-bounded R → dominatedByWF R Q  → SN R
+  -- CR∧ω∧dom→SN : ∀ Q →  CR R → bounded R → dominatedByWF R Q  → SN R
   -- CR∧ω∧dom→SN Q RisCR Riswb (isWFaccQ , R⊆Q) x = let
   --                                                 inf→⊥ : ∀ (f :  ℕ → A) → is R -increasing f → ⊥
   --                                                 inf→⊥ f fInc = let
@@ -670,7 +657,8 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   --                                                             in {!  !}
   --                                                 in {!   !}
 
-  -- CR∧ω→SN : CR R → ω-bounded R → SN R
+  -- CR∧ω→SN : CR R → bounded R → SN R
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+ 
