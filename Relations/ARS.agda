@@ -217,6 +217,12 @@ module Termination (R : 𝓡 A)  where
   bounded : Set
   bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
 
+  BP : Set
+  BP = bounded
+
+  BP- : Set
+  BP- = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
 
@@ -509,7 +515,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
-  -- For each pre-sn element there is a single step reduct to another pre-sn element. 
+  -- For each pre-sn element there is a single step reduct to another pre-sn element.
   preSNlemma2 : dec (is_-SN_ R) → ∀ {x} {n} → preSN x → is R -NF n → (R ⋆) x n
                 → Σ[ y ∈ A ] (preSN y × ((R ⁺) x y × (R ⋆) y n))
   preSNlemma2 SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF R*xn
@@ -517,7 +523,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | y ,, y∉SN , ((Rxz ,⋆ R*zy) , R*yn) = y ,, y∉SN , (RR⋆⊆R⁺ R Rxz R*zy , R*yn)
   ... | y ,, y∉SN , (ε⋆ , R*yn) with x∉SN→∃y∉SN {x} x∉SN
   ... | z ,, z∉SN , Rxz with preSNlemma1 SNdec z∉SN n∈NF R*zn
-    where R*zn = {!   !} 
+    where R*zn = {!   !}
   ... | w ,, w∉SN , (R*zw , R*wn) = w ,, w∉SN , (RR⋆⊆R⁺ R Rxz R*zw , R*wn)
 
   -- x∉SN→preSNseq : ∀ {x n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n

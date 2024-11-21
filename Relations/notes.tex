@@ -6,11 +6,32 @@
 \newcommand{\cmark}{\quad\ding{51}}%
 \newcommand{\xmark}{\quad\ding{55}}%
 
-\begin{document} 
+\newcommand{\thra}{\twoheadrightarrow}
+\newcommand{\thla}{\twoheadleftarrow}
+\newcommand{\thlra}{{\thla\!\!\thra}}
+
+\begin{document}
 
 This document aims to bring together the various notes from report, rewriting qs, and counterexamples.
 
+\subsection*{November 21}
+
+Four local ``normal form properties'':
+\begin{enumerate}
+  \item $WNFP(a) : \forall n \in NF. (a \tto n) \to \forall b. (a \tto b) \to (b \tto n)$
+    "$a$ all reducts of $a$ reduce to $a$'s normal form, if it exists``
+  \item $NFP(a) : \forall n \in NF. (a \tto n) \to \forall b. (a \thlra b) \to (b \tto n)$
+    "$a$ all converta of $a$ reduce to $a$'s normal form, if it exists``
+  \item $WUN(a) : \forall n m \in NF. (a \tto n) \to (a \tto m) \to n \equiv m$
+    "$a$ is reducible to at most one normal form"
+  \item $UN(a) : \forall n m \in NF. (a \thlra n) \to (a \thlra m) \to n \equiv m$
+    "$a$ is convertible to at most one normal form''
+\end{enumerate}
+
 \section{Todo}
+
+Look at Exercise 1.3.22
+
 \subsection*{Week starting 11th November}
 \begin{enumerate}
   \item[\cmark] In the report, give a classical proof that the $Inc$ Property
