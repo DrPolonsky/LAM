@@ -458,7 +458,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
 
-  -- Want to prove or disprove!            [ Try to find a counterexample! ***]
+  -- Want to prove or disprove!            [ Try to find a counterexample! ***] [Counterexample 5 in report?]
   ii- : WN R → UN R → bounded R → SN R
   ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
   ... | RisCR = {!   !}
@@ -475,6 +475,9 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- This reminds me of deMorgan from early WF file
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
   x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
+
+  x∈SN→∃y∈NF : ∀ {x} → is R -SN x → Σ[ y ∈ A ] (is R -NF y × (R ⋆) x y)
+  x∈SN→∃y∈NF {x} (acc xacc) = {!   !}
 
   ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
   ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
@@ -506,6 +509,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   acc∧WN→NF : ∀ {x} → is R -accessible x → is R -WN x →  Σ[ y ∈ A ] (is R -NF y) -- This is obvious, just coming from the fact that we are WN, not using accessible at all!
   acc∧WN→NF (acc xacc) (n ,, R*xn , n∈NF) = n ,, n∈NF
 
+  -- For each pre-sn element there is a single step reduct to another pre-sn element. 
   preSNlemma2 : dec (is_-SN_ R) → ∀ {x} {n} → preSN x → is R -NF n → (R ⋆) x n
                 → Σ[ y ∈ A ] (preSN y × ((R ⁺) x y × (R ⋆) y n))
   preSNlemma2 SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF R*xn
@@ -513,7 +517,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | y ,, y∉SN , ((Rxz ,⋆ R*zy) , R*yn) = y ,, y∉SN , (RR⋆⊆R⁺ R Rxz R*zy , R*yn)
   ... | y ,, y∉SN , (ε⋆ , R*yn) with x∉SN→∃y∉SN {x} x∉SN
   ... | z ,, z∉SN , Rxz with preSNlemma1 SNdec z∉SN n∈NF R*zn
-    where R*zn = ? 
+    where R*zn = {!   !} 
   ... | w ,, w∉SN , (R*zw , R*wn) = w ,, w∉SN , (RR⋆⊆R⁺ R Rxz R*zw , R*wn)
 
   -- x∉SN→preSNseq : ∀ {x n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n

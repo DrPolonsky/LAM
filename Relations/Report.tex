@@ -18,7 +18,7 @@ The objective of this work has been to both develop a formal understanding of re
 \\
 I have been focussed on Chapter 1 of TeReSe which covers abstract reduction systems (ARS) as well as the appendix (sections 1-3) which provides the necessary mathematical background for the rest of the book (e.g. relations, ordinals, inductive definitions and the Knaster-Tarski lemma). Where the book has made use of classical logic I have investigated the possibility of using constructive alternatives.
 
-\section{Definitions}
+\section{Definitions} \label{section:Definitions}
 The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, theorem 1.2.2 and theorem 1.2.3. Before exploring those proofs the following definitions are essential.
 
 
@@ -197,7 +197,7 @@ Let $A$ be a set.
           \draw[->>] (f1) -- (a);
           \draw[->>] (dots) -- (a);
       \end{tikzpicture}
-      \caption{An example of an bounded sequence.}
+      \caption{An example of a bounded sequence.}
 
     \end{figure}
 
@@ -316,11 +316,72 @@ Principles we are considering
 
   \end{itemize}
 \end{itemize}
-
+  
 \section{Implications}
-We now look into the interrelation of the various properties defined in Section 2. Our aim is to expand on the
-connections made in Figure 1.8 of [TeReSe] (p.19).
+We now look into the interrelation of the various properties defined in Section~\ref{section:Definitions}. Our aim is to expand on the
+connections made in Figure 1.8 of [TeReSe] (p.19). 
 
+The following are the implications we have proven in Agda, along with a reference to the name of the proof in Agda. Where appropriate we indicate
+which classical assumptions were used as part of the proof. 
+
+\begin{itemize}
+  \item SN and WCR $\implies$ CR
+
+\texttt{NewmansLemma : $\mathnormal{\forall}$ \{R : $\mathbb{R}$ A\} $\to$ SN R $\to$ weakly-confluent R $\to$ confluent R}
+
+
+We have also provided a proof elementwise making use of the classical principal 
+about the decidability of $R$ being minimal. 
+
+
+\texttt{SN$\land$UN$\to$CRelem :\newline $\forall$ (R : $\mathbb{R}$ A) $\to$ decMin (~R R) $\to$ $\forall$ x $\to$ is R -SN x $\to$ is R -UN x$\to$ is R -CR x}
+
+\sacomment{How to one line this consistently and in a pretty way?}
+
+\item{CP $\implies$ CR}
+
+\texttt{iv : CP R $\to$ confluent R}
+
+This is theorem 1-2-3 iv in [TeReSe]
+
+\item{WN and UN $\implies$ CR}
+
+\texttt{ii : WN R $\times$ UN R $\to$ confluent R}
+
+This is theorem 1-2-2 ii in [TeReSe]
+
+\item{WN and UN $\implies$ bounded}
+
+\texttt{i : WN R → UN R → bounded R}
+
+\sacomment{Going to have to find a way to neatly represent the implications}
+
+
+\sacomment{note to self, tidy up below with references to agda code}
+
+\item{WN and UN$\to$ $\implies$ bounded}
+
+\item{WN and UN and RP $\implies$ wfSeq - (~ R)}
+\item {CR $\implies$ WCR}
+\item {NF $implies$ UN}
+\item {SN and WCR $\implies$ UN and WN}
+\item {Ind and Inc $\implies$ SN} \sacomment{I don't think we have 
+a proof of this, should we include it, include it with a note that we're taking [TeReSe]'s word on it?}
+\item {WCR, WN, and, Inc $\implies$ SN}
+\item {WCR, WN, and RP $\implies$} 
+\item {CR and NF $\implies$ UN}
+\item {CR $^{\leq1} \implies$ CR}
+
+\end{itemize}
+
+
+
+
+
+
+
+
+\newpage
 \section{Counterexamples}
 The following counterexamples are used to rule out certain implications between properties from holding.
 \sacomment{How should we present this section. Is it enough to have diagrams and a list of what they are a counter to?}
@@ -354,10 +415,10 @@ Counterexample to:
 \begin{center}
   \begin{tikzcd}
       % Nodes
-      \node (x) {x};
+      \node (x) {a};
       \node (n) [left of=x, xshift=-1cm] {n \in NF};
-      \node (y) [right of=x, xshift=1cm] {y};
-      \node (z) [right of=y] {z};
+      \node (y) [right of=x, xshift=1cm] {b};
+      \node (z) [right of=y] {c};
 
       % Arrows
       \draw[->>] (x) -- (n);
@@ -385,36 +446,150 @@ Counterexample to:
 \begin{center}
   \begin{tikzcd}
       % Nodes
-      \node (x) {x};
+      \node (x) {a};
 
       % Arrows
       \draw[->, loop] (x) to (x);
   \end{tikzcd}
-\end{center}
+\end{center} 
 Counterexample to:
 \begin{itemize}
-  \item bounded and RP implies SN
-  \item bounded and RP implies WN
+  \item bounded and RP $\implies$ SN
+  \item bounded and RP $\implies$ WN 
 \end{itemize}
 
 \subsection*{Counterexample 4}
+An infinite sequence
   \begin{center}
       \begin{tikzpicture}
       % Define the nodes
-      \node (a) at (0, 0) {$a$};
-      \node (b) at (1, 0) {$b$};
+      \node (a) at (0, 0) {$f_0$};
+      \node (b) at (1, 0) {$f_1$};
       \node (dots) at (2, 0) {$...$};
 
       % Draw the arrows
       \draw[->] (a) -- (b);
       \draw[->] (b) -- (dots);
-
-
       \end{tikzpicture}
     \end{center}
 Counterexample to:
+\begin{itemize}
+  \item WN
+  \item bounded
+  \item RP $\implies$ bounded
+  \item WCR $\implies$ WN
+  \item CR $\implies$ WN
+  \item CR and CP $\implies$ WN
+  \item CR and CP $\implies$ bounded
+\end{itemize}
+
+\subsection*{Counterexample 5}
+An infinite sequence with a bound that is a normal form.
+\begin{center}
+  
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
 
 
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $n\in NF$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+      
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item WN $\implies$ SN
+  \item WN and CR $\implies$ SN
+  \item WN, CR and, bounded $\implies$ SN
+\end{itemize}
+
+\subsection*{Counterexample 6}
+An infinite sequence with a bound that is a normal form where each element
+of the sequence has a single step relation to the initial element of the sequence.
+\begin{center}
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) to [bend right=20] (f0);
+      \draw[->] (dots) to [bend right=50] (f0);
+
+
+
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $n\in NF$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+      
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item RP
+\end{itemize}
+
+\subsection*{Counterexample 7}
+An "infinite haircomb"
+\begin{center}
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (f2) at (2, 0) {$f_2$};
+      \node (dots) at (3, 0) {$...$};
+
+      \node (n0) at (0, -1) {$n_0$};
+      \node (n1) at (1, -1) {$n_1$};
+      \node (n2) at (2, -1) {$n_2$};
+      \node (dots2) at (3, -1) {$...$};
+
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (f2);
+      \draw[->] (f2) -- (dots);
+      
+      \draw[->] (f0) -- (n0);
+      \draw[->] (f1) -- (n1);
+      \draw[->] (f2) -- (n2);
+      \draw[->] (dots) -- (dots2);
+      
+
+      \end{tikzpicture}
+      
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item WN $\implies$ WCR
+  \item WN $\implies$ bounded
+  \item WN $\implies$ SN
+  \item WN and RP $\implies$ SN
+\end{itemize}
 \section{Well-foundedness}
 \subsection{Well-foundedness}
 \sacomment{Talk about the different types of wellfoundedness, starting with the one given in the book, the reason for thinking it is classical and not constructive, and provide an image showing the relation between the notions of wellfoundedness we have. Talk about future work in this area.}
