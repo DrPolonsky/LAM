@@ -462,8 +462,8 @@ module RecursiveTypes where
      ... | in1 ∀occ  = ∀occ
      ... | in2 ¬∀occ with DMList∀∃ (s x) (Occurs𝕋 x) (atomOccursDec x) ¬∀occ
      ... | ∃ with List∃Instantiate (λ 𝕥 → Occurs𝕋 x 𝕥 → ⊥) (s x) ∃
-     f (here .n) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ {!   !})
-     f (down x) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in2 {!   !}))
+     f (here .n) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in1 ∃))
+     f (down x) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in2 {! ∃  !}))
     
 
     --  ... | in1 ∀occ = ∀occ
