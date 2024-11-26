@@ -143,6 +143,13 @@ A relation $R$ has the following properties when the stated conditions are met:
 \end{dfn}
 
 \begin{dfn}
+  A relation $R$ has the \emph{weak normal form property} (WNFP) if
+ $a \tto b$ and $a \tto c$  $\implies$
+ $c \tto b$, for all $a,c \in A$ and all normal form $b \in A$.
+\end{dfn}
+
+
+\begin{dfn}
   A relation $R$ has the \emph{normal form property} (NFP) if
  $a \to^= b$  $\implies$
  $a \tto b$, for all $a \in A$ and any normal form $b \in A$.
@@ -366,16 +373,40 @@ This is theorem 1-2-2 ii in [TeReSe]
 
 \item{WN and UN$\to$ $\implies$ bounded}
 
-\item{WN and UN and RP $\implies$ wfSeq - (~ R)}
+\texttt{i+ : WN R $\to$ UN$\to$ R $\to$ bounded R}
+
+\item{WN and UN and RP $\implies$ wfSeq - ($\sim$ R)}
+
+\texttt{ii3- :  WN R $\to$ UN R $\to$ RP R $\to$ isWFseq- ($\sim$R R)}
+
 \item {CR $\implies$ WCR}
+
+\texttt{CR$\to$WCR : CR R $\to$ WCR R }
+
 \item {NF $implies$ UN}
+\sacomment{Need to prove}
+
 \item {SN and WCR $\implies$ UN and WN}
+\sacomment{Need to proove}
+\texttt{}
+
 \item {Ind and Inc $\implies$ SN} \sacomment{I don't think we have
 a proof of this, should we include it, include it with a note that we're taking [TeReSe]'s word on it?}
+
+
 \item {WCR, WN, and, Inc $\implies$ SN}
-\item {WCR, WN, and RP $\implies$}
-\item {CR and NF $\implies$ UN}
+
+
+\item {WCR, WN, and RP $\implies$ SN}
+
+
+\item {CR $\implies$ NF $\implies$ UN}
+
+\texttt{i-4 : confluent R $\to$ NFP R $\to$ UN R}
+
 \item {CR $^{\leq1} \implies$ CR}
+
+\texttt{iv : CP R $\to$ confluent R}
 
 \end{itemize}
 }
@@ -385,31 +416,36 @@ BP = boundedness property
 
 Table listing highest "confluence" property implied
 by the conjunction of row and column.
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
   \toprule
-  CP & CR & WCR & WNFP & WUN \\
+  & CP & CR & WCR & WNFP & WUN  \\
   \midrule
-  SN  & & & & \\
-  WN  & & & & \\
-  WN*  & & & & \\
-  BP $\land$ CP   & & & & \\
-  BP  & & & & \\
-  CP  & & & & \\
+  SN  & ? & CR & CR & (Should be CR?)  & ?  \\
+  WN  & ? & CR & (Not CR) & ? & ? \\
+  WN* & ? & CR & ? & ? & ? \\
+  BP $\land$ CP & ? & CR & ? & ? & ? \\
+  BP  & ? & CR & ? & ? & ? \\ 
+  CP  & ? & CR & ? & ? & ? \\
   \bottomrule
 \end{tabular}
 
+
 Table listing highest "normalization" property implied 
 by the conjunction of row and column.
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
   \toprule
-  CP & CR & WCR & WNFP & WUN \\
+  & CP & CR & WCR & WNFP & WUN \\
   \midrule
-  SN  & & & & \\
-  WN  & & & & \\
-  WN*  & & & & \\
-  BP $\land$ CP   & & & & \\
-  BP  & & & & \\
-  CP  & & & & \\
+  SN  &?& SN & SN & SN & SN \\
+  WN  &?& (Not SN) & (Not SN) & ? & ? \\
+  WN*  &?& ? & ? & ? & ? \\
+  BP $\land$ CP   &?& ? & ? & ? & ? \\
+  BP  &?& ? & ? & ? & ? \\
+  CP  &?& (not CP or BP) & ? & ? & ? \\
   \bottomrule
 \end{tabular}
 

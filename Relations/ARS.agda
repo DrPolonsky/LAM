@@ -193,6 +193,9 @@ module Termination (R : 𝓡 A)  where
   SN : Set
   SN = ∀ x → is_-SN_ x
 
+  WNFP : Set 
+  WNFP = ∀ {a b c} → is_-NF_ b → (R ⋆) a b → (R ⋆) a c → (R ⋆) c b 
+
   NFP : Set
   NFP = ∀ {a b} → is_-NF_ b → (R ⁼) a b → (R ⋆) a b
 
@@ -314,6 +317,13 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   ... | z ,, R⋆xz , ε⋆ = R⋆xz
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
+  eqlemma : ∀ a b → (R ⁼) a b → (R ⁼) b a → a ≡ b 
+  eqlemma a b R=ab R=ba = {!   !} 
+  
+  i-1' : NFP R → UN R 
+  i-1' RisNFP {a}{b} a∈NF b∈NF R=ab with ~⁼ R=ab 
+  ... | R=ba = {!   !}
+
   i-2 : confluent R → UN R
   i-2 confR {x} {y} x∈NF y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   ... | y ,, ε⋆ , ε⋆ = refl
@@ -372,6 +382,15 @@ module Miscellaneous (R : 𝓡 A) where
             proof y R*fᵢy with RP-lemma f f-inc a aisf-bound i R*afᵢ y R*fᵢy
             ... | yisf-bound with RP- f f-inc y yisf-bound
             ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
+
+  CR→WCR : CR R → WCR R 
+  CR→WCR RisCR x Rxy Rxz = RisCR x (Rxy ,⋆ ε⋆) (Rxz ,⋆ ε⋆)
+
+  SN∧WNFP→CR : SN R → WNFP R → CR R 
+  SN∧WNFP→CR RisSN RisWNFP a {b}{c} R*ab R*ac with RisSN a  
+  ... | acc acca = {!   !}
+  -- RisWNFP {!   !} R*ab R*ac  
+  -- ... | z = {!   !}
 
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
@@ -704,3 +723,4 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- CR∧ω→SN RisCR Riswb x = {!   !}
   --------------------------------------------------------
 -- The end
+  
