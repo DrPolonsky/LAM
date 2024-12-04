@@ -510,6 +510,35 @@ module N=N+N where
   check5 : Set
   check5 = {! List→ (F→ℕ ∘ G→F) ([1-n]G 30)  !}
 
+module P=X^2+1 where
+  p : ADT 1
+  p = 𝕧₀ ² ⊔ 𝟏
+
+  z : ADT 1
+  z = p ⊔ 𝕧₀
+
+  2z : ADT 1
+  2z = Num 2 × p ⊔ 𝕧₀
+
+  Z : ADT 0
+  Z = μ z
+
+  2Z : ADT 0
+  2Z = μ 2z
+
+  2zZ=Z : Iso (2z [ Z ]) Z
+  2zZ=Z = =+ (dr= (cong+= i×l (dr= (cong+= i×l al i+r) ) !!) ) =!= a+= (+= (~~ (fix≃ z) ) =!= ~~ (fix≃ z) )
+
+  2Z→Z : ⟦ 2Z ⟧ Γ₀ → ⟦ Z ⟧ Γ₀
+  2Z→Z = RigFold 2z Z 2zZ=Z
+
+  chec : Set
+  chec = {! List- (==ADT {Z}) (EnumADTk Z Γ₀ EnumΓ₀ 4) (List→ 2Z→Z (EnumADTk 2Z Γ₀ EnumΓ₀ 4))  !}
+
+  chec2 : Set
+  chec2 = {! length (EnumADTk Z Γ₀ EnumΓ₀ 4)  !}
+
+
 module PX=X^2+1 where
   p : ADT 1
   p = 𝕧₀ ² ⊔ 𝟏
@@ -532,22 +561,22 @@ module PX=X^2+1 where
   μϕ→μΨ : ⟦ μϕ ⟧ Γ₀ → ⟦ μΨ ⟧ Γ₀
   μϕ→μΨ = RigFold ϕ μΨ ϕμΨ=μΨ
 
-  Enum : Set → Set
-  Enum A = List A
+  findΨ : ℕ → ⟦ μΨ ⟧ Γ₀ → 𝔹
+  findΨ n p = elem (==ADT {μΨ}) p (List→ μϕ→μΨ (EnumADTk μϕ Γ₀ EnumΓ₀ n) )
 
-  EnumEnv : ∀ {n} → SetEnv n → Set
-  EnumEnv Γ = ∀ x → Enum (Γ x)
+  someΨ = take 50 (EnumADTk μΨ Γ₀ EnumΓ₀ 4)
 
-  {-# TERMINATING #-}
-  EnumADT : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → Enum (⟦ e ⟧ Γ)
-  EnumADT (𝕍 x) Γ GG = GG x
-  EnumADT 𝟎 Γ GG = []
-  EnumADT 𝟏 Γ GG = tt ∷ []
-  EnumADT (e1 × e2) Γ GG = lazyProd (EnumADT e1 Γ GG) ((EnumADT e2 Γ GG))
-  EnumADT (e1 ⊔ e2) Γ GG = (List→ in1 (EnumADT e1 Γ GG)) ++ (List→ in2 (EnumADT e2 Γ GG))
-  EnumADT (μ e) Γ GG with EnumADT e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ) ) (io𝓟 _ GG (EnumADT (μ e) Γ GG))
-    -- where f = λ { (i x) → GG x ; o → EnumADT (μ e) Γ GG }
-  ... | c = List→ lfp c
+  check543 : Set
+  check543 = {!   !}
+
+  open JX=1+2X+X²
+
+  check23' : Set
+  check23' = {! check453235  !}
+
+
+  checkCheck : 𝔹
+  checkCheck = {! isSubset' (eqℕ) ([1-n] 100)  ([1-n] 100000)  !}
 
 module 1+X²=1+X+X³ where
   -- The explicitly defined version

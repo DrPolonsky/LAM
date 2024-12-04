@@ -68,6 +68,10 @@ any : ∀ {A} → (A → 𝔹) → List A → 𝔹
 any f [] = false
 any f (x ∷ xs) = if f x then true else any f xs
 
+all : ∀ {A} → (A → 𝔹) → List A → 𝔹
+all f [] = true
+all f (x ∷ as) = if not (f x) then false else all f as
+
 exList : List ℕ
 exList = 1 ∷ 2 ∷ 3 ∷ []
 
@@ -77,7 +81,7 @@ List→ f (x ∷ xs) = f x ∷ List→ f xs
 
 [1-n] : ℕ → List ℕ
 [1-n] zero = []
-[1-n] (succ n) = (succ n) ∷ [1-n] 0
+[1-n] (succ n) = (succ n) ∷ [1-n] n
 
 foldList : ∀ {A B : Set} → B → (A → B → B) → List A → B
 foldList z f [] = z
@@ -104,7 +108,7 @@ filter f (x ∷ xs) = if f x then (filter f xs) else x ∷ (filter f xs)
 
 elem : ∀ {A} → (A → A → 𝔹) → A → List A → 𝔹
 elem dA a [] = false
-elem dA a (x ∷ xs) = or (dA a x) (elem dA a xs)
+elem dA a (x ∷ xs) = if dA a x then true else elem dA a xs
 
 take : ∀ {A} → ℕ → List A → List A
 take zero _ = []
@@ -114,3 +118,29 @@ take (succ n) (x ∷ xs) = x ∷ take n xs
 length : ∀ {A} → List A → ℕ
 length [] = 0
 length (_ ∷ xs) = succ (length xs)
+
+drop : ∀ {A} → (A → A → 𝔹) → A → List A → List A
+drop {A} f a = g where
+             fa = f a
+             g : List A → List A
+             g [] = []
+             g (x ∷ as) = if fa x then as else x ∷ g as
+
+{-# TERMINATING #-}
+isSubset : ∀ {A} → (A → A → 𝔹) → List A → List A → 𝔹
+isSubset {A} eq xs ys = check xs ys where
+  check : List A → List A → 𝔹
+  check []       _    = true
+  check (x ∷ xs) zs = check1 zs where
+    check1 : List A → 𝔹
+    check1 (z ∷ zs) = if eq x z then check xs ys else check1 zs
+    check1 []      = false
+
+isSubset' : ∀ {A} → (A → A → 𝔹) → List A → List A → 𝔹
+isSubset' f a1 a2 = all (λ x → elem f x a2 ) a1
+
+
+List- : ∀ {A} → (A → A → 𝔹) → List A → List A → List A
+List- f [] a2 = []
+List- f xs@(x ∷ a1) [] = xs
+List- f (x ∷ a1) (y ∷ a2) = List- f (drop f y (x ∷ a1)) a2

@@ -187,144 +187,124 @@ annih∧ {A} = iso f+ f- f-+ f+- where
   f+- ()
 
 
-  -- Groupoid operations
-  [!!] : ∀ {a : Set} → a ≃ a
-  [!!] = id≃ _
-  [~~] : ∀ {a b : Set} → a ≃ b → b ≃ a
-  [~~] = iso~
-  _[=!=]_ : ∀ {a b c : Set} → a ≃ b → b ≃ c → a ≃ c
-  ab [=!=] bc = ab iso∘ bc
-  _[~!~]_ : ∀ {a b c : Set} → b ≃ a → c ≃ b → a ≃ c
-  ba [~!~] cb = ([~~] ba [=!=] [~~] cb )
-  _[~!=]_ : ∀ {a b c : Set} → b ≃ a → b ≃ c → a ≃ c
-  ba [~!=] bc = [~~] ba [=!=] bc
-  _[=!~]_ : ∀ {a b c : Set} → a ≃ b → c ≃ b → a ≃ c
-  ab [=!~] cb = ab [=!=] [~~] cb
+-- Groupoid operations
+[!!] : ∀ {a : Set} → a ≃ a
+[!!] = id≃ _
+[~~] : ∀ {a b : Set} → a ≃ b → b ≃ a
+[~~] = iso~
+_[=!=]_ : ∀ {a b c : Set} → a ≃ b → b ≃ c → a ≃ c
+ab [=!=] bc = ab iso∘ bc
+_[~!~]_ : ∀ {a b c : Set} → b ≃ a → c ≃ b → a ≃ c
+ba [~!~] cb = ([~~] ba [=!=] [~~] cb )
+_[~!=]_ : ∀ {a b c : Set} → b ≃ a → b ≃ c → a ≃ c
+ba [~!=] bc = [~~] ba [=!=] bc
+_[=!~]_ : ∀ {a b c : Set} → a ≃ b → c ≃ b → a ≃ c
+ab [=!~] cb = ab [=!=] [~~] cb
 
-  --- Congruence laws
-  cong∨ : ∀ {a b c d : Set} → a ≃ b → c ≃ d → (a ∨ c) ≃ (b ∨ d)
-  cong∨ ab cd = iso∨ ab cd
-  cong∧ : ∀ {a b c d : Set} → a ≃ b → c ≃ d → (a ∧ c) ≃ (b ∧ d)
-  cong∧ ab cd = iso∧ ab cd
+--- Congruence laws
+cong∨ : ∀ {a b c d : Set} → a ≃ b → c ≃ d → (a ∨ c) ≃ (b ∨ d)
+cong∨ ab cd = iso∨ ab cd
+cong∧ : ∀ {a b c d : Set} → a ≃ b → c ≃ d → (a ∧ c) ≃ (b ∧ d)
+cong∧ ab cd = iso∧ ab cd
 
-  cong∨= : ∀ {a b c d e : Set} → a ≃ b → c ≃ d → (b ∨ d) ≃ e → (a ∨ c) ≃ e
-  cong∨= ab cd bde = cong∨ ab cd [=!=] bde
-  cong∧= : ∀ {a b c d e : Set} → a ≃ b → c ≃ d → (b ∧ d) ≃ e → (a ∧ c) ≃ e
-  cong∧= ab cd bde = cong∧ ab cd [=!=] bde
-
-
-
-  !∨ : ∀ {a b c : Set} → b ≃ c → (a ∨ b) ≃ (a ∨ c)
-  !∨ j = cong∨ [!!] j
-  ∨! : ∀ {a b c : Set} → b ≃ c → (b ∨ a) ≃ (c ∨ a)
-  ∨! j = cong∨ j [!!]
-  !∧ : ∀ {a b c : Set} → b ≃ c → (a ∧ b) ≃ (a ∧ c)
-  !∧ j = cong∧ [!!] j
-  ∧! : ∀ {a b c : Set} → b ≃ c → (b ∧ a) ≃ (c ∧ a)
-  ∧! j = cong∧ j [!!]
-
-  !∨= : ∀ {a b c d : Set} → b ≃ c → (a ∨ c) ≃ d → (a ∨ b) ≃ d
-  !∨= bc acd = !∨ bc [=!=] acd
-  ∨!= : ∀ {a b c d : Set} → b ≃ c → (c ∨ a) ≃ d → (b ∨ a) ≃ d
-  ∨!= bc cad = ∨! bc [=!=] cad
-  ∧!= : ∀ {a b c d : Set} → b ≃ c → (a ∧ c) ≃ d → (a ∧ b) ≃ d
-  ∧!= bc acd = !∧ bc [=!=] acd
-  !∧= : ∀ {a b c d : Set} → b ≃ c → (c ∧ a) ≃ d → (b ∧ a) ≃ d
-  !∧= bc cad = ∧! bc [=!=] cad
-
-  -- Semiring Axioms
-  -- Associativity, commutativity, and identity
-  a∧ : ∀ {a b c : Set} → ((a ∧ b) ∧ c) ≃ (a ∧ (b ∧ c))
-  a∧  {a} {b} {c} = [~~] assoc∧
-  a∨ : ∀ {a b c : Set} → ((a ∨ b) ∨ c) ≃ (a ∨ (b ∨ c))
-  a∨  {a} {b} {c} = [~~] assoc∨
-  c∧ : ∀ {a b : Set} → (a ∧ b) ≃ (b ∧ a)
-  c∧  {a} {b} = comm∧
-  c∨ : ∀ {a b : Set} → (a ∨ b) ≃ (b ∨ a)
-  c∨  {a} {b} = comm∨
-  i∨l : ∀ {a : Set} → (⊥ ∨ a) ≃ a
-  i∨l = [~~] id∨
-  i∨r : ∀ {a : Set} → (a ∨ ⊥) ≃ a
-  i∨r = c∨ [=!~] id∨
-  i∧l : ∀ {a : Set} → (⊤ ∧ a) ≃ a
-  i∧l {a} = [~~] id∧
-  i∧r : ∀ {a : Set} → (a ∧ ⊤) ≃ a
-  i∧r {a} = c∧ [=!~] id∧
-  -- distributivity and annihilation
-  dl : ∀ {a b c : Set} → (a ∧ (b ∨ c)) ≃ (a ∧ b ∨ a ∧ c)
-  dl {a} {b} {c} = isodistrL
-  dr : ∀ {a b c : Set} → ((a ∨ b) ∧ c) ≃ (a ∧ c ∨ b ∧ c)
-  dr {a} {b} {c} = isodistrR
-  ar : ∀ {a : Set} → (a ∧ ⊥) ≃ ⊥
-  ar {a} = annih∧
-  al : ∀ {a : Set} → (⊥ ∧ a) ≃ ⊥
-  al {a} = c∧ [=!=] annih∧
-{-
-  a∧= : ∀ {a b c d : Set} → (a ∧ (b ∧ c)) ≃ d → ((a ∧ b) ∧ c) ≃ d
-  a∧=  {a} {b} {c} {d} j = a∧ [=!=] j
-  a∨= : ∀ {a b c d : Set} → (a ∨ (b ∨ c)) ≃ d → ((a ∨ b) ∨ c) ≃ d
-  a∨=  {a} {b} {c} {d} j = {!   !}
-  c∧= : ∀ {a b c : Set} → (b ∧ a) ≃ c → (a ∧ b) ≃ c
-  c∧=  {a} {b} {c} j = {!   !}
-  c∨= : ∀ {a b c : Set} → (b ∨ a) ≃ c → (a ∨ b) ≃ c
-  c∨=  {a} {b} {c} j = {!   !}
-  i∨l= : ∀ {a b : Set} → a ≃ b → (⊥ ∨ a) ≃ b
-  i∨l=  {a} {b} j = i∨l [=!=] j
-  i∨r= : ∀ {a b : Set} → a ≃ b → (a ∨ ⊥) ≃ b
-  i∨r=  {a} {b} j = i∨r [=!=] j
-  i∧l= : ∀ {a b : Set} → a ≃ b → (⊤ ∧ a) ≃ b
-  i∧l=  {a} {b} j = i∧l [=!=] j
-  i∧r= : ∀ {a b : Set} → a ≃ b → (a ∧ ⊤) ≃ b
-  i∧r=  {a} {b} j = i∧r [=!=] j
-
-  dl= : ∀ {a b c d : Set} → (a ∧ b ∨ a ∧ c) ≃ d → (a ∧ (b ∨ c)) ≃ d
-  dl=  {a} {b} {c} {d} j = distrL≃ =!= j
-  dr= : ∀ {a b c d : Set} → (a ∧ c ∨ b ∧ c) ≃ d → ((a ∨ b) ∧ c) ≃ d
-  dr=  {a} {b} {c} {d} j = distrR≃ =!= j
-  ar= : ∀ {a b : Set} → ⊥ ≃ b → (a ∧ ⊥) ≃ b
-  ar=  {a} {b} j = annih∧≃ a =!= j
-  al= : ∀ {a b : Set} → ⊥ ≃ b → (⊥ ∧ a) ≃ b
-  al=  {a} {b} j = c∧= (annih∧≃ a =!= j)
-
-  -- END RULES LIST
-
-  r= : ∀ {e : Set} → e ≃ e
-  r=  {e} = refl≃ e
-  s= : ∀ {a b : Set} → a ≃ b → b ≃ a
-  s=  {a} {b} j = symm≃ j
-  t= : ∀ {a b c : Set} → a ≃ b → b ≃ c → a ≃ c
-  t= = tran≃
-  _t~_ : ∀ {a b c : Set} → a ≃ b → c ≃ b → a ≃ c
-  _t~_  {a} {b} {c} i1 i2 = t= i1 (s= i2)
-  _~t_ : ∀ {a b c : Set} → b ≃ a → b ≃ c → a ≃ c
-  _~t_  {a} {b} {c} i1 i2 = t= (s= i1) i2
-
-  ∨= : ∀ {a b c : Set} → b ≃ c → (a ∨ b) ≃ (a ∨ c)
-  ∨= = !∨
-  =∨ : ∀ {a b c : Set} → b ≃ c → (b ∨ a) ≃ (c ∨ a)
-  =∨ = ∨!
-  ∧= : ∀ {a b c : Set} → b ≃ c → (a ∧ b) ≃ (a ∧ c)
-  ∧= = !∧
-  =∧ : ∀ {a b c : Set} → b ≃ c → (b ∧ a) ≃ (c ∧ a)
-  =∧ = ∧!
+cong∨= : ∀ {a b c d e : Set} → a ≃ b → c ≃ d → (b ∨ d) ≃ e → (a ∨ c) ≃ e
+cong∨= ab cd bde = cong∨ ab cd [=!=] bde
+cong∧= : ∀ {a b c d e : Set} → a ≃ b → c ≃ d → (b ∧ d) ≃ e → (a ∧ c) ≃ e
+cong∧= ab cd bde = cong∧ ab cd [=!=] bde
 
 
-  -- Helpful lemmas
-  ∨1∧ : ∀ {A B : Set} (c : ℕ)  → ((Num c ∧ A) ∨ A) ≃ B → (Num (succ c) ∧ A) ≃ B
-  ∨1∧  {A} {B} c toB = tran≃ e1 toB where
-    e1 = tran≃ distrR≃ (tran≃ (comm∨≃ _ _ ) (∨≃ (refl≃ _) (symm≃ (id∧≃ _ ) ) ) )
 
-  cycle∨ : ∀ {A B C : Set} → (A ∨ B ∨ C) ≃ (B ∨ C ∨ A)
-  cycle∨ = c∨= (a∨= !! )
+!∨ : ∀ {a b c : Set} → b ≃ c → (a ∨ b) ≃ (a ∨ c)
+!∨ j = cong∨ [!!] j
+∨! : ∀ {a b c : Set} → b ≃ c → (b ∨ a) ≃ (c ∨ a)
+∨! j = cong∨ j [!!]
+!∧ : ∀ {a b c : Set} → b ≃ c → (a ∧ b) ≃ (a ∧ c)
+!∧ j = cong∧ [!!] j
+∧! : ∀ {a b c : Set} → b ≃ c → (b ∧ a) ≃ (c ∧ a)
+∧! j = cong∧ j [!!]
 
-  dist3 : ∀ {A B C D : Set} → (A ∧ (B ∨ C ∨ D)) ≃ (A ∧ B ∨ A ∧ C ∨ A ∧ D)
-  dist3 = dl= (!∨ dl)
+!∨= : ∀ {a b c d : Set} → b ≃ c → (a ∨ c) ≃ d → (a ∨ b) ≃ d
+!∨= bc acd = !∨ bc [=!=] acd
+∨!= : ∀ {a b c d : Set} → b ≃ c → (c ∨ a) ≃ d → (b ∨ a) ≃ d
+∨!= bc cad = ∨! bc [=!=] cad
+∧!= : ∀ {a b c d : Set} → b ≃ c → (a ∧ c) ≃ d → (a ∧ b) ≃ d
+∧!= bc acd = !∧ bc [=!=] acd
+!∧= : ∀ {a b c d : Set} → b ≃ c → (c ∧ a) ≃ d → (b ∧ a) ≃ d
+!∧= bc cad = ∧! bc [=!=] cad
 
-  foil : ∀ {A B : Set} → ((A ∨ B) ²) ≃ (A ² ∨ (Num 2 ∧ A ∧ B) ∨ B ²)
-  foil  {A} {B} = dl= (cong∨= dr dr (a∨= (∨= (a∨ ~!= =∨ (=∨ c∧ =!= (=∨ (~~ i∧l) =!~ (∨1∧ 1 (=∨ (=∧ i∨r))) ) ) ) ) ))
+-- Semiring Axioms
+-- Associativity, commutativity, and identity
+a∧ : ∀ {a b c : Set} → ((a ∧ b) ∧ c) ≃ (a ∧ (b ∧ c))
+a∧  {a} {b} {c} = [~~] assoc∧
+a∨ : ∀ {a b c : Set} → ((a ∨ b) ∨ c) ≃ (a ∨ (b ∨ c))
+a∨  {a} {b} {c} = [~~] assoc∨
+c∧ : ∀ {a b : Set} → (a ∧ b) ≃ (b ∧ a)
+c∧  {a} {b} = comm∧
+c∨ : ∀ {a b : Set} → (a ∨ b) ≃ (b ∨ a)
+c∨  {a} {b} = comm∨
+i∨l : ∀ {a : Set} → (⊥ ∨ a) ≃ a
+i∨l = [~~] id∨
+i∨r : ∀ {a : Set} → (a ∨ ⊥) ≃ a
+i∨r = c∨ [=!~] id∨
+i∧l : ∀ {a : Set} → (⊤ ∧ a) ≃ a
+i∧l {a} = [~~] id∧
+i∧r : ∀ {a : Set} → (a ∧ ⊤) ≃ a
+i∧r {a} = c∧ [=!~] id∧
+-- distributivity and annihilation
+[dl] : ∀ {a b c : Set} → (a ∧ (b ∨ c)) ≃ (a ∧ b ∨ a ∧ c)
+[dl] {a} {b} {c} = isodistrL
+[dr] : ∀ {a b c : Set} → ((a ∨ b) ∧ c) ≃ (a ∧ c ∨ b ∧ c)
+[dr] {a} {b} {c} = isodistrR
+[ar] : ∀ {a : Set} → (a ∧ ⊥) ≃ ⊥
+[ar] {a} = annih∧
+[al] : ∀ {a : Set} → (⊥ ∧ a) ≃ ⊥
+[al] {a} = c∧ [=!=] annih∧
 
-  X∨X=2X : ∀ (X : Set) → (X ∨ X) ≃(Num 2 ∧ X)
-  X∨X=2X A = ~~ (dr= (cong∨ i∧l (dr= (∨! i∧l =!= (!∨ al =!= i∨r) ) ) ) )
+a∧= : ∀ {a b c d : Set} → (a ∧ (b ∧ c)) ≃ d → ((a ∧ b) ∧ c) ≃ d
+a∧=  {a} {b} {c} {d} j = a∧ [=!=] j
+a∨= : ∀ {a b c d : Set} → (a ∨ (b ∨ c)) ≃ d → ((a ∨ b) ∨ c) ≃ d
+a∨=  {a} {b} {c} {d} j = [~~] assoc∨ [=!=] j
+c∧= : ∀ {a b c : Set} → (b ∧ a) ≃ c → (a ∧ b) ≃ c
+c∧=  {a} {b} {c} j = comm∧ [=!=] j
+c∨= : ∀ {a b c : Set} → (b ∨ a) ≃ c → (a ∨ b) ≃ c
+c∨=  {a} {b} {c} j = comm∨ [=!=] j
+i∨l= : ∀ {a b : Set} → a ≃ b → (⊥ ∨ a) ≃ b
+i∨l=  {a} {b} j = i∨l [=!=] j
+i∨r= : ∀ {a b : Set} → a ≃ b → (a ∨ ⊥) ≃ b
+i∨r=  {a} {b} j = i∨r [=!=] j
+i∧l= : ∀ {a b : Set} → a ≃ b → (⊤ ∧ a) ≃ b
+i∧l=  {a} {b} j = i∧l [=!=] j
+i∧r= : ∀ {a b : Set} → a ≃ b → (a ∧ ⊤) ≃ b
+i∧r=  {a} {b} j = i∧r [=!=] j
+
+[dl=] : ∀ {a b c d : Set} → (a ∧ b ∨ a ∧ c) ≃ d → (a ∧ (b ∨ c)) ≃ d
+[dl=]  {a} {b} {c} {d} j =  isodistrL [=!=] j
+[dr=] : ∀ {a b c d : Set} → (a ∧ c ∨ b ∧ c) ≃ d → ((a ∨ b) ∧ c) ≃ d
+[dr=]  {a} {b} {c} {d} j = isodistrR [=!=] j
+[ar=] : ∀ {a b : Set} → ⊥ ≃ b → (a ∧ ⊥) ≃ b
+[ar=]  {a} {b} j = [ar] [=!=] j
+[al=] : ∀ {a b : Set} → ⊥ ≃ b → (⊥ ∧ a) ≃ b
+[al=]  {a} {b} j = [al] [=!=] j
+
+-- END RULES LIST
+
+∨= : ∀ {a b c : Set} → b ≃ c → (a ∨ b) ≃ (a ∨ c)
+∨= = !∨
+=∨ : ∀ {a b c : Set} → b ≃ c → (b ∨ a) ≃ (c ∨ a)
+=∨ = ∨!
+∧= : ∀ {a b c : Set} → b ≃ c → (a ∧ b) ≃ (a ∧ c)
+∧= = !∧
+=∧ : ∀ {a b c : Set} → b ≃ c → (b ∧ a) ≃ (c ∧ a)
+=∧ = ∧!
 
 
--}
+-- Helpful lemmas
+
+cycle∨ : ∀ {A B C : Set} → (A ∨ (B ∨ C)) ≃ (B ∨ (C ∨ A))
+cycle∨ = c∨= (a∨= [!!] )
+
+[dist3] : ∀ {A B C D : Set} → (A ∧ (B ∨ (C ∨ D))) ≃ (A ∧ B ∨ (A ∧ C ∨ A ∧ D))
+[dist3] = [dl=] (∨= [dl] )
+
+[foil] : ∀ {A B : Set} → ((A ∨ B) ∧ (A ∨ B)) ≃ ((A ∧ A) ∨ ((A ∧ B ∨ A ∧ B) ∨ (B ∧ B)))
+[foil]  {A} {B} = [dr=] (cong∨= [dl] [dl] (a∨= [!!] ) ) [=!=] ∨= ([~~] (a∨= (∨= (=∨ c∧ ) ) ) )
