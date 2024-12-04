@@ -225,3 +225,9 @@ data dup {A : Set} : List A → Set where
   dTail : ∀ (a : A) (xs : List A) → dup xs      → dup (a ∷ xs)
   -- if the head of the list occurs in the tail, there's a duplicate
   -- otherwise, if the
+
+occursMap : ∀ {A B : Set} {x : A}
+              → (L : List A) → (f : A → B) → occurs x L 
+              → occurs (f x) (map f L)
+occursMap L f (atHead xs) = atHead (map f xs)
+occursMap L f (inTail y xs occ) = inTail (f y) (map f xs) (occursMap xs f occ)  

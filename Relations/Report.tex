@@ -1,5 +1,8 @@
 \documentclass{scrartcl}
 % \input{packages}
+
+\usepackage{booktabs}
+
 \input{macros}
 
 \title{Summer 2024 Report}
@@ -7,8 +10,11 @@
 \date{\today}
 
 \begin{document}
+\renewcommand{\arraystretch}{1.3}
 
 \maketitle
+
+\tableofcontents
 
 \section{Introduction}
 This is a report on the progress I have made during the summer of 2024 working with Dr. Polonsky \footnote{Assisstant Professor, Department of Computer Science, Appalachian State University.}. I have been writing on the topic of relations, working primarily from Term Rewriting Systems (TeReSe) \footnote{(Term Rewriting Systems. (2003). United Kingdom: Cambridge University Press.)}.
@@ -16,8 +22,650 @@ The objective of this work has been to both develop a formal understanding of re
 \\
 I have been focussed on Chapter 1 of TeReSe which covers abstract reduction systems (ARS) as well as the appendix (sections 1-3) which provides the necessary mathematical background for the rest of the book (e.g. relations, ordinals, inductive definitions and the Knaster-Tarski lemma). Where the book has made use of classical logic I have investigated the possibility of using constructive alternatives.
 
-\section{Relations}
+\section{Definitions} \label{section:Definitions}
+The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, theorem 1.2.2 and theorem 1.2.3. Before exploring those proofs the following definitions are essential.
 
+
+The following definitions are taken from [TeReSe], Chapter 1,
+with minimal adaptations for consistency.
+
+\begin{dfn}
+  An abstract reduction system (\emph{ARS}) is a structure $\mathcal{A} = (A, R_\alpha)$ where $A$ is a set and $R_\alpha$ is a set of binary relations.
+\end{dfn}
+A relation $R$ from the set $R_\alpha$ is refered to as a reduction (or rewrite) relation. For example, if we specify $R$ as the relation of being 'less than' ($<$) then $R\, 4\, 2$. \textcolor{red}{Right?}
+\apcomment{Yes, but move this to a(n eventual) list of examples.}
+
+We use $R$ or $\to$ for a single-step reduction and $R^*$ or $\tto$ for a multi-step reduction.
+
+\sacomment{Should we be using $R^+$ rather than $R^*$?}
+
+\apcomment{Thus, when $(a,b) \in \to_{(\alpha)}$, we say that there is a
+\emph{$(\alpha-)$reduction} from $a$ to $b$.
+When $(a,b) \in \tto_\alpha$, we say that there is a multi-step $\alpha$-reduction
+from $a$ to $b$.}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{R-weakly confluent} ($WCR_R$) if all single step reductions from $a$ can always converge
+  via multi-step reductions to some common reduct.
+  A relation $R$ is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if every $a \in A$ is R-weakly confluent.
+\end{dfn}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{R-confluent} ($CR_R$) if all multi-step reductions from $a$ can always converge
+  via multi-step reductions to some common reduct.
+  A relation $R$ is \emph{confluent} (AKA Church-Rosser (CR)) if every $a \in A$ is R-confluent.
+\end{dfn}
+
+\begin{figure}[h]
+  \centering
+\[  \begin{tikzpicture}[node distance=1.5cm, auto]
+    % Nodes
+    \node (top) {a};
+    \node (left) [below left of=top] {b};
+    \node (right) [below right of=top] {c};
+    \node (bottom) [below right of=left] {d};
+
+    % Arrows
+    \draw[->] (top) -- (left);
+    \draw[->] (top) -- (right);
+    \draw[->>] (left) -- (bottom);
+    \draw[->>] (right) -- (bottom);
+\end{tikzpicture}
+\hspace{3cm}
+\begin{tikzpicture}[node distance=1.5cm, auto]
+  % Nodes
+  \node (top) {a};
+  \node (left) [below left of=top] {b};
+  \node (right) [below right of=top] {c};
+  \node (bottom) [below right of=left] {d};
+
+  % Arrows
+  \draw[->>] (top) -- (left);
+  \draw[->>] (top) -- (right);
+  \draw[->>] (left) -- (bottom);
+  \draw[->>] (right) -- (bottom);
+\end{tikzpicture}
+\]
+\caption{On the left is an example of a weakly confluent relation. On the right is an example of a confluent relation.}
+\end{figure}
+
+
+\begin{dfn}
+  \emph An element $a \in A$ is a {normal form} if there exists no reduction to any other element in $A$.
+\end{dfn}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{$R$-weakly normalizing} ($WN_{R}$)if $a \tto b$ for some normal form $b \in A$.
+
+  A relation $R$ is weakly normalizing (WN) if every $a \in A$ is $R$- weakly normalizing.
+\end{dfn}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{$R$-strongly normalizing} ($SN_R$) if every reduction sequence starting from $a$ is finite.
+
+  A relation $R$ is strongly normalizing (SN) if every
+  $a \in A$ is $R$-strongly normalizing.
+\end{dfn}
+
+The above definition of SN is taken from [TeReSe]. When working in Agda, we make use of the alternative definition presented in [TeReSe] ($\leftarrow$ is accessibly well-founded).
+
+\subsection{Closure operations on relations}
+
+A relation $R$ has the following properties when the stated conditions are met:
+\begin{dfn}
+  \emph{reflexive} {- $\forall x \in A : x \to x $}
+\end{dfn}
+\begin{dfn}
+  \emph{transitive} {- $\forall x, y, z \in A : ( x \to y \land y \to z ) \implies x \to z $}
+\end{dfn}
+\begin{dfn}
+  \emph{symmetric} {- $\forall x, y \in A : x \to y \implies y \to x$}
+\end{dfn}
+
+\begin{dfn}
+  The \emph{closure} of $R$ is the smallest relation that contains $\to$ and satisfies a given property.
+\end{dfn}
+
+\begin{dfn}
+  The \emph{reflexive closure} of $R$ is the smallest relation $\to^r$ that contains $\to$ and is reflexive.
+\end{dfn}
+\begin{dfn}
+  The \emph{symmetric closure} of $R$ is the smallest relation $R^s$ that contains $R$ and is symmetric.
+\end{dfn}
+\begin{dfn}
+  The \emph{transitive closure} of $R$ is the smallest relation $R^+$ that contains $R$ and is transitive.
+\end{dfn}
+\begin{dfn}
+  The \emph{reflexive transitive closure} of $R$ is the smallest relation $R^*$ that contains $R$ and is both reflexive and transitive.
+\end{dfn}
+\begin{dfn}
+  The \emph{equivalence relation} of $R$ is the smallest relation $R^=$ that contains $R$ and is reflexive, transitive, and symmetric.
+\end{dfn}
+
+\begin{dfn}
+  A relation $R$ has the \emph{weak normal form property} (WNFP) if
+ $a \tto b$ and $a \tto c$  $\implies$
+ $c \tto b$, for all $a,c \in A$ and all normal form $b \in A$.
+\end{dfn}
+
+
+\begin{dfn}
+  A relation $R$ has the \emph{normal form property} (NFP) if
+ $a \to^= b$  $\implies$
+ $a \tto b$, for all $a \in A$ and any normal form $b \in A$.
+\end{dfn}
+
+Two elements $a, b \in A$ being equivalent is denoted $a \equiv b$.
+
+\begin{dfn}
+  A relation $R$ has the \emph{unique normal form property} (UN) if
+  $a \to^= b$  $\implies$
+  $a \equiv b$, for all $a \in A$ and any normal form $b \in A$.
+\end{dfn}
+
+\begin{dfn}
+  A relation $R$ has the \emph{unique normal form property with respect to reduction} (UN$^ \to$) if
+  $a \twoheadleftarrow  \cdot  \tto b$  $\implies$ $a \equiv b$, for all normal forms $a,b \in A$.
+\end{dfn}
+
+Let $A$ be a set.
+\begin{dfn}
+  A \emph{sequence (in $A$)} is a function from the natural numbers to $A$:
+  \begin{align*}
+    &s : \nat \to A \\
+    &s = (s_0,s_1,s_2,\dots)
+  \end{align*}
+\end{dfn}
+
+\begin{dfn}
+  A sequence is \emph{$R$-increasing} if every term is $R$-related to its preceding term.
+\end{dfn}
+
+\begin{dfn}
+  A sequence is \emph{bounded} if there exists an element $a$ to which all elements of the sequence reduce.
+\end{dfn}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
+
+
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $a$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+      \caption{An example of a bounded sequence.}
+
+    \end{figure}
+
+
+\begin{dfn}
+  An element $a \in A$ has the \emph{recurrence property} if $a \tto b \implies b \tto a$ for all $b \in A$.
+\end{dfn}
+\sacomment{I've been using $\tto$ as interchangable with $R *$ (as in the above definition).
+Is that okay or am I going to have to clarify why they are interchangable (are they not interchangable?)?}
+\apcomment{It's okay, but later we will need to make sure we are using them consistently.  Say that in Agda code, $\to$ is denoted by $R$.}
+
+\begin{dfn}
+  A relation $R$ has the \emph{recurrence property} (RP) if every
+  bounded, increasing sequence has a recurrent element.
+\end{dfn}
+
+    \begin{figure}[h]
+      \centering
+      \begin{tikzpicture}
+          % Define the nodes inside the region f
+          \node (f0) at (0, 0) {$f_0$};
+          \node (f1) at (1, 0) {$f_1$};
+          \node (dots) at (2, 0) {$...$};
+          \node (fi) at (3, 0) {$f_i$};
+          \node (fi+1) at (4, 0) {$f_{i+1}$};
+          \node (dots2) at (5,0) {$...$};
+
+          % Draw the arrows between the nodes inside the region f
+          \draw[->] (f0) -- (f1);
+          \draw[->] (f1) -- (dots);
+          \draw[->] (dots) -- (fi);
+          \draw[->] (fi) -- (fi+1);
+          \draw[->] (fi+1) -- (dots2);
+
+
+          % Define the nodes outside the region f
+          \node (a) [below=of dots, yshift=-.25cm] {\parbox{1cm}{\centering $a$ }};
+
+              % Draw the arrows between the nodes inside and outside the region f sds
+
+              \draw[->>] (f0) to [bend right] (a);
+              \draw[->>] (f1) to [bend right] (a);
+              \draw[->>] (dots) -- (a);
+              \draw[->>] (fi) to [bend left=10] (a);
+              \draw[->>] (fi+1) to [bend left] (a);
+              \draw[->>] (dots2) to [bend left] (a);
+              \draw[->>] (a) to [bend left=10] (fi);
+
+          \end{tikzpicture}
+          \caption{An example of a relation with the recurrence property.}
+
+        \end{figure}
+\begin{dfn}
+  A relation $R$ has the \emph{weak recurrence property} (RP-) if
+  for every increasing sequence with bound $a$,
+  there is an element $i$ of the sequence such that $a \tto f (i)$.
+\end{dfn}
+
+
+\begin{dfn}
+  \emph{Cofinality property}
+\end{dfn}
+\sacomment{Still not sure on how to define cofinality.}
+
+\begin{dfn}
+  A relation $R$ is \emph{finitely branching} (FB) if, for all $a \in A$, the set of one step reducts of $a$ is finite.
+\end{dfn}
+
+\subsection{Recurrence property and increasing relations}
+
+In [TeReSe], a relation $R \sse A \times A$ is called \emph{increasing} if there
+exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $x, y \in A$,
+ \[ Rxy \to |x| < |y| \]
+
+\begin{prop}
+  If $R$ is increasing, then no infinite $R$-increasing sequence is bounded.
+\end{prop}
+\begin{proof}
+  Let $(a_i) = a_0 \to a_1 \to a_2 \to \cdots$ be an $R$-increasing sequence
+  and suppose that $(a_i)$ is bounded.  Let $b$ be the bound, so that $a_i \to b$ for all $i$.
+
+  If $m = |b|$ then we have
+  \[ 0 \le |a_0| < |a_1| < |a_2| < \cdots < |a_m| < |b| = m \]
+  % \[ m > |a_m| > |a_{m-1}| > \cdots > |a_0| \ge 0 \]
+  which is a contradiction, since there are only $m-1$ integers strictly less than $m$.
+\end{proof}
+
+It follows that every relation that is increasing in the sense of [TeReSe]
+vacuously satisfies the RP condition.
+
+\begin{cor}
+  If $R$ is increasing, then $R$ has the recurrence property.
+\end{cor}
+
+
+\section{Classical Principles}
+Principles we are considering
+\begin{itemize}
+  \item Decidability of equality on $A$
+  \item Decidability of the relation $R$
+  \item When relevant, decidability of the given precicate $P$
+  \item Not-not-closure of being accessible
+  \item Not-not-closure of $R$
+  \item Not-not-closure of $P$
+  \item Decidability of whether a given element is an $R$-normal form
+  \item When relevant, local/element-wise versions of the above
+  \item Markov's principle:
+  \begin{itemize}
+    \item In $wfMin_0 \to wfSeq$.
+
+    Given a sequence $s : \nat \to A$, let $E(a) = \exists n \in \nat. s n \equiv a$.
+
+    Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
+    \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
+          \to \big(\exists n \in \nat. s n \equiv a\big)\]
+
+  \end{itemize}
+\end{itemize}
+
+\section{Implications}
+{\small
+We now look into the interrelation of the various properties defined in Section~\ref{section:Definitions}. Our aim is to expand on the
+connections made in Figure 1.8 of [TeReSe] (p.19).
+
+The following are the implications we have proven in Agda, along with a reference to the name of the proof in Agda. Where appropriate we indicate
+which classical assumptions were used as part of the proof.
+
+\begin{itemize}
+  \item SN and WCR $\implies$ CR
+
+\texttt{NewmansLemma : $\mathnormal{\forall}$ \{R : $\mathbb{R}$ A\} $\to$ SN R $\to$ weakly-confluent R $\to$ confluent R}
+
+
+We have also provided a proof elementwise making use of the classical principal
+about the decidability of $R$ being minimal.
+
+
+\texttt{SN$\land$UN$\to$CRelem :\newline $\forall$ (R : $\mathbb{R}$ A) $\to$ decMin (~R R) $\to$ $\forall$ x $\to$ is R -SN x $\to$ is R -UN x$\to$ is R -CR x}
+
+\sacomment{How to one line this consistently and in a pretty way?}
+
+\item{CP $\implies$ CR}
+
+\texttt{iv : CP R $\to$ confluent R}
+
+This is theorem 1-2-3 iv in [TeReSe]
+
+\item{WN and UN $\implies$ CR}
+
+\texttt{ii : WN R $\times$ UN R $\to$ confluent R}
+
+This is theorem 1-2-2 ii in [TeReSe]
+
+\item{WN and UN $\implies$ bounded}
+
+\texttt{i : WN R $\to$ UN R $\to$ bounded R}
+
+\sacomment{Going to have to find a way to neatly represent the implications}
+
+
+\sacomment{note to self, tidy up below with references to agda code}
+
+\item{WN and UN$\to$ $\implies$ bounded}
+
+\texttt{i+ : WN R $\to$ UN$\to$ R $\to$ bounded R}
+
+\item{WN and UN and RP $\implies$ wfSeq - ($\sim$ R)}
+
+\texttt{ii3- :  WN R $\to$ UN R $\to$ RP R $\to$ isWFseq- ($\sim$R R)}
+
+\item {CR $\implies$ WCR}
+
+\texttt{CR$\to$WCR : CR R $\to$ WCR R }
+
+\item {NF $implies$ UN}
+\sacomment{Need to prove}
+
+\item {SN and WCR $\implies$ UN and WN}
+\sacomment{Need to proove}
+\texttt{}
+
+\item {Ind and Inc $\implies$ SN} \sacomment{I don't think we have
+a proof of this, should we include it, include it with a note that we're taking [TeReSe]'s word on it?}
+
+
+\item {WCR, WN, and, Inc $\implies$ SN}
+
+
+\item {WCR, WN, and RP $\implies$ SN}
+
+
+\item {CR $\implies$ NF $\implies$ UN}
+
+\texttt{i-4 : confluent R $\to$ NFP R $\to$ UN R}
+
+\item {CR $^{\leq1} \implies$ CR}
+
+\texttt{iv : CP R $\to$ confluent R}
+
+\end{itemize}
+}
+
+\subsection{Summary table}
+BP = boundedness property
+
+Table listing highest "confluence" property implied
+by the conjunction of row and column.
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  & CP & CR & WCR & WNFP & WUN  \\
+  \midrule
+  SN  & ? & CR & CR & (Should be CR?)  & ?  \\
+  WN  & ? & CR & (Not CR) & ? & ? \\
+  WN* & ? & CR & ? & ? & ? \\
+  BP $\land$ CP & ? & CR & ? & ? & ? \\
+  BP  & ? & CR & ? & ? & ? \\ 
+  CP  & ? & CR & ? & ? & ? \\
+  \bottomrule
+\end{tabular}
+
+
+Table listing highest "normalization" property implied 
+by the conjunction of row and column.
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+  \toprule
+  & CP & CR & WCR & WNFP & WUN \\
+  \midrule
+  SN  &?& SN & SN & SN & SN \\
+  WN  &?& (Not SN) & (Not SN) & ? & ? \\
+  WN*  &?& ? & ? & ? & ? \\
+  BP $\land$ CP   &?& ? & ? & ? & ? \\
+  BP  &?& ? & ? & ? & ? \\
+  CP  &?& (not CP or BP) & ? & ? & ? \\
+  \bottomrule
+\end{tabular}
+
+
+
+
+
+
+
+
+\newpage
+\section{Counterexamples}
+The following counterexamples are used to rule out certain implications between properties from holding.
+\sacomment{How should we present this section. Is it enough to have diagrams and a list of what they are a counter to?}
+\subsection*{Counterexample 1}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (c) [right of=b, xshift=1cm] {c};
+      \node (d) [right of=c, xshift=1cm] {d};
+
+      % Arrows
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (b) -- (a);
+      \draw[->] (c) -- (d);
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item WCR $\implies$ CR
+  \item WCR and WN $\implies$ CR
+  \item WCR and WN $\implies$ SN
+  \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ (R *) a c $\to$ (R *) c b}
+  \item IOW and WCR $\implies$ WNFP \sacomment{We need to define these still (IOW and WNFP)}
+\end{itemize}
+\subsection*{Counterexample 2}
+\begin{center}
+  \begin{tikzcd}
+      % Nodes
+      \node (x) {a};
+      \node (n) [left of=x, xshift=-1cm] {n \in NF};
+      \node (y) [right of=x, xshift=1cm] {b};
+      \node (z) [right of=y] {c};
+
+      % Arrows
+      \draw[->>] (x) -- (n);
+      \draw[->>] (x) -- (y);
+      \draw[->] (y) to [bend left] (z);
+      \draw[->] (z) to [bend left] (y);
+  \end{tikzcd}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item WN$\downarrow\subseteq$WN (WN is not closed under reduction) \sacomment{Is this the right way to express that elementwise WN doesn't imply global WN?}
+  \item WN$\downarrow$UN$\rightarrow\subseteq$WN :
+
+  UN$\rightarrow\,$R $\to \forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
+
+  \textcolor{red}{SA: The above is a bit messy, can we make it cleaner?}
+  \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
+  \item $WN_R$ and $UN_R$ $\implies$ $CR_R$
+
+\end{itemize}
+
+\subsection*{Counterexample 3}
+
+\begin{center}
+  \begin{tikzcd}
+      % Nodes
+      \node (x) {a};
+
+      % Arrows
+      \draw[->, loop] (x) to (x);
+  \end{tikzcd}
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item bounded and RP $\implies$ SN
+  \item bounded and RP $\implies$ WN
+\end{itemize}
+
+\subsection*{Counterexample 4}
+An infinite sequence
+  \begin{center}
+      \begin{tikzpicture}
+      % Define the nodes
+      \node (a) at (0, 0) {$f_0$};
+      \node (b) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows
+      \draw[->] (a) -- (b);
+      \draw[->] (b) -- (dots);
+      \end{tikzpicture}
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item WN
+  \item bounded
+  \item RP $\implies$ bounded
+  \item WCR $\implies$ WN
+  \item CR $\implies$ WN
+  \item CR and CP $\implies$ WN
+  \item CR and CP $\implies$ bounded
+\end{itemize}
+
+\subsection*{Counterexample 5}
+An infinite sequence with a bound that is a normal form.
+\begin{center}
+
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
+
+
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $n\in NF$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item WN $\implies$ SN
+  \item WN and CR $\implies$ SN
+  \item WN, CR and, bounded $\implies$ SN
+\end{itemize}
+
+\subsection*{Counterexample 6}
+An infinite sequence with a bound that is a normal form where each element
+of the sequence has a single step relation to the initial element of the sequence.
+\begin{center}
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (dots) at (2, 0) {$...$};
+
+      % Draw the arrows between the nodes inside the region f
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) -- (dots);
+      \draw[->] (f1) to [bend right=20] (f0);
+      \draw[->] (dots) to [bend right=50] (f0);
+
+
+
+      % Define the nodes outside the region f
+      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $n\in NF$ }};
+
+          % Draw the arrows between the nodes inside and outside the region f sds
+
+          \draw[->>] (f0) -- (a);
+          \draw[->>] (f1) -- (a);
+          \draw[->>] (dots) -- (a);
+      \end{tikzpicture}
+
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item RP
+\end{itemize}
+
+\subsection*{Counterexample 7}
+An "infinite haircomb"
+\begin{center}
+  \begin{tikzpicture}
+      % Define the nodes inside the region f
+      \node (f0) at (0, 0) {$f_0$};
+      \node (f1) at (1, 0) {$f_1$};
+      \node (f2) at (2, 0) {$f_2$};
+      \node (dots) at (3, 0) {$...$};
+
+      \node (n0) at (0, -1) {$n_0$};
+      \node (n1) at (1, -1) {$n_1$};
+      \node (n2) at (2, -1) {$n_2$};
+      \node (dots2) at (3, -1) {$...$};
+
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (f2);
+      \draw[->] (f2) -- (dots);
+
+      \draw[->] (f0) -- (n0);
+      \draw[->] (f1) -- (n1);
+      \draw[->] (f2) -- (n2);
+      \draw[->] (dots) -- (dots2);
+
+
+      \end{tikzpicture}
+
+
+    \end{center}
+Counterexample to:
+\begin{itemize}
+  \item WN $\implies$ WCR
+  \item WN $\implies$ bounded
+  \item WN $\implies$ SN
+  \item WN and RP $\implies$ SN
+\end{itemize}
+\section{Well-foundedness}
 \subsection{Well-foundedness}
 \sacomment{Talk about the different types of wellfoundedness, starting with the one given in the book, the reason for thinking it is classical and not constructive, and provide an image showing the relation between the notions of wellfoundedness we have. Talk about future work in this area.}
 
@@ -110,247 +758,8 @@ With the above definitions established we define the notions of well-foundedness
 
   As future work we want to know whether the missing implications can be found, or what the minimal additional requirements are for making those implications.
 
-\subsection{Definitions}
-\textcolor{red}{Go through some of the main definitions formalised from Terese, focussing on where we have used constructive alternatives to the classically given definitions
-Could talk here about omega bounded stuff too!}
-
-The most interesting work we have carried out in investigating Chapter 1 of TeReSe has resulted from trying to provide constructive proofs for Newman's lemma, the Knaster-Tarski lemma, theorem 1.2.2 and theorem 1.2.3. Before exploring those proofs the following definitions are essential.
-
-
-The following definitions are taken from [TeReSe], Chapter 1,
-with minimal adaptations for consistency.
-
-\begin{dfn}
-  An abstract reduction system (\emph{ARS}) is a structure $\mathcal{A} = (A, \to_\alpha)$ where $A$ is a set and $\to_\alpha$ is a set of binary relations.
-\end{dfn}
-A relation $\to$ from the set $\to_\alpha$ is refered to as a reduction (or rewrite) relation. For example, if we specify $\to$ as the relation of being 'less than' ($<$) then $4 \to 2$. \textcolor{red}{Right?}
-\apcomment{Yes, but move this to a(n eventual) list of examples.}
-
-We use $\to$ for a single-step reduction and $\tto$ for a multi-step reduction.
-
-\apcomment{Thus, when $(a,b) \in \to_{(\alpha)}$, we say that there is a
-\emph{$(\alpha-)$reduction} from $a$ to $b$.
-When $(a,b) \in \tto_\alpha$, we say that there is a multi-step $\alpha$-reduction
-from $a$ to $b$.}
-
-\begin{dfn}
-    A reduction relation is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if all single-step reductions from a given element can always converge via multi-step reductions to some common reduct.
-\end{dfn}
-\begin{figure}[h]
-  \centering
-\[  \begin{tikzpicture}[node distance=1.5cm, auto]
-    % Nodes
-    \node (top) {a};
-    \node (left) [below left of=top] {b};
-    \node (right) [below right of=top] {c};
-    \node (bottom) [below right of=left] {d};
-
-    % Arrows
-    \draw[->] (top) -- (left);
-    \draw[->] (top) -- (right);
-    \draw[->>] (left) -- (bottom);
-    \draw[->>] (right) -- (bottom);
-\end{tikzpicture}
-\hspace{3cm}
-\begin{tikzpicture}[node distance=1.5cm, auto]
-  % Nodes
-  \node (top) {a};
-  \node (left) [below left of=top] {b};
-  \node (right) [below right of=top] {c};
-  \node (bottom) [below right of=left] {d};
-
-  % Arrows
-  \draw[->>] (top) -- (left);
-  \draw[->>] (top) -- (right);
-  \draw[->>] (left) -- (bottom);
-  \draw[->>] (right) -- (bottom);
-\end{tikzpicture}
-\]
-\caption{An example of a weakly confluent relation.}
-\end{figure}
-
-\begin{dfn}
-  A reduction relation is \emph{confluent} (AKA Church-Rosser (CR)) if all multi-step reductions from a given element can always converge via multi-step reductions to some common reduct.
-\end{dfn}
-    \begin{figure}
-      \centering
-      \begin{tikzpicture}[node distance=1.5cm, auto]
-        % Nodes
-        \node (top) {a};
-        \node (left) [below left of=top] {b};
-        \node (right) [below right of=top] {c};
-        \node (bottom) [below right of=left] {d};
-
-        % Arrows
-        \draw[->>] (top) -- (left);
-        \draw[->>] (top) -- (right);
-        \draw[->>] (left) -- (bottom);
-        \draw[->>] (right) -- (bottom);
-      \end{tikzpicture}
-    \caption{An example of a confluent relation.}
-    \end{figure}
-
-\begin{dfn}
-  \emph An element $a \in A$ is a {normal form} if there exists no reduction to any other element in $A$.
-\end{dfn}
-
-\begin{dfn}
-  An element $a \in A$ is \emph{$R$-weakly normalizing} ($WN_{R}$)if $a \tto b$ for some normal form $b \in A$.
-
-  A relation $\to$ is weakly normalizing (WN) if every $a \in A$ is $R$- weakly normalizing.
-\end{dfn}
-\sacomment{A lot of these are near word for word from TeReSe, is that okay?}
-
-\begin{dfn}
-  An element $a \in A$ is \emph{$R$-strongly normalizing} ($SN_R$) if every reduction sequence starting from $a$ is finite.
-
-  A relation $\to$ is strongly normalizing (SN) if every
-  $a \in A$ is $\to$-strongly normalizing.
-\end{dfn}
-
-The above definition of SN is taken from TeReSe. We make use of the alternative definition presented in TeReSe ($\leftarrow$ is accessibly well-founded) when working in Agda.
-
-If $\to$ is a reflexive, transitive and symmetric relation we denote it $\to^=$.
-
-\apcomment{This is not quite right; rather, $\to^=$ is the reflexive-symmetric-transitive closure of $\to$, i.e., it is the \emph{equivalence relation generated by $\to$}, the NFP refers to this latter relation.}
-
-\apcomment{Add a subsection/definition listing the closure operations on relations.}
-
-\begin{dfn}
-  A reduction relation $\to$ has the \emph{normal form property} (NFP) if
- $a \to^= b$  $\implies$
- $a \tto b$, for all $a \in A$ and any normal form $b \in A$.
-\end{dfn}
-
-$a, b \in A$ being equivalent is denoted $a \equiv b$.
-
-\begin{dfn}
-  $\to$ has the \emph{unique normal form property} (UN) if
-  $a \to^= b$  $\implies$
-  $a \equiv b$, for all $a \in A$ and any normal form $b \in A$.
-\end{dfn}
-
-\begin{dfn}
-  $\to$ has the \emph{unique normal form property with respect to reduction} (UN$^ \to$) if
-  $a \twoheadleftarrow  \cdot  \tto b$  $\implies$ $a \equiv b$, for all normal forms $a,b \in A$.
-\end{dfn}
-
-Let $A$ be a set.
-\begin{dfn}
-  A \emph{sequence (in $A$)} is a function from the natural numbers to $A$:
-  \begin{align*}
-    &s : \nat \to A \\
-    &s = (s_0,s_1,s_2,\dots)
-  \end{align*}
-\end{dfn}
-
-\begin{dfn}
-  A sequence is \emph{$R$-increasing} if every term is $R$-related to its preceding term.
-\end{dfn}
-
-\begin{dfn}
-  A sequence is \emph{bounded} if there exists an element $a$ to which all elements of the sequence reduce.
-\end{dfn}
-
-\begin{figure}[h]
-  \centering
-  \begin{tikzpicture}
-      % Define the nodes inside the region f
-      \node (f0) at (0, 0) {$f_0$};
-      \node (f1) at (1, 0) {$f_1$};
-      \node (dots) at (2, 0) {$...$};
-
-      % Draw the arrows between the nodes inside the region f
-      \draw[->] (f0) -- (f1);
-      \draw[->] (f1) -- (dots);
-      \draw[->] (f1) -- (dots);
-
-
-      % Define the nodes outside the region f
-      \node (a) [below=of dots, yshift=-.25cm] {\parbox{2cm}{\centering $a$ }};
-
-          % Draw the arrows between the nodes inside and outside the region f sds
-
-          \draw[->>] (f0) -- (a);
-          \draw[->>] (f1) -- (a);
-          \draw[->>] (dots) -- (a);
-      \end{tikzpicture}
-      \caption{An example of an $\omega$-bounded sequence.}
-
-    \end{figure}
-
-
-\begin{dfn}
-  $a \in A$ has the \emph{recurrence property} if $a \tto b \implies b \tto a$ for all $b \in A$.
-\end{dfn}
-\sacomment{I've been using $\tto$ as interchangable with $R *$ (as in the above definition).
-Is that okay or am I going to have to clarify why they are interchangable (are they not interchangable?)?}
-\apcomment{It's okay, but later we will need to make sure we are using them consistently.  Say that in Agda code, $\to$ is denoted by $R$.}
-
-\begin{dfn}
-  $\to$ has the \emph{recurrence property} (RP) if every
-  bounded, increasing sequence has a recurrent element.
-\end{dfn}
-
-    \begin{figure}[h]
-      \centering
-      \begin{tikzpicture}
-          % Define the nodes inside the region f
-          \node (f0) at (0, 0) {$f_0$};
-          \node (f1) at (1, 0) {$f_1$};
-          \node (dots) at (2, 0) {$...$};
-          \node (fi) at (3, 0) {$f_i$};
-          \node (fi+1) at (4, 0) {$f_{i+1}$};
-          \node (dots2) at (5,0) {$...$};
-
-          % Draw the arrows between the nodes inside the region f
-          \draw[->] (f0) -- (f1);
-          \draw[->] (f1) -- (dots);
-          \draw[->] (dots) -- (fi);
-          \draw[->] (fi) -- (fi+1);
-          \draw[->] (fi+1) -- (dots2);
-
-
-          % Define the nodes outside the region f
-          \node (a) [below=of dots, yshift=-.25cm] {\parbox{1cm}{\centering $a$ }};
-
-              % Draw the arrows between the nodes inside and outside the region f sds
-
-              \draw[->>] (f0) to [bend right] (a);
-              \draw[->>] (f1) to [bend right] (a);
-              \draw[->>] (dots) -- (a);
-              \draw[->>] (fi) to [bend left=10] (a);
-              \draw[->>] (fi+1) to [bend left] (a);
-              \draw[->>] (dots2) to [bend left] (a);
-              \draw[->>] (a) to [bend left=10] (fi);
-
-          \end{tikzpicture}
-          \caption{An example of a relation with the recurrence property.}
-
-        \end{figure}
-\begin{dfn}
-  $\to$ has the \emph{weak recurrence property} (RP-) if
-  for every increasing sequence with bound $a$,
-  there is an element $i$ of the sequence such that $a \tto f (i)$.
-\end{dfn}
-
-
-\begin{dfn}
-  \emph{Cofinality property}
-\end{dfn}
-\sacomment{Still not sure on how to define cofinality.}
-
-\begin{dfn}
-  $\to$ is \emph{finitely branching} (FB) if, for all $a \in A$, the set of one step reducts of $a$ is finite.
-\end{dfn}
-
-
-\subsection{Newmans lemma}
-What it is and the different definitions again
-
-\subsection{}
-
-\section{Notes from 08.29}
+\section{Notes}
+\subsection{Notes from 08.29}
 
 \begin{enumerate}
   \item Try to ``fix'' CP by changing $R$ into $R^r$
@@ -362,7 +771,7 @@ What it is and the different definitions again
   \item Add the definition of "recurrent element"
 \end{enumerate}
 
-\section{09.05}
+\subsection{09.05}
 \begin{enumerate}
   \item done: WN, UN, RP imply SN (classical)
   \item need: omega bounded and RP implies SN (classical)
@@ -474,28 +883,5 @@ $RP- \land \; WCR \to RP$
 
 (what other property with $RP-$ would give us $RP$?).
 
-\section{Classical Principles}
-Principles we are considering
-\begin{itemize}
-  \item Decidability of equality on $A$
-  \item Decidability of the relation $R$
-  \item When relevant, decidability of the given precicate $P$
-  \item Not-not-closure of being accessible
-  \item Not-not-closure of $R$
-  \item Not-not-closure of $P$
-  \item Decidability of whether a given element is an $R$-normal form
-  \item When relevant, local/element-wise versions of the above
-  \item Markov's principle:
-  \begin{itemize}
-    \item In $wfMin_0 \to wfSeq$.
-
-    Given a sequence $s : \nat \to A$, let $E(a) = \exists n \in \nat. s n \equiv a$.
-
-    Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
-    \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
-          \to \big(\exists n \in \nat. s n \equiv a\big)\]
-
-  \end{itemize}
-\end{itemize}
 
 \end{document}

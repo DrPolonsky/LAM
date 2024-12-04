@@ -8,3 +8,8 @@ MAlonzo/**
 *.gz 
 *.out 
 .DS_Store
+latex/agda.sty
+latex/Relations/ARS.tex
+Relations/Report.dvi
+Relations/Report.out.ps
+Relations/Report.toc

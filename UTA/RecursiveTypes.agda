@@ -2,7 +2,7 @@ open import BasicLogic
 open import BasicDatatypes
 open import Decidable
 open import SetOperations
--- open LogicOps
+open LogicOps
 -- open import FiniteAutomata
 
 module RecursiveTypes where
@@ -55,7 +55,7 @@ module RecursiveTypes where
   -- a: Fin (succ n), an atom to be added to our algebra
   -- τ: 𝕋 n, a type in our algebra
   -- Returns:
-  -- The result of mapping τ into 𝕋 (succ n) by lifting all of it's atoms into Fin (succ n) by skipping a. 
+  -- The result of mapping τ into 𝕋 (succ n) by lifting all of it's atoms into Fin (succ n) by skipping a.
   wk : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n)
   wk a (α x) = α (skip a x)
   wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
@@ -75,7 +75,7 @@ module RecursiveTypes where
   𝕋Sub : ℕ → Set
   𝕋Sub n = List (Fin n ∧ 𝕋 n)
 
-  -- A solution to the unification problem, a mapping from 
+  -- A solution to the unification problem, a mapping from
   Unifier : ℕ → Set
   Unifier n = Fin n → 𝕋 n
 
@@ -102,14 +102,14 @@ module RecursiveTypes where
   -- L : 𝕋Sub n
   -- Returns:
   -- A list of types for which the LHS in L is equal to x.
-  -- Note that this uses the elimFin function. elimFin will return the recursive call whenever x != y, 
+  -- Note that this uses the elimFin function. elimFin will return the recursive call whenever x != y,
   -- but when x == y it will return (c ∷ rc)
   lookup : ∀ {n} → (x : Fin n) → 𝕋Sub n → List (𝕋 n)
   lookup x [] = []
   lookup {succ n} x ((y , c) ∷ cs) = elimFin (λ _ → rc) (x) (c ∷ rc) (y)
     where rc = lookup x cs
 
-  -- 
+  --
   𝕋Sub→SubList : ∀ {n} → 𝕋Sub n → SubList n
   𝕋Sub→SubList ts = λ x → lookup x ts
 
@@ -156,7 +156,10 @@ module RecursiveTypes where
   atomOccursCorrect v t@(τ ⇒ τ₁) with atomOccurs v τ in p
   ... | true  = (λ x → inLeft ((pr1 (atomOccursCorrect v τ)) p) τ₁) , λ x → refl true
   ... | false = (λ x → inRight τ (((pr1 (atomOccursCorrect v τ₁)) x))) , λ {(inLeft x .τ₁) → exFalso (t≢f (atomOccurs v τ) ((pr2 (atomOccursCorrect v τ)) x) p)
-                                                                          ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x} 
+                                                                          ; (inRight .τ x) → (pr2 (atomOccursCorrect v τ₁)) x}
+
+  atomOccursDec : ∀ {n} (x : Fin n) → dec (λ A → Occurs𝕋 x A)
+  atomOccursDec x = decBy2dec (λ A → Occurs𝕋 x A) (atomOccurs x) (atomOccursCorrect x)
 
   -- Arguments:
   -- x : Fin (succ n)
@@ -196,7 +199,7 @@ module RecursiveTypes where
   -- x : Fin (succ n), an element of the underlying set for our type algebra
   -- As : List (𝕋 (succ n)), a list of elements of our algebra
   -- Returns:
-  -- A 
+  -- A
   -- Notes:
   -- This is a predicate that admits pairs of x and As s.t. x appears in an element of As in accordance with
   -- the Occurs𝕋 datatype
@@ -219,6 +222,8 @@ module RecursiveTypes where
                (occCheckList x As)} )
     (occCheck x A)
 
+
+
   List∀ : ∀ {A : Set} (P : A → Set) → List A → Set
   List∀ P [] = ⊤
   List∀ P (x ∷ xs) = P x ∧ List∀ P xs
@@ -227,6 +232,41 @@ module RecursiveTypes where
             → List∀ P (map f xs) → List∀ (λ z → P (f z)) xs
   List∀map f P [] ps = tt
   List∀map f P (x ∷ xs) (p , ps) = (p , List∀map f P xs ps )
+
+  List∀dec : ∀ {A : Set} (P : A → Set) → dec P → dec (List∀ P)
+  List∀dec P decP [] = in1 tt
+  List∀dec P decP (x ∷ xs) with decP x
+  ... | in1 Px = case (λ ∀Px → in1 (Px , ∀Px))
+                      (λ ¬∀Px → in2 λ {(Px' , ∀Px) → ¬∀Px ∀Px})
+                      (List∀dec P decP xs)
+  ... | in2 ¬Px = in2 (λ {(Px , ∀Px) → ¬Px Px})
+
+  List∀Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A)
+                     → (a : A) → (List∀ P As) → (occurs a As) → P a
+  List∀Instantiate p as a (pa , ∀pas) (atHead xs) = pa
+  List∀Instantiate p as a (pb , ∀pas') (inTail b as' a∈as') = List∀Instantiate p as' a ∀pas' a∈as'
+
+  List∃ : ∀ {A : Set} (P : A → Set) → List A → Set
+  List∃ P [] = ⊥
+  List∃ P (x ∷ xs) = P x ∨ List∃ P xs
+
+  occursList∃ : ∀ {A : Set} (P : A → Set) (x : A) (xs : List A)
+                → occurs x xs → P x → List∃ P xs
+  occursList∃ P x .(x ∷ xs) (atHead xs) Px = in1 Px
+  occursList∃ P x .(b ∷ xs) (inTail b xs x∈xs) Px = in2 (occursList∃ P x xs x∈xs Px)
+
+  List∃dec : ∀ {A : Set} (P : A → Set) → dec P → dec (List∃ P)
+  List∃dec p ¬p∨p [] = in2 (λ x → x)
+  List∃dec p ¬p∨p (x ∷ xs) with ¬p∨p x
+  ... | in1 px  = in1 (in1 px)
+  ... | in2 ¬px = case (λ ∃ → in1 (in2 ∃)) (λ ¬∃ → in2 (λ {(in1 px) → ¬px px
+                                                         ; (in2 ∃) → ¬∃ ∃})) (List∃dec p ¬p∨p xs)
+
+  List∃Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A)
+                     → (List∃ P As) → ∃ (λ x → (occurs x As) ∧ P x)
+  List∃Instantiate P (x ∷ xs) (in1 Px) = exists x ((atHead xs) , Px)
+  List∃Instantiate P (x ∷ xs) (in2 ∃xs) with List∃Instantiate P xs ∃xs
+  ... | exists x' (x'∈xs , Px') = exists x' ((inTail x xs x'∈xs) , Px')
 
   -- Arguments:
   -- x : Fin (succ n), an element of the underlying set for the algebra
@@ -261,19 +301,49 @@ module RecursiveTypes where
   -- Arguments:
   -- s : SubList n, an SR
   -- Returns:
-  -- A type admitting s, s.t. for each x ∈ Dom(s), s is properPred w.r.t. x. An SR for which
+  -- A type admitting s, s.t. for each x ∈ Dom(s), s x is properPred. An SR for which
   -- this is the case is called Proper
   isProperSR : ∀ {n} → SubList n → Set
   isProperSR {0} _ = ⊥
   isProperSR {succ n} s = ∀ x → properPred s x
 
-  -- WkSR : ∀
+  -- Simple list type for fin
+  Fin* : ∀ (n : ℕ) → Set
+  Fin* n = List (Fin n)
+
+  -- Arguments:
+  -- n : ℕ, a natural number
+  -- Returns:
+  -- The list containing all elements of Fin (succ n)
+  enumFin : (n : ℕ) → Fin* (n)
+  enumFin 0 = []
+  enumFin (succ n) = here n ∷ (map down (enumFin n))
+
+  enumFinCorrect : {n : ℕ} → (x : Fin n) → occurs x (enumFin n)
+  enumFinCorrect {succ n} (here n) = atHead (map down (enumFin n))
+  enumFinCorrect {succ n} (down f) = inTail (here n)
+                                            (map down (enumFin n))
+                                            (occursMap (enumFin n) (down) (enumFinCorrect f))
+
+  enumFin' : {n : ℕ} (L : List (Fin n)) → Set
+  enumFin' {n} L = (∀ (f : Fin n) → occurs f L)
+
+  -- decProper : ∀ {n} → (s : SubList (succ n)) ->
+  --                     isProperSR s ∨
+  --                     ∃ (λ x → ∃ (λ A → occurs A (s x) ∧ ¬ Occurs𝕋 x A))
+  -- decProper {n} SR = case {!   !}
+  --                         {!   !}
+  --                         {!   !}
+
+  -- head : {A : Set} → (xs : List A) → ¬ (xs ≡ []) → A
+  -- head [] ¬e = exFalso (¬e (refl _))
+  -- head (x ∷ xs) ¬e = x
 
   -- unify1 : ∀ {n m} → n ≤ m → Unifier m → (s : SubList n) →
   --                            (isProperSR s ∨ ∃ (λ s' → s' ≡ WkSR s)) ∧ Unifier m
 
 
-  
+
   -- subst𝕋 a A B = B[A/a]
   subst𝕋 : ∀ {n} → Fin (succ n) → 𝕋 n → 𝕋 (succ n) → 𝕋 n
   subst𝕋 a A (α b) = elimFin α a A b
@@ -312,9 +382,9 @@ module RecursiveTypes where
   -- x : Fin (succ n)
   -- Returns:
   -- If s is proper w.r.t. x, returns a proof that this is the case.
-  -- Otherwise there is a type in s x s.t. 
+  -- Otherwise there is a type in s x s.t.
   solverStep1 : ∀ {n} → (s : SubList (succ n)) → (x : Fin (succ n))
-                     → List∀ (Occurs𝕋 x) (s x) ∨ (𝕋 n ∧ SubList n)
+                      → List∀ (Occurs𝕋 x) (s x) ∨ (𝕋 n ∧ SubList n)
   solverStep1 {n} s x with decOccAtomList x (s x)
   ... | in1 (exists A (A∈sx , x∉A)) =
     case (λ x∈A → exFalso (x∉A x∈A) )
@@ -322,10 +392,99 @@ module RecursiveTypes where
          (occCheck x A)
   ... | in2 yes = in1 yes
 
-  solverStep2 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
-                →   (∀ (x : Fin (succ n)) → List∀ (Occurs𝕋 x) (s x))
-                  ∨ (SubList n ∧ (Fin (succ m) → 𝕋 n))
-  solverStep2 {n} sr sub = {!   !}
+  elimFin¬Occ : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n)))
+                          → ¬ (occurs f L) → List (Fin n)
+  elimFin¬Occ [] f ¬occ = []
+  elimFin¬Occ {n} (x ∷ L) f ¬occ with decFin x f
+  ... | in1 x≡f rewrite x≡f = exFalso (¬occ (atHead L))
+  elimFin¬Occ {zero} (x ∷ L) f ¬occ | in2 ¬x≡f = []
+  elimFin¬Occ {succ n} L@(here .(succ n) ∷ L') f ¬occ | in2 ¬x≡f = map (elimFin (λ x → x) f (here n)) L
+  elimFin¬Occ {succ n} L@(down x' ∷ L') f ¬occ | in2 ¬x≡f = map (elimFin (λ x → x) f x') L
+
+  -- elimFin¬OccCorrect : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n)))
+  --                                 → (¬occ : ¬ (occurs f L)) → map (skip f) (elimFin¬Occ L f ¬occ) ≡ L
+  -- elimFin¬OccCorrect L f ¬occ = {!   !}
+  --
+  -- {-  #TODOLIST#
+  --     1: Need to show that there are no dups in L s.t. enumFin' L
+  --     2: Need to then show that with f∈(f∷fs) and f∈fs we have a contradiction
+  -- -}
+  -- finListLemma : ∀ {n : ℕ} → (P : (Fin n → Set)) → dec P
+  --                          → (L : List (Fin n)) → (enumFin' L)
+  --                          → (List∀ P L) ∨ ∃ (λ f' → ¬ (P f'))
+  -- finListLemma p ¬p∨p [] ∀f∈fs = in1 tt
+  -- finListLemma {succ n} p ¬p∨p (f ∷ fs) ∀f∈fs = case (case (λ pf ∀pfs → in1 (pf , {!  !})) (λ ¬pf _ → in2 (exists f ¬pf)) (¬p∨p f))
+  --     (λ {(exists x ¬px) → in2 (exists (skip f x) ¬px)})
+  --     (finListLemma p' ¬p∨p' (elimFin¬Occ fs f λ x → {!   !}) λ f₁ → {!  !})
+  --     where p' : Fin n → Set
+  --           p' = λ x → p (skip f x)
+  --           ¬p∨p' : dec p'
+  --           ¬p∨p' = λ x → case (λ p → in1 p) (λ ¬p → in2 ¬p) (¬p∨p (skip f x))
+
+  DecP→-P : ∀ {A : Set} → (P : A → Set) → dec P → dec (- P)
+  DecP→-P p ¬p∨p x with ¬p∨p x
+  ... | in1 px  = in2 (λ ¬px → ¬px px)
+  ... | in2 ¬px = in1 ¬px
+
+  DMList∀∃ : ∀ {A : Set} (xs : List A)
+             → (P : A → Set) → dec P → ¬ List∀ P xs
+             → List∃ (- P) xs
+  DMList∀∃ [] P ¬P∨P ¬∀ = ¬∀ tt
+  DMList∀∃ (x ∷ xs) P ¬P∨P ¬∀ with ¬P∨P x
+  ... | in1 Px = in2 (DMList∀∃ xs P ¬P∨P (λ ∀x → ¬∀ (Px , ∀x)))
+  ... | in2 ¬Px = in1 ¬Px
+
+
+  step1 : ∀ {n} → (s : SubList (succ n)) →
+                isProperSR s ∨ ∃ (λ (x : Fin (succ n)) → List∃ (- (Occurs𝕋 x)) (s x))
+  step1 {n} s with List∃dec
+                         (λ x → List∃ (- (Occurs𝕋 x)) (s x))
+                         (λ x → List∃dec (- (Occurs𝕋 x)) (DecP→-P (Occurs𝕋 x) (atomOccursDec x)) (s x))
+                         (enumFin (succ n))
+  ... | in2 ¬∃ = in1 f where
+     f : ∀ x → List∀ (Occurs𝕋 x) (s x)
+     f x with List∀dec (Occurs𝕋 x) (atomOccursDec x) (s x)
+     ... | in1 ∀occ  = ∀occ
+     ... | in2 ¬∀occ with DMList∀∃ (s x) (Occurs𝕋 x) (atomOccursDec x) ¬∀occ
+     ... | ∃ with List∃Instantiate (λ 𝕥 → Occurs𝕋 x 𝕥 → ⊥) (s x) ∃
+     f (here .n) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in1 ∃))
+     f (down x) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) =
+      exFalso (¬∃ (in2 (occursList∃ (λ z → List∃ (λ z₁ → (x : Occurs𝕋 z z₁) → ⊥) (s z)) (down x) (map down (enumFin n))
+        (occursMap (enumFin n) down (enumFinCorrect x )) ∃)))
+  ... | in1 occ with List∃Instantiate (λ x → List∃ (λ x₁ → Occurs𝕋 x x₁ → ⊥) (s x)) (enumFin (succ n)) occ
+  ... | exists x (x₁ , x₂) = in2 (exists x x₂)
+
+  step2 :  ∀ {n} → (s : SubList (succ n)) (x : Fin (succ n)) (A : 𝕋 (succ n))
+                 → ¬ Occurs𝕋 x A → occurs A (s x) → (𝕋 n ∧ SubList n)
+  step2 s x A x∉A A∈sx with occCheck x A
+  ... | in1 x∈A = exFalso (x∉A x∈A)
+  ... | in2 (exists B A=wkB) = (B , ++SubList (substSubList x B s) (substVarList x B s) )
+
+  step3 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
+                → (isProperSR s) ∨ ((Fin (succ m) → 𝕋 n) ∧ SubList n)
+  step3 {n} s sub with step1 s
+  ... | in1 sIsProperSR = in1 sIsProperSR
+  ... | in2 (exists x x∈sx) with List∃Instantiate _ _ x∈sx
+  ... | exists A (A∈sx , x∉A) with step2 s x A x∉A A∈sx
+  ... | (B , s') = in2 (elimFin (subst𝕋 x B ∘ sub) (here _) B  , s')
+
+  -- instOf : ∀ {A : Set} {B : A → Set} → ∃ {A} B → A
+  -- instOf (exists x y) = x
+
+  step4m   : ∀ {n} → (s : SubList n) → ℕ
+  step4k   : ∀ {n} → (s : SubList n) → ℕ
+  step4eq  : ∀ {n} → (s : SubList n) → n ≡ step4m s + step4k s
+  step4sr  : ∀ {n} → (s : SubList n) → ∃ {SubList   (step4m s)} isProperSR
+  step4sub : ∀ {n} → (s : SubList n) → Fin (step4k s) → 𝕋 (step4m s)
+
+  step4m {zero} s = zero
+  step4m {succ n} s = {!   !}
+  step4k s = {!   !}
+  step4eq s = {!   !}
+  step4sr s = {!   !}
+  step4sub s = {!   !}
+
+  -- step4correct : ∀ {n} → "step4sr s + step4sub s are equivalent to s"
 
   elemFinN : ∀ n → List (Fin n)
   elemFinN zero = []
