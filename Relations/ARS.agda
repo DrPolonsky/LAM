@@ -393,13 +393,6 @@ module Miscellaneous (R : 𝓡 A) where
   -- SN∧WNFP→CRloc : ∀ x → is R -WNFP x → is R -SN x → is R -CR x
   -- SN∧WNFP→CRloc x x∈WNFP (acc xa) {b} {c} R*xb R*xc = {!   !}
 
-  -- Add these goals to future work?
-  SN∧WNFP→CR : SN R → WNFP R → CR R
-  SN∧WNFP→CR RisSN RisWNFP a {b}{c} R*ab R*ac with RisSN a
-  ... | acc acca = {!   !}
-  -- RisWNFP {!   !} R*ab R*ac
-  -- ... | z = {!   !}
-
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
     CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R

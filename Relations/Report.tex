@@ -12,7 +12,7 @@
 
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\quad\ding{51}}%
-\newcommand{\xmark}{\quad\ding{55}}%
+\newcommand{\xmark}{\quad\ding{55}}%  
 
 \newcommand{\thra}{\twoheadrightarrow}
 \newcommand{\thla}{\twoheadleftarrow}
@@ -827,6 +827,11 @@ With the above definitions established we define the notions of well-foundedness
     \item Knaster-Tarski Lemma: Most general form? Alternative formulations?
     \item Knaster--Tarski in a well-founded setting: what additional
     hypotheses are necessary?
+    \item Show SN and WNFP $\to$ CR : SN R $to$ WNFP R $to$ CR R (or, what combination of properties with WNFP gets us to CR)
+    \item Major: Find a classical or constructive solution to theorem 1-2-3 ii. Note, we have a counterexample showing that we 
+    cannot solve this whilst using recurrence property and boundedness rather than ind(uctive) and inc(reasing). The counterexample is the self loop on an element. 
+    \item is $\omega$-bounded implied by WN and the following confluence property:
+    $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $. (This is a weaker form of WNFP)
   \end{enumerate}
 
   \subsection*{Questions about Well-foundedness}
@@ -882,6 +887,9 @@ With the above definitions established we define the notions of well-foundedness
     \item The role of WCR in the proof of our generalization of Thm. 1.2.3(iii)
   \end{itemize}
   \item Complete the ``design'' of the chart(s) with implications?
+  \begin{itemize}
+    \item   Look at Exercise 1.3.22 (Show UN $\to$ UN$^\to$ but not conversely. Show a counterexample to WCR and UN$^\to$ $\to$ UN. Find a counter example to WCR and WN $\to$ Ind)
+  \end{itemize}
   \item Complete the proof of Theorem 1.2.3
   \item Address outstanding questions about wellfoundness implications.
   \begin{itemize}
@@ -890,63 +898,27 @@ With the above definitions established we define the notions of well-foundedness
     \item DecMin suffices for $SN\to WN$, but what is the optimal \emph{necessary} condition?
     \item Relationship between these, and De Morgan's laws.
   \end{itemize}
+  \item Complete the classical properties section
+  \item Complete the guide to the code section
+  \item Miscellaneous
+  \begin{itemize}
+    \item   Make the first argument to "being a normal form" implicit?
+    \item   Define: Inc in report
+    \item   Define: Ind in report 
+    \item   Define: $\mathrm{CR}^{\le 1}$ in report
+    \item   More laws about closure operations: Monotonicity, idempotency
+    \item   Tidy up and standardize the notation used in ars.agda and other agda files
+
+
+  \end{itemize}
 \end{enumerate}
 
 \subsection{General todo list}
 \begin{enumerate}
-  \item Look at Exercise 1.3.22
-  \item  Make the first argument to "being a normal form" implicit?
-  \item Define WNFP to be:
-  \[\forall a b c \to b \in NF \to a R^* b \to a R^* c \to c R^* b \]
-  \item Does WNFP and WN imply CR?  Looks like it!
-  \item  Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$.)
-
-  Could even consider $SN^*$, $CR^*$ etc.
-  \item Define: Inc
-  \item Define: Ind
-  \item Define: $\mathrm{CR}^{\le 1}$
-  \item capture all classical properties/asssumptions we might want to use and justify their use.
-  \item Principles we are considering
-  \begin{itemize}
-    \item Decidability of equality on $A$
-    \item Decidability of the relation $R$
-    \item When relevant, decidability of the given precicate $P$
-    \item Not-not-closure of being accessible
-    \item Not-not-closure of $R$
-    \item Not-not-closure of $P$
-    \item Decidability of whether a given element is an $R$-normal form
-    \item When relevant, local/element-wise versions of the above
-    \item Markov's principle:
-    \begin{itemize}
-      \item In $wfMin_0 \to wfSeq$.
-
-      Given a sequence $s : \nat \to A$, let $E(a) = \exists n \in \nat. s n \equiv a$.
-
-      Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
-      \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
-            \to \big(\exists n \in \nat. s n \equiv a\big)\]
-
-    \end{itemize}
-  \end{itemize}
-  \item Write a guide to the code
-  \item More laws about closure operations: Monotonicity, idempotency
+  \item  Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$). Could even consider $SN^*$, $CR^*$ etc. \sacomment{Is this what we have already shown 
+  in the reduction closure properties? If so we can delete this. If not it should be moved to open questions}
 \end{enumerate}
 
-\subsection*{Week starting 11th November}
-\begin{enumerate}
-  \item[\cmark] In the report, give a classical proof that the $Inc$ Property
-  implies that no $R$-increasing sequence is bounded.
-
-  Conclude that every relation satisfying $Inc$ also satisfies $RP$.
-
-  Therefore, the proof of Theorem 1.2.3(iii) using $RP$ instead of $Inc$
-  is generalizing the claim of the theorem (as stated in [TeReSe]).
-  \item Complete the proof in ARS.agda of Theorem 1.2.3.(iii)
-  \item Organize notes.tex into three sections: TODO, Open Qs, What we've proved. Make sure all notes from the other
-  tex files are sorted here correctly.
-  \item Tidy up and standardize the notation used in ars.agda and other agda files
-  \item Carry on working through report.tex.
-\end{enumerate}
 
 \newpage
 
@@ -968,48 +940,17 @@ Four local ``normal form properties'':
 
 \subsection{Notes from 08.29}
 \begin{enumerate}
-  \item Try to ``fix'' CP by changing $R$ into $R^r$
   \item Finish formulating the ``compactness property".  Two candidates:
   \begin{itemize}
     \item ``Every cocone for a given infinite sequence loops back to some point in the sequence"
     \item ``If an $R^*$-sequence has a cocone then it's constant after some point on.''
   \end{itemize}
-  \item Add the definition of "recurrent element"
-\end{enumerate}
+\end{enumerate} \sacomment{This is our recurrence property right? If so, we can just delete this.}
 
-\subsection{09.05}
-\begin{enumerate}
-  \item done: WN, UN, RP imply SN (classical)
-  \item need: omega bounded and RP implies SN (classical)
-  \item need: omega bounded and RP implies SN (constructive)
-  \item do we need $s_0 \to^* s_c$ in the proof?
-  \item is $\omega$-bounded implied by WN and the following confluence property:
-  $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $.
-  \item Remark before 1.2? (Exercise 1.3.21)
-  \item Make the first argument to "being a normal form" implicit?
-\end{enumerate}
-
-\newcommand{\RP}{\mathsf{RP}}
-\newcommand{\NF}{\mathsf{NF}}
-\newcommand{\UN}{\mathsf{UN}}
-\newcommand{\UNto}{\mathsf{UN}{\to}}
-\newcommand{\SN}{\mathsf{SN}}
-\newcommand{\WN}{\mathsf{WN}}
-\newcommand{\from}{\leftarrow}
 
 \subsection*{Additional remarks about Theorem 1.2.3.}
 \begin{itemize}
-  \item It seems that part (i) of the theorem can be strengthened to only
-  assume $\UNto(R)$ instead of $\UN(R)$:
-  \[ \WN(R) \land \UNto(R) \to \omega{-}\text{bounded}(R) \tag{i} \]
-  \textcolor{red}{(See ARS.agda i+)}
-  \item The analogue of part (ii) of the theorem is unprovable, namely
-  \[ \omega{-}\text{bounded}(R) \land \RP(R) \to \SN(R) \tag{ii}\]
-  For a countermodel, take the one-element loop $a \to a$.
-
-  (It is both $\omega${-}bounded and satisfies RP.)
-
-  Our hypothesis RP is indeed weaker than ``Inc'' from Terese.
+  
   \item The goal \texttt{iii-lemma :  $WN(R) \to WCR(R) \to \omega{-}\text{bounded}(R)$}
   seems either very difficult or impossible.
 
@@ -1074,20 +1015,7 @@ Four local ``normal form properties'':
   This yields a contradiction.
 
 \end{itemize}
-\subsection{09.10 (midweek updata)}
-Is it possible to weaken RP? A possible suggestion:
 
-$RP- :: \omega-bounded \to  \exists i. b \to^* f i$
-
-Does:
-
-$RP \to RP-$
-
-Does:
-
-$RP- \land \; WCR \to RP$
-
-(what other property with $RP-$ would give us $RP$?).
 
 
 \end{document}
