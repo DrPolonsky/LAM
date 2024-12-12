@@ -611,7 +611,8 @@ Counterexample to:
 \begin{itemize}
   \item WN $\implies$ SN
   \item WN and CR $\implies$ SN
-  \item WN, CR and, bounded $\implies$ SN
+  \item WN, CR, and bounded $\implies$ SN
+  \item WN, UN, and bounded $implies$ SN 
 \end{itemize}
 
 \subsection*{Counterexample 6}
@@ -832,6 +833,8 @@ With the above definitions established we define the notions of well-foundedness
     cannot solve this whilst using recurrence property and boundedness rather than ind(uctive) and inc(reasing). The counterexample is the self loop on an element. 
     \item is $\omega$-bounded implied by WN and the following confluence property:
     $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $. (This is a weaker form of WNFP)
+    \item WN and WCR $\to$ bounded. We reached a dead end trying to show this before. Check github history in the ARS file for iii-lemma 
+    if you'd like to see the previous direction.
   \end{enumerate}
 
   \subsection*{Questions about Well-foundedness}

@@ -486,12 +486,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
 
-  -- Cleanup?
-  -- Want to prove or disprove!            [ Try to find a counterexample! ***] [Counterexample 5 in report?]
-  ii- : WN R → UN R → bounded R → SN R
-  ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
-  ... | RisCR = {!   !}
-
 
   -- A classical proof of iii (subbing RP for Inc)
   open import Classical
@@ -624,16 +618,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | in2 R*fcₙfbₙ = (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
 -- Useful dead-ends
-
--- Add to open problems
--- ** AN INTERESTING ONE!!
-  iii-lemma :  WN R → weakly-confluent R → bounded R
-  iii-lemma wnR wcrR f f-inc with wnR (f 0)
-  ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
-          ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
-          ρ zero = R*f0n
-          ρ (succ n) = {!   !}
-          -- iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n ) -- note iii-lemma2 is not yet proven
 
 
 -- The rest go into "counterexamples"
