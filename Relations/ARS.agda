@@ -620,33 +620,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 -- Useful dead-ends
 
 
--- The rest go into "counterexamples"
--- A variation of the below, with the second normal form being a loop
-  NFisωBnd : WCR R → ∀ (f : ℕ → A) → is R -increasing f → ∀ a → is R -NF a
-               → (R ⋆) (f 0) a → ∀ n → (R ⋆) (f n) a
-  NFisωBnd RisWCR f f-inc a a∈NF R*f0a zero = R*f0a
-  NFisωBnd RisWCR f f-inc a a∈NF R*f0a (succ n)
-    with NFisωBnd RisWCR f f-inc a a∈NF R*f0a n
-  ... | ε⋆ = ∅ (a∈NF (f (succ n)) (f-inc n) )
-  ... | Rfny ,⋆ R*ya = {!   !}
-  --  NFisωBnd RisWCR (f ∘ succ) (λ i → f-inc (succ i) ) a a∈NF {!   !} {!   !}
-
--- False; see the usual counterexample to WCR→CR
-  iii-lemma1 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
-  iii-lemma1 wcrR a .a b∈NF ε⋆ .a ε⋆ = ε⋆
-  iii-lemma1 wcrR a .a b∈NF ε⋆ c (Ray ,⋆ R*yc) = ∅ (b∈NF _ Ray )
-  iii-lemma1 wcrR a b b∈NF R*ab@(Ray ,⋆ R*yb) .a ε⋆ = R*ab
-  iii-lemma1 wcrR a b b∈NF (Ray ,⋆ R*yb) c (_,⋆_ {y = z} Raz R*zc)
-    with wcrR (a ,, Ray , Raz)
-  ... | (d ,, R*yd , R*zd) = {!    !}
-
-  -- Same; see counterexample to WCR→CR
-  iii-lemma2 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
-  iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
-  iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
-  ... | (d ,, R*yd , R*cd) = {! iii-lemma2 wcrR _ b b∈NF R*yb    !}
-  -- with iii-lemma2 wcrR y b b∈NF R*yb
-  -- ... | z = {!   !}
 
   -- Comp : Set
   -- Comp = ∀ (f : ℕ → A) → is (R ⋆) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)

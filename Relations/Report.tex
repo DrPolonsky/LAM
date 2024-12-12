@@ -502,12 +502,38 @@ The following counterexamples are used to rule out certain implications between 
 Counterexample to:
 \begin{itemize}
   \item WCR $\implies$ CR
+  \item WCR  $\implies$ WNFP
+  \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ R a c $\to$ (R *) c b }
   \item WCR and WN $\implies$ CR
   \item WCR and WN $\implies$ SN
-  \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ (R *) a c $\to$ (R *) c b}
-  \item IOW and WCR $\implies$ WNFP \sacomment{We need to define these still (IOW and WNFP)}
+  \item IOW and WCR $\implies$ WNFP \sacomment{We need to define these still (IOW and WNFP) in the report}
 \end{itemize}
+
 \subsection*{Counterexample 2}
+\begin{center}
+  \begin{tikzcd}
+      % Nodes
+      \node (x) {a};
+      \node (n) [left of=x, xshift=-1cm] {n \in NF};
+      \node (y) [right of=x, xshift=1cm] {b};
+      \node (z) [right of=y] {c};
+
+      % Arrows
+      \draw[->] (x) -- (n);
+      \draw[->] (x) -- (y);
+      \draw[->] (y) to [bend left] (z);
+      \draw[->] (z) to [bend left] (y);
+  \end{tikzcd}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item WCR and an increasing sequence where the first elelement of the sequence reduces to an element in normal form $\to$ 
+  the sequence is bounded.
+\end{itemize}
+
+
+\subsection*{Counterexample 3}
 \begin{center}
   \begin{tikzcd}
       % Nodes
@@ -537,7 +563,7 @@ Counterexample to:
 
 \end{itemize}
 
-\subsection*{Counterexample 3}
+\subsection*{Counterexample 4}
 
 \begin{center}
   \begin{tikzcd}
@@ -554,7 +580,7 @@ Counterexample to:
   \item bounded and RP $\implies$ WN
 \end{itemize}
 
-\subsection*{Counterexample 4}
+\subsection*{Counterexample 5}
 An infinite sequence
   \begin{center}
       \begin{tikzpicture}
@@ -579,7 +605,7 @@ Counterexample to:
   \item CR and CP $\implies$ bounded
 \end{itemize}
 
-\subsection*{Counterexample 5}
+\subsection*{Counterexample 6}
 An infinite sequence with a bound that is a normal form.
 \begin{center}
 
@@ -615,7 +641,7 @@ Counterexample to:
   \item WN, UN, and bounded $implies$ SN 
 \end{itemize}
 
-\subsection*{Counterexample 6}
+\subsection*{Counterexample 7}
 An infinite sequence with a bound that is a normal form where each element
 of the sequence has a single step relation to the initial element of the sequence.
 \begin{center}
@@ -651,7 +677,7 @@ Counterexample to:
   \item RP
 \end{itemize}
 
-\subsection*{Counterexample 7}
+\subsection*{Counterexample 8}
 An "infinite haircomb"
 \begin{center}
   \begin{tikzpicture}
