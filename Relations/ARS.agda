@@ -169,8 +169,8 @@ module Termination (R : 𝓡 A)  where
   is_-SN_ : 𝓟 A
   is_-SN_ = is_-SNacc_
 
-  is_-WNFP_ : 𝓟 A
-  is_-WNFP_ x = ∀ {y z} → is_-NF_ y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
+  -- is_-WNFP_ : 𝓟 A
+  -- is_-WNFP_ x = ∀ {y z} → is_-NF_ y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
 
   is_-UN_ : 𝓟 A
   is_-UN_ x = ∀ {y} {z} → is_-NF_ y → is_-NF_ z → (R ⋆) x y → (R ⋆) x z → y ≡ z
@@ -196,8 +196,8 @@ module Termination (R : 𝓡 A)  where
   SN : Set
   SN = ∀ x → is_-SN_ x
 
-  WNFP : Set
-  WNFP = ∀ {x} → is_-WNFP_ x
+  -- WNFP : Set
+  -- WNFP = ∀ {x} → is_-WNFP_ x
 
   NFP : Set
   NFP = ∀ {a b} → is_-NF_ b → (R ⁼) a b → (R ⋆) a b
