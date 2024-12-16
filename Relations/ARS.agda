@@ -360,6 +360,18 @@ module Theorem-1-2-2 (R : 𝓡 A) where
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
 module Miscellaneous (R : 𝓡 A) where
+
+  ¬¬NF⊆NF : ∀ x → ¬¬ (is R -NF x) → is R -NF x
+  ¬¬NF⊆NF x nnNFx y Rxy = nnNFx λ x∈NF → x∈NF y Rxy
+
+  open ReductionClosureProperties using (rec↓⊆rec)
+
+  -- ¬¬R⊆R : ∀ x → ¬¬ (is R -recurrent x) → is R -recurrent x
+  -- ¬¬R⊆R x nnRx .x ε⋆ = ε⋆
+  -- ¬¬R⊆R x nnRx y (_,⋆_ {y = z} Rxz R*zy)
+  --   with ¬¬R⊆R z (λ z∉R → nnRx (λ x∈R → z∉R (rec↓⊆rec R x∈R (Rxz ,⋆ ε⋆)) ) ) y R*zy
+  -- ... | c = {!   !}
+
   -- Recurrent property
   RP : Set
   -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
@@ -406,6 +418,7 @@ module Miscellaneous (R : 𝓡 A) where
     -- Looks true, perhaps messy
     -- Question: WN ∧ (∀ x → UN(x)) → UN(R) ?
 
+    -- SN∩UN⊆NP, also need to prove: UN↓⊆UN
     UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
                   → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
     UN-lemma R decNF x x∈SN x∈UN y y∈NF R*xy .x ε⋆ = R*xy
@@ -415,6 +428,7 @@ module Miscellaneous (R : 𝓡 A) where
     ... | refl = UN-lemma R decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y y∈NF R*z₀z' z R*z₀z
       where z₀∈UN = λ {a} {b} a∈NF b∈NF R*z₀a R*z₀b → x∈UN a∈NF b∈NF (Rxz₀ ,⋆ R*z₀a) (Rxz₀ ,⋆ R*z₀b)
 
+    -- SN∩UN⊆CR, try to do this by induction on accessibility, without relying on SN⊆WN
     SN∧UN→CRelem : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x → is R -CR x
     SN∧UN→CRelem R decNF x x∈SN x∈UN {b} {c} R*xb R*xc with SNdec→WN R decNF x x∈SN
     ... | (z ,, R*xz , z∈NF) = (z ,, UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz b R*xb

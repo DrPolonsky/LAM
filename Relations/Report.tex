@@ -12,12 +12,13 @@
 
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\quad\ding{51}}%
-\newcommand{\xmark}{\quad\ding{55}}%  
+\newcommand{\xmark}{\quad\ding{55}}%
 
 \newcommand{\thra}{\twoheadrightarrow}
 \newcommand{\thla}{\twoheadleftarrow}
 \newcommand{\thlra}{{\thla\!\!\thra}}
 
+\newcommand{\down}[1]{{#1}{\downarrow}}
 \begin{document}
 \renewcommand{\arraystretch}{1.3}
 
@@ -527,7 +528,7 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-  \item WCR and an increasing sequence where the first elelement of the sequence reduces to an element in normal form $\to$ 
+  \item WCR and an increasing sequence where the first elelement of the sequence reduces to an element in normal form $\to$
   the sequence is bounded.
 \end{itemize}
 
@@ -636,7 +637,7 @@ Counterexample to:
   \item WN $\implies$ SN
   \item WN and CR $\implies$ SN
   \item WN, CR, and bounded $\implies$ SN
-  \item WN, UN, and bounded $implies$ SN 
+  \item WN, UN, and bounded $implies$ SN
 \end{itemize}
 
 \subsection*{Counterexample 7}
@@ -853,11 +854,11 @@ With the above definitions established we define the notions of well-foundedness
     \item Knaster--Tarski in a well-founded setting: what additional
     hypotheses are necessary?
     \item Show SN and WNFP $\to$ CR : SN R $to$ WNFP R $to$ CR R (or, what combination of properties with WNFP gets us to CR)
-    \item Major: Find a classical or constructive solution to theorem 1-2-3 ii. Note, we have a counterexample showing that we 
-    cannot solve this whilst using recurrence property and boundedness rather than ind(uctive) and inc(reasing). The counterexample is the self loop on an element. 
+    \item Major: Find a classical or constructive solution to theorem 1-2-3 ii. Note, we have a counterexample showing that we
+    cannot solve this whilst using recurrence property and boundedness rather than ind(uctive) and inc(reasing). The counterexample is the self loop on an element.
     \item is $\omega$-bounded implied by WN and the following confluence property:
     $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $. (This is a weaker form of WNFP)
-    \item WN and WCR $\to$ bounded. We reached a dead end trying to show this before. Check github history in the ARS file for iii-lemma 
+    \item WN and WCR $\to$ bounded. We reached a dead end trying to show this before. Check github history in the ARS file for iii-lemma
     if you'd like to see the previous direction.
   \end{enumerate}
 
@@ -931,7 +932,7 @@ With the above definitions established we define the notions of well-foundedness
   \begin{itemize}
     \item   Make the first argument to "being a normal form" implicit?
     \item   Define: Inc in report
-    \item   Define: Ind in report 
+    \item   Define: Ind in report
     \item   Define: $\mathrm{CR}^{\le 1}$ in report
     \item   More laws about closure operations: Monotonicity, idempotency
     \item   Tidy up and standardize the notation used in ars.agda and other agda files
@@ -942,10 +943,15 @@ With the above definitions established we define the notions of well-foundedness
 
 \subsection{General todo list}
 \begin{enumerate}
-  \item  Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$). Could even consider $SN^*$, $CR^*$ etc. \sacomment{Is this what we have already shown 
+  \item  Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$). Could even consider $SN^*$, $CR^*$ etc. \sacomment{Is this what we have already shown
   in the reduction closure properties? If so we can delete this. If not it should be moved to open questions}
 \end{enumerate}
 
+\apcomment{For a property $P(x)$, let $\down{P}(x) := \forall y. x \thra y \implies P(y)$}
+
+Note that $\down{P} \subseteq P$.
+
+If the converse inclusion holds, we will say that $P$ is \emph{closed under reduction}.
 
 \newpage
 
@@ -953,6 +959,7 @@ With the above definitions established we define the notions of well-foundedness
 
 
 \subsection*{November 21}
+\apcomment{These may be addressed by the implications table}
 Four local ``normal form properties'':
 \begin{enumerate}
   \item $WNFP(a) : \forall n \in NF. (a \tto n) \to \forall b. (a \tto b) \to (b \tto n)$
@@ -965,21 +972,14 @@ Four local ``normal form properties'':
     "$a$ is convertible to at most one normal form''
 \end{enumerate}
 
-\subsection{Notes from 08.29}
-\begin{enumerate}
-  \item Finish formulating the ``compactness property".  Two candidates:
-  \begin{itemize}
-    \item ``Every cocone for a given infinite sequence loops back to some point in the sequence"
-    \item ``If an $R^*$-sequence has a cocone then it's constant after some point on.''
-  \end{itemize}
-\end{enumerate} \sacomment{This is our recurrence property right? If so, we can just delete this.}
-
 
 \subsection*{Additional remarks about Theorem 1.2.3.}
 \begin{itemize}
-  
+
   \item The goal \texttt{iii-lemma :  $WN(R) \to WCR(R) \to \omega{-}\text{bounded}(R)$}
   seems either very difficult or impossible.
+
+  \apcomment{This implication should be either proved or refuted.}
 
   Yet, constructing the bound of a given $R$-increasing sequence is key to the proof of
   (our interpretation of) Theorem 1.2.3(iii), namely that
