@@ -13,10 +13,57 @@
 \newcommand{\then}{\quad\mathrel{\Longrightarrow}\quad}
 
 \newcommand{\ints}{\mathbb{Z}}
+\newcommand{\nat}{\mathbb{N}}
 
 \begin{document}
 
 \maketitle
+
+\section{Standard ADTs}
+\begin{itemize}
+  \item $s(X) = 1 + 2\cdot X$, $S = \mu X. s(x)$
+  \item $t(X) = 1 + X^2$, $T = \mu X. t(x)$
+  \item $m(X) = 1 + X + X^2$, $M = \mu X. m(x)$
+  \item $j(X) = 1 + 2X + X^2$, $J = \mu X. j(x)$
+  \item $h(X) = 1 + X + X^3$, $H = \mu X. h(x)$
+  \item $h(X) = 1 + X^2 + X^4$
+\end{itemize}
+
+\section{Research problems}
+\subsection{Relating different ``roots'' of a single ADT}
+
+Enumerate/define the polynomials that leave the given ADT unchanged
+
+Examples:
+\begin{enumerate}
+  \item $T = T^5$
+  \item $M = M^3$
+  \item $J = J^2$
+\end{enumerate}
+
+\subsection{Relating different ADTs in terms of their roots}
+\begin{enumerate}
+  \item $T^3 = M^2$
+  \item $T^3$ and $M^2$ vs. $S$?
+  \item
+\end{enumerate}
+
+\subsection{A type theory defining equality without triple equality}
+
+\section{Definitions}
+
+\begin{itemize}
+  \item Let $\nat[x]$ be the set of all polynomials in variable $x$ with coefficients in $\nat$
+  \item This is the free rig over ${x}$
+  \item Consider the left action of $\nat[x]$ on itself: $\_\cdot\_ : \nat[x] \times \nat[x] \to \nat[x]$ and $(p(x) , q(x)) \mapsto p(x) \cdot q(x)$
+  \item If we now consider the quotient $\nat[x] / ((1) x=2x+1 , (2) x+x^2=1+x)$, we find that the induced action satisfies \[(x\cdot) \circ (x\cdot) = id\]
+  \item With (2), every $p(x)$ is equivalent to $a+bx$
+  \item With (1), every $a+b\cdot x$ is equivalent to one of: \[\begin{cases}
+    a & a \ge 0 \\
+    a + x & a                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \ge 0 \\
+    bx & b \ge 1
+  \end{cases}\]
+\end{itemize}
 
 \section{2024.08.23}
 
