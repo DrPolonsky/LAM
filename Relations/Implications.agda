@@ -5,8 +5,7 @@ open import Predicates
 open import Logic
 open import Datatypes using (ℕ ; zero; succ; Fin)
 
-module Relations.Implications {A : Set} {R : 𝓡 A} where
-
+module Relations.Implications {A : Set} (R : 𝓡 A) where
 
 module Definitions where
     -- Weakly recurrent
@@ -14,8 +13,12 @@ module Definitions where
     is_-WR_ x = Σ[ r ∈ A ] ((R ⋆) x r × is R -recurrent r)
 
     -- Strongly recurrent
-    is_-SR_ : 𝓟 A
-    is_-SR_ x = ∀ (f : ℕ → A) → f zero ≡ x → is R -increasing f → Σ[ i ∈ ℕ ] (is R -recurrent (f i))
+    data is_-SR_ : 𝓟 A where
+      SRrec : ∀ x → is R -recurrent x → is_-SR_ x
+      SRacc : ∀ x → (∀ y → R x y → is_-SR_ y) → is_-SR_ x
+
+    is_-SRseq_ : 𝓟 A
+    is_-SRseq_ x = ∀ (f : ℕ → A) → f zero ≡ x → is R -increasing f → Σ[ i ∈ ℕ ] (is R -recurrent (f i))
 
     -- Alternative definition. Every infinite sequence hits a recurrent term
     is_-SRv2_ : 𝓟 A
@@ -54,16 +57,16 @@ module Basic-Implications where
     ... | ε⋆ = refl
     ... | Rzz₁ ,⋆ R*z₁y = ∅ (isNF _ z Rzz₁)
 
-    SN→SR : ∀ {x} → is R -SN x → is_-SR_ x
+    SN→SR : ∀ {x} → is R -SN x → is_-SRseq_ x
     SN→SR (acc accx) f refl fisRinc
       with SN→SR (accx (f (succ zero)) (fisRinc zero)) (λ m → f (succ m)) refl
                  (λ n → fisRinc (succ n) )
     ... | (k ,, H) = (succ k ,, H )
 
-    SN→WN∧SR : ∀ {x} → is R -SN x → (is R -WN x × is_-SR_ x)
+    SN→WN∧SR : ∀ {x} → is R -SN x → (is R -WN x × is_-SRseq_ x)
     SN→WN∧SR (acc accx) = {!   !} -- We'll need dec min here
 
-    SR→WR : ∀ {x} → is_-SR_ x → is_-WR_ x
+    SR→WR : ∀ {x} → is_-SRseq_ x → is_-WR_ x
     SR→WR isSR_x = {!   !}
 
     SR2→WR : ∀ {x} → is_-SRv2_ x → is_-WR_ x
@@ -76,12 +79,12 @@ open Basic-Implications public
 
 module Normalizing-Implications where
 
-    WN∧NP→SR : ∀ {x} → is R -WN x → is_-WNFP_ x → is_-SR_ x
+    WN∧NP→SR : ∀ {x} → is R -WN x → is_-WNFP_ x → is_-SRseq_ x
     WN∧NP→SR isWN_x isNP_x R*xy = {!   !}  -- Hold off on this until we agree on a defn of SR
 
     WN∧NP→SN : ∀ {x} → is R -WN x → is_-WNFP_ x → is R -SN x -- I think this might hold. As always, proving something is SN is a pain. Why not define SN as for all reductions from x, those reductions are WN?
-    WN∧NP→SN (n ,, (R*xn , isNF_n)) isNP_x with isNP_x isNF_n R*xn
-    ... | R*_n = acc ({!   !})
+    WN∧NP→SN {x} (n ,, (R*xn , isNF_n)) isNP_x with isNP_x {n} {{!   !} } isNF_n R*xn
+    ... | R*_n = {!   !}
 
 
 module Confluent-Implications where
