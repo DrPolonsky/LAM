@@ -222,7 +222,7 @@ module RecursiveTypes where
                (occCheckList x As)} )
     (occCheck x A)
 
-  
+
 
   List∀ : ∀ {A : Set} (P : A → Set) → List A → Set
   List∀ P [] = ⊤
@@ -241,7 +241,7 @@ module RecursiveTypes where
                       (List∀dec P decP xs)
   ... | in2 ¬Px = in2 (λ {(Px , ∀Px) → ¬Px Px})
 
-  List∀Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A) 
+  List∀Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A)
                      → (a : A) → (List∀ P As) → (occurs a As) → P a
   List∀Instantiate p as a (pa , ∀pas) (atHead xs) = pa
   List∀Instantiate p as a (pb , ∀pas') (inTail b as' a∈as') = List∀Instantiate p as' a ∀pas' a∈as'
@@ -250,14 +250,19 @@ module RecursiveTypes where
   List∃ P [] = ⊥
   List∃ P (x ∷ xs) = P x ∨ List∃ P xs
 
+  occursList∃ : ∀ {A : Set} (P : A → Set) (x : A) (xs : List A)
+                → occurs x xs → P x → List∃ P xs
+  occursList∃ P x .(x ∷ xs) (atHead xs) Px = in1 Px
+  occursList∃ P x .(b ∷ xs) (inTail b xs x∈xs) Px = in2 (occursList∃ P x xs x∈xs Px)
+
   List∃dec : ∀ {A : Set} (P : A → Set) → dec P → dec (List∃ P)
   List∃dec p ¬p∨p [] = in2 (λ x → x)
-  List∃dec p ¬p∨p (x ∷ xs) with ¬p∨p x 
+  List∃dec p ¬p∨p (x ∷ xs) with ¬p∨p x
   ... | in1 px  = in1 (in1 px)
   ... | in2 ¬px = case (λ ∃ → in1 (in2 ∃)) (λ ¬∃ → in2 (λ {(in1 px) → ¬px px
                                                          ; (in2 ∃) → ¬∃ ∃})) (List∃dec p ¬p∨p xs)
 
-  List∃Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A) 
+  List∃Instantiate : ∀ {A : Set} (P : A → Set) → (As : List A)
                      → (List∃ P As) → ∃ (λ x → (occurs x As) ∧ P x)
   List∃Instantiate P (x ∷ xs) (in1 Px) = exists x ((atHead xs) , Px)
   List∃Instantiate P (x ∷ xs) (in2 ∃xs) with List∃Instantiate P xs ∃xs
@@ -386,8 +391,8 @@ module RecursiveTypes where
          (λ {(exists B A≡wkB) → in2 (B , ++SubList (substSubList x B s) (substVarList x B s) )} )
          (occCheck x A)
   ... | in2 yes = in1 yes
-  
-  elimFin¬Occ : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n))) 
+
+  elimFin¬Occ : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n)))
                           → ¬ (occurs f L) → List (Fin n)
   elimFin¬Occ [] f ¬occ = []
   elimFin¬Occ {n} (x ∷ L) f ¬occ with decFin x f
@@ -396,124 +401,77 @@ module RecursiveTypes where
   elimFin¬Occ {succ n} L@(here .(succ n) ∷ L') f ¬occ | in2 ¬x≡f = map (elimFin (λ x → x) f (here n)) L
   elimFin¬Occ {succ n} L@(down x' ∷ L') f ¬occ | in2 ¬x≡f = map (elimFin (λ x → x) f x') L
 
-
-  elimFin¬OccCorrect : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n))) 
-                                  → (¬occ : ¬ (occurs f L)) → map (skip f) (elimFin¬Occ L f ¬occ) ≡ L
-  elimFin¬OccCorrect L f ¬occ = {!   !}
-
-  {-  #TODOLIST#
-      1: Need to show that there are no dups in L s.t. enumFin' L
-      2: Need to then show that with f∈(f∷fs) and f∈fs we have a contradiction
-  -}
-  finListLemma : ∀ {n : ℕ} → (P : (Fin n → Set)) → dec P
-                           → (L : List (Fin n)) → (enumFin' L)
-                           → (List∀ P L) ∨ ∃ (λ f' → ¬ (P f'))
-  finListLemma p ¬p∨p [] ∀f∈fs = in1 tt
-  finListLemma {succ n} p ¬p∨p (f ∷ fs) ∀f∈fs = case (case (λ pf ∀pfs → in1 (pf , {!  !})) (λ ¬pf _ → in2 (exists f ¬pf)) (¬p∨p f))
-                                                (λ {(exists x ¬px) → in2 (exists (skip f x) ¬px)}) 
-                                                (finListLemma p' ¬p∨p' (elimFin¬Occ fs f λ x → {!   !}) λ f₁ → {!  !})
-                                                where p' : Fin n → Set
-                                                      p' = λ x → p (skip f x)
-                                                      ¬p∨p' : dec p'
-                                                      ¬p∨p' = λ x → case (λ p → in1 p) (λ ¬p → in2 ¬p) (¬p∨p (skip f x))
-
-  
-  -- solverStep2 : ∀ {n} → (s : SubList (succ n)) →
-  --               isProperSR s ∨ ∃ (λ (x : Fin (succ n)) → ¬ List∀ (Occurs𝕋 x) (s x))
-  -- solverStep2 {n} s with finListLemma 
-  --                        (λ x → List∀ (Occurs𝕋 x) (s x))
-  --                        (λ x → List∀dec (λ A → Occurs𝕋 x A) (atomOccursDec x) (s x)) 
-  --                        (enumFin (succ n))
-  --                        enumFinCorrect
-  -- ... | in1 (occHere , occDown) = in1 λ { (here n) → occHere
-  --                                       ; (down f) → List∀Instantiate 
-  --                                                    (λ x → List∀ (Occurs𝕋 x) (s x)) 
-  --                                                    (map down (enumFin n)) 
-  --                                                    (down f) 
-  --                                                    occDown 
-  --                                                    (occursMap (enumFin n) down (enumFinCorrect f))}
-  -- ... | in2 (exists f ¬∀occ) = in2 (exists f ¬∀occ)
+  -- elimFin¬OccCorrect : ∀ {n : ℕ} (L : List (Fin (succ n))) → (f : (Fin (succ n)))
+  --                                 → (¬occ : ¬ (occurs f L)) → map (skip f) (elimFin¬Occ L f ¬occ) ≡ L
+  -- elimFin¬OccCorrect L f ¬occ = {!   !}
+  --
+  -- {-  #TODOLIST#
+  --     1: Need to show that there are no dups in L s.t. enumFin' L
+  --     2: Need to then show that with f∈(f∷fs) and f∈fs we have a contradiction
+  -- -}
+  -- finListLemma : ∀ {n : ℕ} → (P : (Fin n → Set)) → dec P
+  --                          → (L : List (Fin n)) → (enumFin' L)
+  --                          → (List∀ P L) ∨ ∃ (λ f' → ¬ (P f'))
+  -- finListLemma p ¬p∨p [] ∀f∈fs = in1 tt
+  -- finListLemma {succ n} p ¬p∨p (f ∷ fs) ∀f∈fs = case (case (λ pf ∀pfs → in1 (pf , {!  !})) (λ ¬pf _ → in2 (exists f ¬pf)) (¬p∨p f))
+  --     (λ {(exists x ¬px) → in2 (exists (skip f x) ¬px)})
+  --     (finListLemma p' ¬p∨p' (elimFin¬Occ fs f λ x → {!   !}) λ f₁ → {!  !})
+  --     where p' : Fin n → Set
+  --           p' = λ x → p (skip f x)
+  --           ¬p∨p' : dec p'
+  --           ¬p∨p' = λ x → case (λ p → in1 p) (λ ¬p → in2 ¬p) (¬p∨p (skip f x))
 
   DecP→-P : ∀ {A : Set} → (P : A → Set) → dec P → dec (- P)
-  DecP→-P p ¬p∨p x with ¬p∨p x 
+  DecP→-P p ¬p∨p x with ¬p∨p x
   ... | in1 px  = in2 (λ ¬px → ¬px px)
   ... | in2 ¬px = in1 ¬px
 
-  DMList∀∃ : ∀ {A : Set} (xs : List A) 
+  DMList∀∃ : ∀ {A : Set} (xs : List A)
              → (P : A → Set) → dec P → ¬ List∀ P xs
              → List∃ (- P) xs
   DMList∀∃ [] P ¬P∨P ¬∀ = ¬∀ tt
-  DMList∀∃ (x ∷ xs) P ¬P∨P ¬∀ with ¬P∨P x 
+  DMList∀∃ (x ∷ xs) P ¬P∨P ¬∀ with ¬P∨P x
   ... | in1 Px = in2 (DMList∀∃ xs P ¬P∨P (λ ∀x → ¬∀ (Px , ∀x)))
   ... | in2 ¬Px = in1 ¬Px
 
 
-  solverStep2 : ∀ {n} → (s : SubList (succ n)) →
+  step1 : ∀ {n} → (s : SubList (succ n)) →
                 isProperSR s ∨ ∃ (λ (x : Fin (succ n)) → List∃ (- (Occurs𝕋 x)) (s x))
-  solverStep2 {n} s with List∃dec
+  step1 {n} s with List∃dec
                          (λ x → List∃ (- (Occurs𝕋 x)) (s x))
-                         (λ x → List∃dec (- (Occurs𝕋 x)) (DecP→-P (Occurs𝕋 x) (atomOccursDec x)) (s x)) 
+                         (λ x → List∃dec (- (Occurs𝕋 x)) (DecP→-P (Occurs𝕋 x) (atomOccursDec x)) (s x))
                          (enumFin (succ n))
-  ... | in1 (in1 ∃here) = in2 (exists (here _) ∃here)
-  ... | in1 (in2 ∃down) = in2 (exists {!   !} {!   !})
-  ... | in2 ¬∃ = in1 f where 
+  ... | in2 ¬∃ = in1 f where
      f : ∀ x → List∀ (Occurs𝕋 x) (s x)
      f x with List∀dec (Occurs𝕋 x) (atomOccursDec x) (s x)
      ... | in1 ∀occ  = ∀occ
      ... | in2 ¬∀occ with DMList∀∃ (s x) (Occurs𝕋 x) (atomOccursDec x) ¬∀occ
      ... | ∃ with List∃Instantiate (λ 𝕥 → Occurs𝕋 x 𝕥 → ⊥) (s x) ∃
      f (here .n) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in1 ∃))
-     f (down x) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) = exFalso (¬∃ (in2 {! ∃  !}))
-    
+     f (down x) | in2 ¬∀occ | ∃ | exists 𝕥 (occ , ¬occ) =
+      exFalso (¬∃ (in2 (occursList∃ (λ z → List∃ (λ z₁ → (x : Occurs𝕋 z z₁) → ⊥) (s z)) (down x) (map down (enumFin n))
+        (occursMap (enumFin n) down (enumFinCorrect x )) ∃)))
+  ... | in1 occ with List∃Instantiate (λ x → List∃ (λ x₁ → Occurs𝕋 x x₁ → ⊥) (s x)) (enumFin (succ n)) occ
+  ... | exists x (x₁ , x₂) = in2 (exists x x₂)
 
-    --  ... | in1 ∀occ = ∀occ
-    --  f (here .n) | in2 ¬∀occ = exFalso (¬∃ (in1 {!   !}))
-    --  f (down x) | in2 ¬∀occ = exFalso (¬∃ (in2 {!   !}))
+  step2 :  ∀ {n} → (s : SubList (succ n)) (x : Fin (succ n)) (A : 𝕋 (succ n))
+                 → ¬ Occurs𝕋 x A → occurs A (s x) → (𝕋 n ∧ SubList n)
+  step2 s x A x∉A A∈sx with occCheck x A
+  ... | in1 x∈A = exFalso (x∉A x∈A)
+  ... | in2 (exists B A=wkB) = (B , ++SubList (substSubList x B s) (substVarList x B s) )
 
+  step3 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
+                → (isProperSR s) ∨ ((Fin (succ m) → 𝕋 n) ∧ SubList n)
+  step3 {n} s sub with step1 s
+  ... | in1 sIsProperSR = in1 sIsProperSR
+  ... | in2 (exists x x∈sx) with List∃Instantiate _ _ x∈sx
+  ... | exists A (A∈sx , x∉A) with step2 s x A x∉A A∈sx
+  ... | (B , s') = in2 (elimFin (subst𝕋 x B ∘ sub) (here _) B  , s')
 
-    --  f x with s x
-    --  ... | [] = tt
-    --  ... | 𝕥 ∷ 𝕥s = case {!   !} {!   !} {!  dec (λ x → Occurs𝕋 x 𝕥)!} 
+  -- step4 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
 
-
-
-    -- finListLemma {succ n} p ¬p∨p (f ∷ fs) ∀f∈fs with ∀f∈fs f
-  -- ... | atHead .fs      = case (case (λ pf ∀pfs → in1 (pf , {!   !})) (λ ¬pf _ → in2 (exists f ¬pf)) (¬p∨p f))
-  --                               (λ {(exists x ¬px) → in2 (exists (skip f x) ¬px)}) 
-  --                               (finListLemma p' ¬p∨p' (map (elimFin ((λ x → x)) f {!   !}) fs) {!   !})
-  --                               where p' : Fin n → Set
-  --                                     p' = λ x → p (skip f x)
-  --                                     ¬p∨p' : dec p'
-  --                                     ¬p∨p' = λ x → case (λ p → in1 p) (λ ¬p → in2 ¬p) (¬p∨p (skip f x))
-  -- ... | inTail .f .fs e = case (λ x → {!   !}) 
-  --                              (λ {(exists x ¬px) → in2 (exists (skip f x) ¬px)})
-  --                              (finListLemma p' ¬p∨p' {!   !} {!   !})
-  --                         where p' : Fin n → Set
-  --                               p' = λ x → p (skip f x)
-  --                               ¬p∨p' : dec p'
-  --                               ¬p∨p' = λ x → case (λ p → in1 p) (λ ¬p → in2 ¬p) (¬p∨p (skip f x))
-
-
-
-
-  -- solverStep2 : ∀ {n} → (s : SubList (succ n)) →
-  --               isProperSR s ∨ ∃ (λ (x : Fin (succ n)) → ¬ List∀ (Occurs𝕋 x) (s x))
-  -- solverStep2 {n} s with List∀dec (λ x → List∀ (Occurs𝕋 x) (s x))
-  --                        (λ x → List∀dec (λ A → Occurs𝕋 x A) (atomOccursDec x) (s x)) (enumFin (succ n))
-  -- ... | e = {!   !}
-
-  -- ... | in1 (hereProper , downProper) = in1 λ {(here .n) → hereProper
-  --                                            ; (down f) → {!   !}}
-  -- ... | in2 x = {!  !}
-
-  
-
-  solverStep3 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
-                → (∀ (x : Fin (succ n)) → List∀ (Occurs𝕋 x) (s x)) ∨
-                  ((Fin (succ m) → 𝕋 n) ∧ SubList n)
-  solverStep3 {n} s sub with solverStep1 s (here n)
-  ... | in1 x = {!   !}
-  ... | in2 x = {!   !}
+  -- solverStep4 : Set
+  -- solverStep4 = {! con  !}
 
   elemFinN : ∀ n → List (Fin n)
   elemFinN zero = []
@@ -740,5 +698,4 @@ module IntersectionTypes where
 
   -- mono : ∀ 𝔸 {s s' t t' : 𝕋∩ 𝔸} → Sub s t → Sub s' t' → Sub (meet s s') (meet t t')
    -- mono st st' = {!   !}
--}    
-                    
+-}
