@@ -468,7 +468,11 @@ module RecursiveTypes where
   ... | exists A (A∈sx , x∉A) with step2 s x A x∉A A∈sx
   ... | (B , s') = in2 (elimFin (subst𝕋 x B ∘ sub) (here _) B  , s')
 
-  -- step4 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n))
+  -- step4 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n)) 
+  --                   → (s' : SubList ())
+
+  step4 : ∀ {n} → (s : SubList n) → (Fin zero → 𝕋 n)
+                → 
 
   -- solverStep4 : Set
   -- solverStep4 = {! con  !}
