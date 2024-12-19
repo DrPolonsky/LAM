@@ -67,6 +67,39 @@ infix 50 _³
 -- ⟦_⟧→refl : ∀ {n : ℕ} (e : ADT n) (Γ : SetEnv n) x → ⟦ e ⟧→ (reflSetEnv→ Γ) x ≡ x
 -- ⟦ e ⟧→refl Γ x = ?
 
+-- Enumeration of ADTS
+Enum : Set → Set
+Enum A = List A
+
+EnumEnv : ∀ {n} → SetEnv n → Set
+EnumEnv Γ = ∀ x → Enum (Γ x)
+
+EnumΓ₀ : EnumEnv Γ₀
+EnumΓ₀ = λ ()
+
+{-# TERMINATING #-}
+EnumADT : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → Enum (⟦ e ⟧ Γ)
+EnumADT (𝕍 x) Γ GG = GG x
+EnumADT 𝟎 Γ GG = []
+EnumADT 𝟏 Γ GG = tt ∷ []
+EnumADT (e1 × e2) Γ GG = lazyProd (EnumADT e1 Γ GG) ((EnumADT e2 Γ GG))
+EnumADT (e1 ⊔ e2) Γ GG = merge (List→ in1 (EnumADT e1 Γ GG)) (List→ in2 (EnumADT e2 Γ GG))
+EnumADT (μ e) Γ GG with EnumADT e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ) ) (io𝓟 _ GG (EnumADT (μ e) Γ GG))
+  -- where f = λ { (i x) → GG x ; o → EnumADT (μ e) Γ GG }
+... | c = List→ lfp c
+
+{-# TERMINATING #-}
+EnumADTk : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → ℕ → Enum (⟦ e ⟧ Γ)
+EnumADTk _ _ _ 0 = []
+EnumADTk (𝕍 x) Γ GG k = (GG x)
+EnumADTk 𝟎 Γ GG _ = []
+EnumADTk 𝟏 Γ GG _ = tt ∷ []
+EnumADTk (e1 × e2) Γ GG k = lazyProd (EnumADTk e1 Γ GG k) ((EnumADTk e2 Γ GG k))
+EnumADTk (e1 ⊔ e2) Γ GG k = merge (List→ in1 (EnumADTk e1 Γ GG k)) (List→ in2 (EnumADTk e2 Γ GG k))
+EnumADTk (μ e) Γ GG (succ k) =
+  List→ lfp (EnumADTk e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ))
+            (io𝓟 _ GG (EnumADTk (μ e) Γ GG k)) (succ k))
+
 decΓ₀ : decSetEnv Γ₀
 decΓ₀ ()
 
@@ -130,37 +163,6 @@ ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldInj Fma
       αinj {u} {v} au=av =
         ADTFunctorInj e (ConsSetEnv→ ρ→σ I o) (ConsSetEnv→Inj I ρ→σ I ρ→σInj ) (lfpInj G au=av)
 
--- ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldinj x=y where
---       F : Set → Set
---       F = λ X → ⟦ e ⟧ ((ρ ⅋o:= X))
---       Fmap : Functor F
---       Fmap {X} {Y} f z = ⟦_⟧→_ {succ n} e {(ρ ⅋o:= X)} {(ρ ⅋o:= Y)} (ConsSetEnv→ f (reflSetEnv→ ρ) ) z
---       Finj : FunctorInj F Fmap
---       Finj {A} {B} f finj = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= B)} (ConsSetEnv→ f (reflSetEnv→ ρ))
---            λ { o → finj ; (down z) → I }
---       A : Set
---       A = ⟦ μ e ⟧ σ
---       α : F A → A  
---       α = (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z))
---       αinj : inj α
---       αinj {z1} {z2} z12 with lfpInj (λ z → ⟦ e ⟧ (σ ⅋o:= z)) z12
---       -- ... | c = {!   !}
---       ... | c = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= A)} (reflSetEnv→ ((ρ ⅋o:= A))) (reflSetEnv→Inj (coskip ρ (o) (LFP (λ z → ⟦ e ⟧ coskip σ (o) z))) ) g
-      -- wo = {!   !}
-      -- foldinj = foldInj Fmap Finj α αinj
-
-   -- fold (λ f z → (⟦ e ⟧→ ConsSetEnv→ f (λ x₁ x₂ → x₂)) z)
-   --   (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z)) x
-   --   ≡
-   --   fold (λ f z → (⟦ e ⟧→ ConsSetEnv→ f (λ x₁ x₂ → x₂)) z)
-   --   (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z)) y
-   --
-   -- fold (λ f → ⟦ e ⟧→ ConsSetEnv→ f (λ x₁ x₂ → x₂))
-   --           (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z)) x
-   --           ≡
-   --           fold (λ f → ⟦ e ⟧→ ConsSetEnv→ f (λ x₁ x₂ → x₂))
-   --           (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ (λ x₁ → x₁) ρ→σ) z)) y
-
 -- ADTFunctorInj (μ e) ρ→σ ρ→σInj {x} {y} x=y = foldInj ? {!   !} {!   !} {!   !} {!   !}
 -- foldInj : ∀ {F : Set → Set} (Fmap : Functor F) → FunctorInj F Fmap
 --             → ∀ {A : Set} (α : F A → A) → inj α → inj (fold Fmap α)
@@ -191,6 +193,24 @@ open import QADT.EnvIsomorphisms
   f : (x y : Set) → x ≃ y → (⟦ e ⟧ (ρ ⅋o:= x)) ≃ (⟦ e ⟧ (σ ⅋o:= y))
   f x y xy with coskipSetEnv≃Set≃ xy ρ≃σ
   ... | μ1 = ⟦ e ⟧≃ μ1
+
+-- ≃⟦_⟧≃ :
+
+iso≡trans : ∀ {A B C D : Set} {ab : A ≃ B} {bc : B ≃ C} {cd : C ≃ D} → ((ab iso∘ bc) iso∘ cd) ≡ (ab iso∘ (bc iso∘ cd))
+iso≡trans = {!   !}
+
+iso≃ : {A A' B B' : Set} → A ≃ A' → B ≃ B' → (A ≃ B) ≃ (A' ≃ B')
+iso≃ {A} {A'} {B} {B'} aa' bb' = iso f+ f- f-+ f+- where
+  f+ : A ≃ B → A' ≃ B'
+  f+ ab = iso~ aa' iso∘ (ab [=!=] bb' )
+  f- : A' ≃ B' → A ≃ B
+  f- a'b' = (aa' iso∘ a'b' ) iso∘ iso~ bb'
+
+  -- (aa' iso∘ (iso~ aa' iso∘ (ab iso∘ bb' )) ) iso∘ iso~ bb'
+  f-+ : (x : A ≃ B) → f- (f+ x) ≡ x
+  f-+ x = {!   !}
+  f+- : (y : A' ≃ B') → f+ (f- y) ≡ y
+  f+- = {!   !}
 
 wk : ∀ {n} → Fin (succ n) → ADT (n) → ADT (succ n)
 wk {n} f (𝕍 x) = 𝕍 (skip f x )

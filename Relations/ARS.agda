@@ -149,7 +149,7 @@ module Proposition-1-1-11  where
     ... | R*cd with lemmaiii R⋄⊆R* b d R⋄*bd
     ... | R*bd = d ,, R*bd , R*cd
 
-open ClassicalImplications using (decMin)
+open ClassicalImplications using (decMin;isMinDec)
 
 -- Notions related to termination in ARSs
 module Termination (R : 𝓡 A)  where
@@ -168,6 +168,9 @@ module Termination (R : 𝓡 A)  where
 
   is_-SN_ : 𝓟 A
   is_-SN_ = is_-SNacc_
+
+  -- is_-WNFP_ : 𝓟 A
+  -- is_-WNFP_ x = ∀ {y z} → is_-NF_ y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
 
   is_-UN_ : 𝓟 A
   is_-UN_ x = ∀ {y} {z} → is_-NF_ y → is_-NF_ z → (R ⋆) x y → (R ⋆) x z → y ≡ z
@@ -192,6 +195,9 @@ module Termination (R : 𝓡 A)  where
 
   SN : Set
   SN = ∀ x → is_-SN_ x
+
+  -- WNFP : Set
+  -- WNFP = ∀ {x} → is_-WNFP_ x
 
   NFP : Set
   NFP = ∀ {a b} → is_-NF_ b → (R ⁼) a b → (R ⋆) a b
@@ -220,8 +226,12 @@ module Termination (R : 𝓡 A)  where
   BP : Set
   BP = bounded
 
-  BP- : Set
-  BP- = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+  BP+ : Set
+  BP+ = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+
+  -- Trivially, BP+ → BP
+  -- Classically, BP → BP+.  Need to decide whether a non-strictly increasing
+  -- sequence is in fact increasing infinitely often.
 
   dominatedByWF : 𝓡 A → Set
   dominatedByWF Q = isWFacc Q × (R ⊆ Q)
@@ -309,10 +319,13 @@ module Newmans-Lemma where -- SN ∧ WCR → CR
   NewmansLemma RisSN RisWCR (a ,, R*ab , R*ac) = wCR→conf RisWCR a (RisSN a) R*ab R*ac
 
 module Theorem-1-2-2 (R : 𝓡 A) where
-  i-1 : confluent R → NFP R
-  i-1 confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
+  i-1a : confluent R → NFP R
+  i-1a confR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
   ... | z ,, R⋆xz , ε⋆ = R⋆xz
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
+
+  i-1b : NFP R → UN R
+  i-1b RisNFP {a}{b} a∈NF b∈NF R=ab = NF→ε R a∈NF (RisNFP b∈NF R=ab)
 
   i-2 : confluent R → UN R
   i-2 confR {x} {y} x∈NF y∈NF R⁼xy with Proposition-1-1-10.i→vi confR x y R⁼xy
@@ -321,7 +334,7 @@ module Theorem-1-2-2 (R : 𝓡 A) where
   ... | z ,, R⋆xz , (Ryz ,⋆ R⋆yz) = ∅ (y∈NF _ Ryz)
 
   i-3 : confluent R → NFP R × UN R
-  i-3 confR = (i-1 confR) , (i-2 confR)
+  i-3 confR = (i-1a confR) , (i-2 confR)
 
   i-4 : confluent R → NFP R → UN R
   i-4 confR nfpR = pr2 (i-3 confR)
@@ -347,6 +360,18 @@ module Theorem-1-2-2 (R : 𝓡 A) where
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
 module Miscellaneous (R : 𝓡 A) where
+
+  ¬¬NF⊆NF : ∀ x → ¬¬ (is R -NF x) → is R -NF x
+  ¬¬NF⊆NF x nnNFx y Rxy = nnNFx λ x∈NF → x∈NF y Rxy
+
+  open ReductionClosureProperties using (rec↓⊆rec)
+
+  -- ¬¬R⊆R : ∀ x → ¬¬ (is R -recurrent x) → is R -recurrent x
+  -- ¬¬R⊆R x nnRx .x ε⋆ = ε⋆
+  -- ¬¬R⊆R x nnRx y (_,⋆_ {y = z} Rxz R*zy)
+  --   with ¬¬R⊆R z (λ z∉R → nnRx (λ x∈R → z∉R (rec↓⊆rec R x∈R (Rxz ,⋆ ε⋆)) ) ) y R*zy
+  -- ... | c = {!   !}
+
   -- Recurrent property
   RP : Set
   -- RP = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
@@ -373,17 +398,27 @@ module Miscellaneous (R : 𝓡 A) where
             ... | yisf-bound with RP- f f-inc y yisf-bound
             ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
 
+  CR→WCR : CR R → WCR R
+  CR→WCR RisCR x Rxy Rxz = RisCR x (Rxy ,⋆ ε⋆) (Rxz ,⋆ ε⋆)
+
+  -- Hard goal 1
+  -- SN∧WNFP→CRloc : ∀ x → is R -WNFP x → is R -SN x → is R -CR x
+  -- SN∧WNFP→CRloc x x∈WNFP (acc xa) {b} {c} R*xb R*xc = {!   !}
+
   module OldProofOfNL where
     -- This is actually an if-and-only-if...
     CR→CRelem : ∀ (R : 𝓡 A) → (confluent R) → CR R
     CR→CRelem R RisCR x =  λ z z₁ → RisCR (x ,, z , z₁)
 
+    -- This should be easy.
     -- Question: what if WN is global?      [***]
     WNg∧UN→CRelem : ∀ (R : 𝓡 A) → WN R → ∀ x → is R -UN x → is R -CR x
     WNg∧UN→CRelem R wnR x x∈UN = {!   !}
 
+    -- Looks true, perhaps messy
     -- Question: WN ∧ (∀ x → UN(x)) → UN(R) ?
 
+    -- SN∩UN⊆NP, also need to prove: UN↓⊆UN
     UN-lemma : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x
                   → ∀ y → is R -NF y → (R ⋆) x y → ∀ z → (R ⋆) x z → (R ⋆) z y
     UN-lemma R decNF x x∈SN x∈UN y y∈NF R*xy .x ε⋆ = R*xy
@@ -393,6 +428,7 @@ module Miscellaneous (R : 𝓡 A) where
     ... | refl = UN-lemma R decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y y∈NF R*z₀z' z R*z₀z
       where z₀∈UN = λ {a} {b} a∈NF b∈NF R*z₀a R*z₀b → x∈UN a∈NF b∈NF (Rxz₀ ,⋆ R*z₀a) (Rxz₀ ,⋆ R*z₀b)
 
+    -- SN∩UN⊆CR, try to do this by induction on accessibility, without relying on SN⊆WN
     SN∧UN→CRelem : ∀ (R : 𝓡 A) → decMin (~R R) → ∀ x → is R -SN x → is R -UN x → is R -CR x
     SN∧UN→CRelem R decNF x x∈SN x∈UN {b} {c} R*xb R*xc with SNdec→WN R decNF x x∈SN
     ... | (z ,, R*xz , z∈NF) = (z ,, UN-lemma R decNF x x∈SN x∈UN z z∈NF R*xz b R*xb
@@ -464,33 +500,27 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | ε⋆ = a∈NF (s (succ c)) (sIsRdec c) -- if a and S c are the same, then a has the recurrent property which leads to contradiction
 
 
-  -- Want to prove or disprove!            [ Try to find a counterexample! ***] [Counterexample 5 in report?]
-  ii- : WN R → UN R → bounded R → SN R
-  ii- RisWN RisUN Risωbdd x with Theorem-1-2-2.ii R (RisWN , RisUN)
-  ... | RisCR = {!   !}
-
 
   -- A classical proof of iii (subbing RP for Inc)
   open import Classical
+  -- open ClassicalImplications
 
   -- A classical assumption which nonetheless may be necessary to assume
-  ¬NFx→Rxy : ∀ {x} → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
-  ¬NFx→Rxy {x} x∉NF  = {! x∉NF   !}
+  ¬NFx→Rxy : ∀ {x} → isMinDec (~R R) x → ¬ (is R -NF x) →  Σ[ y ∈ A ] (R x y)
+  ¬NFx→Rxy {x} xdec x∉NF with xdec
+  ... | in1 yRxy = yRxy
+  ... | in2 x∈NF = ∅ (x∉NF x∈NF)
 
   -- Stronger version of the above
   -- This reminds me of deMorgan from early WF file
   x∉SN→∃y∉SN : ∀ {x} → ¬(is R -SN x) → Σ[ y ∈ A ] (¬(is R -SN y) × R x y)
   x∉SN→∃y∉SN {x} x∉SN = {!   !}  -- Can't think how to progress this
 
-  x∈SN→∃y∈NF : ∀ {x} → is R -SN x → Σ[ y ∈ A ] (is R -NF y × (R ⋆) x y)
-  x∈SN→∃y∈NF {x} (acc xacc) = {!   !}
-
   ¬SN∧NF→⊥ : ∀ {x} → ¬ (is R -SN x) → is R -NF x → ⊥
   ¬SN∧NF→⊥ x∉SN x∈NF = x∉SN (acc (λ y Rxy → ∅ (x∈NF _ Rxy)))
 
   -- -- Classical proof in the report
   -- iii :  WN R → WCR R → RP R → isWFseq- (~R R)
-  -- iii wnR wcrR rp s sIsRdec = {!  !}
 
   preSN : 𝓟 A
   preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
@@ -593,7 +623,6 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   -- ... | b₀ ,, b∉SN , (R*ab₀ , R*b₀n) = {!   !}
 
 
-
   iv : CP R → confluent R
   iv RhasCP (a ,, R*ab , R*ac) with RhasCP a
   ... | f ,, f-winc , (refl , fisCof) with fisCof _ R*ab | fisCof _ R*ac
@@ -604,103 +633,8 @@ module Theorem-1-2-3 (R : 𝓡 A) where
 
 -- Useful dead-ends
 
--- ** AN INTERESTING ONE!!
-  iii-lemma :  WN R → weakly-confluent R → bounded R
-  iii-lemma wnR wcrR f f-inc with wnR (f 0)
-  ... | nf ,, R*f0n , n∈NF = nf ,, ρ where
-          ρ : ∀ (n : ℕ) → (R ⋆) (f n) nf
-          ρ zero = R*f0n
-          ρ (succ n) = {!   !}
-          -- iii-lemma2 wcrR (f n) nf n∈NF (ρ n) (f (succ n)) (f-inc n ) -- note iii-lemma2 is not yet proven
 
-
--- The rest go into "counterexamples"
--- A variation of the below, with the second normal form being a loop
-  NFisωBnd : WCR R → ∀ (f : ℕ → A) → is R -increasing f → ∀ a → is R -NF a
-               → (R ⋆) (f 0) a → ∀ n → (R ⋆) (f n) a
-  NFisωBnd RisWCR f f-inc a a∈NF R*f0a zero = R*f0a
-  NFisωBnd RisWCR f f-inc a a∈NF R*f0a (succ n)
-    with NFisωBnd RisWCR f f-inc a a∈NF R*f0a n
-  ... | ε⋆ = ∅ (a∈NF (f (succ n)) (f-inc n) )
-  ... | Rfny ,⋆ R*ya = {!   !}
-  --  NFisωBnd RisWCR (f ∘ succ) (λ i → f-inc (succ i) ) a a∈NF {!   !} {!   !}
-
--- False; see the usual counterexample to WCR→CR
-  iii-lemma1 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → (R ⋆) a c → (R ⋆) c b
-  iii-lemma1 wcrR a .a b∈NF ε⋆ .a ε⋆ = ε⋆
-  iii-lemma1 wcrR a .a b∈NF ε⋆ c (Ray ,⋆ R*yc) = ∅ (b∈NF _ Ray )
-  iii-lemma1 wcrR a b b∈NF R*ab@(Ray ,⋆ R*yb) .a ε⋆ = R*ab
-  iii-lemma1 wcrR a b b∈NF (Ray ,⋆ R*yb) c (_,⋆_ {y = z} Raz R*zc)
-    with wcrR (a ,, Ray , Raz)
-  ... | (d ,, R*yd , R*zd) = {!    !}
-
-  -- Same; see counterexample to WCR→CR
-  iii-lemma2 : weakly-confluent R → ∀ a b → is R -NF b → (R ⋆) a b → ∀ c → R a c → (R ⋆) c b
-  iii-lemma2 wcrR a .a b∈NF ε⋆ c Rac = ∅ (b∈NF c Rac)
-  iii-lemma2 wcrR a b b∈NF (Ray ,⋆ R*yb) c Rac with wcrR (a ,, Ray , Rac)
-  ... | (d ,, R*yd , R*cd) = {! iii-lemma2 wcrR _ b b∈NF R*yb    !}
-  -- with iii-lemma2 wcrR y b b∈NF R*yb
-  -- ... | z = {!   !}
-
-
- -- To be deleted?
- -- This seems very classical
-  {- 2024.08.09
-     Actually, it's false.
-     Counter-example: ℕ∞
-        AKA "the one-point compactification of ℕ"
-        AKA "Natural numbers with infinity added"
-     Define R : 𝓡 ℕ∞
-            R x y = x < y
-     Then R is well-founded, hence dominated by a a well-founded Q := R.
-     Also, R is bounded: Every element of every sequence reduces to a := ∞.
-     But R is not SN, for it admits the infinite reduction 0 → 1 → 2 → ⋯
-  ---
-  ii : ∀ Q → dominatedByWF R Q → bounded R → SN R -- isWFacc (~R R)
-  ii Q domRQ bddR = {!   !}
-
-  -- The same example shows the weaker version below to be unprovable
-  -- (Which is not surprising, since it's classicaly equivalent to the one above.)
-  ii-seq : ∀ Q → dominatedByWF R Q → bounded R → isWFseq- (~R R) -- isWFacc (~R R)
-  ii-seq Q (QisWFacc , R⊆Q) bddR f f-inc =
-    let QisWFseq- : isWFseq- (~R Q)
-        QisWFseq- = isWFmin-→isWFseq- (~R Q) (isWFacc-→isWFmin- (~R Q) (¬¬isWFacc→isWFacc- (~R Q) λ z → z {!   !} ) )
-     in QisWFseq- f (λ n → R⊆Q (f n) (f (succ n)) (f-inc n) )
-  -- ii-seq : ∀ Q → dominatedByWF R Q → bounded R → isWFseq (~R R) -- isWFacc (~R R)
-  -- ii-seq Q domRQ bddR f with bddR f {!   !}
-  -- ... | c = {!   !}
-
-  The problem with the above goals is the hypothesis "dominatedByWF R Q".
-  It's not useful for proving strong normalization.
-  Intead, we need something that is nearly dual to "bounded".
-  -continuous?
-  -}
-  -- ind + inc → no infinite sequence
 
   -- Comp : Set
   -- Comp = ∀ (f : ℕ → A) → is (R ⋆) -increasing f → ∀ a → (∀ n → (R ⋆) (f n) a)
   --           → Σ[ m ∈ ℕ ] ∀ k → f (add k m) ≡ f m
-
-  ------------------------
-
-  -- inf→⊥ : ∀ (f : ℕ → A)  → bounded R → ∀ Q →  dominatedByWF R Q →  is R -increasing f → ⊥
-  -- inf→⊥ f RisWb Q (isWFaccQ , R⊆Q) FisRinc =
-  --                                 let
-  --                                 a = f 0
-  --                                 (b ,, fnb) = RisWb f FisRinc
-  --                                   in {!   !}
-
-  -- CR∧ω∧dom→SN : ∀ Q →  CR R → bounded R → dominatedByWF R Q  → SN R
-  -- CR∧ω∧dom→SN Q RisCR Riswb (isWFaccQ , R⊆Q) x = let
-  --                                                 inf→⊥ : ∀ (f :  ℕ → A) → is R -increasing f → ⊥
-  --                                                 inf→⊥ f fInc = let
-  --                                                             (a ,, fna) = Riswb f fInc
-  --                                                             yada : is Q -accessible fst (Riswb f fInc)
-  --                                                             yada = isWFaccQ a
-  --                                                             in {!  !}
-  --                                                 in {!   !}
-
-  -- CR∧ω→SN : CR R → bounded R → SN R
-  -- CR∧ω→SN RisCR Riswb x = {!   !}
-  --------------------------------------------------------
--- The end

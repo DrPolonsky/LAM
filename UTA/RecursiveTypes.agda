@@ -468,14 +468,23 @@ module RecursiveTypes where
   ... | exists A (A∈sx , x∉A) with step2 s x A x∉A A∈sx
   ... | (B , s') = in2 (elimFin (subst𝕋 x B ∘ sub) (here _) B  , s')
 
-  -- step4 : ∀ {n} {m} → (s : SubList (succ n)) → (Fin m → 𝕋 (succ n)) 
-  --                   → (s' : SubList ())
+  -- instOf : ∀ {A : Set} {B : A → Set} → ∃ {A} B → A
+  -- instOf (exists x y) = x
 
-  step4 : ∀ {n} → (s : SubList n) → (Fin zero → 𝕋 n)
-                → 
+  step4m   : ∀ {n} → (s : SubList n) → ℕ
+  step4k   : ∀ {n} → (s : SubList n) → ℕ
+  step4eq  : ∀ {n} → (s : SubList n) → n ≡ step4m s + step4k s
+  step4sr  : ∀ {n} → (s : SubList n) → ∃ {SubList   (step4m s)} isProperSR
+  step4sub : ∀ {n} → (s : SubList n) → Fin (step4k s) → 𝕋 (step4m s)
 
-  -- solverStep4 : Set
-  -- solverStep4 = {! con  !}
+  step4m {zero} s = zero
+  step4m {succ n} s = {!   !}
+  step4k s = {!   !}
+  step4eq s = {!   !}
+  step4sr s = {!   !}
+  step4sub s = {!   !}
+
+  -- step4correct : ∀ {n} → "step4sr s + step4sub s are equivalent to s"
 
   elemFinN : ∀ n → List (Fin n)
   elemFinN zero = []

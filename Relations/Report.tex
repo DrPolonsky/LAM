@@ -9,6 +9,16 @@
 \author{Sam Arkle}
 \date{\today}
 
+
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\quad\ding{51}}%
+\newcommand{\xmark}{\quad\ding{55}}%
+
+\newcommand{\thra}{\twoheadrightarrow}
+\newcommand{\thla}{\twoheadleftarrow}
+\newcommand{\thlra}{{\thla\!\!\thra}}
+
+\newcommand{\down}[1]{{#1}{\downarrow}}
 \begin{document}
 \renewcommand{\arraystretch}{1.3}
 
@@ -141,6 +151,13 @@ A relation $R$ has the following properties when the stated conditions are met:
 \begin{dfn}
   The \emph{equivalence relation} of $R$ is the smallest relation $R^=$ that contains $R$ and is reflexive, transitive, and symmetric.
 \end{dfn}
+
+\begin{dfn}
+  A relation $R$ has the \emph{weak normal form property} (WNFP) if
+ $a \tto b$ and $a \tto c$  $\implies$
+ $c \tto b$, for all $a,c \in A$ and all normal form $b \in A$.
+\end{dfn}
+
 
 \begin{dfn}
   A relation $R$ has the \emph{normal form property} (NFP) if
@@ -366,16 +383,40 @@ This is theorem 1-2-2 ii in [TeReSe]
 
 \item{WN and UN$\to$ $\implies$ bounded}
 
-\item{WN and UN and RP $\implies$ wfSeq - (~ R)}
+\texttt{i+ : WN R $\to$ UN$\to$ R $\to$ bounded R}
+
+\item{WN and UN and RP $\implies$ wfSeq - ($\sim$ R)}
+
+\texttt{ii3- :  WN R $\to$ UN R $\to$ RP R $\to$ isWFseq- ($\sim$R R)}
+
 \item {CR $\implies$ WCR}
+
+\texttt{CR$\to$WCR : CR R $\to$ WCR R }
+
 \item {NF $implies$ UN}
+\sacomment{Need to prove}
+
 \item {SN and WCR $\implies$ UN and WN}
+\sacomment{Need to proove}
+\texttt{}
+
 \item {Ind and Inc $\implies$ SN} \sacomment{I don't think we have
 a proof of this, should we include it, include it with a note that we're taking [TeReSe]'s word on it?}
+
+
 \item {WCR, WN, and, Inc $\implies$ SN}
-\item {WCR, WN, and RP $\implies$}
-\item {CR and NF $\implies$ UN}
+
+
+\item {WCR, WN, and RP $\implies$ SN}
+
+
+\item {CR $\implies$ NF $\implies$ UN}
+
+\texttt{i-4 : confluent R $\to$ NFP R $\to$ UN R}
+
 \item {CR $^{\leq1} \implies$ CR}
+
+\texttt{iv : CP R $\to$ confluent R}
 
 \end{itemize}
 }
@@ -385,37 +426,54 @@ BP = boundedness property
 
 Table listing highest "confluence" property implied
 by the conjunction of row and column.
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
   \toprule
-  CP & CR & WCR & WNFP & WUN \\
+  & CP & CR & WCR & WNFP & WUN  \\
   \midrule
-  SN  & & & & \\
-  WN  & & & & \\
-  WN*  & & & & \\
-  BP $\land$ CP   & & & & \\
-  BP  & & & & \\
-  CP  & & & & \\
+  SN  & ? & CR & CR & (Should be CR?)  & ?  \\
+  WN  & ? & CR & (Not CR) & ? & ? \\
+  WN* & ? & CR & ? & ? & ? \\
+  BP $\land$ CP & ? & CR & ? & ? & ? \\
+  BP  & ? & CR & ? & ? & ? \\
+  CP  & ? & CR & ? & ? & ? \\
   \bottomrule
 \end{tabular}
 
-Table listing highest "normalization" property implied 
+
+Table listing highest "normalization" property implied
 by the conjunction of row and column.
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
+
+
+\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
   \toprule
-  CP & CR & WCR & WNFP & WUN \\
+  & CP & CR & WCR & WNFP & WUN \\
   \midrule
-  SN  & & & & \\
-  WN  & & & & \\
-  WN*  & & & & \\
-  BP $\land$ CP   & & & & \\
-  BP  & & & & \\
-  CP  & & & & \\
+  SN  &?& SN & SN & SN & SN \\
+  WN  &?& (Not SN) & (Not SN) & ? & ? \\
+  WN*  &?& ? & ? & ? & ? \\
+  BP $\land$ CP   &?& ? & ? & ? & ? \\
+  BP  &?& ? & ? & ? & ? \\
+  CP  &?& (not CP or BP) & ? & ? & ? \\
   \bottomrule
 \end{tabular}
 
+\subsection{Double-check: What has been proven}
+\begin{itemize}
+  \item \sacomment{List all the constructive proofs we've put together!}
+  \item SN implies bounded
+  \item RP- implies RP
+  \item The infinite haircomb refutes $WN \land RP \to \omega$-bounded.  But it is not WCR.
+  \item We have formalized proposition 1.1.9, 1.1.10, 1.1.11 from [TeReSe].
+  \item We have a proof for Theorem 1.2.1 (Newlman's Lemma) (though we have just one proof of multiple possible proofs).
+  \item We have a proof for all parts of Theorem 1.2.2
+  \item We have a proof for Theorem 1.2.3 i, iv.
+  \item Reduction closure properties for SN, NF, UN, recurrent property.
 
-
-
+  So, does $WN, RP, WCR$ imply $\omega$-bounded?
+  Answer: yes, that is what we have proved classically.
+\end{itemize}
 
 
 
@@ -423,7 +481,6 @@ by the conjunction of row and column.
 \newpage
 \section{Counterexamples}
 The following counterexamples are used to rule out certain implications between properties from holding.
-\sacomment{How should we present this section. Is it enough to have diagrams and a list of what they are a counter to?}
 \subsection*{Counterexample 1}
 \begin{center}
 
@@ -445,12 +502,38 @@ The following counterexamples are used to rule out certain implications between 
 Counterexample to:
 \begin{itemize}
   \item WCR $\implies$ CR
+  \item WCR  $\implies$ WNFP
+  \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ R a c $\to$ (R *) c b }
   \item WCR and WN $\implies$ CR
   \item WCR and WN $\implies$ SN
-  \item \mbox{WCR R $\to$ $\forall$ a b $\to$ is R -NF b $\to$ (R *) a b $\to$ $\forall$ c $\to$ (R *) a c $\to$ (R *) c b}
-  \item IOW and WCR $\implies$ WNFP \sacomment{We need to define these still (IOW and WNFP)}
+  \item IOW and WCR $\implies$ WNFP \sacomment{We need to define IOW in the report}
 \end{itemize}
+
 \subsection*{Counterexample 2}
+\begin{center}
+  \begin{tikzcd}
+      % Nodes
+      \node (x) {a};
+      \node (n) [left of=x, xshift=-1cm] {n \in NF};
+      \node (y) [right of=x, xshift=1cm] {b};
+      \node (z) [right of=y] {c};
+
+      % Arrows
+      \draw[->] (x) -- (n);
+      \draw[->] (x) -- (y);
+      \draw[->] (y) to [bend left] (z);
+      \draw[->] (z) to [bend left] (y);
+  \end{tikzcd}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item WCR and an increasing sequence where the first elelement of the sequence reduces to an element in normal form $\to$
+  the sequence is bounded.
+\end{itemize}
+
+
+\subsection*{Counterexample 3}
 \begin{center}
   \begin{tikzcd}
       % Nodes
@@ -474,13 +557,12 @@ Counterexample to:
 
   UN$\rightarrow\,$R $\to \forall$ x $\to$ is R-WN x $\to$ $\forall$ y $\to$ (R *) x y $\to$ is R-WN y
 
-  \textcolor{red}{SA: The above is a bit messy, can we make it cleaner?}
   \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
   \item $WN_R$ and $UN_R$ $\implies$ $CR_R$
 
 \end{itemize}
 
-\subsection*{Counterexample 3}
+\subsection*{Counterexample 4}
 
 \begin{center}
   \begin{tikzcd}
@@ -497,7 +579,7 @@ Counterexample to:
   \item bounded and RP $\implies$ WN
 \end{itemize}
 
-\subsection*{Counterexample 4}
+\subsection*{Counterexample 5}
 An infinite sequence
   \begin{center}
       \begin{tikzpicture}
@@ -522,7 +604,7 @@ Counterexample to:
   \item CR and CP $\implies$ bounded
 \end{itemize}
 
-\subsection*{Counterexample 5}
+\subsection*{Counterexample 6}
 An infinite sequence with a bound that is a normal form.
 \begin{center}
 
@@ -554,10 +636,11 @@ Counterexample to:
 \begin{itemize}
   \item WN $\implies$ SN
   \item WN and CR $\implies$ SN
-  \item WN, CR and, bounded $\implies$ SN
+  \item WN, CR, and bounded $\implies$ SN
+  \item WN, UN, and bounded $implies$ SN
 \end{itemize}
 
-\subsection*{Counterexample 6}
+\subsection*{Counterexample 7}
 An infinite sequence with a bound that is a normal form where each element
 of the sequence has a single step relation to the initial element of the sequence.
 \begin{center}
@@ -593,7 +676,7 @@ Counterexample to:
   \item RP
 \end{itemize}
 
-\subsection*{Counterexample 7}
+\subsection*{Counterexample 8}
 An "infinite haircomb"
 \begin{center}
   \begin{tikzpicture}
@@ -629,6 +712,8 @@ Counterexample to:
   \item WN $\implies$ SN
   \item WN and RP $\implies$ SN
 \end{itemize}
+
+
 \section{Well-foundedness}
 \subsection{Well-foundedness}
 \sacomment{Talk about the different types of wellfoundedness, starting with the one given in the book, the reason for thinking it is classical and not constructive, and provide an image showing the relation between the notions of wellfoundedness we have. Talk about future work in this area.}
@@ -668,7 +753,6 @@ With the above definitions established we define the notions of well-foundedness
       \item \textit{R} is well-founded if it is not not the case that every non-empty predicate has a minimal element with respect to $R$. \textcolor{red}{is there a better way to express this double negation in english?}
       \item \textit{R} is well-founded if there is no infinite $R$-decreasing sequence (this is the definition of well-foundedness found in TeReSe).
     \end{enumerate}
-
 \end{dfn}
 
 \begin{figure}[h]
@@ -719,57 +803,183 @@ With the above definitions established we define the notions of well-foundedness
 \end{figure}
 
 
-
   As future work we want to know whether the missing implications can be found, or what the minimal additional requirements are for making those implications.
 
-\section{Notes}
-\subsection{Notes from 08.29}
+  \section{Open Questions }
+  \begin{enumerate}
+    \item Complete the Wellfoundedness implications:
+       \[ WNg \land UN \to CRelem :
+       \forall (R : \mathscr{R} A) \to WN R \to \forall x \to is R -UN x \to is R -CR x \]
+       \item $WN R \to UN R \to \omega-bdd R \to SN R$ (1.2.3.ii-)
+        \item Finish formulating the ``compactness property".  Two candidates:
+         \item ``Every cocone for a given infinite sequence loops back to some point in the sequence"
+         \item ``If an $R^*$-sequence has a cocone then it's constant after some point on.''
+         \item is $\omega$-bounded implied by WN and the following confluence property:
+         $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $.
+    \item (2024.10.10) Is being $R$-WN inductive?
+    \item (2024.10.10) Does $R$ being finitely branching imply
+     that, for an inductive $\phi$, if $\lnot \phi(x)$ then
+     $\exists y. Rxy \land \lnot \phi(y)$?
 
+    \item If WCR holds, is WN$\downarrow\subseteq$WN ?
+    \item Same question for next bullet in 2.2
+    \item Same for bullet 3 in 2.2 (but pointwise!)
+    \item \item Look at restricting WFmin to $\lnot\lnot$-closed predicates
+    \item Status of important hypotheses:
+      \begin{itemize}
+        \item Deciding whether a given element $x$ reduces to a given element $y$
+        (Is $R$ itself decidable?)
+        \item Deciding whether a given element $x$ reduces to some element $y$
+        (Is being an $R$-normal form decidable?)
+
+        {\textcolor{red}{This is needed to show that SN $\Rightarrow$ WN.}}
+
+        \item If a given element $x$ is \emph{not} a normal form,
+        exhibiting some element $y$ that it reduces to.
+        (This is related to DeMorgan/Markov/etc. properties that came up in WF file.)
+
+        \item Does UN-lemma \emph{require} the decidability assumption?
+      \end{itemize}
+    \item META questions: Which of the ARS theorems can be made ``local/pointwise'',
+    for example,
+    \begin{itemize}
+      \item NL+: $WCR(R) \land SN(x) \to CR(x)$?  (Yes?)
+      \item NL++: $WCR(x) \land SN(x) \to CR(x)$? (No.)
+    \end{itemize}
+    \item Can "sequential" properties like RP, RP-, isWFseq, isWFseq-, $\omega$-bounded, etc.,
+      be related to the cofinality property.
+      \item What happens if properties involving sequences are reformulated for
+    $R^r$? (Cannot decide whether the given sequence is finite or infinite.)
+    \item Knaster-Tarski Lemma: Most general form? Alternative formulations?
+    \item Knaster--Tarski in a well-founded setting: what additional
+    hypotheses are necessary?
+    \item Show SN and WNFP $\to$ CR : SN R $to$ WNFP R $to$ CR R (or, what combination of properties with WNFP gets us to CR)
+    \item Major: Find a classical or constructive solution to theorem 1-2-3 ii. Note, we have a counterexample showing that we
+    cannot solve this whilst using recurrence property and boundedness rather than ind(uctive) and inc(reasing). The counterexample is the self loop on an element.
+    \item is $\omega$-bounded implied by WN and the following confluence property:
+    $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $. (This is a weaker form of WNFP)
+    \item WN and WCR $\to$ bounded. We reached a dead end trying to show this before. Check github history in the ARS file for iii-lemma
+    if you'd like to see the previous direction.
+  \end{enumerate}
+
+  \subsection*{Questions about Well-foundedness}
+  \begin{enumerate}
+    \item For a given element $x$, is the property of
+    being accessible $\lnot\lnot$-closed? I.E.,
+    Does $x$ being $\lnot\lnot$-accessible imply that $x$ is accessible?
+    (Conjecture: No.)
+
+    \item As a special case, does being weakly (accessible) well-founded imply being $\lnot\lnot$-wellfounded?
+    (Conjecture: No.)
+
+    Also: Same question about inductive notion of well-foundedness.
+
+    \item ($\star$) Given a well-founded relation, does every non-empty subset
+    have a minimal element?
+
+    \emph{Problem.} Need to decide whether, for a given $x \in U$,
+     the set $\{y | Ryx\}$ is empty.
+
+     \item IF every non-empty subset has a minimal element, does this imply
+     either of the weak forms of well-foundedness: $\mathtt{isWFacc-}$ or
+     $\mathtt{isWFind-}$ ?
+
+     \item Does $\mathtt{isWFmin-}$ imply $\mathtt{isWFacc-}$ or $\mathtt{isWFind-}$?
+
+     \emph{Problem.} Need to go from $\lnot (\forall y. R y d \to \phi y)$
+     and $\forall y. R y d \to \lnot \lnot \phi y$ to $\bot$.
+
+     In terms of accessibility, it should suffices to assume accessibility is
+     $\lnot\lnot$-closed, since being related to y is not relevant for that. (?)
+
+     \item Does sequential well-foundedness (no decreasing sequence) imply
+     any of the other notions, e.g., \texttt{WFmin-} ?
+
+     \emph{Note.}  This seems to require the most classical assumptions:
+     $\lnot\lnot$-closure of $\phi$, relativized De Morgan law,
+     Markov's principle, etc.
+     \textsc{Remark.}
+     $\lnot\lnot$-closure of accessibility should solve problems 1 and 4.
+  \end{enumerate}
+  \newpage
+
+\section{Todo}
+
+\subsection{Main themes}
 \begin{enumerate}
-  \item Try to ``fix'' CP by changing $R$ into $R^r$
-  \item Finish formulating the ``compactness property".  Two candidates:
+  \item Clean up the implications around recurrence properties:
   \begin{itemize}
-    \item ``Every cocone for a given infinite sequence loops back to some point in the sequence"
-    \item ``If an $R^*$-sequence has a cocone then it's constant after some point on.''
+    \item RP iff cofinality and Boundedness?
+    \item What is the ``recurrent'' generalization of WN?
+    \item What is the ``recurrent'' generalization of SN?
+    \item The role of WCR in the proof of our generalization of Thm. 1.2.3(iii)
   \end{itemize}
-  \item Add the definition of "recurrent element"
+  \item Complete the ``design'' of the chart(s) with implications?
+  \begin{itemize}
+    \item   Look at Exercise 1.3.22 (Show UN $\to$ UN$^\to$ but not conversely. Show a counterexample to WCR and UN$^\to$ $\to$ UN. Find a counter example to WCR and WN $\to$ Ind)
+  \end{itemize}
+  \item Complete the proof of Theorem 1.2.3
+  \item Address outstanding questions about wellfoundness implications.
+  \begin{itemize}
+    \item WFseq implies WFmin? (Assuming decMin)
+    \item WFacc implies $WFmin_0$? (Assuming decMin)
+    \item DecMin suffices for $SN\to WN$, but what is the optimal \emph{necessary} condition?
+    \item Relationship between these, and De Morgan's laws.
+  \end{itemize}
+  \item Complete the classical properties section
+  \item Complete the guide to the code section
+  \item Miscellaneous
+  \begin{itemize}
+    \item   Make the first argument to "being a normal form" implicit?
+    \item   Define: Inc in report
+    \item   Define: Ind in report
+    \item   Define: $\mathrm{CR}^{\le 1}$ in report
+    \item   More laws about closure operations: Monotonicity, idempotency
+    \item   Tidy up and standardize the notation used in ars.agda and other agda files
+
+
+  \end{itemize}
 \end{enumerate}
 
-\subsection{09.05}
+\subsection{General todo list}
 \begin{enumerate}
-  \item done: WN, UN, RP imply SN (classical)
-  \item need: omega bounded and RP implies SN (classical)
-  \item need: omega bounded and RP implies SN (constructive)
-  \item do we need $s_0 \to^* s_c$ in the proof?
-  \item is $\omega$-bounded implied by WN and the following confluence property:
-  $a \to^* n \in NF$, and $a \to b$ then $b \to^* n $.
-  \item Remark before 1.2? (Exercise 1.3.21)
-  \item Make the first argument to "being a normal form" implicit?
+  \item  Another interesting one? $WN^*$: hereditarily $WN$ ($WN$ for the reduction graph starting from a given element $x$). Could even consider $SN^*$, $CR^*$ etc. \sacomment{Is this what we have already shown
+  in the reduction closure properties? If so we can delete this. If not it should be moved to open questions}
 \end{enumerate}
 
-\newcommand{\RP}{\mathsf{RP}}
-\newcommand{\NF}{\mathsf{NF}}
-\newcommand{\UN}{\mathsf{UN}}
-\newcommand{\UNto}{\mathsf{UN}{\to}}
-\newcommand{\SN}{\mathsf{SN}}
-\newcommand{\WN}{\mathsf{WN}}
-\newcommand{\from}{\leftarrow}
+\apcomment{For a property $P(x)$, let $\down{P}(x) := \forall y. x \thra y \implies P(y)$}
+
+Note that $\down{P} \subseteq P$.
+
+If the converse inclusion holds, we will say that $P$ is \emph{closed under reduction}.
+
+\newpage
+
+\section{Misc. Notes}
+
+
+\subsection*{November 21}
+\apcomment{These may be addressed by the implications table}
+Four local ``normal form properties'':
+\begin{enumerate}
+  \item $WNFP(a) : \forall n \in NF. (a \tto n) \to \forall b. (a \tto b) \to (b \tto n)$
+    "$a$ all reducts of $a$ reduce to $a$'s normal form, if it exists``
+  \item $NFP(a) : \forall n \in NF. (a \tto n) \to \forall b. (a \thlra b) \to (b \tto n)$
+    "$a$ all converta of $a$ reduce to $a$'s normal form, if it exists``
+  \item $WUN(a) : \forall n m \in NF. (a \tto n) \to (a \tto m) \to n \equiv m$
+    "$a$ is reducible to at most one normal form"
+  \item $UN(a) : \forall n m \in NF. (a \thlra n) \to (a \thlra m) \to n \equiv m$
+    "$a$ is convertible to at most one normal form''
+\end{enumerate}
+
 
 \subsection*{Additional remarks about Theorem 1.2.3.}
 \begin{itemize}
-  \item It seems that part (i) of the theorem can be strengthened to only
-  assume $\UNto(R)$ instead of $\UN(R)$:
-  \[ \WN(R) \land \UNto(R) \to \omega{-}\text{bounded}(R) \tag{i} \]
-  \textcolor{red}{(See ARS.agda i+)}
-  \item The analogue of part (ii) of the theorem is unprovable, namely
-  \[ \omega{-}\text{bounded}(R) \land \RP(R) \to \SN(R) \tag{ii}\]
-  For a countermodel, take the one-element loop $a \to a$.
 
-  (It is both $\omega${-}bounded and satisfies RP.)
-
-  Our hypothesis RP is indeed weaker than ``Inc'' from Terese.
   \item The goal \texttt{iii-lemma :  $WN(R) \to WCR(R) \to \omega{-}\text{bounded}(R)$}
   seems either very difficult or impossible.
+
+  \apcomment{This implication should be either proved or refuted.}
 
   Yet, constructing the bound of a given $R$-increasing sequence is key to the proof of
   (our interpretation of) Theorem 1.2.3(iii), namely that
@@ -832,20 +1042,7 @@ With the above definitions established we define the notions of well-foundedness
   This yields a contradiction.
 
 \end{itemize}
-\subsection{09.10 (midweek updata)}
-Is it possible to weaken RP? A possible suggestion:
 
-$RP- :: \omega-bounded \to  \exists i. b \to^* f i$
-
-Does:
-
-$RP \to RP-$
-
-Does:
-
-$RP- \land \; WCR \to RP$
-
-(what other property with $RP-$ would give us $RP$?).
 
 
 \end{document}
