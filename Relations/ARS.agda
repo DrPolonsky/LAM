@@ -259,6 +259,35 @@ module Termination (R : 𝓡 A)  where
   ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
   ... | (n ,, R*yn , n∈NF) = (n ,, (Rxy ,⋆ R*yn) , n∈NF)
 
+  SN⊆∁∁WN : is_-SN_ ⊆ ∁ (∁ is_-WN_)
+  SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF ) where
+    x∈NF : ∀ y → ¬ R x y
+    x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
+           (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
+
+  SN⊆WWWN : ∀ a → is_-SN_ a → (∀ v → (R ⋆) a v → is_-WN_ v → is_-WN_ a) → is_-WN_ a
+  SN⊆WWWN a (acc aacc) Ha = {!   !} where
+    x∈WNaF* : ∀ y → (R ⋆) a y → is_-WN_ a
+    x∈WNaF* y R*ay = {! H  !}
+    x∈WNaF : ∀ y → R a y → is_-WN_ a
+    x∈WNaF y Ray with SN⊆WWWN y (aacc y Ray) (λ { v R*yv (n ,, R*vn , n∈NF) → n ,, (R*yv ⋆!⋆ R*vn) , n∈NF } )
+    ... | (n ,, R*yn , n∈NF) = n ,, Ray ,⋆ R*yn , n∈NF
+    -- SN⊆WWWN' : ∀ x → is_-SN_ x → (R ⋆) a x → (∀ y → (R ⋆) x y → is_-WN_ y → is_-WN_ a) → is_-WN_ a
+    -- SN⊆WWWN' x (acc xacc) R*ax Hx = {! Hx   !}  where
+    --   x∈WNaF : ∀ y → R x y → is_-WN_ a
+    --   x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
+  -- SN⊆WWWN : ∀ a → is_-SN_ a → (∀ v → (R ⋆) a v → is_-WN_ v → is_-WN_ a) → is_-WN_ a
+  -- SN⊆WWWN a (acc aacc) Ha = SN⊆WWWN' a (acc aacc) ε⋆ Ha where
+  --   x∈WNaF : ∀ y → R a y → is_-WN_ a
+  --   x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
+  --   SN⊆WWWN' : ∀ x → is_-SN_ x → (R ⋆) a x → (∀ y → (R ⋆) x y → is_-WN_ y → is_-WN_ a) → is_-WN_ a
+  --   SN⊆WWWN' x (acc xacc) R*ax Hx = {! Hx   !}  where
+  --     x∈WNaF : ∀ y → R x y → is_-WN_ a
+  --     x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
+
+  -- SN⊆WWWN : ∀ a → is_-SN_ a → ∀ x → (R ⋆) a x → (is_-WN_ x → is_-WN_ a) → is_-WN_ a
+  -- SN⊆WWWN a (acc aacc) x R*ax WNx→WNa = {!   !}
+
 open Termination public
 
 module ReductionClosureProperties (R : 𝓡 A) where

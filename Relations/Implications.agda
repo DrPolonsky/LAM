@@ -62,18 +62,20 @@ module Basic-Implications where
       with SN→SR (accx (f (succ zero)) (fisRinc zero)) (λ m → f (succ m)) refl
                  (λ n → fisRinc (succ n) )
     ... | (k ,, H) = (succ k ,, H )
-    
+
     open ClassicalImplications using (decMin)
 
     SN→WN∧SR : ∀ {x} → decMin (~R R) →  is R -SN x → (is R -WN x × is_-SRseq_ x)
-    SN→WN∧SR {x} decMin isSN_x = (SNdec→WN R decMin x isSN_x) , (SN→SR isSN_x) 
+    SN→WN∧SR {x} decMin x∈SN = (SNdec→WN R decMin x x∈SN) , (SN→SR x∈SN)
 
-    SR→WR : ∀ {x} → is_-SRseq_ x → is_-WR_ x
-    fst (SR→WR {x} isSR_x) = x
-    pr1 (snd (SR→WR {x} isSR_x)) = ε⋆
-    pr2 (snd (SR→WR {.y} isSR_x)) y ε⋆ = ε⋆
-    pr2 (snd (SR→WR {x} isSR_x)) y (Rxx₁ ,⋆ R*x₁y) with isSR_x (λ n → x) refl {!   !}   -- Need to show sequence is increasing. Don't think I've gone the right path.  
-    ... | isRec_x = snd isRec_x y (Rxx₁ ,⋆ R*x₁y)
+    SR→WR : ∀ {x} → is_-SR_ x → is_-WR_ x
+    SR→WR x∈SR = {!   !}
+    -- SR→WR : ∀ {x} → is_-SRseq_ x → is_-WR_ x
+    -- fst (SR→WR {x} isSR_x) = x
+    -- pr1 (snd (SR→WR {x} isSR_x)) = ε⋆
+    -- pr2 (snd (SR→WR {.y} isSR_x)) y ε⋆ = ε⋆
+    -- pr2 (snd (SR→WR {x} isSR_x)) y (Rxx₁ ,⋆ R*x₁y) with isSR_x (λ n → x) refl {!   !}   -- Need to show sequence is increasing. Don't think I've gone the right path.
+    -- ... | isRec_x = snd isRec_x y (Rxx₁ ,⋆ R*x₁y)
 
 
     WN→WR : ∀ {x} → is R -WN x → is_-WR_ x
@@ -83,21 +85,22 @@ open Basic-Implications public
 
 module Normalizing-Implications where
 
+    -- same as below
     WN∧NP→SR : ∀ {x} → is R -WN x → is_-WNFP_ x → is_-SR_ x
-    WN∧NP→SR {x} (n ,, R*xn , isNF_n) isNP_x = {!   !} 
-    
+    WN∧NP→SR {x} (n ,, R*xn , isNF_n) isNP_x = {!   !}
+
+    -- There's a counterexample (infinite sequence!)
     WN∧NP→SN : ∀ {x} → is R -WN x → is_-WNFP_ x → is R -SN x -- I think this might hold. As always, proving something is SN is a pain. Why not define SN as for all reductions from x, those reductions are WN?
     WN∧NP→SN {x} (n ,, (R*xn , isNF_n)) isNP_x with isNP_x {n} {{!   !} } isNF_n R*xn
     ... | R*_n = {!   !}
 
-    -- Rewriting UNlemma from ARS without decdiability 
+    -- Rewriting UNlemma from ARS without decidability
+    -- Try to do induction on x∈SN [not obvious?]
     SN∧UN→WN : ∀ x → is R -SN x → is R -UN x
-                  → is_-WNFP_ x 
+                  → is_-WNFP_ x
     SN∧UN→WN x isSN_x isUN_x isNF_y ε⋆ ε⋆ = ε⋆
     SN∧UN→WN x isSN_x isUN_x isNF_y ε⋆ (Rxx₁ ,⋆ R*x₁z) = ∅ (isNF _ y Rxx₁)
-    SN∧UN→WN x isSN_x isUN_x isNF_y   (_,⋆_ {y = x₁}  Rxx₁  R*x₁y) R*xz = {!   !} 
-
-
+    SN∧UN→WN x isSN_x isUN_x isNF_y   (_,⋆_ {y = x₁}  Rxx₁  R*x₁y) R*xz = {!   !}
 
 module Confluent-Implications where
 
@@ -109,15 +112,14 @@ module Confluent-Implications where
 
     SR→recElement : ∀ {x} → is_-SR_ x → Σ[ y ∈ A ] ((R ⋆) x y × is R -recurrent y)
     SR→recElement {x} (SRrec _ isRec_x) = x ,, ε⋆ , isRec_x
-    SR→recElement {x} (SRacc _ isSR_y) = SR→recElement {!   !} 
-    
-    SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x 
+    SR→recElement {x} (SRacc _ isSR_y) = SR→recElement {!   !}
+
+    SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x
     SR∧RP→CR {x} (SRrec _ isRec_x) isRP_x R*xy R*xz = x ,, isRec _ x R*xy , isRec _ x R*xz
     SR∧RP→CR {x} (SRacc _ isSR_x₁) isRP_x R*xy R*xz = {!   !}
 
     WN∧SR∧UN→CR : ∀ {x} → is_-SR_ x → is R -WN x → is R -UN x → is R -CR x
-    WN∧SR∧UN→CR isSR_x (n ,, R*xn , isNF_n ) isUN_x R*xy R*xz = {!   !} 
+    WN∧SR∧UN→CR isSR_x (n ,, R*xn , isNF_n ) isUN_x R*xy R*xz = {!   !}
 
     SN∧UN→CR : ∀ {x} → is R -SN x → is R -UN x → is R -CR x
     SN∧UN→CR isSN_x isUN_x R*xy R*xz = {!   !}
-    
