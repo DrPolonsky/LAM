@@ -60,6 +60,10 @@ module RecursiveTypes where
   wk a (α x) = α (skip a x)
   wk a (τ₁ ⇒ τ₂) = (wk a τ₁) ⇒ (wk a τ₂)
 
+  wk* : ∀ {n k} → 𝕋 n → 𝕋 (k + n)
+  wk* {n} {zero} B = B
+  wk* {n} {succ k} B = wk (here _) (wk* B)
+
   -- Record representing equations between types
   record 𝕋= (n : ℕ) : Set where
     constructor con
@@ -285,10 +289,6 @@ module RecursiveTypes where
                                                        (pr2 (atomOccursCorrect x x₁) x₂)
                                                         ao))
 
-  SR : ℕ → Set
-  SR 0 = ⊥
-  SR (succ n) = ∃ (λ (s : SubList (succ n)) → ∀ (x : Fin (succ n)) → atomOccursInList x (s x))
-
   -- Arguments:
   -- s : SubList n, An SR
   -- x : Fin n, an "atom"
@@ -304,7 +304,7 @@ module RecursiveTypes where
   -- A type admitting s, s.t. for each x ∈ Dom(s), s x is properPred. An SR for which
   -- this is the case is called Proper
   isProperSR : ∀ {n} → SubList n → Set
-  isProperSR {0} _ = ⊥
+  isProperSR {0} _ = ⊤
   isProperSR {succ n} s = ∀ x → properPred s x
 
   -- Simple list type for fin
@@ -361,6 +361,10 @@ module RecursiveTypes where
     -- let xList  = subst[𝕋] x B (s x)
     --     eqList = map (con B) xList
     --  in  prepSub eqList
+
+  subFin : ∀ {m k : ℕ} → (Fin m → 𝕋 k) → 𝕋 (m + k) → 𝕋 k
+  subFin {zero} s B = B
+  subFin {succ m} s B = subFin {m} (λ x → s (down x) ) (wk* (s (here _)))
 
   ++SubList : ∀ {n} → SubList n → SubList n → SubList n
   ++SubList cs1 cs2 = λ z → cs1 z ++ cs2 z
@@ -471,18 +475,48 @@ module RecursiveTypes where
   -- instOf : ∀ {A : Set} {B : A → Set} → ∃ {A} B → A
   -- instOf (exists x y) = x
 
-  step4m   : ∀ {n} → (s : SubList n) → ℕ
-  step4k   : ∀ {n} → (s : SubList n) → ℕ
-  step4eq  : ∀ {n} → (s : SubList n) → n ≡ step4m s + step4k s
-  step4sr  : ∀ {n} → (s : SubList n) → ∃ {SubList   (step4m s)} isProperSR
-  step4sub : ∀ {n} → (s : SubList n) → Fin (step4k s) → 𝕋 (step4m s)
 
-  step4m {zero} s = zero
-  step4m {succ n} s = {!   !}
-  step4k s = {!   !}
-  step4eq s = {!   !}
-  step4sr s = {!   !}
-  step4sub s = {!   !}
+  -- SR : ℕ → Set
+  -- SR 0 = ⊥
+  -- SR (succ n) = ∃ (λ (s : SubList (succ n)) → ∀ (x : Fin (succ n)) → atomOccursInList x (s x))
+
+  -- record SubSR : Set where
+  record SubSR (n : ℕ) : Set where
+    constructor subSR
+    field
+      subVars : ℕ
+      srVars : ℕ
+      subpart : Fin subVars → 𝕋 srVars
+      sr : SubList srVars
+      propsr : isProperSR sr
+      sub+sr=n : n ≡ subVars + srVars
+
+  step4 : ∀ {n} → SubList n → SubSR n
+  step4 {zero} s = subSR zero zero (λ ())  s tt (refl zero )
+  step4 {succ n} s with step1 s
+  ... | in1 isPsr = subSR zero (succ n) (λ ()) s isPsr (refl (succ n))
+  ... | in2 (exists x x∈sx) with List∃Instantiate _ _ x∈sx
+  ... | exists A (A∈sx , x∉A) with step2 s x A x∉A A∈sx
+  ... | (B , s') with step4 s'
+  ... | subSR subVars srVars subpart sr propsr sub+sr=n
+      = subSR (succ subVars) srVars
+              (elimFin subpart (here subVars) (subFin subpart (transp 𝕋 sub+sr=n B) ) )
+              sr propsr (ext succ sub+sr=n )
+
+  unify : ∀ {n} → 𝕋=* n → SubSR n
+  unify e = step4 (prepSub e)
+
+  testEq : 𝕋=* 4
+  testEq = con (α (here 3) ) (α (down (here _)) )
+         ∷ con ((α (here 3)) ⇒ α (down (down (here _) ) ) )
+                ( (α (down (down (here _)))) ⇒ ((α (down (here _)) ) ⇒ α (down (down (down (here _))) ) ) )
+         ∷ []
+
+  testCompute : SubSR 4
+  testCompute = {! unify testEq   !}
+
+  testCompute2 : Set
+  testCompute2 = {! SubSR.sr (unify testEq) (down (here _))  !}
 
   -- step4correct : ∀ {n} → "step4sr s + step4sub s are equivalent to s"
 
@@ -605,10 +639,6 @@ module RecursiveTypes where
   -- of substitution towards our NF, since there will always be a decreasing number of unique
   -- atoms on the right hand side of our equations.
 
-  record SR : Set where
-    field
-      num : ℕ
-      eq : Fin num → 𝕋 num
 
   -- occursCheck : ∀ {n : ℕ} → 𝕋Sub n → 𝔹
   -- occursCheck [] = false
