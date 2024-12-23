@@ -89,6 +89,7 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFseq+ : Set
   isWFseq+ = ∀ (s : ℕ → A) → is_-decreasing_ s → Σ[ a ∈ A ] (∀ n → (R ⋆) (s n) a )
   -- NB. Does NOT imply well-foundedness; EG, loop a ⟶ a is WFseq+
+  -- NB. This is exactly "ω-bounded"
 
 open WFDefinitions public
 
@@ -289,9 +290,10 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   isWFseq-→isWFmin- : decMin → isWFseq- R → isWFmin- R
   isWFseq-→isWFmin- dM RisWFseq P {a} a∈P ¬Σmin = RisWFseq (dMseq dM a) s-dec where
     s-dec : is R -decreasing (dMseq dM a)
-    s-dec n with dM (dMseq dM a n)
+    s-dec 0 = {!   !}
+    s-dec (succ n) with dM (dMseq dM a (succ n))
     ... | in1 (y ,, yRsn) = yRsn
-    ... | in2 snRmin = {!   !}
+    ... | in2 snRmin = ∅ (snRmin (dMseq dM a n) {!   !} )
 
   -- 2. Implications relying on ¬¬-closure of accessibility
   ¬¬ACC : Set
