@@ -50,7 +50,7 @@ module Basic-Implications where
     NF⊆Rec isNF_x y (Rxx₁ ,⋆ R*x₁y) = ∅ (isNF _ x Rxx₁)
 
     RP→NP : ∀ {x} → is_-RP_ x → is_-WNFP_ x
-    RP→NP isRec_x isNF_y R*xy R*xz = isRec_x (NF⊆Rec isNF_y) R*xy R*xz
+    RP→NP x∈Rec isNF_y R*xy R*xz = x∈Rec (NF⊆Rec isNF_y) R*xy R*xz
 
     NP→UN : ∀ {x} → is_-WNFP_ x → is R -UN x
     NP→UN isNP_x isNF_y isNF_z R*xy R*xz with isNP_x isNF_y R*xy R*xz
@@ -69,14 +69,12 @@ module Basic-Implications where
     SN→WN∧SR {x} decMin x∈SN = (SNdec→WN R decMin x x∈SN) , (SN→SR x∈SN)
 
     SR→WR : ∀ {x} → is_-SR_ x → is_-WR_ x
-    SR→WR x∈SR = {!   !}
-    -- SR→WR : ∀ {x} → is_-SRseq_ x → is_-WR_ x
-    -- fst (SR→WR {x} isSR_x) = x
-    -- pr1 (snd (SR→WR {x} isSR_x)) = ε⋆
-    -- pr2 (snd (SR→WR {.y} isSR_x)) y ε⋆ = ε⋆
-    -- pr2 (snd (SR→WR {x} isSR_x)) y (Rxx₁ ,⋆ R*x₁y) with isSR_x (λ n → x) refl {!   !}   -- Need to show sequence is increasing. Don't think I've gone the right path.
-    -- ... | isRec_x = snd isRec_x y (Rxx₁ ,⋆ R*x₁y)
-
+    SR→WR {x} (SRrec .x x∈Rec) = x ,, ε⋆ , x∈Rec
+    SR→WR {x} (SRacc .x x∈SR) = {!   !}
+        where 
+            IH : ∀ {y} → R x y → is_-SR_ y 
+            IH {y} Rxy = x∈SR y Rxy
+             
 
     WN→WR : ∀ {x} → is R -WN x → is_-WR_ x
     WN→WR (y ,, (R*xy , isNF_y)) = y ,, (R*xy , (NF⊆Rec isNF_y))
@@ -84,15 +82,6 @@ module Basic-Implications where
 open Basic-Implications public
 
 module Normalizing-Implications where
-
-    -- same as below
-    WN∧NP→SR : ∀ {x} → is R -WN x → is_-WNFP_ x → is_-SR_ x
-    WN∧NP→SR {x} (n ,, R*xn , isNF_n) isNP_x = {!   !}
-
-    -- There's a counterexample (infinite sequence!)
-    WN∧NP→SN : ∀ {x} → is R -WN x → is_-WNFP_ x → is R -SN x -- I think this might hold. As always, proving something is SN is a pain. Why not define SN as for all reductions from x, those reductions are WN?
-    WN∧NP→SN {x} (n ,, (R*xn , isNF_n)) isNP_x with isNP_x {n} {{!   !} } isNF_n R*xn
-    ... | R*_n = {!   !}
 
     -- Rewriting UNlemma from ARS without decidability
     -- Try to do induction on x∈SN [not obvious?]
@@ -111,8 +100,8 @@ module Confluent-Implications where
     WN∧NP→CR (n ,, (R*xn , isNF_x)) isWNFP_x R*xy R*xz = n ,, isWNFP isNF_x x R*xn R*xy , isWNFP isNF_x x R*xn R*xz
 
     SR→recElement : ∀ {x} → is_-SR_ x → Σ[ y ∈ A ] ((R ⋆) x y × is R -recurrent y)
-    SR→recElement {x} (SRrec _ isRec_x) = x ,, ε⋆ , isRec_x
-    SR→recElement {x} (SRacc _ isSR_y) = SR→recElement {!   !}
+    SR→recElement {x} (SRrec _ x∈Rec) = x ,, ε⋆ , x∈Rec
+    SR→recElement {x} (SRacc _ xInd) = {!   !} 
 
     SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x
     SR∧RP→CR {x} (SRrec _ isRec_x) isRP_x R*xy R*xz = x ,, isRec _ x R*xy , isRec _ x R*xz
