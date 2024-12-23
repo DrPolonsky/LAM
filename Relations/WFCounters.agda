@@ -7,8 +7,6 @@ open import Relations.Wellfounded
 
 module Relations.WFCounters where
 
--- data Next : ℕ → ℕ → Set where
---   next : ∀ n → Next n (succ n)
 data _<_ : ℕ → ℕ → Set where
   base< : ∀ {n} → n < succ n
   succ< : ∀ {n m} → n < m → n < succ m
@@ -39,4 +37,10 @@ module LTnotWFmin (P : 𝓟 ℕ) where
 
   lemma3 : isWFmin _<_ → dec P
   lemma3 wfmin n with wfmin (Psat n) (PsatS zero)
+  ... | (k ,, kmin) = lemma2 n k kmin
+
+  lemma4 : isWFmin₀ _<_ → ¬¬Closed P → dec P
+  lemma4 wfmin₀ ¬¬CP n with wfmin₀ (Psat n) nnCPs (PsatS zero)
+    where nnCPs = λ { zero → λ nnp0 → Psat0 zero (¬¬CP n λ pn → nnp0 λ { (Psat0 .zero p) → pn  p } )
+                    ; (succ k) → λ _ → PsatS k }
   ... | (k ,, kmin) = lemma2 n k kmin

@@ -265,6 +265,11 @@ module Termination (R : 𝓡 A)  where
     x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
            (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
 
+  WN⊆WN↑ : ∀ {x y} → is_-WN_ y → (R ⋆) x y → is_-WN_ x
+  WN⊆WN↑ y∈WN ε⋆ = y∈WN
+  WN⊆WN↑ y∈WN (Rxz ,⋆ R*zy) with WN⊆WN↑ y∈WN R*zy
+  ... | (n ,, R*zn , n∈NF) = n ,, (Rxz ,⋆ R*zn) , n∈NF
+
   SN⊆WWWN : ∀ a → is_-SN_ a → (∀ v → (R ⋆) a v → is_-WN_ v → is_-WN_ a) → is_-WN_ a
   SN⊆WWWN a (acc aacc) Ha = {!   !} where
     x∈WNaF* : ∀ y → (R ⋆) a y → is_-WN_ a
