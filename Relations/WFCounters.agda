@@ -45,3 +45,38 @@ module LTnotWFmin (P : 𝓟 ℕ) where
           nnCPs  zero nnp0 = Psat0 0 (¬¬CP n λ pn → nnp0 λ {(Psat0 .0 p) → pn p})
           nnCPs (succ k) _ = PsatS k
   ... | (k ,, kmin) = lemma2 n k kmin
+
+module isWFminImpliesDec {A : Set} (R : 𝓡 A) (wfMin : isWFmin R) (P : 𝓟 A) where
+
+  open ClassicalImplications
+
+  data cP (a₀ : A) : 𝓟 A where
+    cPmin : P a₀ → ∀ {x} → (∀ y → ¬ R y x) → cP a₀ x
+    cPsuc : ∀ {x y} → R y x → cP a₀ x
+
+  cPlemma : ∀ {b c} → R b c → decMin R → dec P
+  cPlemma Rbc dmR a with wfMin (cP a) (cPsuc Rbc)
+  ... | m ,, cPmin pa _ , mIsMin = in1 pa
+  ... | m ,, cPsuc {.m} {y} Rym , mIsMin with dmR y
+  ... | in1 (z ,, Rzy) = ∅ (mIsMin y (cPsuc Rzy) Rym )
+  ... | in2 yMin = in2 (λ pa → mIsMin y (cPmin pa yMin) Rym )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- the end

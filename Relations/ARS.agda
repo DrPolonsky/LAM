@@ -149,7 +149,7 @@ module Proposition-1-1-11  where
     ... | R*cd with lemmaiii R⋄⊆R* b d R⋄*bd
     ... | R*bd = d ,, R*bd , R*cd
 
-open ClassicalImplications using (decMin;isMinDec)
+open ClassicalImplications using (decMin;isMinDec;isMinDec-)
 
 -- Notions related to termination in ARSs
 module Termination (R : 𝓡 A)  where
@@ -252,6 +252,13 @@ module Termination (R : 𝓡 A)  where
   NF→ε : ∀ {x} → x ∈ is_-NF_ → ∀ {y} → (R ⋆) x y → x ≡ y
   NF→ε {x} x∈NF {.x} ε⋆ = refl
   NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
+
+  SN⊆WN→isMinDec- : ∀ x → is_-WN_ x → isMinDec- (~R R) x
+  SN⊆WN→isMinDec- x (.x ,, ε⋆ , n∈NF) x∉NF = ∅ (x∉NF n∈NF)
+  SN⊆WN→isMinDec- x (n ,, (_,⋆_ {y = y} Rxy R*yn) , n∈NF) x∉NF = y ,, Rxy
+
+  ¬¬WN∩isMinDec-⊆WN : ∀ x → ¬¬ (is_-WN_ x) → isMinDec- (~R R) x → is_-WN_ x
+  ¬¬WN∩isMinDec-⊆WN x nnWNx md = {!   !}
 
   SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
   SNdec→WN decR x (acc accx) with decR x

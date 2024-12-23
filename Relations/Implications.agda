@@ -63,21 +63,20 @@ module Basic-Implications where
                  (λ n → fisRinc (succ n) )
     ... | (k ,, H) = (succ k ,, H )
 
+    WN→WR : ∀ {x} → is R -WN x → is_-WR_ x
+    WN→WR (y ,, (R*xy , isNF_y)) = y ,, (R*xy , (NF⊆Rec isNF_y))
+
     open ClassicalImplications using (decMin)
 
     SN→WN∧SR : ∀ {x} → decMin (~R R) →  is R -SN x → (is R -WN x × is_-SRseq_ x)
     SN→WN∧SR {x} decMin x∈SN = (SNdec→WN R decMin x x∈SN) , (SN→SR x∈SN)
 
-    SR→WR : ∀ {x} → is_-SR_ x → is_-WR_ x
-    SR→WR {x} (SRrec .x x∈Rec) = x ,, ε⋆ , x∈Rec
-    SR→WR {x} (SRacc .x x∈SR) = {!   !}
-        where 
-            IH : ∀ {y} → R x y → is_-SR_ y 
-            IH {y} Rxy = x∈SR y Rxy
-             
-
-    WN→WR : ∀ {x} → is R -WN x → is_-WR_ x
-    WN→WR (y ,, (R*xy , isNF_y)) = y ,, (R*xy , (NF⊆Rec isNF_y))
+    decMin→SR→WR : ∀ {x} → decMin (~R R) → is_-SR_ x → is_-WR_ x
+    decMin→SR→WR {x} dM (SRrec .x x∈Rec) = x ,, ε⋆ , x∈Rec
+    decMin→SR→WR {x} dM (SRacc .x x∈SN) with dM x
+    ... | in2 xIsMin = x ,, ε⋆ , λ { y ε⋆ → ε⋆ ; y (Rxz ,⋆ Ryz) → ∅ (xIsMin _ Rxz) }
+    ... | in1 (y ,, Rxy) with decMin→SR→WR dM (x∈SN y Rxy)
+    ...| (r ,, R*yr , r∈R) = r ,, (Rxy ,⋆ R*yr) , r∈R
 
 open Basic-Implications public
 
@@ -85,8 +84,7 @@ module Normalizing-Implications where
 
     -- Rewriting UNlemma from ARS without decidability
     -- Try to do induction on x∈SN [not obvious?]
-    SN∧UN→WN : ∀ x → is R -SN x → is R -UN x
-                  → is_-WNFP_ x
+    SN∧UN→WN : ∀ x → is R -SN x → is R -UN x → is_-WNFP_ x
     SN∧UN→WN x isSN_x isUN_x isNF_y ε⋆ ε⋆ = ε⋆
     SN∧UN→WN x isSN_x isUN_x isNF_y ε⋆ (Rxx₁ ,⋆ R*x₁z) = ∅ (isNF _ y Rxx₁)
     SN∧UN→WN x isSN_x isUN_x isNF_y   (_,⋆_ {y = x₁}  Rxx₁  R*x₁y) R*xz = {!   !}
@@ -99,16 +97,29 @@ module Confluent-Implications where
     WN∧NP→CR : ∀ {x} → is R -WN x → is_-WNFP_ x → is R -CR x
     WN∧NP→CR (n ,, (R*xn , isNF_x)) isWNFP_x R*xy R*xz = n ,, isWNFP isNF_x x R*xn R*xy , isWNFP isNF_x x R*xn R*xz
 
-    SR→recElement : ∀ {x} → is_-SR_ x → Σ[ y ∈ A ] ((R ⋆) x y × is R -recurrent y)
-    SR→recElement {x} (SRrec _ x∈Rec) = x ,, ε⋆ , x∈Rec
-    SR→recElement {x} (SRacc _ xInd) = {!   !} 
+    -- SR∧RP→SL : ∀ {x} → is_-SR_ x → is_-RP_ x → ∀ {y z} → R x y → (R ⋆) x z → y ↘ R ⋆ ↙ z
+    -- SR∧RP→SL {x} (SRrec _ isRec_x) x∈RP {y} {z} Rxy R*xz = {!   !}
+    -- SR∧RP→SL {x} (SRacc _ x∈SR) x∈RP {y} {.x} Rxy ε⋆ = y ,, ε⋆ , (Rxy ,⋆ ε⋆)
+    -- SR∧RP→SL {x} (SRacc _ x∈SR) x∈RP {y} {z} Rxy (_,⋆_ {y = w} Rxw R*wz) =
+    --   let w∈SR : is_-SR_ w
+    --       w∈SR = x∈SR w Rxw
+    --       w∈RP : is_-RP_ w
+    --       w∈RP = {!   !}
+    --       IH = SR∧RP→SL {w} w∈SR w∈RP
+    --    in {!   !}
 
     SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x
     SR∧RP→CR {x} (SRrec _ isRec_x) isRP_x R*xy R*xz = x ,, isRec _ x R*xy , isRec _ x R*xz
     SR∧RP→CR {x} (SRacc _ isSR_x₁) isRP_x R*xy R*xz = {!   !}
+    SR∧RP→SL {x} (SRacc _ x∈SR) x∈RP {y} {z} Rxy (_,⋆_ {y = w} Rxw R*wz) =
+      let w∈SR : is_-SR_ w
+          w∈SR = x∈SR w Rxw
+          w∈RP : is_-RP_ w
+          w∈RP = {!   !}
+          IH = SR∧RP→SL {w} w∈SR w∈RP
+       in {!   !}
 
-    WN∧SR∧UN→CR : ∀ {x} → is_-SR_ x → is R -WN x → is R -UN x → is R -CR x
-    WN∧SR∧UN→CR isSR_x (n ,, R*xn , isNF_n ) isUN_x R*xy R*xz = {!   !}
+    -- Counterexample WN∧SR∧UN→CR
 
     SN∧UN→CR : ∀ {x} → is R -SN x → is R -UN x → is R -CR x
     SN∧UN→CR isSN_x isUN_x R*xy R*xz = {!   !}

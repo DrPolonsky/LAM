@@ -806,6 +806,11 @@ With the above definitions established we define the notions of well-foundedness
 
   As future work we want to know whether the missing implications can be found, or what the minimal additional requirements are for making those implications.
 
+\subsection{Additional Remarks}
+
+\texttt{isWFmin} is only provably when restricted to \emph{decidable} predicates, and this
+restriction is also necessary: in general, WFmin for all P implies all predicates are decidable.
+
   \section{Open Questions }
   \begin{enumerate}
     \item Complete the Wellfoundedness implications:
@@ -937,10 +942,14 @@ With the above definitions established we define the notions of well-foundedness
     \item   Define: $\mathrm{CR}^{\le 1}$ in report
     \item   More laws about closure operations: Monotonicity, idempotency
     \item   Tidy up and standardize the notation used in ars.agda and other agda files
-
-
   \end{itemize}
 \end{enumerate}
+
+\subsection{12.23}
+\begin{enumerate}
+  \item Prove isWFseq implies isWFmin1
+\end{enumerate}
+
 
 \subsection{General todo list}
 \begin{enumerate}

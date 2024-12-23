@@ -55,6 +55,10 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   isWFmin₀ : Set₁
   isWFmin₀ = ∀ (P : 𝓟 A) → ¬¬Closed P → ∀ {a : A} → a ∈ P → Σ[ m ∈ A ] is_-_-minimal_ P m
 
+  -- Like isWFmin, but restricted to decidable predicates
+  isWFmin₁ : Set₁
+  isWFmin₁ = ∀ (P : 𝓟 A) → dec P → ∀ {a : A} → a ∈ P → Σ[ m ∈ A ] is_-_-minimal_ P m
+
   is_-increasing_ : 𝓟 (ℕ → A)
   is_-increasing_ s = ∀ n → R (s n) (s (succ n)) -- xₙ < xₙ₊₁
 
@@ -83,13 +87,6 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   -- What about restricting P to ¬¬-closed predicates instead?
   isWFmin+ : Set₁
   isWFmin+ = ∀ (P : 𝓟 A) → ∀ {a : A} → a ∉ P → Σ[ m ∈ A ] (m ∉ P × (∀ x → R x m → P x) )
-
-  open import Relations.ClosureOperators
-  -- A positive variation of isWFseq, CF "inductive" in TeReSe
-  isWFseq+ : Set
-  isWFseq+ = ∀ (s : ℕ → A) → is_-decreasing_ s → Σ[ a ∈ A ] (∀ n → (R ⋆) (s n) a )
-  -- NB. Does NOT imply well-foundedness; EG, loop a ⟶ a is WFseq+
-  -- NB. This is exactly "ω-bounded"
 
 open WFDefinitions public
 
@@ -183,6 +180,14 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   isMinDec : A → Set
   isMinDec x = (Σ[ y ∈ A ] R y x) ⊔ isMin x
 
+  isMinDec- : A → Set
+  isMinDec- x = ¬ isMin x → (Σ[ y ∈ A ] R y x)
+
+  isMinDec⊆isMinDec- : isMinDec ⊆ isMinDec-
+  isMinDec⊆isMinDec- x x∈md x∉M with x∈md
+  ... | in1 x→y = x→y
+  ... | in2 x∈M = ∅ (x∉M x∈M)
+
   -- Decidability of being R-minimal, globally
   decMin : Set
   decMin = ∀ x → isMinDec x
@@ -267,9 +272,6 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     where ¬¬CP = {!   !}
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-
-
-
   dMseq : decMin → A → ℕ → A
   dMseq dM a0 zero = a0
   dMseq dM a0 (succ n) with dM (dMseq dM a0 n)
@@ -280,8 +282,16 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
   --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
 
+  -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero)
+
   isWFseq→isWFmin : decMin → isWFseq R → isWFmin R
   isWFseq→isWFmin dM RisWFseq P {a} a∈P with RisWFseq (dMseq dM a)
+  ... | n ,, snRn with dM (dMseq dM a n)
+  ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
+  ... | in2 snRmin = {!   !}
+
+  isWFseq→isWFmin₁ : decMin → isWFseq R → isWFmin₁ R
+  isWFseq→isWFmin₁ dM RisWFseq P Pdec {a} a∈P with RisWFseq (dMseq dM a)
   ... | n ,, snRn with dM (dMseq dM a n)
   ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
   ... | in2 snRmin = {!   !}
