@@ -257,20 +257,23 @@ module Termination (R : 𝓡 A)  where
   SN⊆WN→isMinDec- x (.x ,, ε⋆ , n∈NF) x∉NF = ∅ (x∉NF n∈NF)
   SN⊆WN→isMinDec- x (n ,, (_,⋆_ {y = y} Rxy R*yn) , n∈NF) x∉NF = y ,, Rxy
 
-  ¬¬WN∩isMinDec-⊆WN : ∀ x → ¬¬ (is_-WN_ x) → isMinDec- (~R R) x → is_-WN_ x
-  ¬¬WN∩isMinDec-⊆WN x nnWNx md = {!   !}
+  SN⊆∁∁WN : is_-SN_ ⊆ ∁ (∁ is_-WN_)
+  SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF ) where
+    x∈NF : ∀ y → ¬ R x y
+    x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
+           (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
+
+  -- ¬¬WN∩isMinDec-⊆WN : ∀ x → ¬¬ (is_-WN_ x) → isMinDec- (~R R) x → is_-WN_ x
+  -- ¬¬WN∩isMinDec-⊆WN x nnWNx md = {!   !}
+
+  SN∩isMinDec-⊆WN : ∀ x → (is_-SN_ x) → (∀ y → isMinDec- (~R R) y) → is_-WN_ x
+  SN∩isMinDec-⊆WN x (acc xa) md = {!   !}
 
   SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
   SNdec→WN decR x (acc accx) with decR x
   ... | in2 y∈NF = x ,, (ε⋆ , y∈NF)
   ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
   ... | (n ,, R*yn , n∈NF) = (n ,, (Rxy ,⋆ R*yn) , n∈NF)
-
-  SN⊆∁∁WN : is_-SN_ ⊆ ∁ (∁ is_-WN_)
-  SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF ) where
-    x∈NF : ∀ y → ¬ R x y
-    x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
-           (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
 
   WN⊆WN↑ : ∀ {x y} → is_-WN_ y → (R ⋆) x y → is_-WN_ x
   WN⊆WN↑ y∈WN ε⋆ = y∈WN
