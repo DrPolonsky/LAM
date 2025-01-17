@@ -1,0 +1,82 @@
+% Macros for papers on lambda calculus and type theory
+
+% PZC font
+\DeclareFontFamily{OT1}{pzc}{}
+\DeclareFontShape{OT1}{pzc}{m}{it}{<-> s * [1.10] pzcmi7t}{}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Signals
+\newcommand{\hired}[1]{\textcolor{red}{#1}}
+\newcommand{\hiblue}[1]{\textcolor{blue}{#1}}
+\newcommand{\higreen}[1]{\textcolor{green}{#1}}
+\newcommand{\hiorange}[1]{\textcolor{orange}{#1}}
+\newcommand{\greyout}[1]{\textcolor{gray}{#1}}
+\newcommand{\whiteout}[1]{\textcolor{white}{#1}}
+\newcommand{\err}[1]{\hired{#1}}
+
+% Misc.
+\newcommand{\ul}[1]{\underline{#1}}
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\setof}[1]{\left\{#1\right\}}
+\newcommand{\fv}{\mathsf{FV}}
+
+% Grammar sorts
+\newcommand{\lam}{\lambda}
+\newcommand{\Lam}{\Lambda}
+\newcommand{\vars}{\mathbb{V}}
+\newcommand{\atoms}{\mathbb{A}}
+\newcommand{\types}{\mathbb{T}}
+\newcommand{\nat}{\mathbb{N}}
+
+% Spaced equations
+\newcommand{\eq}{\quad=\quad}
+\newcommand{\of}{\quad:\quad}
+\newcommand{\bnf}{\quad::=\quad}
+\newcommand{\rrule}{\quad\longrightarrow\quad}
+\newcommand{\then}{\ \Longrightarrow\ }
+
+% Relations and arrows
+\newcommand{\sse}{\subseteq}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\from}{\leftarrow}
+\newcommand{\oto}{\leftrightarrow}
+\newcommand{\RA}{\Rightarrow}
+\newcommand{\thra}{\twoheadrightarrow}
+
+% Standard combinators
+\newcommand{\ic}{\mathtt{I}}
+\newcommand{\kc}{\mathtt{K}}
+\newcommand{\yc}{\mathtt{Y}}
+\newcommand{\scomb}{\mathtt{S}}
+
+% Sets of lambda terms
+\newcommand{\NF}{\mathsf{NF}}
+\newcommand{\WN}{\mathsf{WN}}
+\newcommand{\SN}{\mathsf{SN}}
+
+% Finite types
+\newcommand{\bzero}{\boldsymbol{0}}
+\newcommand{\bone}{\boldsymbol{1}}
+\newcommand{\btwo}{\boldsymbol{2}}
+
+% Terms for products and sums
+\newcommand{\fst}{\mathsf{fst}}
+\newcommand{\snd}{\mathsf{snd}}
+\newcommand{\leftc}{\mathsf{left}}
+\newcommand{\rightc}{\mathsf{right}}
+\newcommand{\case}{\mathsf{case}}
+
+% Elimination forms
+\newcommand{\elimc}{\mathsf{elim}}
+\newcommand{\iter}{\mathsf{iter}}
+\newcommand{\rec}{\mathsf{rec}}
+
+% Terms for booleans
+\newcommand{\ttc}{\mathtt{tt}}
+\newcommand{\ffc}{\mathtt{ff}}
+\newcommand{\ite}{\mathtt{IfThenElse}}
+
+% Systems
+\newcommand{\lstar}{\lam\star}
+\newcommand{\lameq}{\lam\simeq}
+\newcommand{\lamC}{{\lam{C}}}

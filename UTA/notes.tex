@@ -6,9 +6,92 @@
 \title{Intersection Type Algebras}
 \author{Aaron Frye, Andrew Polonsky}
 
-\newcommand{\types}{\mathbb{T}}
+\input{lambdamacs}
+
+% \newcommand{\types}{\mathbb{T}}
+\newcommand{\mcS}{\mathcal{S}}
+\newcommand{\mcF}{\mathcal{F}}
+\newcommand{\semof}[1]{{[\![{#1}]\!]}}
+\newcommand{\ita}{\mathpzc{Ita}}
+\newcommand{\msl}{\mathpzc{Msl}}
 
 \begin{document}
+
+\section*{01.17}
+TODO:
+\begin{itemize}
+  \item Need to start writing the paper!
+  \item Need a pretty-printer/helper functions for using the Agda code.
+  \item Need to refactor/cleanup the code
+  \item Work on the conjecture
+  \begin{enumerate}
+    \item One direction should be easy
+    \item Is the other direction even true?
+  \end{enumerate}
+  \item Generalizing the code to preorders/intersection types
+  \item Verify correctness of the code: prove it computes the most general unifier
+  equivalent to the starting list of constraints
+  \item Implementing the decision algorithm for the generated recursive type algebra
+  \item How to implement/define the ``free'' ita/meet semilattices in type theory
+  --- related to: How to define strict order between types.
+  \item Implement/verify the decider for the subtyping relation between trees.
+\end{itemize}
+
+\section{Notes from jan. 2025}
+Intersection type algebras are the simultaneous free algebra for the
+monoid functor (whose free algebras are list algebras) and
+icmonoid functor (whose free algebras are free semilattices).
+
+Specifically, given a type $A$, let $\mathcal{P}_f(A)$ denote the final
+powerset of $A$.  Define
+\begin{align}
+  \label{e:msl}
+  \msl(A) &= \mathcal{P}_f(A) \\
+  \label{e:ita}
+  \ita(A) &= \mu X. A \times \msl(X)^*
+\end{align}
+
+That is, for any type $A$, $\ita(A)$ is the initial type satisfying
+$\ita(A) = \msl(\ita(A))^* \times A$.
+
+The distributivity is implicit in this representation, since the
+type $\msl(\ita(A))$ forms an intersection type algebra in the sense of
+BCD, which involves two binary operations, $\to$ and $\cap$.
+Specifically, given $S_1,S_2 \sse_f (\ita(A)$, we
+define
+\begin{align*}
+  (S_1 \cap S_2) &= S_1 \cup S_2 \\
+  (S_1 \to S_2) &= \setof{((s:ts),a) \mid s \in S_1, (ts,a) \in S_2}
+\end{align*}
+This translation validates the distributivity rule, since
+\begin{align*}
+  S_1 \to (S_2 \cap S_3)
+  &= S_1 \to (S_2 \cup S_3) \\
+  &= \setof{(s:ts,a) \mid s \in S_1, (ts,a) \in S_2 \cup S_3}\\
+  &= \setof{(s:ts,a) \mid s \in S_1, (ts,a) \in S_2}
+  \cup \setof{(s:ts,a) \mid s \in S_1, (ts,a) \in S_3}\\
+  &= (S_1 \to S_2) \cup (S_1 \to S_3) \\
+  &= (S_1 \to S_2) \cap (S_1 \to S_3)
+\end{align*}
+
+With the monadic unit $\eta_A = \lam a{:}A. (\emptyset,a): A \to \msl(\ita(A))$,
+and the initiality of the algebra of BCD types $\types_{\to,\cap}(A)$,
+we obtain a map $dnf_A : \types_{\to,\cap)(A) \to \msl(\ita(A))}$.
+
+The converse map $bcd_A : \msl(\ita(A)) \to \types_{\to,\cap}(A)$
+is given recursively by
+\begin{align*}
+  bcd_A(\setof{T_1,\dots,T_m}) &= bcd'_A(T_1) \cap (bcd'_A(T_2) \cap
+    \cdots (bcd'_A(T_{m-1}) \cap bcd'_A(T_m)) \cdots)\\
+  bcd'(A)([S_1,\dots,S_n],a) &= bcd_A(S_1) \to (bcd_A(S_2) \to \cdots (bcd_A(S_n)\to a)
+  \cdots)
+\end{align*}
+
+It is easy to verify by induction that $bcd_A$ is injective.
+It therefore splits the map $dnf_A$, computing the canonical representative
+for the BCD-equivalence class of every type in $\types_{\to,\times}(A)$ .
+
+\emph{Need to choose an ordering in representation of subsets!}
 
 \section{2024.09.12}
 
