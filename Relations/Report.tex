@@ -277,6 +277,32 @@ Is that okay or am I going to have to clarify why they are interchangable (are t
   there is an element $i$ of the sequence such that $a \tto f (i)$.
 \end{dfn}
 
+\begin{dfn}
+  A relation $R$ has the \emph{recurrence property} (RP) if
+ $a \tto b$ and $a \tto c$  $\implies$
+ $c \tto b$, for all $a,c \in A$ and all $b \in A$ with the recurrence property.
+\end{dfn}
+\sacomment{This mirrors our Weak normal form property but for recurrence. Which would be a suitable name?}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{$R$-weakly recurrent} ($WR_{R}$)if $a \tto b$ for some recurrent element $b \in A$.
+
+  A relation $R$ is weakly recurrent (WR) if every $a \in A$ is $R$- weakly recurrent.
+\end{dfn}
+
+\begin{dfn}
+  An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if every reduction sequence starting from $a$ reaches a recurrent element in a finite number of reductions.
+
+  A relation $R$ is strongly recurrent (SR) if every
+  $a \in A$ is $R$-strongly recurrent.
+\end{dfn}
+\sacomment{Not sure on this defn. Is it right to state it requires a finite number of steps}
+
+
+
+
+
+
 
 \begin{dfn}
   \emph{Cofinality property}
@@ -475,6 +501,59 @@ by the conjunction of row and column.
   Answer: yes, that is what we have proved classically.
 \end{itemize}
 
+\subsection{Hierarchy}
+The properties of strong normality and confluence are the two properties of greatest interest. As such, there is 
+value in determining which other properties combine to imply one these properties. This motivated the development of the 
+following hierarchies. 
+
+\subsubsection{Confluence hierarchy}
+
+Unique Normal Form Property $<$ Weak Normal Form Property $<$ Recurrence Property $<$ Confluent
+
+\subsubsection{Normalization hierarchy}
+
+Weakly Recurrent $<$ Weakly Normal $<$ Strongly Recurrent $<$ Weakly Normal and Strongly Recurrent $<$ Strongly Normal
+
+The property of being strongly recurrent implies the property of being weakly normal only when there is also the classical property 
+of decidability of minimality for a given element. 
+
+\begin{table}[h!]
+  \centering
+  \caption{Local implications}
+  \begin{tabular}{|l|c|c|c|c|c|}     
+  \hline
+  \textbf{CR} & CR, WR  & CR, SR  &   &   &   \\
+  \hline
+  \textbf{RP} & CR, WR  & CR, SR  &   &   &   \\
+  \hline
+  \textbf{NP} & NP, WR  & CR, WN  &   &   &   \\
+  \hline
+  \textbf{UN} & UN, WR  & UN, WN  &   &   &   \\
+  \hline
+  & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
+  \hline  
+  \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
+  \caption{Local implications - Counterexamples}
+  \begin{tabular}{|l|c|c|c|c|c|}     
+  \hline
+  \textbf{CR} & CR, CE-9  & CR, CE-6  & WIP , CE-9  &   &   \\
+  \hline
+  \textbf{RP} & CR, CE-9  & CR, CE-6  & WIP , CE-9 &   &   \\
+  \hline
+  \textbf{NP} & CE-10, CE-9  & CR, CE-6  & CE-11 , CE-9 &   &   \\
+  \hline
+  \textbf{UN} & CE-3, CE-9  & CE-3, CE-6  & CE-3, CE-9  &   &   \\
+  \hline
+  & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
+  \hline  
+  \end{tabular}
+\end{table} 
+\sacomment{We can potentially merge the two tables. Is it the case that we never move one step up the hierarchy? Is it always a case that if we move one step we move up all the steps, if that is the case then we just need to either express the relevant counterexample, or express the property attained.}
+
 
 
 
@@ -559,6 +638,8 @@ Counterexample to:
 
   \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
   \item $WN_R$ and $UN_R$ $\implies$ $CR_R$
+  \item (Local) WR and UN $\implies$ NP 
+  \item (Local) WN and UN $\implies$ SR
 
 \end{itemize}
 
@@ -638,7 +719,10 @@ Counterexample to:
   \item WN and CR $\implies$ SN
   \item WN, CR, and bounded $\implies$ SN
   \item WN, UN, and bounded $implies$ SN
-  \item WN and NP $\implies$ SR
+  \item (Local) WN and UN $\implies$ SR
+  \item (Local) WN and NP $\implies$ SR
+  \item (Local) WN and RP $\implies$ SR
+  \item (Local) WN and CR $\implies$ SR
 \end{itemize}
 
 \subsection*{Counterexample 7}
@@ -713,6 +797,84 @@ Counterexample to:
   \item WN $\implies$ SN
   \item WN and RP $\implies$ SN
 \end{itemize}
+
+\subsection*{Counterexample 9}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+
+      % Arrows
+      \draw[->] (a) to [bend left] (b);
+      \draw[->] (b) to [bend left] (a);
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item (Local) WR and UN $\implies$ WN 
+  \item (Local) SR and UN $\implies$ WN 
+  \item (Local) SR and NP $\implies$ WN 
+  \item (Local) SR and RP $\implies$ WN 
+  \item (Local) SR and CR $\implies$ WN 
+\end{itemize}
+
+\subsection*{Counterexample 10}
+\begin{center}
+  \begin{tikzpicture}
+      % Nodes
+      \node (a) {a};
+      \node (b) [left of=a, xshift=-1cm, yshift=-1cm] {b};
+      \node (c) [left of=b] {c};
+      \node (f0) [right of=a, xshift=1cm, yshift=-1cm] {$f_0$};
+      \node (f1) [right of=f0, xshift=1cm] {$f_1$};
+      \node (f2) [right of=f1, xshift=1cm] {$f_2$};
+      \node (dots) [right of=f2, xshift=1cm] {...};
+      
+      % Arrows
+      \draw[->] (a) -- (b);
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (a) -- (f0);
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (f2);
+      \draw[->] (f2) -- (dots);
+  \end{tikzpicture}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item (Local) WR and NP $\implies$ RP 
+\end{itemize}
+
+\subsection*{Counterexample 11}
+\begin{center}
+  \begin{tikzpicture}
+      % Nodes
+      \node (a) {a};
+      \node (b) [left of=a, xshift=-1cm, yshift=-1cm] {b};
+      \node (c) [left of=b] {c};
+      \node (d) [right of=a, xshift=1cm, yshift=-1cm] {d};
+      \node (e) [right of=d] {e};
+      
+      % Arrows
+      \draw[->] (a) -- (b);
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (a) -- (d);
+      \draw[->] (d) to [bend left] (e);
+      \draw[->] (e) to [bend left] (d);
+
+  \end{tikzpicture}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item (Local) SR and NP $\implies$ RP 
+\end{itemize}
+
 
 
 \section{Well-foundedness}
