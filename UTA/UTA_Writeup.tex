@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{Formalizing Unification over Extensions of Simple Types}
+\author{Aaron Frye}
+\date{January 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Abstract}
+We use Agda to implement and verify type inference algorithms for extensions of simple types. We first treat recursive types and simple types, then subtyping.
+
+\section{Formalization and Agda}
+It is well known that the Curry-Howard correspondence draws an equivalence between proofs in constructive propositional logic and well typed programs with simple types. Agda leverages this fact to serve as both a functional programming language
+and a way of writing formally verified mathematical proofs. It takes the idea a step further by incorporating dependent types, which allows the typing system to admit programs representing proofs in predicate logic.
+
+Due to Agdas innate properties as a proof assistant, our results serve as both executable implementations of the listed algorithms and proofs of their correctness.
+
+\section{Unification}
+Unification in computer science refers to the problem of finding a substitution that solves a given set of equations. In our case we focus on unifying equations over types.
+
+
+\section{Unification of recursive types}
+
+\section{Rough ideas}
+\begin{itemize}
+    \item{unification}
+    \item{Type Algebras}
+    \item{Syntactic Algebras, notions of equivalence between algebras}
+    \item{Free Algebras, invertibility}
+    \item{Unification of Simple Types}
+    \item{Deciding equivalence}
+    \item{Recursive types}
+    \item{The subtyping relation}
+    \item{Intersection Types}
+\end{itemize}
+
+\end{document}
