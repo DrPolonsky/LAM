@@ -248,7 +248,7 @@ module S=1+2S where
 
 
   findm² : MM² → ℕ → 𝔹
-  findm² m² n = elem ==M² m² (List→ S→M²v3 (allS n))
+  findm² m² n = elem ==M² m² (List→ S→M² (allS n))
 
 
   some_m² : List MM²
@@ -296,7 +296,7 @@ module prettyPrint where
   𝕄²→M² (pr3 , pr4) = (𝕄→M pr3 ) , 𝕄→M pr4
 
   check37 : Set
-  check37 = {! List→ M²→𝕄² (notPass 6)  !}
+  check37 = {! List→ M²→𝕄² (S=1+2S.passN 6)  !}
 
   check4 : Set
   check4 = {! List→ (f ∘ preimg) (passN 5)  !} where
@@ -395,7 +395,7 @@ module JX=1+2X+X² where
   J→J²v7 = RigFold j (J ²) jJ²=J²v7
 
   findj² : ⟦ J ² ⟧ Γ₀ → ℕ → 𝔹
-  findj² j² n = elem ==J² j² (List→ J→J²v6 (allJ n))
+  findj² j² n = elem ==J² j² (List→ J→J² (allJ n))
 
 
   some_j² : List (⟦ J ² ⟧ Γ₀)
@@ -445,7 +445,7 @@ module JX=1+2X+X² where
   check'''' = {! length (filter (λ x → not (eqℕ x 2)) (List→ depthJ (allJ 5)))  !} -- {! take 100 (filter (λ x → not (le 5 (depthJ x)) (allJ 5))   !} -- {! List→ J²→𝕁² (passNj² 4)  !}
 
   chek : Set
-  chek = {! findj² (𝕁²→J² (jl , jb (ju1 jl) jl)) 5  !}
+  chek = {! List→ J²→𝕁² (passNj² 5)  !}
 
   check''' : Set
   check''' = {! List→ J→𝕁 (take 100 (allJ 6))  !}
@@ -639,6 +639,9 @@ module 1+X²=1+X+X³ where
   T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
   T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
   -- foldT (⟦ B ⟧ Γ₀) (_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ ) )
+
+  test54 : Set
+  test54 = {!   !}
 
 𝔹≃𝔹₁ : ∀ {n} → Iso (Num {n} 2) (Num 2)
 𝔹≃𝔹₁ = !!
