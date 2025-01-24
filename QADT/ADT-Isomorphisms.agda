@@ -35,6 +35,11 @@ data Iso {n} : ADT n → ADT n → Set where
   fix≃ : ∀ (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
   subst≃ : ∀ {e1 e2 : ADT (succ n)} {d1 d2 : ADT n} → Iso e1 e2 → Iso d1 d2 → Iso (e1 [ d1 ]) (e2 [ d2 ])
 
+  -- subst : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
+  -- subst e e' = subst-level e e' (o)
+substIso : ∀ {n} → (e : ADT (succ n)) → {a b : ADT n} → Iso a b → Iso (subst e a) (subst e b)
+substIso e j = subst≃ (refl≃ e ) j
+
 -- Groupoid operations
 !! : ∀ {n} {a : ADT n}   → Iso a a
 !! = refl≃ _

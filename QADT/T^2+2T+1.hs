@@ -64,5 +64,18 @@ allFX2 = lazyProd allFX allFX
 list1 = [x == test1 x | x <- take 10000 allFX]
 list2 = [x == test2 x | x <- take 10000 allFX2]
 
+swap :: (a,b) -> (b,a)
+swap (x,y) = (y,x)
+
+mapj :: (a -> b) -> Maybe (Either (a, a) (a, Bool)) -> Maybe (Either (b, b) (b, Bool))
+mapj f Nothing = Nothing
+mapj f (Just (Left (x , y))) = Just (Left (f x, f y))
+mapj f (Just (Right (x,c))) = Just (Right (f x, c))
+
+jswap :: Maybe (Either (FX2, FX2) (FX2, Bool)) -> Maybe (Either (FX2, FX2) (FX2, Bool))
+jswap = mapj swap
+
+list3 = [((g . swap) x , (jswap . g) x) | x <- (take 10000 allFX2) ]
+
 check :: [Bool] -> Bool
 check = all id
