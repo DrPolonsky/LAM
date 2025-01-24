@@ -34,6 +34,12 @@ _² a = a × a
 _³ : ∀ {n} → ADT n → ADT n
 _³ a = a × a ²
 
+_⁴ : ∀ {n} → ADT n → ADT n
+_⁴ a = a × a ³
+
+_⁵ : ∀ {n} → ADT n → ADT n
+_⁵ a = a × a ⁴
+
 Num : ∀ {n} → ℕ → ADT n
 Num zero = 𝟎
 Num (succ n) = 1+ (Num n)
@@ -43,6 +49,8 @@ Num (succ n) = 1+ (Num n)
 
 infix 50 _²
 infix 50 _³
+infix 50 _⁴
+infix 50 _⁵
 
 -- Set interpretation of ADTs
 ⟦_⟧_ : ∀ {n : ℕ} → ADT n → SetEnv n → Set
