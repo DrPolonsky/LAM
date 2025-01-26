@@ -1,4 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
+-- {-# OPTIONS --allow-unsolved-metas #-}
 open import Logic
 open import Predicates
 open import Relations.Core
@@ -272,38 +272,40 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     where ¬¬CP = {!   !}
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-  dMseq : decMin → A → ℕ → A
-  dMseq dM a0 zero = a0
-  dMseq dM a0 (succ n) with dM (dMseq dM a0 n)
-  ... | in1 (b ,, bRsn) = b
-  ... | in2 x = dMseq dM a0 n
+  module WFseqImplications (dM : decMin) where
 
-  {- It seems we need the following lemma. -}
-  -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
-  --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
+    dMseq : A → ℕ → A
+    dMseq a0 zero = a0
+    dMseq a0 (succ n) with dM (dMseq a0 n)
+    ... | in1 (b ,, bRsn) = b
+    ... | in2 x = dMseq a0 n
 
-  -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero)
+    {- It seems we need the following lemma. -}
+    -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
+    --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
 
-  isWFseq→isWFmin : decMin → isWFseq R → isWFmin R
-  isWFseq→isWFmin dM RisWFseq P {a} a∈P with RisWFseq (dMseq dM a)
-  ... | n ,, snRn with dM (dMseq dM a n)
-  ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
-  ... | in2 snRmin = {!   !}
+    -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero)
 
-  isWFseq→isWFmin₁ : decMin → isWFseq R → isWFmin₁ R
-  isWFseq→isWFmin₁ dM RisWFseq P Pdec {a} a∈P with RisWFseq (dMseq dM a)
-  ... | n ,, snRn with dM (dMseq dM a n)
-  ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
-  ... | in2 snRmin = {!   !}
+    isWFseq→isWFmin : isWFseq R → isWFmin R
+    isWFseq→isWFmin RisWFseq P {a} a∈P with RisWFseq (dMseq a)
+    ... | n ,, snRn with dM (dMseq a n)
+    ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
+    ... | in2 snRmin = {!   !}
 
-  -- This seems to lead to the same issue as above
-  isWFseq-→isWFmin- : decMin → isWFseq- R → isWFmin- R
-  isWFseq-→isWFmin- dM RisWFseq P {a} a∈P ¬Σmin = RisWFseq (dMseq dM a) s-dec where
-    s-dec : is R -decreasing (dMseq dM a)
-    s-dec 0 = {!   !}
-    s-dec (succ n) with dM (dMseq dM a (succ n))
-    ... | in1 (y ,, yRsn) = yRsn
-    ... | in2 snRmin = ∅ (snRmin (dMseq dM a n) {!   !} )
+    isWFseq→isWFmin₁ : isWFseq R → isWFmin₁ R
+    isWFseq→isWFmin₁ RisWFseq P Pdec {a} a∈P with RisWFseq (dMseq a)
+    ... | n ,, snRn with dM (dMseq a n)
+    ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
+    ... | in2 snRmin = {!   !}
+
+    -- This seems to lead to the same issue as above
+    isWFseq-→isWFmin- : isWFseq- R → isWFmin- R
+    isWFseq-→isWFmin- RisWFseq P {a} a∈P ¬Σmin = RisWFseq (dMseq a) s-dec where
+      s-dec : is R -decreasing (dMseq a)
+      s-dec 0 = {!   !}
+      s-dec (succ n) with dM (dMseq a (succ n))
+      ... | in1 (y ,, yRsn) = yRsn
+      ... | in2 snRmin = ∅ (snRmin (dMseq a n) {!   !} )
 
   -- 2. Implications relying on ¬¬-closure of accessibility
   ¬¬ACC : Set
