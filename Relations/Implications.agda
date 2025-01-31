@@ -150,3 +150,26 @@ module Confluent-Implications where
 
     SN∧UN→NP : ∀ x → is R -SN x → is R -UN x → is_-WNFP_ x -- WTS R*zy. know y is uniquely normal. Know strongly normal. So z should terminate. Must terminate at y
     SN∧UN→NP x (acc xacc) x∈UN y∈NF R*xy R*xz = {!   !}   
+
+    NF⊆SN : ∀ x → is R -NF x → is R -SN x
+    NF⊆SN x x∈NF = acc (λ y Rxy → ∅ (x∈NF y Rxy) )
+
+    open ReductionClosureProperties
+
+    WN∧R→SN : ∀ x → is R -WN x → is R -recurrent x → is R -SN x
+    WN∧R→SN x (n ,, R*xn , n∈NF) x∈R =
+        acc (λ y Rxy → ∅ (NF↓⊆NF R n∈NF (x∈R n R*xn) y Rxy) )
+
+    WN∧NP∧SR→SN : ∀ x → is R -WN x → is_-WNFP_ x → is_-SR_ x → is R -SN x
+    WN∧NP∧SR→SN x x∈WN x∈NP (SRrec .x x∈RF) = WN∧R→SN x x∈WN x∈RF
+    WN∧NP∧SR→SN x (n ,, R*xn , n∈NF) x∈NP (SRacc .x xAcc) = acc f where
+        f : ∀ (y : A) → ~R R y x → is ~R R -accessible y
+        f y Rxy = WN∧NP∧SR→SN y
+                    (n ,, x∈NP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
+                    (λ {w} {z} H R*yw R*yz → x∈NP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
+                    (xAcc y Rxy)
+
+    module SNWN (P : 𝓟 A) where
+
+        NF-ind2 : (∀ (x n : A) → (R ⋆) x n → is R -NF n → P x) → ∀ a → is R -WN a → P a
+        NF-ind2 IH a (n ,, R*an , n∈NF) = IH a n R*an n∈NF
