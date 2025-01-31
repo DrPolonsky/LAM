@@ -575,7 +575,7 @@ In the following table red text indicates that classical properties are required
   \hline
   \textbf{WNFP} & {CE-11}, {CE-9}  & CR, {CE-6}  & CE-11 , {CE-9} & CR, ?   & \red{CR} , SN \\
   \hline
-  \textbf{UN} & {CE-3}, {CE-12}  & CR, {CE-6}  & CE-3, {CE-9}  & CR, {CE-3}  & \red{CR} , SN \\
+  \textbf{UN} & {CE-3}, {CE-12} and CE-9  & CR, {CE-6}  & CE-3, {CE-9}  & CR, ?  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -589,11 +589,11 @@ In the following table red text indicates that classical properties are required
   \hline
   \textbf{CR} & CR, {CE-9}  & CR, {CE-6}  & CR , {CE-9}  & CR, ?  & CR , SN \\
   \hline
-  \textbf{RP} & CR, {CE-9}  & CR, {CE-6}  & \red{CR} , {CE-9} & CR, ?   & CR , SN \\
+  \textbf{RP} & CR, {CE-9}  & CR, {CE-6}  & {CR} , {CE-9} & CR, ?   & CR , SN \\
   \hline
-  \textbf{WNFP} & ?, {CE-9}  & CR, {CE-6}  & \red{CR} , {CE-9} & CR, ?   & CR , SN \\
+  \textbf{WNFP} & CE-1.2, {CE-9}  & CR, {CE-6}  & {CR} , {CE-9} & CR, ?   & CR , SN \\
   \hline
-  \textbf{UN} & ?, {CE-9}  & CR, {CE-6}  & \red{CR}, {CE-9}  & CR, ?  & CR , SN \\
+  \textbf{UN} & CE-1.1, {CE-9}  & CR, {CE-6}  & {CR}, {CE-9}  & CR, ?  & CR , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -632,6 +632,57 @@ Counterexample to:
   \item WCR and WN $\implies$ CR
   \item WCR and WN $\implies$ SN
   \item IOW and WCR $\implies$ WNFP \sacomment{We need to define IOW in the report}
+\end{itemize}
+
+\subsection*{Counterexample 1.1}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (c) [right of=b, xshift=1cm] {c};
+      \node (d) [right of=c, xshift=1cm] {d};
+
+      % Arrows
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (b) -- (a);
+      \draw[->] (c) -- (d);
+      \draw[->, loop] (d) to (d);
+
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item (Global) WCR, UN, and WR $\implies$ WNFP
+\end{itemize}
+
+\subsection*{Counterexample 1.2}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (c) [right of=b, xshift=1cm] {c};
+      \node (d) [right of=c, xshift=1cm] {d};
+
+      % Arrows
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (b) -- (a);
+      \draw[->] (c) -- (d);
+      \draw[->, loop] (d) to (d);
+      \draw[->, loop] (a) to (a);
+
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item (Global) WCR, WNFP, and WR $\implies$ RP
 \end{itemize}
 
 \subsection*{Counterexample 2}
