@@ -91,6 +91,8 @@ _++_ : ∀ {A} → List A → List A → List A
 [] ++ ys = ys
 (x ∷ xs) ++ ys = x ∷ (xs ++ ys)
 
+infixr 21 _++_
+
 merge : ∀ {A} → List A → List A → List A
 merge xs [] = xs
 merge [] ys = ys
@@ -144,3 +146,7 @@ List- : ∀ {A} → (A → A → 𝔹) → List A → List A → List A
 List- f [] a2 = []
 List- f xs@(x ∷ a1) [] = xs
 List- f (x ∷ a1) (y ∷ a2) = List- f (drop f y (x ∷ a1)) a2
+
+flatten : ∀ {A} → (List (List A)) → List A
+flatten [] = []
+flatten (al ∷ as) = al ++ (flatten as)

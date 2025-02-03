@@ -1,7 +1,7 @@
 import re
 def main():
-    diff = [1, 1, 1, 0]
-    poly = [0, 1, 0, 0, 0]
+    diff = [1, 0, 1]
+    poly = [0, 0, 0, 1, 0, 0, 0]
     # diff = [1, 0, 0, 0, 0, 1]
     # poly = [1, 1, 0, 0, 0, 1]
     # poly = [0, 0, 1, 1, 0, 0, 0, 1]
@@ -22,14 +22,14 @@ def step(diff, poly, start_x=1,lim=1):
         n = input(": ")
         if n.lower() in ('q', 'quit'): return "break"
     n = int(n)
+    while len(poly) < n + len(diff) + 1:
+        poly.append(0)
     if n < 0:
         neg = True
         n = abs(n)
-    if n < start_x or poly[n] < lim:
+    if abs(n) < start_x or (poly[n] < lim and not neg):
         return
-    while len(poly) < n + len(diff) + 1:
-        poly.append(0)
-    if neg and all((poly[n+i-start_x] >= diff[i]) or diff[i] <= 0 for i in range(len(diff))):
+    if neg and all((poly[n+i-start_x] >= diff[i]) or diff[i] <= 0 for i in range(len(diff))) and (poly[n] > diff[1] if diff[1] >= 0 else True):
         for i in range(len(diff)):
             poly[n + i - start_x] -= diff[i]
     elif not neg:

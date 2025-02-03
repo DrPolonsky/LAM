@@ -184,6 +184,9 @@ _~t_ {n} {a} {b} {c} i1 i2 = t= (s= i1) i2
 cycle+ : ∀ {n} {A B C : ADT n} → Iso (A ⊔ B ⊔ C) (B ⊔ C ⊔ A)
 cycle+ = c+= (a+= !! )
 
+cycle×3 : ∀ {n} {A B C : ADT n} → Iso (A × B × C) (B × C × A)
+cycle×3 = c×= a×
+
 dist3 : ∀ {n} {A B C D : ADT n} → Iso (A × (B ⊔ C ⊔ D)) (A × B ⊔ A × C ⊔ A × D)
 dist3 = dl= (!+ dl)
 
@@ -235,3 +238,10 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 
 RigFold : ∀ (A : ADT 1) → (B : ADT 0) → Iso (A [ B ]) B → ⟦ μ A ⟧ Γ₀ → ⟦ B ⟧ Γ₀
 RigFold A B rigiso = foldADT {0} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (substlemmagen A B Γ₀ o ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
+
+module IsoLemmas where
+  c×³ : ∀ {n} {X : ADT n} → List (Iso (X ³) (X ³))
+  c×³ {X = X} = !! ∷ cycle×3 ∷ (cycle×3 =!= cycle×3) ∷ ×= c× ∷ (cycle×3 =!= ×= c× ) ∷ (cycle×3 =!= (cycle×3 =!= ×= c× ) ) ∷ []
+
+
+open IsoLemmas public
