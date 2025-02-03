@@ -1,4 +1,4 @@
--- {-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Logic
 open import Predicates
 open import Relations.Core
