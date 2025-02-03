@@ -291,12 +291,20 @@ Is that okay or am I going to have to clarify why they are interchangable (are t
 \end{dfn}
 
 \begin{dfn}
+  An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if either $a$ itself is recurrent or every element one $R$ step 
+  from $a$ is also strongly recurrent.
+
+  A relation $R$ is strongly recurrent (SR) if every
+  $a \in A$ is $R$-strongly recurrent.
+\end{dfn}
+
+\begin{dfn}
   An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if every reduction sequence starting from $a$ reaches a recurrent element in a finite number of steps.
 
   A relation $R$ is strongly recurrent (SR) if every
   $a \in A$ is $R$-strongly recurrent.
 \end{dfn}
-\sacomment{Not sure on this defn. Is it right to state it requires a finite number of steps}
+\sacomment{We have the two contender definitions for SR above.}
 
 
 
@@ -447,44 +455,6 @@ a proof of this, should we include it, include it with a note that we're taking 
 \end{itemize}
 }
 
-\subsection{Summary table}
-BP = boundedness property
-
-Table listing highest "confluence" property implied
-by the conjunction of row and column.
-
-
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
-  \toprule
-  & CP & CR & WCR & WNFP & WUN  \\
-  \midrule
-  SN  & ? & CR & CR & (Should be CR?)  & ?  \\
-  WN  & ? & CR & (Not CR) & ? & ? \\
-  WN* & ? & CR & ? & ? & ? \\
-  BP $\land$ CP & ? & CR & ? & ? & ? \\
-  BP  & ? & CR & ? & ? & ? \\
-  CP  & ? & CR & ? & ? & ? \\
-  \bottomrule
-\end{tabular}
-
-
-Table listing highest "normalization" property implied
-by the conjunction of row and column.
-
-
-\begin{tabular}{@{}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{\quad}l@{}}
-  \toprule
-  & CP & CR & WCR & WNFP & WUN \\
-  \midrule
-  SN  &?& SN & SN & SN & SN \\
-  WN  &?& (Not SN) & (Not SN) & ? & ? \\
-  WN*  &?& ? & ? & ? & ? \\
-  BP $\land$ CP   &?& ? & ? & ? & ? \\
-  BP  &?& ? & ? & ? & ? \\
-  CP  &?& (not CP or BP) & ? & ? & ? \\
-  \bottomrule
-\end{tabular}
-
 \subsection{Double-check: What has been proven}
 \begin{itemize}
   \item \sacomment{List all the constructive proofs we've put together!}
@@ -508,13 +478,52 @@ following hierarchies.
 
 \subsubsection{Confluence hierarchy}
 
-Unique Normal Form Property $<$ Weak Normal Form Property $<$ Recurrence Property $<$ Confluent
+\begin{center}
+  
+  \begin{tikzpicture}[auto,
+    arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
+    % A box style
+    \tikzstyle{boxnode} = [draw, rectangle, minimum width=3cm, minimum height=1cm, text centered]
+    
+    % Place the nodes vertically (top to bottom)
+    \node (Confluent) [boxnode] at (0,0) {Confluent};
+    \node (RP)        [boxnode, below=2cm of Confluent] {Recurrence Property};
+    \node (WN)        [boxnode, below=2cm of RP] {Weak Normal Form Property};
+    \node (UN)        [boxnode, below=2cm of WN] {Unique Normal Form Property};
+    
+    % Draw arrows downwards
+    \draw[arrowstyle] (Confluent) -- (RP);
+    \draw[arrowstyle] (RP) -- (WN);
+    \draw[arrowstyle] (WN) -- (UN);
+  \end{tikzpicture}
+\end{center}
+  
 
 \subsubsection{Normalization hierarchy}
 
-Weakly Recurrent $<$ Weakly Normal $<$ Strongly Recurrent $<$ Weakly Normal and Strongly Recurrent $<$ Strongly Normal
 
-The property of being strongly recurrent implies the property of being weakly normal only when there is also the classical property 
+\begin{tikzpicture}[node distance=2cm, auto,
+  % Define a thicker arrow with larger arrowhead and some shortening
+  arrowstyle/.style = {->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}
+]
+% Define a box style
+\tikzstyle{boxnode} = [draw, rectangle, minimum width=3cm, minimum height=1cm, text centered]
+
+% Define the nodes
+\node (SN) [boxnode] at (0,0) {Strongly Normal};
+\node (WN) [boxnode, below left=2cm and 2cm of SN] {Weakly Normal};
+\node (SR) [boxnode, below right=2cm and 2cm of SN] {Strongly Recurrent};
+\node (WR) [boxnode, below of=SN, yshift=-4cm] {Weakly Recurrent};
+
+% Draw the arrows to form a diamond
+\draw [arrowstyle] (SN) -- (WN);
+\draw [arrowstyle] (SN) -- (SR);
+\draw [arrowstyle] (WN) -- (WR);
+\draw [arrowstyle] (SR) -- (WR);
+\end{tikzpicture}
+
+
+The property of being strongly recurrent implies the property of being weakly recurrent only when there is also the classical property 
 of decidability of minimality for a given element. 
 
 In the following table red text indicates that classical properties are required for the implication to hold. Blue indicates we are currently unsure. 
@@ -524,13 +533,13 @@ In the following table red text indicates that classical properties are required
   \caption{Local implications}
   \begin{tabular}{|l|c|c|c|c|c|}     
   \hline
-  \textbf{CR} & CR, CE-9  & CR, CE-6  & CR , CE-9  & CR, CE-6  & CR , SN \\
+  \textbf{CR} & CR, CE-9  & CR, CE-6  & CR , CE-9  & CR, SN  & CR , SN \\
   \hline
-  \textbf{RP} & CR, CE-9  & CR, CE-6  & \red{CR} , CE-9 & CR, CE-6   & \red{CR} , SN \\
+  \textbf{RP} & CR, CE-9  & CR, CE-6  & \red{CR} , CE-9 & CR, SN   & \red{CR} , SN \\
   \hline
-  \textbf{WNFP} & CE-10, CE-9  & CR, CE-6  & CE-11 , CE-9 & CR, CE-6   & \red{CR} , SN \\
+  \textbf{WNFP} & CE-10, CE-9  & CR, CE-6  & CE-11 , CE-9 & CR, SN   & \red{CR} , SN \\
   \hline
-  \textbf{UN} & CE-3, CE-9  & CE-3, CE-6  & CE-3, CE-9  & CE-3, CE-3  & \red{CR} , SN \\
+  \textbf{UN} & CE-3, CE-12  & CE-3, CE-6  & CE-3, CE-9  & CE-3, CE-3  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -542,13 +551,13 @@ In the following table red text indicates that classical properties are required
   \caption{Local implications - WCR }
   \begin{tabular}{|l|c|c|c|c|c|}     
   \hline
-  \textbf{CR} & CR, CE-9  & CR, \blue{CE-6}  & CR , \blue{CE-9}  & CR, \blue{CE-6}  & CR , SN \\
+  \textbf{CR} & CR, CE-9  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
-  \textbf{RP} & CR, CE-9  & CR, \blue{CE-6}  & \red{CR} , \blue{CE-9} & CR, \blue{CE-6}   & \red{CR} , SN \\
+  \textbf{RP} & CR, CE-9  & CR, {CE-6}  & \red{CR} , {CE-9} & CR, SN   & \red{CR} , SN \\
   \hline
-  \textbf{WNFP} & CE-10, CE-9  & CR, \blue{CE-6}  & \blue{CE-11} , \blue{CE-9} & CR, \blue{CE-6}   & \red{CR} , SN \\
+  \textbf{WNFP} & CE-10.1, CE-9  & CR, {CE-6}  & {CE-11} , {CE-9} & CR, SN  & \red{CR} , SN \\
   \hline
-  \textbf{UN} & CE-3, CE-9  & \blue{CE-3}, \blue{CE-6}  & \blue{CE-3}, \blue{CE-9}  & \blue{CE-3}, \blue{CE-3}  & \red{CR} , SN \\
+  \textbf{UN} & CE-3.1, CE-12  & {CE-3.1}, {CE-6}  & {CE-3.1}, {CE-9}  & {CE-3.1}, {CE-3.1}  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -560,13 +569,13 @@ In the following table red text indicates that classical properties are required
   \caption{Global implications}
   \begin{tabular}{|l|c|c|c|c|c|}     
   \hline
-  \textbf{CR} & CR, \blue{CE-9}  & CR, \blue{CE-6}  & CR , \blue{CE-9}  & CR, \blue{CE-6}  & CR , SN \\
+  \textbf{CR} & CR, {CE-9}  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
-  \textbf{RP} & CR, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR} , \blue{CE-9} & CR, \blue{CE-6}   & \blue{CR} , SN \\
+  \textbf{RP} & CR, {CE-9}  & CR, {CE-6}  & \red{CR} , {CE-9} & CR, SN   & \red{CR} , SN \\
   \hline
-  \textbf{WNFP} & \blue{CE-10}, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR} , \blue{CE-9} & CR, \blue{CE-6}   & \blue{CR} , SN \\
+  \textbf{WNFP} & {CE-11}, {CE-9}  & CR, {CE-6}  & CE-11 , {CE-9} & CR, SN   & \red{CR} , SN \\
   \hline
-  \textbf{UN} & \blue{CE-3}, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR}, \blue{CE-9}  & \blue{CE-3}, \blue{CE-3}  & \blue{CR} , SN \\
+  \textbf{UN} & {CE-3}, {CE-12} and CE-9  & CR, {CE-6}  & CE-3, {CE-9}  & CR, SN  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -578,13 +587,13 @@ In the following table red text indicates that classical properties are required
   \caption{Global implications - WCR}
   \begin{tabular}{|l|c|c|c|c|c|}     
   \hline
-  \textbf{CR} & CR, \blue{CE-9}  & CR, \blue{CE-6}  & CR , \blue{CE-9}  & CR, \blue{CE-6}  & CR , SN \\
+  \textbf{CR} & CR, {CE-9}  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
-  \textbf{RP} & CR, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR} , \blue{CE-9} & CR, \blue{CE-6}   & CR , SN \\
+  \textbf{RP} & CR, {CE-9}  & CR, {CE-6}  & {CR} , {CE-9} & CR, SN   & CR , SN \\
   \hline
-  \textbf{WNFP} & \blue{CE-10}, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR} , \blue{CE-9} & CR, \blue{CE-6}   & CR , SN \\
+  \textbf{WNFP} & CE-1.2, {CE-9}  & CR, {CE-6}  & {CR} , {CE-9} & CR, SN   & CR , SN \\
   \hline
-  \textbf{UN} & \blue{CE-3}, \blue{CE-9}  & CR, \blue{CE-6}  & \red{CR}, \blue{CE-9}  & \blue{CE-3}, \blue{CE-3}  & CR , SN \\
+  \textbf{UN} & CE-1.1, {CE-9}  & CR, {CE-6}  & {CR}, {CE-9}  & CR, SN  & CR , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
   \hline  
@@ -623,6 +632,57 @@ Counterexample to:
   \item WCR and WN $\implies$ CR
   \item WCR and WN $\implies$ SN
   \item IOW and WCR $\implies$ WNFP \sacomment{We need to define IOW in the report}
+\end{itemize}
+
+\subsection*{Counterexample 1.1}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (c) [right of=b, xshift=1cm] {c};
+      \node (d) [right of=c, xshift=1cm] {d};
+
+      % Arrows
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (b) -- (a);
+      \draw[->] (c) -- (d);
+      \draw[->, loop] (d) to (d);
+
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item (Global) WCR, UN, and WR $\implies$ WNFP
+\end{itemize}
+
+\subsection*{Counterexample 1.2}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (c) [right of=b, xshift=1cm] {c};
+      \node (d) [right of=c, xshift=1cm] {d};
+
+      % Arrows
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (b) -- (a);
+      \draw[->] (c) -- (d);
+      \draw[->, loop] (d) to (d);
+      \draw[->, loop] (a) to (a);
+
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+  \item (Global) WCR, WNFP, and WR $\implies$ RP
 \end{itemize}
 
 \subsection*{Counterexample 2}
@@ -675,7 +735,34 @@ Counterexample to:
 
   \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
   \item $WN_R$ and $UN_R$ $\implies$ $CR_R$
-  \item (Local) WCR, WR and UN $\implies$ NP 
+  \item (Local) WR and UN $\implies$ NP 
+  \item (Local) WN and UN $\implies$ SR
+
+\end{itemize}
+
+\subsection*{Counterexample 3.1}
+\begin{center}
+  \begin{tikzcd}
+      % Nodes
+      \node (x) {a};
+      \node (a') [above of=x] {a'};
+      \node (n) [left of=x, xshift=-1cm] {n \in NF};
+      \node (y) [right of=x, xshift=1cm] {b};
+      \node (z) [right of=y] {c};
+
+      % Arrows
+      \draw[->>] (x) -- (n);
+      \draw[->] (a') -- (x);
+      \draw[->] (a') -- (n);
+      \draw[->>] (x) -- (y);
+      \draw[->] (y) to [bend left] (z);
+      \draw[->] (z) to [bend left] (y);
+  \end{tikzcd}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
+  \item (Local) WCR, WR, and UN $\implies$ NP 
   \item (Local) WCR, WN and UN $\implies$ SR
 
 \end{itemize}
@@ -743,9 +830,9 @@ An infinite sequence with a bound that is a normal form.
 
           % Draw the arrows between the nodes inside and outside the region f sds
 
-          \draw[->>] (f0) -- (a);
-          \draw[->>] (f1) -- (a);
-          \draw[->>] (dots) -- (a);
+          \draw[->] (f0) -- (a);
+          \draw[->] (f1) -- (a);
+          \draw[->] (dots) -- (a);
       \end{tikzpicture}
 
 
@@ -883,6 +970,37 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
+  \item (Local) WR, and NP $\implies$ RP 
+\end{itemize}
+
+\subsection*{Counterexample 10.1}
+\begin{center}
+  \begin{tikzpicture}
+      % Nodes
+      \node (a) {a};
+      \node (a') [above of=a] {a'};
+      \node (b) [left of=a, xshift=-1cm, yshift=-1cm] {b};
+      \node (c) [left of=b] {c};
+      \node (f0) [right of=a, xshift=1cm, yshift=-1cm] {$f_0$};
+      \node (f1) [right of=f0, xshift=1cm] {$f_1$};
+      \node (f2) [right of=f1, xshift=1cm] {$f_2$};
+      \node (dots) [right of=f2, xshift=1cm] {...};
+      
+      % Arrows
+      \draw[->] (a) -- (b);
+      \draw[->] (a') -- (a);
+      \draw[->] (a') -- (b);
+      \draw[->] (b) to [bend left] (c);
+      \draw[->] (c) to [bend left] (b);
+      \draw[->] (a) -- (f0);
+      \draw[->] (f0) -- (f1);
+      \draw[->] (f1) -- (f2);
+      \draw[->] (f2) -- (dots);
+  \end{tikzpicture}
+\end{center}
+
+Counterexample to:
+\begin{itemize}
   \item (Local) WCR, WR, and NP $\implies$ RP 
 \end{itemize}
 
@@ -910,6 +1028,28 @@ Counterexample to:
 Counterexample to:
 \begin{itemize}
   \item (Local) SR and NP $\implies$ RP 
+\end{itemize}
+
+\subsection*{Counterexample 12}
+\begin{center}
+
+  \begin{tikzcd}[node distance=2cm, auto]
+      % Nodes
+      \node (a) {a};
+      \node (b) [right of=a, xshift=1cm] {b};
+      \node (n) [below of=a, xshift=1cm] {n};
+      
+
+      % Arrows
+      \draw[->] (a) to [bend left] (b);
+      \draw[->] (b) to [bend left] (a);
+      \draw[->] (a) -- (n);
+  \end{tikzcd}
+
+\end{center}
+Counterexample to:
+\begin{itemize}
+    \item (gloabl) WCR, WR, and UN $implies$ WN or SR or SN
 \end{itemize}
 
 

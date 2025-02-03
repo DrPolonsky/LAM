@@ -17,6 +17,9 @@ module Definitions where
       SRrec : ∀ x → is R -recurrent x → is_-SR_ x
       SRacc : ∀ x → (∀ y → R x y → is_-SR_ y) → is_-SR_ x
 
+    SR : Set 
+    SR = ∀ x → is_-SR_ x
+
     is_-SRseq_ : 𝓟 A
     is_-SRseq_ x = ∀ (f : ℕ → A) → f zero ≡ x → is R -increasing f → Σ[ i ∈ ℕ ] (is R -recurrent (f i))
 
@@ -46,8 +49,8 @@ module Basic-Implications where
 
     -- Normal form is a subset of recurrence
     NF⊆Rec : ∀ {x} → is R -NF x → is R -recurrent x
-    NF⊆Rec isNF_x y ε⋆ = ε⋆
-    NF⊆Rec isNF_x y (Rxx₁ ,⋆ R*x₁y) = ∅ (isNF _ x Rxx₁)
+    NF⊆Rec x∈NF y ε⋆ = ε⋆
+    NF⊆Rec x∈NF y (Rxx₁ ,⋆ R*x₁y) = ∅ (x∈NF _ Rxx₁)
 
     RP→NP : ∀ {x} → is_-RP_ x → is_-WNFP_ x
     RP→NP x∈Rec isNF_y R*xy R*xz = x∈Rec (NF⊆Rec isNF_y) R*xy R*xz
@@ -89,13 +92,34 @@ module Normalizing-Implications where
     SN∧UN→WN x isSN_x isUN_x isNF_y ε⋆ (Rxx₁ ,⋆ R*x₁z) = ∅ (isNF _ y Rxx₁)
     SN∧UN→WN x isSN_x isUN_x isNF_y   (_,⋆_ {y = x₁}  Rxx₁  R*x₁y) R*xz = {!   !}
 
+    SR↓⊆SR : ∀ {x y} → is_-SR_ x → (R ⋆) x y → is_-SR_ y
+    SR↓⊆SR {x} (SRrec _ x∈rec) ε⋆ = SRrec x x∈rec
+    SR↓⊆SR {y} (SRrec _ x∈rec) (Rxx₀ ,⋆ R*x₀y) = SR↓⊆SR (SRrec _ (ReductionClosureProperties.rec↓⊆rec R x∈rec (Rxx₀ ,⋆ ε⋆))) R*x₀y
+    SR↓⊆SR {x} (SRacc _ x∈acc) ε⋆ = SRacc x x∈acc
+    SR↓⊆SR (SRacc _ x) (Rxx₀ ,⋆ R*x₀y) = SR↓⊆SR (x _ Rxx₀) R*x₀y 
+
+    LocalNewmansLemmaRecurrent : weakly-confluent R → ∀ x → is_-SR_ x → is R -CR x 
+    LocalNewmansLemmaRecurrent RisWCR x (SRrec .x x∈Rec) R*xy R*xz = x ,, x∈Rec _ R*xy , x∈Rec _ R*xz           -- Start by casing on SR. Recurrent case is simple
+    LocalNewmansLemmaRecurrent RisWCR x (SRacc .x x∈Acc) ε⋆ R*xz = _ ,, R*xz , ε⋆                               -- Then case on the reductions, ε⋆ cases are simple 
+    LocalNewmansLemmaRecurrent RisWCR x (SRacc .x x∈Acc) (Rxy₁ ,⋆ R*y₁y) ε⋆ = _ ,, ε⋆ , (Rxy₁ ,⋆ R*y₁y)
+    LocalNewmansLemmaRecurrent RisWCR x (SRacc .x x∈Acc) (Rxy₁ ,⋆ R*y₁y) (Rxz₁ ,⋆ R*z₁z)                        -- Now apply WCR to get common reduct w
+                with RisWCR (x ,, Rxy₁ , Rxz₁) 
+    ... | w ,, R*y₁w , R*z₁w  with LocalNewmansLemmaRecurrent RisWCR _ (x∈Acc _ Rxy₁) R*y₁y R*y₁w               -- Recursive twice                                  
+    ... | y₂ ,, R*yy₂ , R*wy₂ with LocalNewmansLemmaRecurrent RisWCR _ (x∈Acc _ Rxz₁) R*z₁z (R*z₁w ⋆!⋆ R*wy₂)  
+    ... | z₂ ,, R*zz₂ , R*y₂z₂ = z₂ ,, ((R*yy₂ ⋆!⋆ R*y₂z₂) , R*zz₂)                                             
+
+    GlobalNewmansLemmaRecurrent : weakly-confluent R → SR → CR R 
+    GlobalNewmansLemmaRecurrent RisWCR RisSR x = LocalNewmansLemmaRecurrent RisWCR x (RisSR x) 
+    
+
+
 module Confluent-Implications where
 
     WR∧RP→CR : ∀ {x} → is_-WR_ x → is_-RP_ x → is R -CR x
     WR∧RP→CR (q ,, (R*xq , isRec_q)) isRP_x R*xy R*xz = q ,, isRP isRec_q x R*xq R*xy , isRP isRec_q x R*xq R*xz
 
     WN∧NP→CR : ∀ {x} → is R -WN x → is_-WNFP_ x → is R -CR x
-    WN∧NP→CR (n ,, (R*xn , isNF_x)) isWNFP_x R*xy R*xz = n ,, isWNFP isNF_x x R*xn R*xy , isWNFP isNF_x x R*xn R*xz
+    WN∧NP→CR (n ,, (R*xn , x∈NF)) isWNFP_x R*xy R*xz = n ,, isWNFP x∈NF x R*xn R*xy , isWNFP x∈NF x R*xn R*xz
 
     -- SR∧RP→SL : ∀ {x} → is_-SR_ x → is_-RP_ x → ∀ {y z} → R x y → (R ⋆) x z → y ↘ R ⋆ ↙ z
     -- SR∧RP→SL {x} (SRrec _ isRec_x) x∈RP {y} {z} Rxy R*xz = {!   !}
@@ -108,18 +132,44 @@ module Confluent-Implications where
     --       IH = SR∧RP→SL {w} w∈SR w∈RP
     --    in {!   !}
 
-    SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x
-    SR∧RP→CR {x} (SRrec _ isRec_x) isRP_x R*xy R*xz = x ,, isRec _ x R*xy , isRec _ x R*xz
-    SR∧RP→CR {x} (SRacc _ isSR_x₁) isRP_x R*xy R*xz = {!   !}
-    SR∧RP→SL {x} (SRacc _ x∈SR) x∈RP {y} {z} Rxy (_,⋆_ {y = w} Rxw R*wz) =
-      let w∈SR : is_-SR_ w
-          w∈SR = x∈SR w Rxw
-          w∈RP : is_-RP_ w
-          w∈RP = {!   !}
-          IH = SR∧RP→SL {w} w∈SR w∈RP
-       in {!   !}
+    -- SR∧RP→CR : ∀ {x} → is_-SR_ x → is_-RP_ x → is R -CR x
+    -- SR∧RP→CR {x} (SRrec _ isRec_x) isRP_x R*xy R*xz = x ,, isRec _ x R*xy , isRec _ x R*xz
+    -- SR∧RP→CR {x} (SRacc _ isSR_x₁) isRP_x R*xy R*xz = {!   !}
+    -- SR∧RP→SL {x} (SRacc _ x∈SR) x∈RP {y} {z} Rxy ( _,⋆_ {y = w} Rxw R*wz) =
+    --   let w∈SR : is_-SR_ w
+    --       w∈SR = x∈SR w Rxw
+    --       w∈RP : is_-RP_ w
+    --       w∈RP = {!   !}
+    --       IH = SR∧RP→SL {w} w∈SR w∈RP
+    --    in {!   !}
 
     -- Counterexample WN∧SR∧UN→CR
 
     SN∧UN→CR : ∀ {x} → is R -SN x → is R -UN x → is R -CR x
     SN∧UN→CR isSN_x isUN_x R*xy R*xz = {!   !}
+
+    SN∧UN→NP : ∀ x → is R -SN x → is R -UN x → is_-WNFP_ x -- WTS R*zy. know y is uniquely normal. Know strongly normal. So z should terminate. Must terminate at y
+    SN∧UN→NP x (acc xacc) x∈UN y∈NF R*xy R*xz = {!   !}   
+
+    NF⊆SN : ∀ x → is R -NF x → is R -SN x
+    NF⊆SN x x∈NF = acc (λ y Rxy → ∅ (x∈NF y Rxy) )
+
+    open ReductionClosureProperties
+
+    WN∧R→SN : ∀ x → is R -WN x → is R -recurrent x → is R -SN x
+    WN∧R→SN x (n ,, R*xn , n∈NF) x∈R =
+        acc (λ y Rxy → ∅ (NF↓⊆NF R n∈NF (x∈R n R*xn) y Rxy) )
+
+    WN∧NP∧SR→SN : ∀ x → is R -WN x → is_-WNFP_ x → is_-SR_ x → is R -SN x
+    WN∧NP∧SR→SN x x∈WN x∈NP (SRrec .x x∈RF) = WN∧R→SN x x∈WN x∈RF
+    WN∧NP∧SR→SN x (n ,, R*xn , n∈NF) x∈NP (SRacc .x xAcc) = acc f where
+        f : ∀ (y : A) → ~R R y x → is ~R R -accessible y
+        f y Rxy = WN∧NP∧SR→SN y
+                    (n ,, x∈NP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
+                    (λ {w} {z} H R*yw R*yz → x∈NP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
+                    (xAcc y Rxy)
+
+    module SNWN (P : 𝓟 A) where
+
+        NF-ind2 : (∀ (x n : A) → (R ⋆) x n → is R -NF n → P x) → ∀ a → is R -WN a → P a
+        NF-ind2 IH a (n ,, R*an , n∈NF) = IH a n R*an n∈NF
