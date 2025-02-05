@@ -196,13 +196,13 @@ MbnodeCurried : MM ∧ MM → MM
 MbnodeCurried (m1 , m2) = lfp (in2 (in2 ((m1 , m2 )) ) )
 
 allM : ℕ → List MM
+allM² : ℕ → List (MM ∧ MM)
 allM zero = []
 allM (succ n) = let
   un = List→ Munode (allM n)
-  allM² : List (MM ∧ MM)
-  allM² = lazyProd (allM n) (allM n)
-  bn = List→ MbnodeCurried allM²
+  bn = List→ MbnodeCurried (allM² n)
   in Mleaf ∷ merge un bn
+allM² n = lazyProd (allM n) (allM n)
 
 allM³ : ℕ → List MM³
 allM³ n = lazyProd (allM n) (lazyProd (allM n) (allM n))
@@ -219,6 +219,39 @@ data 𝕄 : Set where
   mu : 𝕄 → 𝕄
   mb : 𝕄 → 𝕄 → 𝕄
 
+𝕄² : Set
+𝕄² = 𝕄 ∧ 𝕄
+
+S-alg : ↑ (𝕄² ∨ 𝕄²) → 𝕄²
+S-alg  o                        = ml , ml
+S-alg (i (in1 (m1 , m2)))       = ml , mb m1 m2
+S-alg (i (in2 (m1 , ml)))       = ml , mu m1
+S-alg (i (in2 (m1 , mu m2)))    = mu m2 , m1
+S-alg (i (in2 (m1 , mb m2 m3))) = mb m2 m3 , m1
+
+_==𝕄_ : 𝕄 → 𝕄 → 𝔹
+_==𝕄_ ml ml = true
+_==𝕄_ (mu m1) (mu m2) = m1 ==𝕄 m2
+_==𝕄_ (mb m11 m12) (mb m21 m22) = and (m11 ==𝕄 m21) (m12 ==𝕄 m22)
+_==𝕄_ _ _ = false
+
+_==𝕄²_ : 𝕄² → 𝕄² → 𝔹
+(m11 , m12) ==𝕄² (m21 , m22) = (mb m11 m12) ==𝕄 (mb m21 m22)
+
+data 𝕊 : Set where
+  so : 𝕊
+  sp : 𝕊 → 𝕊
+  sq : 𝕊 → 𝕊
+
+S→M² : 𝕊 → 𝕄²
+S→M² so = S-alg o
+S→M² (sp s) = S-alg (i (in1 (S→M² s)))
+S→M² (sq s) = S-alg (i (in2 (S→M² s)))
+
+all𝕊 : ℕ → List 𝕊
+all𝕊 0 = []
+all𝕊 (succ n) = so ∷ merge (List→ sp (all𝕊 n)) (List→ sq (all𝕊 n))
+
 M→𝕄 : MM → 𝕄
 M→𝕄 (lfp (in1 tt)) = ml
 M→𝕄 (lfp (in2 (in1 x))) = mu (M→𝕄 x)
@@ -229,8 +262,104 @@ M→𝕄 (lfp (in2 (in2 (pr3 , pr4)))) = mb (M→𝕄 pr3 ) (M→𝕄 pr4)
 𝕄→M (mu mm) = lfp (in2 (in1 (𝕄→M mm) ))
 𝕄→M (mb mm1 mm2) = lfp (in2 (in2 ((𝕄→M mm1) , 𝕄→M mm2 ) ))
 
+M²→𝕄² : MM ∧ MM → 𝕄²
+M²→𝕄² (m1 , m2) = M→𝕄 m1 , M→𝕄 m2
+𝕄²→M² : 𝕄² → MM ∧ MM
+𝕄²→M² (m1 , m2) = 𝕄→M m1 , 𝕄→M m2
+
 M³→𝕄 : MM³ → (𝕄 ∧ (𝕄 ∧ 𝕄))
 M³→𝕄 (m1 , (m2 , m3)) = M→𝕄 m1 , (M→𝕄 m2 , M→𝕄 m3 )
 
 𝕄→M³ : (𝕄 ∧ (𝕄 ∧ 𝕄)) → MM³
 𝕄→M³ (m1 , (m2 , m3)) = (𝕄→M m1 ) , (𝕄→M m2 , 𝕄→M m3 )
+
+findCycleHelper : 𝕄² → 𝕄² → ℕ → ↑ 𝕊
+findCycleHelper init cur zero     = if init ==𝕄² cur then i so else o
+findCycleHelper init cur (succ k)
+  with init ==𝕄² cur
+... | true  = i so
+... | false
+  with findCycleHelper init (S-alg (i (in1 cur))) k
+     | findCycleHelper init (S-alg (i (in2 cur))) k
+... | o | o     = o
+... | o | (i s) = i (sq s)
+... | (i s) | _ = i (sp s)
+
+findCycle : 𝕄² → ↑ 𝕊
+findCycle mm = io (i ∘ sq) ((↑→ sp (findCycleHelper mm mm2 d))) (↑→ sp (findCycleHelper mm mm1 d)) where
+  mm1 = S-alg (i (in1 mm))
+  mm2 = S-alg (i (in2 mm))
+  d = 10 -- depth
+
+
+
+testS : Set
+testS = ⊤ where  
+    -- {! e11    !} where
+    -- e0 = (lfp (in2 (in1 (lfp (in1 tt)))) , lfp (in1 tt))
+    SHOW = List→ M²→𝕄²
+    e1 : List 𝕊
+    e1 = all𝕊 20
+    e2 : List (MM ∧ MM)
+    e2 = allM² 4
+    e3 : List 𝕄²
+    e3 = List→ S→M² e1
+    e4 : List (MM ∧ MM)
+    e4 = filter (λ mm → elem (_==𝕄²_) (M²→𝕄² mm) e3 ) e2
+    e5 : List 𝕄²
+    e5 = SHOW (take 1 e4)
+    e6 = SHOW (take 10 e2)
+    e7 = SHOW (take 20 e4)
+    e71 = SHOW (take 50 e4)
+    e8 = List→ (λ mm → or (mm ==𝕄² S-alg (i (in1 mm))) (mm ==𝕄²  S-alg (i (in2 mm)))) e7
+    e9 = List→ (λ mm → mm ==𝕄²  S-alg (i (in2 mm))) e7
+    e10 = List→ (λ mm → or (mm ==𝕄² S-alg (i (in2 mm))) (mm ==𝕄²  S-alg (i (in2 (S-alg (i (in2 mm))))))) e7
+    e11 = List→ findCycle e71
+{-
+e11 output:
+i (sp so) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp so) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp so) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+i (sp (sq so)) ∷
+o ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷
+o ∷
+i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ []
+-}
