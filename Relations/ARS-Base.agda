@@ -16,7 +16,7 @@ _↙_↘_ x R y = (R ~∘ R) x y
 
 -- 𝓖 is \MCG
 𝓖 : 𝓡 A → 𝓟 A
-𝓖 R x = Σ[ y ∈ A ] (R ⋆) x y 
+𝓖 R x = Σ[ y ∈ A ] (R ⋆) x y
 
 -- Definition 1.1.8: Notions of Confluence
 module Confluence (Rα : 𝓡 A) where

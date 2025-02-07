@@ -650,13 +650,13 @@ module Theorem-1-2-3 (R : 𝓡 A) where
           , seq→sseq-bnd f fisR+inc n (λ k → x→s (pf k) ,⋆ s→n (pf k) ) where open preSN
 
 
-  Theorem123_iii : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R 
-  Theorem123_iii RisWN RisWCR RisRP decSN x with decSN x 
+  Theorem123_iii : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R
+  Theorem123_iii RisWN RisWCR RisRP decSN x with decSN x
   ... | in1 x∈SN = x∈SN
-  ... | in2 x∉SN with RisWN x 
-  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN R*xn n∈NF x∉SN 
+  ... | in2 x∉SN with RisWN x
+  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN R*xn n∈NF x∉SN
   ... | b₀ ,, R*xb₀ , nb₀∈preSN with Theorem123Lemma RisWCR decSN n b₀ nb₀∈preSN
-  ... | s ,, s-inc , n∈s-bound with RisRP s s-inc n n∈s-bound 
+  ... | s ,, s-inc , n∈s-bound with RisRP s s-inc n n∈s-bound
   ... | i ,, ε⋆ = ∅ (n∈NF _ (s-inc i))
   ... | i ,, (Rnz ,⋆ R*zsᵢ) = ∅ (n∈NF _ Rnz)
 

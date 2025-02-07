@@ -1,14 +1,14 @@
-module Relations.ARS-Propositions {A : Set} where 
+module Relations.ARS-Propositions {A : Set} where
 
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Relations.ARS-Base 
+open import Relations.ARS-Base
 
 {- This file contains formalizations for Proposition 1.1.9, 1.1.10, 1.1.11 from TeReSe Chapter 1 -}
 
 module Proposition-1-1-9 {Rα Rβ : 𝓡 A} where
-    
+
     ii : commute Rα Rβ ↔ ~R (Rβ ⋆) ∘R (Rα ⋆) ⊆ (Rα ⋆) ∘R  ~R (Rβ ⋆)
     pr1 ii commRαRβ z y (x ,, Rβ*xz , Rα*xy) with commRαRβ Rα*xy Rβ*xz
     ...| q ,, Rβ*yq , Rα*zq = q ,, Rα*zq , Rβ*yq
