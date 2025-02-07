@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Relations.Relations
 open import Predicates
 open import Logic
@@ -26,9 +24,6 @@ weakly-confluent→WCR x x₁ x₂ x₃ = x (x₁ ,, x₂ , x₃)
 
 WCR→weakly-confluent : ∀ {x : A} → R isWCR → weakly-confluent R 
 WCR→weakly-confluent RisWCR (x ,, Rxy , Rxz) = RisWCR x Rxy Rxz 
-
-weakly-confluent↔WCR : ∀ {x : A} → weakly-confluent R ↔ R isWCR
-weakly-confluent↔WCR = weakly-confluent→WCR , WCR→weakly-confluent 
 
 CR→confluent : ∀ {x : A} → R isCR → confluent R
 CR→confluent RisCR (x ,, R*xy , R*xz)  with RisCR x R*xy R*xz 
