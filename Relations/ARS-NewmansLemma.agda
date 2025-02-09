@@ -4,23 +4,14 @@ open import Logic
 
 module Relations.ARS-NewmansLemma {A : Set } (R : 𝓡 A) where
 
+open import Relations.ARS-Util
 open import Relations.ARS-Properties {A}
 open LocalProperties {R}
+
 
 {-This file contains formalizations of Newman's lemma and variants-}
 
 module Newmans-Lemma where
-
-    wCR→conflInd : R isWCR → is (~R R) -inductive CR
-    wCR→conflInd RisWCR x IND ε⋆ R*xz = _ ,, R*xz , ε⋆
-    wCR→conflInd RisWCR x IND (Rxy₀ ,⋆ R*y₀y) ε⋆ = _ ,, ε⋆ , (Rxy₀ ,⋆ R*y₀y)
-    wCR→conflInd RisWCR x IND (Rxy₀ ,⋆ R*y₀y) (Rxz₀ ,⋆ R*z₀z) with RisWCR x Rxy₀ Rxz₀
-    ... | w ,, R*y₀w , R*z₀w with IND _ Rxy₀ R*y₀y R*y₀w
-    ... | v ,, R*yv , R*wv with IND _ Rxz₀ R*z₀z (R*z₀w ⋆!⋆ R*wv)
-    ... | u ,, R*zu , R*vu = u ,, ((R*yv ⋆!⋆ R*vu) , R*zu)
-
-    wCR→Conf : R isWCR → SN ⊆ CR
-    wCR→Conf RisWCR = acc⊆ind (~R R) (λ x → CR x) (wCR→conflInd RisWCR)
 
     NewmansLemma : R isSN → R isWCR → R isCR
     NewmansLemma RisSN RisWCR x R*xy R*xz = wCR→Conf RisWCR x (RisSN x) R*xy R*xz

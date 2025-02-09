@@ -39,8 +39,8 @@ module LocalProperties {R : 𝓡 A} where
     UN x = ∀ {y} {z} → NF y → NF z → (R ⋆) x y → (R ⋆) x z → y ≡ z
 
     -- Weakly minimal form
-    WR : 𝓟 A
-    WR x = Σ[ r ∈ A ] ((R ⋆) x r × MF r)
+    WM : 𝓟 A
+    WM x = Σ[ r ∈ A ] ((R ⋆) x r × MF r)
 
     -- Strongly minimal form
     data SM : 𝓟 A where
@@ -70,6 +70,9 @@ module GlobalProperties (R : 𝓡 A) where
     _isSM : Set
     _isSM = ∀ x → SM x
 
+    _isWNFP : Set 
+    _isWNFP = ∀ x → WNFP x
+
     _isNP : Set
     _isNP = ∀ {x y} → NF y → (R ⁼) x y → (R ⋆) x y
 
@@ -90,6 +93,14 @@ module GlobalProperties (R : 𝓡 A) where
     _isBP+ : Set
     _isBP+ = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
 
+    _isRP : Set
+    _isRP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is_-_bound_ f a)
+         → Σ[ m ∈ ℕ ] MF (f m)
+
+    _isRP- : Set 
+    _isRP- = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is_-_bound_ f a)
+          → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
+
     -- AKA Convergent
     _isComplete : Set
     _isComplete = _isCR × _isSN
@@ -104,8 +115,19 @@ module GlobalProperties (R : 𝓡 A) where
     is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
 
     -- Cofinality Property
-    CP : Set
-    CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
+    _isCP : Set
+    _isCP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
                    (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
 
 open GlobalProperties public
+
+module MiscProperties (R : 𝓡 A) where 
+  -- These properties are variations on the above properties 
+  open LocalProperties {R}
+  SMseq : 𝓟 A   
+  SMseq x = ∀ (f : ℕ → A) → f zero ≡ x → is R -increasing f → Σ[ i ∈ ℕ ] (MF (f i))
+
+  SRv2 : 𝓟 A 
+  SRv2 x = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ i ∈ ℕ ] (MF (f i))
+
+  
