@@ -115,16 +115,7 @@ module WFImplications {A : Set} (R : 𝓡 A) where
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) {s zero } (zero ,, refl)
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-  -- The status of isWFmin+ ??
-  isWFmin+→isWFmin- : isWFmin+ R → isWFmin- R
-  isWFmin+→isWFmin- Rmin+ P {d} p ¬∃minP with Rmin+ (∁ P ) (λ x → x p)
-  ... | (a ,, ¬¬Pa , aMin) = ¬¬Pa (λ pa → ¬∃minP ((a ,, pa , λ y Py Rya → aMin y Rya Py )) )
-
-  isWFmin+→isWFmin₀ : isWFmin+ R → isWFmin₀ R
-  isWFmin+→isWFmin₀ RisWFmin+ P ∁∁P⊆P {a} a∈P with RisWFmin+ (∁ P) (λ a∉P → a∉P a∈P)
-  ... | x ,, ¬¬x∈P , xmin = (x ,, ∁∁P⊆P x ¬¬x∈P , λ y y∈P Ryx → xmin y Ryx y∈P )
-
-  -- Remark.  The converse of this is exactly the DNS for accessibility
+    -- Remark.  The converse of this is exactly the DNS for accessibility
   ¬¬isWFacc→isWFacc- :  ¬¬ (isWFacc R) → isWFacc- R
   ¬¬isWFacc→isWFacc- ¬¬wfAccR = λ x ¬accx     → ¬¬wfAccR (λ isWFacc → ¬accx (isWFacc x) )
 
@@ -164,6 +155,34 @@ module WFImplications {A : Set} (R : 𝓡 A) where
           f (d ,, dRBmin) with pr1 dRBmin
           ... | n ,, sn≡d = pr2 dRBmin (s (succ n)) (succ n ,, refl)
                                 (transp (R (s (succ n))) sn≡d (s-dec n))
+
+  -- The status of isWFmin+
+  -- isWFmin→isWFmin+  : isWFmin R → isWFmin+ R
+  -- Problem: can only conclude the minimum element is ¬¬P
+  -- isWFmin→isWFmin+ RisWF P ¬pa with RisWF (∁ P) ¬pa
+  -- ... | (m ,, ¬pm , H) = (m ,, ¬pm , {!   !} )
+
+  -- same issue, can only conclude ¬¬pm
+  -- isWFmin₀→isWFmin+ : isWFmin₀ R → isWFmin+ R
+  -- isWFmin₀→isWFmin+ RisWF P ¬pa
+  --   with RisWF (∁ P) (λ x z z₁ → z (λ z₂ → z₂ z₁)) ¬pa
+  -- ... | (m ,, ¬pm , h) = (m ,, ¬pm , λ x Rxm → {!   !} )
+
+  isWFind→isWFmin+  : isWFacc R → isWFmin+ R
+  isWFind→isWFmin+ RisWF P ¬pa = {!   !}
+
+  isWFmin+→isWFind- : isWFmin+ R → isWFind- R
+  isWFmin+→isWFind- RisWF P Pind x ¬px with RisWF P ¬px
+  ... | (y ,, ¬py , yind) = ¬py ((Pind y yind))
+
+  isWFmin+→isWFmin- : isWFmin+ R → isWFmin- R
+  isWFmin+→isWFmin- Rmin+ P {d} p ¬∃minP with Rmin+ (∁ P ) (λ x → x p)
+  ... | (a ,, ¬¬Pa , aMin) = ¬¬Pa (λ pa → ¬∃minP ((a ,, pa , λ y Py Rya → aMin y Rya Py )) )
+
+  isWFmin+→isWFmin₀ : isWFmin+ R → isWFmin₀ R
+  isWFmin+→isWFmin₀ RisWFmin+ P ∁∁P⊆P {a} a∈P with RisWFmin+ (∁ P) (λ a∉P → a∉P a∈P)
+  ... | x ,, ¬¬x∈P , xmin = (x ,, ∁∁P⊆P x ¬¬x∈P , λ y y∈P Ryx → xmin y Ryx y∈P )
+
 
   ¬acc : ∀ {x : A} → ¬ (is R -accessible x) → ¬ (∀ y → R y x → is R -accessible y)
   ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
@@ -260,13 +279,13 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   --   -- ... | in1 (y ,, Ryx) = λ px → f y (xac y Ryx) (¬¬P→P {!   !} {!   !} )
   --   ... | in1 (y ,, Ryx) = f y (xac y Ryx) (¬¬P→P y λ ¬Py → {!   !} )
 
-  decMin→FB→isWFacc→isWFmin₀ : decMin → FB R → isWFacc R → isWFmin₀ R
-  decMin→FB→isWFacc→isWFmin₀ dM fb RisWFacc P ¬¬P→P {d} d∈P = f d (RisWFacc d) d∈P where
-    f : ∀ x → is R -accessible x → x ∈ P → Σ[ a ∈ A ] is R - P -minimal a
-    f x (acc xac) x∈P with dM x
-    ... | in2 xIsMin = x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx)
-    -- ... | in1 (y ,, Ryx) = λ px → f y (xac y Ryx) (¬¬P→P {!   !} {!   !} )
-    ... | in1 (y ,, Ryx) = f y (xac y Ryx) (¬¬P→P y λ ¬Py → {!   !} )
+  -- decMin→FB→isWFacc→isWFmin₀ : decMin → FB R → isWFacc R → isWFmin₀ R
+  -- decMin→FB→isWFacc→isWFmin₀ dM fb RisWFacc P ¬¬P→P {d} d∈P = f d (RisWFacc d) d∈P where
+  --   f : ∀ x → is R -accessible x → x ∈ P → Σ[ a ∈ A ] is R - P -minimal a
+  --   f x (acc xac) x∈P with dM x
+  --   ... | in2 xIsMin = x ,, (x∈P , λ y Py Ryx → xIsMin y Ryx)
+  --   -- ... | in1 (y ,, Ryx) = λ px → f y (xac y Ryx) (¬¬P→P {!   !} {!   !} )
+  --   ... | in1 (y ,, Ryx) = f y (xac y Ryx) (¬¬P→P y λ ¬Py → {!   !} )
 
   FB→isWFmin₀-→isWFacc- : FB R → isWFmin₀- R → isWFacc- R
   FB→isWFmin₀-→isWFacc- fb RisWF x₀ x₀∉acc =
@@ -340,6 +359,10 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     ... | in1 (b ,, bRsn) = b
     ... | in2 x = dMseq a0 n
 
+    -- isWFmin+→isWFseq : isWFmin+ R → isWFseq R
+    -- isWFmin+→isWFseq RisWFmin+ s with RisWFmin+ (λ x → Σ[ k ∈ ℕ ] s x ≡ )
+    -- ... | c = {!   !}
+
     {- It seems we need the following lemma. -}
     -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
     --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
@@ -409,6 +432,9 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   ¬¬isWFind→isWFind : ¬¬ACC → ¬¬ (isWFind R) → isWFind R
   ¬¬isWFind→isWFind ¬¬acc ¬¬isWFindR = isWFacc→isWFind R (¬¬isWFacc→isWFacc ¬¬acc g )
     where g = λ ¬Racc → ¬¬isWFindR (λ Rind → ¬Racc (isWFind→isWFacc R Rind ) )
+
+  DNSacc→isWFmin-→isWFacc- = {!   !}
+
 
   -- No idea about this one.
   isWFmin-→¬¬isWFmin : ¬¬ACC → isWFmin- R → ¬¬ (isWFmin R)

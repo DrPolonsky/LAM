@@ -5,7 +5,9 @@
 
 \input{macros}
 
-\title{Summer 2024 Report}
+\title{Formalizing Abstract Rewriting}
+% \title{Abstract Rewriting from a Constructive Viewpoint}
+% \title{A Constructive View on Abstact Rewriting}
 \author{Sam Arkle}
 \date{\today}
 
@@ -19,12 +21,26 @@
 \newcommand{\thlra}{{\thla\!\!\thra}}
 
 \newcommand{\down}[1]{{#1}{\downarrow}}
+
 \begin{document}
+
 \renewcommand{\arraystretch}{1.3}
 
 \maketitle
+\begin{abstract}
+We formalize in the Agda proof assistant the main results about Abstract Reduction Systems (ARS) given in the standard reference [Terese].
+% Our contribution can be viewed as a development of abstract rewriting using constructive logic.
+% , and is part of a larger project aiming to develop a library of programming language theory in Agda. This application leads us to give special focus to concepts related to termination and confluence.
+We define a taxonomy of concepts related to termination and confluence and investigate their relationships between each other and their classical counterparts.
+We identify, and eliminate where possible, the use of classical logic in the proofs of standard ARS results.
+% For example, the study of strong normalization leads us to multiple inequivalent
+% formalizations of the notion of a well-founded relations, with subtle distinctions.
+Our analysis leads to refinements and mild generalizations of classical termination and confluence criteria.
+\end{abstract}
 
 \tableofcontents
+
+
 
 \section{Introduction}
 This is a report on the progress I have made during the summer of 2024 working with Dr. Polonsky \footnote{Assisstant Professor, Department of Computer Science, Appalachian State University.}. I have been writing on the topic of relations, working primarily from Term Rewriting Systems (TeReSe) \footnote{(Term Rewriting Systems. (2003). United Kingdom: Cambridge University Press.)}.
@@ -291,7 +307,7 @@ Is that okay or am I going to have to clarify why they are interchangable (are t
 \end{dfn}
 
 \begin{dfn}
-  An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if either $a$ itself is recurrent or every element one $R$ step 
+  An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if either $a$ itself is recurrent or every element one $R$ step
   from $a$ is also strongly recurrent.
 
   A relation $R$ is strongly recurrent (SR) if every
@@ -368,8 +384,9 @@ Principles we are considering
     Need: $\forall a. \lnot\lnot E(a) \to E(a)$, i.e.,
     \[\lnot\lnot \big(\exists n \in \nat. s n \equiv a\big)
           \to \big(\exists n \in \nat. s n \equiv a\big)\]
-
   \end{itemize}
+  \item When an element is not SN, it transitions to one which is not SN either.
+  (Use in the proof of Theorem 1.2.3)
 \end{itemize}
 
 \section{Implications}
@@ -472,32 +489,32 @@ a proof of this, should we include it, include it with a note that we're taking 
 \end{itemize}
 
 \subsection{Hierarchy}
-The properties of strong normality and confluence are the two properties of greatest interest. As such, there is 
-value in determining which other properties combine to imply one these properties. This motivated the development of the 
-following hierarchies. 
+The properties of strong normality and confluence are the two properties of greatest interest. As such, there is
+value in determining which other properties combine to imply one these properties. This motivated the development of the
+following hierarchies.
 
 \subsubsection{Confluence hierarchy}
 
 \begin{center}
-  
+
   \begin{tikzpicture}[auto,
     arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
     % A box style
     \tikzstyle{boxnode} = [draw, rectangle, minimum width=3cm, minimum height=1cm, text centered]
-    
+
     % Place the nodes vertically (top to bottom)
     \node (Confluent) [boxnode] at (0,0) {Confluent};
     \node (RP)        [boxnode, below=2cm of Confluent] {Recurrence Property};
     \node (WN)        [boxnode, below=2cm of RP] {Weak Normal Form Property};
     \node (UN)        [boxnode, below=2cm of WN] {Unique Normal Form Property};
-    
+
     % Draw arrows downwards
     \draw[arrowstyle] (Confluent) -- (RP);
     \draw[arrowstyle] (RP) -- (WN);
     \draw[arrowstyle] (WN) -- (UN);
   \end{tikzpicture}
 \end{center}
-  
+
 
 \subsubsection{Normalization hierarchy}
 
@@ -523,15 +540,15 @@ following hierarchies.
 \end{tikzpicture}
 
 
-The property of being strongly recurrent implies the property of being weakly recurrent only when there is also the classical property 
-of decidability of minimality for a given element. 
+The property of being strongly recurrent implies the property of being weakly recurrent only when there is also the classical property
+of decidability of minimality for a given element.
 
-In the following table red text indicates that classical properties are required for the implication to hold. Blue indicates we are currently unsure. 
+In the following table red text indicates that classical properties are required for the implication to hold. Blue indicates we are currently unsure.
 
 \begin{table}[h!]
   \centering
   \caption{Local implications}
-  \begin{tabular}{|l|c|c|c|c|c|}     
+  \begin{tabular}{|l|c|c|c|c|c|}
   \hline
   \textbf{CR} & CR, CE-9  & CR, CE-6  & CR , CE-9  & CR, SN  & CR , SN \\
   \hline
@@ -542,14 +559,14 @@ In the following table red text indicates that classical properties are required
   \textbf{UN} & CE-3, CE-12  & CE-3, CE-6  & CE-3, CE-9  & CE-3, CE-3  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
-  \hline  
+  \hline
   \end{tabular}
-\end{table} 
+\end{table}
 
 \begin{table}[h!]
   \centering
   \caption{Local implications - WCR }
-  \begin{tabular}{|l|c|c|c|c|c|}     
+  \begin{tabular}{|l|c|c|c|c|c|}
   \hline
   \textbf{CR} & CR, CE-9  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
@@ -560,14 +577,14 @@ In the following table red text indicates that classical properties are required
   \textbf{UN} & CE-3.1, CE-12  & {CE-3.1}, {CE-6}  & {CE-3.1}, {CE-9}  & {CE-3.1}, {CE-3.1}  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
-  \hline  
+  \hline
   \end{tabular}
-\end{table} 
+\end{table}
 
 \begin{table}[h!]
   \centering
   \caption{Global implications}
-  \begin{tabular}{|l|c|c|c|c|c|}     
+  \begin{tabular}{|l|c|c|c|c|c|}
   \hline
   \textbf{CR} & CR, {CE-9}  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
@@ -578,14 +595,14 @@ In the following table red text indicates that classical properties are required
   \textbf{UN} & {CE-3}, {CE-12} and CE-9  & CR, {CE-6}  & CE-3, {CE-9}  & CR, SN  & \red{CR} , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
-  \hline  
+  \hline
   \end{tabular}
-\end{table} 
+\end{table}
 
 \begin{table}[h!]
   \centering
   \caption{Global implications - WCR}
-  \begin{tabular}{|l|c|c|c|c|c|}     
+  \begin{tabular}{|l|c|c|c|c|c|}
   \hline
   \textbf{CR} & CR, {CE-9}  & CR, {CE-6}  & CR , {CE-9}  & CR, SN  & CR , SN \\
   \hline
@@ -596,9 +613,9 @@ In the following table red text indicates that classical properties are required
   \textbf{UN} & CE-1.1, {CE-9}  & CR, {CE-6}  & {CR}, {CE-9}  & CR, SN  & CR , SN \\
   \hline
   & \textbf{WR} & \textbf{WN} & \textbf{SR} & \textbf{WN}$\boldsymbol{\land}$\textbf{SR} & \textbf{SN} \\
-  \hline  
+  \hline
   \end{tabular}
-\end{table} 
+\end{table}
 
 
 
@@ -735,7 +752,7 @@ Counterexample to:
 
   \item $\forall$ (R : $\mathscr{R}$ A) $\to$ $\forall$ is R -WN x $\to$ is R -UN x $\to$ is R -CR x
   \item $WN_R$ and $UN_R$ $\implies$ $CR_R$
-  \item (Local) WR and UN $\implies$ NP 
+  \item (Local) WR and UN $\implies$ NP
   \item (Local) WN and UN $\implies$ SR
 
 \end{itemize}
@@ -762,7 +779,7 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-  \item (Local) WCR, WR, and UN $\implies$ NP 
+  \item (Local) WCR, WR, and UN $\implies$ NP
   \item (Local) WCR, WN and UN $\implies$ SR
 
 \end{itemize}
@@ -941,8 +958,8 @@ Counterexample to:
 \end{center}
 Counterexample to:
 \begin{itemize}
-  \item (Local) WCR, WR, and UN $\implies$ WN 
-  \item (Local) SR and CR $\implies$ WN 
+  \item (Local) WCR, WR, and UN $\implies$ WN
+  \item (Local) SR and CR $\implies$ WN
 \end{itemize}
 
 \subsection*{Counterexample 10}
@@ -956,7 +973,7 @@ Counterexample to:
       \node (f1) [right of=f0, xshift=1cm] {$f_1$};
       \node (f2) [right of=f1, xshift=1cm] {$f_2$};
       \node (dots) [right of=f2, xshift=1cm] {...};
-      
+
       % Arrows
       \draw[->] (a) -- (b);
       \draw[->] (b) to [bend left] (c);
@@ -970,7 +987,7 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-  \item (Local) WR, and NP $\implies$ RP 
+  \item (Local) WR, and NP $\implies$ RP
 \end{itemize}
 
 \subsection*{Counterexample 10.1}
@@ -985,7 +1002,7 @@ Counterexample to:
       \node (f1) [right of=f0, xshift=1cm] {$f_1$};
       \node (f2) [right of=f1, xshift=1cm] {$f_2$};
       \node (dots) [right of=f2, xshift=1cm] {...};
-      
+
       % Arrows
       \draw[->] (a) -- (b);
       \draw[->] (a') -- (a);
@@ -1001,7 +1018,7 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-  \item (Local) WCR, WR, and NP $\implies$ RP 
+  \item (Local) WCR, WR, and NP $\implies$ RP
 \end{itemize}
 
 \subsection*{Counterexample 11}
@@ -1013,7 +1030,7 @@ Counterexample to:
       \node (c) [left of=b] {c};
       \node (d) [right of=a, xshift=1cm, yshift=-1cm] {d};
       \node (e) [right of=d] {e};
-      
+
       % Arrows
       \draw[->] (a) -- (b);
       \draw[->] (b) to [bend left] (c);
@@ -1027,7 +1044,7 @@ Counterexample to:
 
 Counterexample to:
 \begin{itemize}
-  \item (Local) SR and NP $\implies$ RP 
+  \item (Local) SR and NP $\implies$ RP
 \end{itemize}
 
 \subsection*{Counterexample 12}
@@ -1038,7 +1055,7 @@ Counterexample to:
       \node (a) {a};
       \node (b) [right of=a, xshift=1cm] {b};
       \node (n) [below of=a, xshift=1cm] {n};
-      
+
 
       % Arrows
       \draw[->] (a) to [bend left] (b);
