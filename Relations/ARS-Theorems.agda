@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Relations.Relations
 open import Predicates
 open import Logic
