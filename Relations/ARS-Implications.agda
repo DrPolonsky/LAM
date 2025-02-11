@@ -1,7 +1,7 @@
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Datatypes using (ℕ)
+open import Datatypes using (ℕ; zero;  succ)
 
 
 module Relations.ARS-Implications {A : Set } {R : 𝓡 A} where
@@ -35,8 +35,10 @@ module Hierarchy-Implications where
     ... | ε⋆ = refl
     ... | Rzz₁ ,⋆ R*z₁y = ∅ (z∈NF Rzz₁)
 
-    SN→SM : ∀ {x} → SN x → SM x
-    SN→SM {x} (acc accx) = SMacc x {!   !}
+    SN→SM : ∀ {x} → SN x → SMseq R x
+    SN→SM {x} (acc accx) f refl f-inc with 
+        SN→SM (accx (f (succ zero)) (f-inc zero)) (λ m → f (succ m)) refl (λ n → f-inc (succ n)) 
+    ... | (k ,, H) = (succ k ,, H)
 
     WN→WM : ∀ {x} → WN x → WM x
     WN→WM (n ,, R*xn , x∈NF) = n ,, (R*xn , (NF⊆MF x∈NF))
@@ -49,7 +51,7 @@ module Hierarchy-Implications where
     ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
     ... | (n ,, R*yn , n∈NF) = n ,, (Rxy ,⋆ R*yn) , n∈NF
 
-    SN→WN∧SM : decMin (~R R) → ∀ {x} → SN x → (WN x × SM x)
+    SN→WN∧SM : decMin (~R R) → ∀ {x} → SN x → (WN x × SMseq R x)
     SN→WN∧SM decR {x} x∈SN = SNdec→WN decR x x∈SN , SN→SM x∈SN
 
     SM→WR : decMin (~R R) → ∀ {x} → SM x → WM x
@@ -124,9 +126,19 @@ module Desired-Implications where
     ... | (b ,, b-bnd) = RisRP f f-inc b b-bnd
 
     RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP
-    RisSMseq→RisRP RisSM = {!   !}
+    RisSMseq→RisRP RisSM f f-inc a a-bnd = RisSM f refl f-inc
+
+    open import Relations.ARS-Theorems {A}
+    open Theorem-1-2-3 {R}
+    
     RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP
-    RisSMseq→RisBP RisSM = {!   !}
+    RisSMseq→RisBP RisSM f f-inc with RisSM f refl f-inc
+    ... | i ,, i∈rec = (f i) ,, boundProof
+        where 
+        boundProof  : (x : ℕ) → (R ⋆) (f x) (f i) 
+        boundProof n with seq-lemma2 f f-inc i n 
+        ... | in1 R*fᵢfₙ = i∈rec (f n) R*fᵢfₙ
+        ... | in2 R*fₙfᵢ = R*fₙfᵢ   
 
 RP→RP- : R isRP → R isRP-
 RP→RP- RisRP f f-inc b bis-bound with RisRP f f-inc b bis-bound
