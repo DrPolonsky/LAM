@@ -1,0 +1,52 @@
+\documentclass[letterpaper,USenglish,cleveref, autoref, thm-restate]{lipics-v2021}
+ 
+\input{macros}
+
+\bibliographystyle{plainurl}% the mandatory bibstyle  
+
+  
+\title{Formalization of Abstract Rewriting}  
+ 
+
+\author{Andrew Polonsky}{Appalachian State University, USA}
+{polonskya@appstate.edu} 
+{} 
+{}%TODO mandatory, 
+% please use full name; only 1 author per \author macro; 
+% first two parameters are mandatory, other parameters can be empty. 
+% Please provide at least the name of the affiliation and the country. 
+% The full address is optional. Use additional curly braces to indicate the correct
+%  name splitting when the last name consists of multiple name parts.
+\author{Samuel Arkle}{Appalachian State University, USA (Recent graduate)}
+{arklesd@appstate.edu}{}{}
+
+\Copyright{Andrew Polonsky and Samuel Arkle}
+
+\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+
+\keywords{Dummy keyword} %TODO mandatory; please add comma-separated list of keywords
+
+\supplement{https://github.com/DrPolonsky/LAM/tree/main/Relations}% TODO: set a repo just for this submissionoptional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    We present a constructive formalization of Abstract Reduction Systems (ARS)
+     in the Agda proof assistant, focusing on the results given in Term Rewriting 
+     Systems (Terese). We define a taxonomy of concepts related to termination and 
+     confluence and investigate their relationships between each other and their 
+     classical counterparts. We identify, and eliminate where possible, the use of classical 
+     logic in the proofs of standard ARS results. Our analysis leads to refinements and mild
+      generalizations of classical termination and confluence criteria.
+\end{abstract}
+\input{Introduction.tex}
+\input{Definitions.tex}
+\input{Implications.tex}
+\input{Counterexamples.tex}
+\input{Well-foundedness.tex}
+
+
+\end{document}
+
