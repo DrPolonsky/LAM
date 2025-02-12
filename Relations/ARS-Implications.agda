@@ -36,8 +36,8 @@ module Hierarchy-Implications where
     ... | Rzz₁ ,⋆ R*z₁y = ∅ (z∈NF Rzz₁)
 
     SN→SM : ∀ {x} → SN x → SMseq R x
-    SN→SM {x} (acc accx) f refl f-inc with 
-        SN→SM (accx (f (succ zero)) (f-inc zero)) (λ m → f (succ m)) refl (λ n → f-inc (succ n)) 
+    SN→SM {x} (acc accx) f refl f-inc with
+        SN→SM (accx (f (succ zero)) (f-inc zero)) (λ m → f (succ m)) refl (λ n → f-inc (succ n))
     ... | (k ,, H) = (succ k ,, H)
 
     WN→WM : ∀ {x} → WN x → WM x
@@ -105,8 +105,8 @@ module Desired-Implications where
             R=zy : (R ⁼) z y
             R=zy = (~ˢ⋆ (⋆⊆⁼ R R*xz)) ⋆!⋆ (⋆⊆⁼ R R*xy)
 
-    NP↔WNFP : R isNP ↔ R isWNFP 
-    NP↔WNFP = NP→WNFP , WNFP→NP 
+    NP↔WNFP : R isNP ↔ R isWNFP
+    NP↔WNFP = NP→WNFP , WNFP→NP
 
     -- Counterexample: (n <- a -> b <-> c <- d -> m)
     -- n,m ∈ NF, R isUN→, n R⁼ m, but n ≢ m.
@@ -133,15 +133,15 @@ module Desired-Implications where
 
     open import Relations.ARS-Theorems {A}
     open Theorem-1-2-3 {R}
-    
+
     RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP
     RisSMseq→RisBP RisSM f f-inc with RisSM f refl f-inc
     ... | i ,, i∈rec = (f i) ,, boundProof
-        where 
-        boundProof  : (x : ℕ) → (R ⋆) (f x) (f i) 
-        boundProof n with seq-lemma2 f f-inc i n 
+        where
+        boundProof  : (x : ℕ) → (R ⋆) (f x) (f i)
+        boundProof n with seq-lemma2 f f-inc i n
         ... | in1 R*fᵢfₙ = i∈rec (f n) R*fᵢfₙ
-        ... | in2 R*fₙfᵢ = R*fₙfᵢ   
+        ... | in2 R*fₙfᵢ = R*fₙfᵢ
 
 RP→RP- : R isRP → R isRP-
 RP→RP- RisRP f f-inc b bis-bound with RisRP f f-inc b bis-bound

@@ -473,7 +473,9 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
 
     isWFseq→isWFminDNE : isWFseq R → isWFminDNE R
     isWFseq→isWFminDNE RisWFseq P Pdne {a} a∈P with RisWFseq (dMseq a)
-    ... | (k ,, p) = {!   !}
+    ... | (k ,, p) with dM (dMseq a k) | p
+    ... | in1 (x ,, Ryx) | x∈NF = ∅ (x∈NF Ryx) 
+    ... | in2 x | c = {!   !}
 
     -- This seems to lead to the same issue as above
     isWFseq-→isWFmin- : isWFseq- R → isWFmin- R
