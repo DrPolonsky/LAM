@@ -105,6 +105,9 @@ module Desired-Implications where
             R=zy : (R ⁼) z y
             R=zy = (~ˢ⋆ (⋆⊆⁼ R R*xz)) ⋆!⋆ (⋆⊆⁼ R R*xy)
 
+    NP↔WNFP : R isNP ↔ R isWNFP 
+    NP↔WNFP = NP→WNFP , WNFP→NP 
+
     -- Counterexample: (n <- a -> b <-> c <- d -> m)
     -- n,m ∈ NF, R isUN→, n R⁼ m, but n ≢ m.
     -- Possible fix: Provably with WN, via (WN∧UN→)→CR→WNFP→NP→UN (??)
