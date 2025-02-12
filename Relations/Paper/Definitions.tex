@@ -1,2 +1,143 @@
 \section{Definitions}
 \label{sec:Definitions}
+
+The following definitions are provided to ensure clarity and precision 
+in our discussion. When useful, we also include the name and type of
+definition as we have implemented it in Agda, allowing the report to guide the code
+and vice versa.
+
+\begin{definition}
+    An abstract rewrite system (\emph{ARS}) is a structure $\mathcal{A} = (A, R_\alpha)$ where
+     $A$ is a set of elements and $R_\alpha$ is a set of binary relations on $A$.
+\end{definition}
+
+We denote a relation $R$ (from the set $R_\alpha$) from an element $a \in A$ to an element $b \in A$ as $a\rstep b$.
+A multi-step relation is denoted $a \mstep b$.
+
+\begin{definition}
+    An element $a \in A$ is \emph{R-weakly confluent} ($WCR_R$) if all single step relations from $a$ can always converge
+    via multi-step relations to some common reduct.
+    
+    A relation $R$ is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if every $a \in A$ is R-weakly confluent.
+\end{definition}
+
+\begin{definition}
+    An element $a \in A$ is \emph{R-confluent} ($CR_R$) if all multi-step relations from $a$ can always converge
+    via multi-step relations to some common reduct.
+    A relation $R$ is \emph{confluent} (AKA Church-Rosser (CR)) if every $a \in A$ is R-confluent.
+\end{definition}
+
+\begin{definition}
+    \emph An element $a \in A$ is a {normal form} if there exists no relation to any other element in $A$.
+\end{definition}
+  
+\begin{definition}
+    An element $a \in A$ is \emph{$R$-weakly normalizing} ($WN_{R}$)if $a \mstep b$ for some normal form $b \in A$.
+  
+    A relation $R$ is weakly normalizing (WN) if every $a \in A$ is $R$- weakly normalizing.
+\end{definition}
+
+\begin{definition}
+    An element $a \in A$ is \emph{$R$-strongly normalizing} ($SN_R$) if every sequence of relations starting from $a$ is finite.
+  
+    A relation $R$ is strongly normalizing (SN) if every
+    $a \in A$ is $R$-strongly normalizing.
+\end{definition}
+
+The above definition of SN is taken from [TeReSe]. 
+When working in Agda, we make use of the alternative definition presented in [TeReSe] ($\leftarrow$ is accessibly well-founded). 
+The \ref{sec:Well-foundedness} section clarifies this definition. 
+
+\begin{definition}
+    An element $a \in A$ has the \emph{$R$-weak normal form property} ($WNFP_{R}$) if $a \mstep b$ and 
+    $a \mstep c \implies c \mstep b$, for all $c \in A$ and all normal form $b \in A$.
+    
+    A relation $R$ has the \emph{weak normal form property} (WNFP) if every $a \in A$ has the $R$-weak normal form property.    
+\end{definition}
+
+\begin{definition}
+    The \emph{equivalence relation} of $R$ is the smallest relation $\estep$ that contains $R$ and is reflexive, transitive, and symmetric.
+\end{definition}
+
+\begin{definition}
+An element $a \in A$ has the \emph{$R$-normal form property} ($NFP_{R}$) if
+$a \estep b$  $\implies$
+$a \mstep b$, for any normal form $b \in A$.
+
+A relation $R$ has the \emph{normal form property} (NFP) if every $a \in A$ has the $R$-normal form property.
+\end{definition}
+
+In ARS-Implications.agda we show the equivalence of WNFP and NFP when applied globally in the function $\mathtt{NP \leftrightarrow WNFP}$.
+
+In the next definition we deonte two elements $a, b \in A$ being equivalent with $a \equiv b$.
+\begin{definition}
+An element $a \in A$ has the \emph{{R}-unique normal form property} ($UN_{R}$) if
+$a \estep b$  $\implies$
+$a \equiv b$, for any normal form $b \in A$.
+
+A relation $R$ has the \emph{unique normal form property} ($UN$) if every $a \in A$ has the $R$-unique normal form property.
+\end{definition}
+
+
+\begin{definition}
+An element $a \in A$ has the \emph{${R}$-unique normal form property with respect to reduction} ($UN^ \to _{R}$) if
+$b \bmstep  \cdot  \mstep c$  $\implies$ $b \equiv c$, for all normal forms $b,c \in A$.
+
+A relation $R$ has the \emph{unique normal form property with respect to reduction} ($UN^\to$) if every $a \in A$ has the
+$R$-unique normal form property with respect to reduction.
+\end{definition}
+In ARS-Implications.agda we show that $UN$ implies $UN\to$ but the inverse implication doesn't hold, as seen 
+in counterexample (\sacomment{TODO: put counterexample here when section is complete}).
+
+\begin{definition}
+    A \emph{sequence (in $A$)} is a function from the natural numbers to $A$:
+    \begin{align*}
+      &s : \nat \to A \\
+      &s = (s_0,s_1,s_2,\dots)
+    \end{align*}
+\end{definition}
+  
+\begin{definition}
+    A sequence is \emph{$R$-increasing} if every term is $R$-related to its preceding term.
+\end{definition}
+  
+\begin{definition}
+    A sequence is \emph{bounded} if there exists an element $a \in A$ to which all elements of the sequence reduce.
+\end{definition}
+
+\begin{definition}
+    An element $a \in A$ has the \emph{minimal form property} ($MF$) if $a \mstep b \implies b \mstep a$ for all $b \in A$.
+\end{definition}
+
+Note that being a normal form is a trivial case of the minimal form property (as we prove in ARS-implications.agda 
+function $\mathtt{NF\subseteq MF : \forall {x} \to NF x \to MF x}$).
+
+\begin{definition}
+    An element $a \in A$ is \emph{$R$-weakly recurrent} ($WR_{R}$)if $a \mstep b$ for some recurrent element $b \in A$.
+  
+    A relation $R$ is weakly recurrent (WR) if every $a \in A$ is $R$-weakly recurrent.
+\end{definition}
+
+\begin{definition}
+    An element $a \in A$ is \emph{$R$-strongly recurrent} ($SR_R$) if either $a$ itself is recurrent or every element one $R$ step
+    from $a$ is also strongly recurrent.
+  
+    A relation $R$ is strongly recurrent (SR) if every
+    $a \in A$ is $R$-strongly recurrent.
+\end{definition}
+
+\begin{definition}
+   An element $a \in A$ has the \emph{${R}$-weak minimal form property} ($WMFP_R$) if
+   $a \mstep b$ and $a \mstep c$  $\implies$
+   $c \mstep b$, for all $c \in A$ and all $b \in A$ with the minimal form property.
+
+   A relation $R$ has the \emph{weak minimal form property} (WMFP) if every $a \in A$ has the $R$-weak minimal form property.
+\end{definition}
+
+
+
+
+
+
+
+
