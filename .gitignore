@@ -10,6 +10,7 @@ MAlonzo/**
 .DS_Store
 latex/agda.sty
 latex/Relations/ARS.tex
-Relations/Report.dvi
-Relations/Report.out.ps
-Relations/Report.toc
+*.dvi
+*.ps
+*.toc
+*.vtc
