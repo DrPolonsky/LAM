@@ -12,6 +12,8 @@ open import Relations.ARS-Properties {A}
 open LocalProperties {R}
 open MiscProperties
 
+open WeakerWF
+
 CR→WCR : R isCR → R isWCR
 CR→WCR RisCR x Rxy Rxz = RisCR x (Rxy ,⋆ ε⋆) (Rxz ,⋆ ε⋆)
 
@@ -35,26 +37,30 @@ module Hierarchy-Implications where
     ... | ε⋆ = refl
     ... | Rzz₁ ,⋆ R*z₁y = ∅ (z∈NF Rzz₁)
 
-    SN→SM : ∀ {x} → SN x → SMseq R x
-    SN→SM {x} (acc accx) f refl f-inc with
-        SN→SM (accx (f (succ zero)) (f-inc zero)) (λ m → f (succ m)) refl (λ n → f-inc (succ n))
+    SN→SM : ∀ {x} → SN x → SM x
+    SN→SM (acc xa) = SMacc _ (λ y Rxy → SN→SM (xa y Rxy))
+
+    SN→SMseq : ∀ {x} → SN x → SMseq R x
+    SN→SMseq {x} (acc accx) f refl f-inc with
+        SN→SMseq (accx (f (succ zero)) (f-inc zero)) (λ m → f (succ m)) refl (λ n → f-inc (succ n))
     ... | (k ,, H) = (succ k ,, H)
 
     WN→WM : ∀ {x} → WN x → WM x
     WN→WM (n ,, R*xn , x∈NF) = n ,, (R*xn , (NF⊆MF x∈NF))
 
-    open ClassicalImplications using (decMin)
+    -- open ClassicalImplications -- using (decMin)
+    open import Relations.Decidable
 
-    SNdec→WN : decMin (~R R) → SN ⊆ WN
+    SNdec→WN : (~R R) isMinDec → SN ⊆ WN
     SNdec→WN decR x (acc accx) with decR x
     ... | in2 y∈NF = x ,, (ε⋆ , y∈NF _)
     ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
     ... | (n ,, R*yn , n∈NF) = n ,, (Rxy ,⋆ R*yn) , n∈NF
 
-    SN→WN∧SM : decMin (~R R) → ∀ {x} → SN x → (WN x × SMseq R x)
-    SN→WN∧SM decR {x} x∈SN = SNdec→WN decR x x∈SN , SN→SM x∈SN
+    SN→WN∧SM : (~R R) isMinDec → ∀ {x} → SN x → (WN x × SMseq R x)
+    SN→WN∧SM decR {x} x∈SN = SNdec→WN decR x x∈SN , SN→SMseq x∈SN
 
-    SM→WR : decMin (~R R) → ∀ {x} → SM x → WM x
+    SM→WR : (~R R) isMinDec → ∀ {x} → SM x → WM x
     SM→WR decR {x} (SMrec .x x∈rec) = x ,, ε⋆ , x∈rec
     SM→WR decR {x} (SMacc .x x∈acc) with decR x
     ... | in2 xIsMin = x ,, (ε⋆ , λ { y ε⋆ → ε⋆
@@ -83,7 +89,7 @@ module Normalizing-Implications where
     WN∧WNFP∧SM→SN : ∀ {x} → WN x → WNFP x → SM x → SN x
     WN∧WNFP∧SM→SN {x} x∈WN x∈WNFP (SMrec .x x∈MF) = WN∧R→SN x∈WN x∈MF
     WN∧WNFP∧SM→SN {x} (n ,, R*xn , n∈NF) x∈WNFP (SMacc .x xAcc) = acc f where
-        f : ∀ (y : A) → ~R R y x → is ~R R -accessible y
+        f : ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
         f y Rxy = WN∧WNFP∧SM→SN
                     (n ,, x∈WNFP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
                     (λ {w} {z} H R*yw R*yz → x∈WNFP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
@@ -147,7 +153,7 @@ RP→RP- : R isRP → R isRP-
 RP→RP- RisRP f f-inc b bis-bound with RisRP f f-inc b bis-bound
 ... | i ,, i∈RP = i ,, (i∈RP b (bis-bound i))
 
-RP-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is R - f bound a)
+RP-lemma : ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ a → (is R - f bound a)
           →  ∀ i → (R ⋆) a (f i) → ∀ x → (R ⋆) (f i) x → is R - f bound x
 RP-lemma f f-inc a aisf-bound i R*afᵢ y R*fᵢy n = (aisf-bound n ⋆!⋆ R*afᵢ) ⋆!⋆ R*fᵢy
 
@@ -173,14 +179,13 @@ WCR∧SNx→UNx : R isWCR → ∀ (x : A) → SN x → UN x
 WCR∧SNx→UNx RisWCR x x∈SN y∈NF z∈NF R*xy R*xz with WCR∧SNx→WNFPx RisWCR x x∈SN y∈NF R*xy R*xz
 ... | R*zy = ~ (NF→ε z∈NF R*zy)
 
+open import Relations.Decidable
 
-open ClassicalImplications using (decMin; isMinDec-)
-
-WN→isMinDec- : ∀ (x : A) → x ∈ WN  → isMinDec- (~R R) x
+WN→isMinDec- : ∀ (x : A) → x ∈ WN  → x ∈ MinDec- (~R R)
 WN→isMinDec- x (.x ,, ε⋆ , n∈NF) x∉NF = ∅ (x∉NF (λ y → n∈NF))
 WN→isMinDec- x (n ,, (_,⋆_ {y = y} Rxy R*yn) , n∈NF) x∉NF = y ,, Rxy
 
-decMin∧SNx∧UNx→WNFP  : decMin (~R R) → ∀ x → SN x → UN x → WNFP x     -- Formerly UN-lemma
+decMin∧SNx∧UNx→WNFP  : (~R R) isMinDec  → ∀ x → SN x → UN x → WNFP x     -- Formerly UN-lemma
 decMin∧SNx∧UNx→WNFP decNF x x∈SN x∈UN y∈NF R*xy  ε⋆ = R*xy
 decMin∧SNx∧UNx→WNFP decNF x (acc xacc) x∈UN y∈NF R*xy (Rxz₀ ,⋆ R*z₀z)
     with SNdec→WN decNF _ (xacc _ Rxz₀)
@@ -188,7 +193,7 @@ decMin∧SNx∧UNx→WNFP decNF x (acc xacc) x∈UN y∈NF R*xy (Rxz₀ ,⋆ R*z
 ... | refl = decMin∧SNx∧UNx→WNFP decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y∈NF R*z₀z' R*z₀z
     where z₀∈UN =  λ {a} {b} a∈NF b∈NF R*z₀a R*z₀b → x∈UN (λ Rav → a∈NF Rav)  (λ Rbw → b∈NF Rbw) (Rxz₀ ,⋆ R*z₀a) (Rxz₀ ,⋆ R*z₀b)
 
-SN∧UN→CRelem : decMin (~R R) → ∀ x → SN x → UN x → CR x
+SN∧UN→CRelem : (~R R) isMinDec → ∀ x → SN x → UN x → CR x
 SN∧UN→CRelem decNF x x∈SN x∈UN R*xb R*xc with SNdec→WN decNF x x∈SN
 ... | (z ,, R*xz , z∈NF) = (z ,, decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN  z∈NF R*xz  R*xb
                                 , decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN z∈NF R*xz R*xc )

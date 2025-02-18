@@ -24,7 +24,7 @@ module LocalProperties {R : 𝓡 A} where
     WN x = Σ[ n ∈ A ] ((R ⋆) x n × NF n)
 
     SN : 𝓟 A
-    SN x = is (~R R) -accessible x
+    SN = (~R R) -accessible
 
     -- Minimal form: Recurrent or Normal form
     MF : 𝓟 A
@@ -70,7 +70,7 @@ module GlobalProperties (R : 𝓡 A) where
     _isSM : Set
     _isSM = ∀ x → SM x
 
-    _isWNFP : Set 
+    _isWNFP : Set
     _isWNFP = ∀ x → WNFP x
 
     _isNP : Set
@@ -87,18 +87,20 @@ module GlobalProperties (R : 𝓡 A) where
     is_-_bound_ : (f : ℕ → A) → A → Set
     is_-_bound_ f x = ∀ n → (R ⋆) (f n) x
 
+    open WeakerWF
+
     _isBP : Set
-    _isBP = ∀ (f : ℕ → A) → is R -increasing f → Σ[ x ∈ A ] ( is_-_bound_ f x )
+    _isBP = ∀ (f : ℕ → A) → f ∈ R -increasing → Σ[ x ∈ A ] ( is_-_bound_ f x )
 
     _isBP+ : Set
-    _isBP+ = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+    _isBP+ = ∀ (f : ℕ → A) → f ∈ (R ʳ) -increasing → Σ[ a ∈ A ] (is_-_bound_ f a )
 
     _isRP : Set
-    _isRP = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is_-_bound_ f a)
+    _isRP = ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ a → (is_-_bound_ f a)
          → Σ[ m ∈ ℕ ] MF (f m)
 
-    _isRP- : Set 
-    _isRP- = ∀ (f : ℕ → A) → is R -increasing f → ∀ a → (is_-_bound_ f a)
+    _isRP- : Set
+    _isRP- = ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ a → (is_-_bound_ f a)
           → Σ[ i ∈ ℕ ] ((R ⋆) a (f i))
 
     -- AKA Convergent
@@ -109,25 +111,24 @@ module GlobalProperties (R : 𝓡 A) where
     _isSemicomplete = _isUN × _isWN
 
     _isDominatedByWF : 𝓡 A → Set
-    _isDominatedByWF Q = isWFacc Q × (R ⊆ Q)
+    _isDominatedByWF Q = Q isWF × (R ⊆ Q)
 
     is_-cofinal_ : 𝓟 A → Set
     is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
 
     -- Cofinality Property
     _isCP : Set
-    _isCP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
+    _isCP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((s ∈ (R ʳ) -increasing) ×
                    (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
 
 open GlobalProperties public
 
-module MiscProperties (R : 𝓡 A) where 
-  -- These properties are variations on the above properties 
+module MiscProperties (R : 𝓡 A) where
+  -- These properties are variations on the above properties
   open LocalProperties {R}
-  SMseq : 𝓟 A   
-  SMseq x = ∀ (f : ℕ → A) → f zero ≡ x → is R -increasing f → Σ[ i ∈ ℕ ] (MF (f i))
+  open WeakerWF
+  SMseq : 𝓟 A
+  SMseq x = ∀ (f : ℕ → A) → f zero ≡ x → f ∈ R -increasing → Σ[ i ∈ ℕ ] (MF (f i))
 
-  SRv2 : 𝓟 A 
-  SRv2 x = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ i ∈ ℕ ] (MF (f i))
-
-  
+  SRv2 : 𝓟 A
+  SRv2 x = ∀ (f : ℕ → A) → f ∈ (R ʳ) -increasing → Σ[ i ∈ ℕ ] (MF (f i))

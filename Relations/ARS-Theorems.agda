@@ -11,7 +11,7 @@ open import Relations.ARS-Properties {A}
 open LocalProperties {R}
 open import Relations.ARS-Propositions
 open import Relations.ARS-Base
-
+open WeakerWF
 {-This file contains formalization of the theorems of TeReSe Chapter 1-}
 
 module Theorem-1-2-2 where
@@ -47,12 +47,12 @@ module Theorem-1-2-2 where
       ... | d ,, Rʳxd , axʳ x₁ with f d y _ x₁ R*y₁y
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
-module Theorem-1-2-3 where 
-  seq-lemma : ∀ (f : ℕ → A) → is R -increasing f → ∀ n → (R ⋆) (f zero) (f n)
+module Theorem-1-2-3 where
+  seq-lemma : ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ n → (R ⋆) (f zero) (f n)
   seq-lemma f f-inc zero = ε⋆
   seq-lemma f f-inc (succ n) = f-inc zero ,⋆ seq-lemma (f ∘ succ) (λ k → f-inc (succ k)) n
 
-  seq-lemma2 : ∀ (f : ℕ → A) → is R -increasing f → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
+  seq-lemma2 : ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
   seq-lemma2 f f-inc zero m = in1 (seq-lemma f f-inc m)
   seq-lemma2 f f-inc (succ n) zero = in2 (seq-lemma f f-inc (succ n))
   seq-lemma2 f f-inc (succ n) (succ m) = seq-lemma2 (f ∘ succ) (λ k → f-inc (succ k) ) n m
@@ -64,7 +64,7 @@ module Theorem-1-2-3 where
   refl-closure-lemma Φ Φax Φeps x y (axʳ ρ) = Φax x y ρ
   refl-closure-lemma Φ Φax Φeps x .x εʳ = Φeps x x refl
 
-  wseq-lemma : ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ n → (R ⋆) (f zero) (f n)
+  wseq-lemma : ∀ (f : ℕ → A) → f ∈ (R ʳ) -increasing → ∀ n → (R ⋆) (f zero) (f n)
   wseq-lemma f f-winc zero = ε⋆
   wseq-lemma f f-winc (succ n) =
     let Φ = λ x y Rʳxy → (R ⋆) y (f (succ n)) → (R ⋆) x (f (succ n))
@@ -73,7 +73,7 @@ module Theorem-1-2-3 where
         rcl = refl-closure-lemma Φ Φax Φeps (f zero) (f (succ zero)) (f-winc zero)
       in rcl (wseq-lemma (f ∘ succ) (λ k → f-winc (succ k)) n)
 
-  wseq-lemma2 : ∀ (f : ℕ → A) → is (R ʳ) -increasing f → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
+  wseq-lemma2 : ∀ (f : ℕ → A) → f ∈ (R ʳ) -increasing → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
   wseq-lemma2 f f-winc zero m = in1 (wseq-lemma f f-winc m)
   wseq-lemma2 f f-winc (succ n) zero = in2 (wseq-lemma f f-winc (succ n))
   wseq-lemma2 f f-winc (succ n) (succ m) = wseq-lemma2 (f ∘ succ) (λ k → f-winc (succ k) ) n m
@@ -82,12 +82,12 @@ module Theorem-1-2-3 where
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
     g : ∀ k → (R ⋆) (f k) n
-    g k with Theorem-1-2-2.ii (RisWN , RisUN)  (f 0) R*f0n (seq-lemma f f-inc k) 
+    g k with Theorem-1-2-2.ii (RisWN , RisUN)  (f 0) R*f0n (seq-lemma f f-inc k)
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF Rnn₀ )
 
-  -- Using UN→ rather than UN 
-  i→ : R isWN → R isUN→ → R isBP 
+  -- Using UN→ rather than UN
+  i→ : R isWN → R isUN→ → R isBP
   i→ RisWN RisUN→ f f-inc  with RisWN (f zero)
   ... | (a ,, R*f0a , a∈NF) = a ,, g where
     g : ∀ k → (R ⋆) (f k) a
@@ -95,7 +95,7 @@ module Theorem-1-2-3 where
     ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
 
-  
+
   -- A variant on theorem 1-2-3 ii)
   iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)
   iiSeq wnR unR rp s sIsRdec with i wnR unR
@@ -119,7 +119,7 @@ module Theorem-1-2-3 where
   ... | in2 R*fcₙfbₙ = (f bₙ) ,, R*bfbₙ , (R*cfcₙ ⋆!⋆ R*fcₙfbₙ)
 
 
-  -- The proof of Theorem-1-2-3-iii requires classical principles 
+  -- The proof of Theorem-1-2-3-iii requires classical principles
   open import Classical
   record preSN (n x : A) : Set where
     constructor pSN
@@ -130,10 +130,10 @@ module Theorem-1-2-3 where
       x→s : R x s
       s→n : (R ⋆) s n
       s∈SN : SN s
-  
+
   x∉SN→∃y∉SN : dec (SN) → ∀ {x} → ¬(SN x) → Σ[ y ∈ A ] (¬(SN y) × R x y)
-  x∉SN→∃y∉SN decSN {x} x∉SN = {!   !} 
-  
+  x∉SN→∃y∉SN decSN {x} x∉SN = {!   !}
+
   preSNlemma1 : dec (SN) → ∀ {x n} → (R ⋆) x n → NF n → ¬ SN x →
                                   Σ[ y ∈ A ] ((R ⋆) x y × preSN n y)
   preSNlemma1 decSN {x} {.x} ε⋆ n∈NF x∉SN = ∅ (¬SN∧NF→⊥ x∉SN n∈NF )
@@ -161,7 +161,7 @@ module Theorem-1-2-3 where
   ... | (v ,, R*yv , p) = (v ,, RR⋆⊆R⁺ R Rxy R*yv , p)
 
   preSNlemma3 : R isWCR → dec (SN) → ∀ n x → preSN n x →
-                  Σ[ f ∈ (ℕ → A) ] ((∀ k → preSN n (f k)) × is (R ⁺) -increasing f)
+                  Σ[ f ∈ (ℕ → A) ] ((∀ k → preSN n (f k)) × f ∈ (R ⁺) -increasing)
   preSNlemma3 RisWCR decSN n x p = f ,, pf , finc where
     f : ℕ → A
     pf : ∀ (k : ℕ) → preSN n (f k)
@@ -169,21 +169,21 @@ module Theorem-1-2-3 where
     f (succ k) = fst (preSNlemma2 RisWCR decSN n (f k) (pf k))
     pf zero = p
     pf (succ k) = pr2 (snd (preSNlemma2 RisWCR decSN n (f k) (pf k)))
-    finc : is R ⁺ -increasing f
+    finc : f ∈ (R ⁺) -increasing
     finc k = pr1 (snd (preSNlemma2 RisWCR decSN n (f k) (pf k)))
 
-  
-  seq→sseq : ∀ (f : ℕ → A) → is (R ⁺) -increasing f → ∀ (k : ℕ) → Σ[ a ∈ A ] (R ⋆) a (f k)
+
+  seq→sseq : ∀ (f : ℕ → A) → f ∈ (R ⁺) -increasing → ∀ (k : ℕ) → Σ[ a ∈ A ] (R ⋆) a (f k)
   seq→sseq f finc zero = f zero ,, ε⋆
   seq→sseq f finc (succ k)
     with seq→sseq f finc k
   ... | x ,, (_,⋆_ {y = y} h r) = y ,, (r ⋆!⋆ ⁺→⋆ R (finc k) )
   ... | .(f k) ,, ε⋆ with finc k
   ... | (_,⁺_ {y = y} h r) = (y ,, ⁺→⋆ R  r )
-  ... | ε⁺ = f (succ k) ,, ε⋆ 
+  ... | ε⁺ = f (succ k) ,, ε⋆
 
-  seq→sseq-inc :  ∀ (f : ℕ → A) (finc : is (R ⁺) -increasing f)
-                   → is R -increasing (λ k → fst (seq→sseq f finc k))
+  seq→sseq-inc :  ∀ (f : ℕ → A) (finc : f ∈ (R ⁺) -increasing)
+                   → (λ k → fst (seq→sseq f finc k)) ∈ R -increasing
   seq→sseq-inc f finc zero with seq→sseq f finc zero | finc zero
   ... | x ,, (x₁ ,⋆ R*xf0) | ax⁺ f0f1 = f0f1
   ... | x ,, (x₁ ,⋆ R*xf0) | h ,⁺ t = h
@@ -193,21 +193,21 @@ module Theorem-1-2-3 where
   ... | x ,, (h ,⋆ x→fsk) = h
   ... | .(f (succ k)) ,, ε⋆ with finc (succ k)
   ... | ax⁺ h = h
-  ... | h ,⁺ c = h 
+  ... | h ,⁺ c = h
 
-  seq→sseq-bnd : ∀ (f : ℕ → A) (finc : is (R ⁺) -increasing f) (b : A) →
+  seq→sseq-bnd : ∀ (f : ℕ → A) (finc : f ∈ (R ⁺) -increasing) (b : A) →
                is R - f bound b → is R - (λ k → fst (seq→sseq f finc k)) bound b
-  seq→sseq-bnd f finc b fbnd k = snd (seq→sseq f finc k) ⋆!⋆ (fbnd k) 
+  seq→sseq-bnd f finc b fbnd k = snd (seq→sseq f finc k) ⋆!⋆ (fbnd k)
 
 
   Theorem123Lemma : R isWCR → dec (SN) → ∀ n x → preSN n x →
-                    Σ[ f ∈ (ℕ → A) ] (is R -increasing f × is R - f bound n)
+                    Σ[ f ∈ (ℕ → A) ] (f ∈ R -increasing × is R - f bound n)
   Theorem123Lemma RisWCR decSN n x p
     with preSNlemma3 RisWCR decSN n x p
   ... | (f ,, pf , fisR+inc) =
         (λ k → fst (seq→sseq f fisR+inc k))
         ,,  seq→sseq-inc f fisR+inc
-          , seq→sseq-bnd f fisR+inc n (λ k → x→s (pf k) ,⋆ s→n (pf k) ) where open preSN 
+          , seq→sseq-bnd f fisR+inc n (λ k → x→s (pf k) ,⋆ s→n (pf k) ) where open preSN
 
   iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN
   iii RisWN RisWCR RisRP decSN x with decSN x
@@ -217,7 +217,4 @@ module Theorem-1-2-3 where
   ... | b₀ ,, R*xb₀ , nb₀∈preSN with Theorem123Lemma RisWCR decSN n b₀ nb₀∈preSN
   ... | s ,, s-inc , n∈s-bound with RisRP s s-inc n n∈s-bound
   ... | i ,, ε⋆ = ∅ (n∈NF (s-inc i))
-  ... | i ,, (Rnz ,⋆ R*zsᵢ) = ∅ (n∈NF Rnz) 
-
-
- 
+  ... | i ,, (Rnz ,⋆ R*zsᵢ) = ∅ (n∈NF Rnz)

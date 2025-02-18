@@ -32,7 +32,7 @@ CR→confluent RisCR (x ,, R*xy , R*xz)  with RisCR x R*xy R*xz
 ... | RisConfluent = RisConfluent
 
 
-wCR→conflInd : R isWCR → is (~R R) -inductive CR
+wCR→conflInd : R isWCR → (~R R) -inductive CR
 wCR→conflInd RisWCR x IND ε⋆ R*xz = _ ,, R*xz , ε⋆
 wCR→conflInd RisWCR x IND (Rxy₀ ,⋆ R*y₀y) ε⋆ = _ ,, ε⋆ , (Rxy₀ ,⋆ R*y₀y)
 wCR→conflInd RisWCR x IND (Rxy₀ ,⋆ R*y₀y) (Rxz₀ ,⋆ R*z₀z) with RisWCR x Rxy₀ Rxz₀
@@ -41,8 +41,10 @@ wCR→conflInd RisWCR x IND (Rxy₀ ,⋆ R*y₀y) (Rxz₀ ,⋆ R*z₀z) with Ris
 ... | u ,, R*zu , R*vu = u ,, ((R*yv ⋆!⋆ R*vu) , R*zu)
 
 wCR→Conf : R isWCR → SN ⊆ CR
-wCR→Conf RisWCR = acc⊆ind (~R R) (λ x → CR x) (wCR→conflInd RisWCR)
+wCR→Conf RisWCR = acc⊆ind (λ x → CR x) (wCR→conflInd RisWCR)
+  where open BasicImplications
 
+open import Relations.Decidable
 
 SN⊆∁∁WN : SN ⊆ ∁ (∁ WN)
 SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF _) where
@@ -50,9 +52,7 @@ SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF _) where
     x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
             (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
 
-open ClassicalImplications using (isMinDec)
-
-¬NFx→Rxy : ∀ {x} → isMinDec (~R R) x → ¬ (NF x) →  Σ[ y ∈ A ] (R x y)
+¬NFx→Rxy : ∀ {x} → x ∈ MinDec (~R R) → ¬ (NF x) →  Σ[ y ∈ A ] (R x y)
 ¬NFx→Rxy {x} xdec x∉NF with xdec
 ... | in1 yRxy = yRxy
 ... | in2 x∈NF = ∅ (x∉NF λ _ → x∉NF (x∈NF _))
