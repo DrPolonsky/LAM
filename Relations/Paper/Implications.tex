@@ -14,8 +14,8 @@ show chains of implications starting from these properties.
   
       % Place the nodes vertically (top to bottom)
       \node (Confluent) [boxnode] at (-4,0) {$\CR$};
-      \node (RP)        [boxnode, right=.5cm of Confluent] {$\WMFP$};
-      \node (WN)        [boxnode, right=.5cm of RP] {$\WNFP$};
+      \node (RP)        [boxnode, right=.5cm of Confluent] {$\MP$};
+      \node (WN)        [boxnode, right=.5cm of RP] {$\NP$};
       \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
   
       % Draw arrows downwards
@@ -69,9 +69,9 @@ to hold.
     \hline
     $\UNto$ &  CE-, CE-     & CE, CE-       & CE , CE-          & CE, CE            & \red{$\CR$} , $\SN$ \\
     \hline
-    $\WNFP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    $\NP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
     \hline
-    $\WMFP$ & $\CR$ , CE-    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    $\MP$ & $\CR$ , CE-    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
     \hline
     $\CR$   & $\CR$, CE-     & $\CR$, CE-     & $\CR$, CE-        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
     \hline
@@ -88,9 +88,9 @@ to hold.
     \hline
     $\UNto$ &  CE-, CE-     & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
     \hline
-    $\WNFP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    $\NP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
     \hline
-    $\WMFP$ & $\CR$ , CE    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    $\MP$ & $\CR$ , CE    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
     \hline
     $\CR$   & $\CR$, CE     & $\CR$, CE     & $\CR$, CE-        & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
     \hline
@@ -107,9 +107,9 @@ to hold.
     \hline
     $\UNto$ &  CE-, CE-     & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
     \hline
-    $\WNFP$ & CE-, CE-      & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
+    $\NP$ & CE-, CE-      & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
     \hline
-    $\WMFP$ & $\CR$ , CE    & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
+    $\MP$ & $\CR$ , CE    & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
     \hline
     $\CR$   & $\CR$, CE     & $\CR$, CE     &  $\CR$, CE-       & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
     \hline
