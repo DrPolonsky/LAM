@@ -1,2 +1,123 @@
 \section{Implications}
 \label{sec:Implications}
+
+From the perspective of programming language theory, the two properties of abstract rewriting 
+systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
+show chains of implications starting from these properties.
+
+\begin{center}
+
+    \begin{tikzpicture}[auto,
+      arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
+      % A box style
+      \tikzstyle{boxnode} = [draw, rectangle, text centered]
+  
+      % Place the nodes vertically (top to bottom)
+      \node (Confluent) [boxnode] at (-4,0) {$\CR$};
+      \node (RP)        [boxnode, right=.5cm of Confluent] {$\WMFP$};
+      \node (WN)        [boxnode, right=.5cm of RP] {$\WNFP$};
+      \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
+  
+      % Draw arrows downwards
+      \draw[arrowstyle] (Confluent) -- (RP);
+      \draw[arrowstyle] (RP) -- (WN);
+      \draw[arrowstyle] (WN) -- (UN);
+   
+        
+        % Define the nodes
+        \node (SN) [boxnode] at (4,0) {$\SN$};
+        \node (WN) [boxnode, above right=0.5cm and 0.5cm of SN] {$\WN$};
+        \node (SR) [boxnode, below right=0.5cm and 0.5cm of SN] {$\SM$};
+        \node (WR) [boxnode, right of=SN, xshift=2cm] {$\WM$};
+        
+        % Draw the arrows to form a diamond
+        \draw [arrowstyle] (SN) -- (WN);
+        \draw [arrowstyle] (SN) -- (SR);
+        \draw [arrowstyle] (WN) -- (WR);
+        \draw [arrowstyle] (SR) -- (WR);
+      \end{tikzpicture}
+\end{center}
+  
+The classical property of being minimally decidable is required to complete the implcation 
+from $\SN$ to $\WN$, as can be seen in our formalization
+
+\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| \footnote{ARS-Implications.agda}
+
+\sacomment{Are we going to define this property here or elsewhere?}
+
+The isMinDec property states that all elements either have a relation to some other element, or 
+there is no other element to which they have a relation. If the element relates to no other element then it is terminating 
+and so trivially $\WN$. If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
+$y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element. 
+
+Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
+
+The following tables show which combination of these properties implies a property higher in the hierarchy. Where a combination 
+does not imply a higher property a explanatory counterexample is given. The counterexamples referenced are in section \ref{sec:Counterexamples}.
+
+The first table explores where the properties hold locally, the second explores where the properties hold globally, and the third 
+table is global and includes the $\WCR$ property. An property being red indicates that classical assumptions are required for the implication 
+to hold. 
+
+\sacomment{UPDATE COUNTEREXAMPLES WHEN CE SECTION FINISHED}
+\begin{table}[h!]
+    \centering
+    \caption{Local implications}
+    \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
+    \hline
+    \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+    \hline
+    $\UNto$ &  CE-, CE-     & CE, CE-       & CE , CE-          & CE, CE            & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\WNFP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\WMFP$ & $\CR$ , CE-    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\CR$   & $\CR$, CE-     & $\CR$, CE-     & $\CR$, CE-        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
+    \hline
+    
+    \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \caption{Global implications}
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+            & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+    \hline
+    $\UNto$ &  CE-, CE-     & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\WNFP$ & CE-, CE-      & $\CR$, CE-    & CE , CE-          & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\WMFP$ & $\CR$ , CE    & $\CR$, CE-    & \red{$\CR$} , CE- & $\CR$, $\SN$      & \red{$\CR$} , $\SN$ \\
+    \hline
+    $\CR$   & $\CR$, CE     & $\CR$, CE     & $\CR$, CE-        & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
+    \hline
+    
+    \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \caption{Global implications with global $\WCR$}
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+            & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+    \hline
+    $\UNto$ &  CE-, CE-     & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
+    \hline
+    $\WNFP$ & CE-, CE-      & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
+    \hline
+    $\WMFP$ & $\CR$ , CE    & $\CR$, CE-    &  $\CR$ , CE-      & $\CR$, $\SN$      &  $\CR$ , $\SN$ \\
+    \hline
+    $\CR$   & $\CR$, CE     & $\CR$, CE     &  $\CR$, CE-       & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
+    \hline
+    
+    \end{tabular}
+\end{table}
+
+\sacomment{Need to update the tables with appropriate symbols for global and local. Colour for first row and column?}
+
+The tables show that there are two changes when moving from properties holding locally and globally. 
+Globally $\WN \land \UNto \implies \CR$ whereas it does not locally. 

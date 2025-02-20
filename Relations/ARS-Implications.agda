@@ -60,12 +60,12 @@ module Hierarchy-Implications where
     SN→WN∧SM : (~R R) isMinDec → ∀ {x} → SN x → (WN x × SMseq R x)
     SN→WN∧SM decR {x} x∈SN = SNdec→WN decR x x∈SN , SN→SMseq x∈SN
 
-    SM→WR : (~R R) isMinDec → ∀ {x} → SM x → WM x
-    SM→WR decR {x} (SMrec .x x∈rec) = x ,, ε⋆ , x∈rec
-    SM→WR decR {x} (SMacc .x x∈acc) with decR x
+    SM→WM : (~R R) isMinDec → ∀ {x} → SM x → WM x
+    SM→WM decR {x} (SMrec .x x∈rec) = x ,, ε⋆ , x∈rec
+    SM→WM decR {x} (SMacc .x x∈acc) with decR x
     ... | in2 xIsMin = x ,, (ε⋆ , λ { y ε⋆ → ε⋆
                                     ; y (Rxx₁ ,⋆ R*x₁y) → ∅ (xIsMin _ Rxx₁)})
-    ... | in1 (y ,, Rxy) with SM→WR decR (x∈acc y Rxy)
+    ... | in1 (y ,, Rxy) with SM→WM decR (x∈acc y Rxy)
     ... | r ,, R*yr , r∈acc = r ,, (Rxy ,⋆ R*yr) , r∈acc
 
 -- Equivalence of RP definitions
@@ -164,6 +164,9 @@ RP-→RP RP- f f-inc a aisf-bound with RP- f f-inc a aisf-bound
             proof y R*fᵢy with RP-lemma f f-inc a aisf-bound i R*afᵢ y R*fᵢy
             ... | yisf-bound with RP- f f-inc y yisf-bound
             ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
+
+RP-↔RP : R isRP- ↔ (R isRP) 
+RP-↔RP  = RP-→RP , RP→RP- 
 
 
 WCR∧SNx→WNFPx : R isWCR → SN ⊆ WNFP

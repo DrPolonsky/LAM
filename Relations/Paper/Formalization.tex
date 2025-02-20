@@ -1,0 +1,85 @@
+\section{Formalization of Terese}
+\label{sec:Formalization}
+The original ambition of this project was to formalize the contents of the \emph{abstract reduction 
+systems} chapter in Term Rewriting Systems [TeReSe], a standard text in rewriting. 
+The motivation for the project was to provide construvtive proofs in Agda 
+of the propositions and theorems in the chapter. This in turn provides a foundation for 
+future work in programming languages theory. 
+
+In order to formalize the chapter we have aimed to provide constructive counterparts to the 
+classical proofs found in the text, and to make explicit any classical properties we depend 
+on when a constructive proof could not be found. It is from this formalization that our 
+original work has emerged. We have gone beyond \terese in fleshing out the interrelationship 
+of the properties most interesting from the perspective of programming languages theory (namely 
+being confluent and strongly normalizing). 
+For some properties we suggest alternatives which are more conducive to a constructive project. 
+We look into many notions of well-foundedness and again explore their interrelationship. 
+
+This section explains the deviations we took from \terese and lays the groundwork for the original work 
+that we have carried out. 
+
+\sacomment{Maybe mention where we have stayed true to the book, but I don't think this is key}
+
+Our first deviation from \terese is in defining strong normalization. The book defines 
+an element as strongly normalizing if every reduction sequence starting from it is finite. 
+We wanted to avoid introducing the notion of finiteness to our definition and so we 
+followed the alternative definition given in \terese : a relation is strongly normalizing when its 
+converse is well founded. In \terese a particular definition of well-foundedness is given but 
+it is one with which we were not satisfied and so we explored different definitions of 
+well-foundedness. This exploration is detailed in section \ref{sec:Well-foundedness}. 
+
+Another deviation we have taken from \terese relates to the use of the definition of an 
+increasing relation (see dfn:\ref{d:inc}). This property was one we found particularly difficult 
+to make use of in a constructive setting (for example showing that it along with the properties 
+of being WCR and WN implies SN) and so we suggest an alternative property, $\RP$.
+(dfn:\ref{d:RP}). 
+
+\begin{proposition}
+    If $R$ is increasing, then no infinite $R$-increasing sequence is bounded.
+\end{proposition}
+\begin{proof}
+    Let $(a_i) = a_0 \to a_1 \to a_2 \to \cdots$ be an $R$-increasing sequence
+    and suppose that $(a_i)$ is bounded.  Let $b$ be the bound, so that $a_i \to b$ for all $i$.
+
+    If $m = |b|$ then we have
+    \[ 0 \le |a_0| < |a_1| < |a_2| < \cdots < |a_m| < |b| = m \]
+    % \[ m > |a_m| > |a_{m-1}| > \cdots > |a_0| \ge 0 \]
+    which is a contradiction, since there are only $m-1$ integers strictly less than $m$.
+\end{proof}
+It follows that every relation that is increasing in the sense of \terese
+vacuously satisfies the RP condition.
+
+\begin{corollary}
+    If $R$ is increasing, then $R$ has the recurrence property.
+\end{corollary}
+
+We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weaker definition that 
+did not rely on the notion of $\MF$. We were able to proove that this weaker definition is 
+in fact an equivalent definition in the following proof in Agda: 
+
+\verb|RP-↔RP : R is RP- ↔ R is RP| \footnote{ARS-implications.agda}
+
+Three proofs are given in \terese of Newman's Lemma (Theorem 1.2.1). The first and third of 
+these proofs we found to rely on classical principles. The second proof was amenablbe to a 
+constructive formalization which we carried out in the function 
+
+
+\verb|NewmansLemma : R isSN → R isWCR → R isCR| \footnote{ARS-NewmansLemma.agda}
+
+We show in section \ref{sec:Implications} that $\SN$ implies $\SM$, and it is from this implication 
+that we produce a new generalization of Newman's lemma. Every relation with the properties 
+$\SM$ and $\WCR$ has the property of $\CR$. This holds true both locally and globally as we show in:
+
+\verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR| \footnote{ARS-NewmansLemma.agda}
+
+and \verb|GlobalNewmansLemmaRecurrent : R isWCR → R isSM → R isCR| \footnote{ARS-NewmansLemma.agda}
+
+The formalization of the proof that $\WCR \land \WN \land \Inc \implies \SN$ proved particularly difficult. 
+As already mentioned, we substituted out the property $\Inc$ for the property $\RP$ however 
+we found that we still require a classical principle in order for the proof to hold (as can be seen in the type of our proof):
+\verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN| \footnote{ARS-Theorems.agda}
+The classical property $\decSN$ is a property that states it is decidable whether a given 
+element has the property of being $\SN$. \sacomment{Should say more on this proof.}
+
+In the next section we take a closer look at the properties we found most crucial for termination and confluence, and the interrelationship between them.
+
