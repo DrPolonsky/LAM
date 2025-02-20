@@ -5,6 +5,7 @@ open import Predicates
 open import Logic
 open import Relations.ARS-Base
 open import Datatypes using (ℕ; zero)
+open import Relations.Seq
 
 
 {- Local and global properties for ARS -}

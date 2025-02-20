@@ -2,6 +2,7 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 open import Datatypes using (ℕ; zero;  succ)
+open import Relations.Seq
 
 
 module Relations.ARS-Implications {A : Set } {R : 𝓡 A} where
@@ -78,6 +79,12 @@ module Confluent-Implications where
     WN∧WNFP→CR : ∀ {x} → WN x → WNFP x → CR x
     WN∧WNFP→CR (n ,, (R*xn , x∈NF)) x∈WNFP R*xy R*xz = n ,, x∈WNFP x∈NF R*xn R*xy , x∈WNFP x∈NF R*xn R*xz
 
+    UN→∧WN→CR : R isUN→ → R isWN → R isCR
+    UN→∧WN→CR RisUN→ RisWN x {y}{z} R*xy R*xz with RisWN y | RisWN z 
+    ... | n₀ ,, R*yn₀ , n₀∈NF |  n₁ ,, R*zn₁ , n₁∈NF with 
+                RisUN→ x n₀∈NF n₁∈NF (R*xy ⋆!⋆ R*yn₀) (R*xz ⋆!⋆ R*zn₁) 
+    ... | n₀≡n₁ = n₀ ,, (R*yn₀ , transp ((R ⋆) z) (~ n₀≡n₁) R*zn₁)
+
 module Normalizing-Implications where
     NF⊆SN : ∀ {x} → NF x → SN x
     NF⊆SN {x} x∈NF = acc λ y Rxy → ∅ (x∈NF Rxy)
@@ -137,15 +144,15 @@ module Desired-Implications where
     RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP
     RisSMseq→RisRP RisSM f f-inc a a-bnd = RisSM f refl f-inc
 
-    open import Relations.ARS-Theorems {A}
-    open Theorem-1-2-3 {R}
+    -- open import Relations.ARS-Theorems {A}
+    -- open Theorem-1-2-3 {R}
 
     RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP
     RisSMseq→RisBP RisSM f f-inc with RisSM f refl f-inc
     ... | i ,, i∈rec = (f i) ,, boundProof
         where
         boundProof  : (x : ℕ) → (R ⋆) (f x) (f i)
-        boundProof n with seq-lemma2 f f-inc i n
+        boundProof n with seq-lemma2 R f f-inc i n
         ... | in1 R*fᵢfₙ = i∈rec (f n) R*fᵢfₙ
         ... | in2 R*fₙfᵢ = R*fₙfᵢ
 
@@ -200,3 +207,5 @@ SN∧UN→CRelem : (~R R) isMinDec → ∀ x → SN x → UN x → CR x
 SN∧UN→CRelem decNF x x∈SN x∈UN R*xb R*xc with SNdec→WN decNF x x∈SN
 ... | (z ,, R*xz , z∈NF) = (z ,, decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN  z∈NF R*xz  R*xb
                                 , decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN z∈NF R*xz R*xc )
+
+

@@ -3,10 +3,12 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 open import Datatypes using (ℕ; zero; succ)
+open import Relations.Seq
 
 module Relations.ARS-Theorems {A : Set } {R : 𝓡 A} where
 
 open import Relations.ARS-Util
+open import Relations.ARS-Implications
 open import Relations.ARS-Properties {A}
 open LocalProperties {R}
 open import Relations.ARS-Propositions
@@ -27,16 +29,8 @@ module Theorem-1-2-2 where
     CP→UN RisCR = NP→UN (CR→NP RisCR)
     -- The above provides i)
 
-    lemmaii : R isWN → R isUN → R ⁼ ⊆ (R ⋆) ∘R ~R (R ⋆)
-    lemmaii RisWN RisUN x y R⁼xy with RisWN x
-    ... | nˣ ,, R*xnˣ , nˣ∈NF with RisWN y
-    ... | nʸ ,, R*ynʸ , nʸ∈NF with RisUN nˣ∈NF nʸ∈NF (⋆~!⁼!⋆ R*xnˣ R⁼xy R*ynʸ)
-    ... | refl = nʸ ,, R*xnˣ , R*ynʸ
-
     ii : R isWN × R isUN → R isCR
-    ii (RisWN , RisUN) x {y}{z} R*xy R*xz with RisWN x
-    ... | n ,, R*xn , n∈NF with Proposition-1-1-10.vi→i (lemmaii RisWN RisUN) (x ,, (R*xy , R*xz))
-    ... | q ,, R*yq , R*zq  = q ,, R*yq , R*zq
+    ii (RisWN , RisUN) = Confluent-Implications.UN→∧WN→CR (Desired-Implications.UN→UN→ RisUN) RisWN 
 
     iii : subcommutative R → R isCR
     iii RisSC x R*xy R*xz = Proposition-1-1-10.v→i (λ { b c (a ,, Rab , R*ac) → f b c a Rab R*ac } ) (x ,, (R*xy , R*xz))  where
@@ -48,15 +42,6 @@ module Theorem-1-2-2 where
       ... | w ,, R*dw , R*yw = w ,, (Rʳxd ʳ!⋆ R*dw ) , R*yw
 
 module Theorem-1-2-3 where
-  seq-lemma : ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ n → (R ⋆) (f zero) (f n)
-  seq-lemma f f-inc zero = ε⋆
-  seq-lemma f f-inc (succ n) = f-inc zero ,⋆ seq-lemma (f ∘ succ) (λ k → f-inc (succ k)) n
-
-  seq-lemma2 : ∀ (f : ℕ → A) → f ∈ R -increasing → ∀ n m → (R ⋆) (f n) (f m) ⊔ (R ⋆) (f m) (f n)
-  seq-lemma2 f f-inc zero m = in1 (seq-lemma f f-inc m)
-  seq-lemma2 f f-inc (succ n) zero = in2 (seq-lemma f f-inc (succ n))
-  seq-lemma2 f f-inc (succ n) (succ m) = seq-lemma2 (f ∘ succ) (λ k → f-inc (succ k) ) n m
-
   refl-closure-lemma : ∀ (Φ : (∀ x y → (R ʳ) x y → Set))
                          (Φax  : ∀ x y (ρ : R x y) → Φ x y (axʳ ρ))
                          (Φeps : ∀ x y (p : x ≡ y) → Φ x y (transp ((R ʳ) x) p εʳ) )
@@ -82,7 +67,7 @@ module Theorem-1-2-3 where
   i RisWN RisUN f f-inc with RisWN (f zero)
   ... | (n ,, R*f0n , n∈NF) = n ,, g where
     g : ∀ k → (R ⋆) (f k) n
-    g k with Theorem-1-2-2.ii (RisWN , RisUN)  (f 0) R*f0n (seq-lemma f f-inc k)
+    g k with Theorem-1-2-2.ii (RisWN , RisUN)  (f 0) R*f0n (seq-lemma R f f-inc k)
     ... | .n ,, ε⋆ , R*fkn = R*fkn
     ... | n' ,, (Rnn₀ ,⋆ R*n₀n') , R*fkn = ∅ (n∈NF Rnn₀ )
 
@@ -92,7 +77,7 @@ module Theorem-1-2-3 where
   ... | (a ,, R*f0a , a∈NF) = a ,, g where
     g : ∀ k → (R ⋆) (f k) a
     g k with RisWN (f k)
-    ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma f f-inc k) ⋆!⋆ R*fkb)
+    ... | b ,, R*fkb , b∈NF with RisUN→ (f zero) a∈NF b∈NF R*f0a ((seq-lemma R f f-inc k) ⋆!⋆ R*fkb)
     ... | refl = R*fkb
 
 
@@ -104,7 +89,7 @@ module Theorem-1-2-3 where
   ... | b ,, bisωLimit with bisωLimit 0
   ... | R*s₀b with rp s sIsRdec b bisωLimit
   ... | c ,, ScisRecurrent with Theorem-1-2-2.ii (wnR , unR)
-  ... | RisCR with RisCR (s 0)  R*s₀a  (seq-lemma s sIsRdec c)
+  ... | RisCR with RisCR (s 0)  R*s₀a  (seq-lemma R s sIsRdec c)
   ... | d ,, (Raa₁ ,⋆ R*a₁d) , R*bd = a∈NF Raa₁
   ... | .a ,, ε⋆ , R*sca with ScisRecurrent a (R*sca)
   ... | Raa₃ ,⋆ R*as_c = a∈NF Raa₃

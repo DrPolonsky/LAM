@@ -6,6 +6,7 @@ open import Datatypes
 open import Classical
 open import Relations.Decidable
 open import Relations.ClosureOperators
+open import Relations.Seq
 
 module Relations.Wellfounded where
 
@@ -96,15 +97,9 @@ module WeakerWF {A : Set} (R : 𝓡 A) where
   isWFind- : Set₁
   isWFind- = ∀ (φ : 𝓟 A) → R -inductive φ → ∀ x → ¬¬ (φ x)
 
-  _-increasing : 𝓟 (ℕ → A)
-  _-increasing s = ∀ n → R (s n) (s (succ n)) -- xₙ < xₙ₊₁
-
-  _-decreasing : 𝓟 (ℕ → A)
-  _-decreasing s = ∀ n → R (s (succ n)) (s n) -- xₙ > xₙ₊₁
-
   -- The classical concept of a well-founded relation [TeReSe]
   isWFseq- : Set
-  isWFseq- = ∀ (s : ℕ → A) → ¬ (_-decreasing s)
+  isWFseq- = ∀ (s : ℕ → A) → ¬ (s ∈ R -decreasing)
 
   isWFmin- : Set₁
   isWFmin- = ∀ (P : 𝓟 A) → ∀ {d} → d ∈ P → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
