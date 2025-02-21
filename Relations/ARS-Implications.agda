@@ -89,18 +89,31 @@ module Normalizing-Implications where
     NF⊆SN : ∀ {x} → NF x → SN x
     NF⊆SN {x} x∈NF = acc λ y Rxy → ∅ (x∈NF Rxy)
 
-    WN∧R→SN : ∀ {x} → WN x → MF x → SN x
-    WN∧R→SN (n ,, R*xn , n∈NF) x∈MF =
+    WN∧MF→SN : ∀ {x} → WN x → MF x → SN x
+    WN∧MF→SN (n ,, R*xn , n∈NF) x∈MF =
         acc (λ y Rxy → ∅ (NF↓⊆NF n∈NF (x∈MF n R*xn) Rxy))
 
     WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x
-    WN∧NP∧SM→SN {x} x∈WN x∈NP (SMrec .x x∈MF) = WN∧R→SN x∈WN x∈MF
+    WN∧NP∧SM→SN {x} x∈WN x∈NP (SMrec .x x∈MF) = WN∧MF→SN x∈WN x∈MF
     WN∧NP∧SM→SN {x} (n ,, R*xn , n∈NF) x∈NP (SMacc .x xAcc) = acc f where
         f : ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
         f y Rxy = WN∧NP∧SM→SN
                     (n ,, x∈NP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
                     (λ {w} {z} H R*yw R*yz → x∈NP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
                     (xAcc y Rxy)
+    
+    isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x 
+    isWN∧SM→SN RisWN {x} (SMrec .x x∈MF) = WN∧MF→SN (RisWN x) x∈MF
+    isWN∧SM→SN RisWN {x} (SMacc .x x∈SMacc) with RisWN x 
+    ... | .x ,, ε⋆ , n∈NF = NF⊆SN n∈NF
+    ... | n ,, (Rxy ,⋆ R*xn) , n∈NF = acc f where 
+        f :  ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
+        f y Rxy = isWN∧SM→SN RisWN  (x∈SMacc y Rxy)
+
+    isWN∧isSM→isSN : R isWN → R isSM → R isSN 
+    isWN∧isSM→isSN RisWN RisSM x =  isWN∧SM→SN RisWN (RisSM x)    
+
+
 
 
 module Desired-Implications where
