@@ -1,0 +1,82 @@
+\documentclass{scrartcl}
+
+\usepackage{xcolor}
+
+\newcommand{\hired}[1]{{\color{red}{#1}}}
+
+\begin{document}
+
+\section*{Notes}
+
+\section{Plan}
+\begin{itemize}
+  \item Start by discussing motivation
+  \item Then contributions
+  \item Plan of the paper
+  \item At some point, there should be like a summary of what's been done and what are some interesting discoveries
+\end{itemize}
+
+In the conclusion, we should recap the main takeaways from each piece.
+The key role of finitely branching condition in making many results effective.
+That it also collapses many well-foundedness properties.
+The ``sufficiency frontier'' for completeness (termination and confluence).
+
+Also discuss open problems, unprovable implications, etc.
+Maybe mention the Kleene tree idea, or at least include the reference to the Bezem-Coquand paper.
+
+\section{Motivation}
+
+The standard presentation in Terese makes liberal use of classical logic.
+Should stress effectivity of type-theoretic formalization.
+\section{Contributions}
+
+\begin{itemize}
+  \item Formalization of ``elementary ARS theory'' as presented in
+  Chapter 1 of [TeReSe].
+  \item An ontology of termination and confluence properties, and a detailed analysis of logical relations between them.
+  \item Defining several new ARS concepts that serve to streamline and generalize a number of relationships.
+  \item With the above, obtain marginal improvements to classical confluence and termination criteria
+  \item Collecting implications between constructive notions of well-foundedness
+\end{itemize}
+
+\section{Formalization principles}
+
+\begin{itemize}
+  \item No function extensionality
+  \item No univalence, uniqueness of identity proofs, cubical, or any other
+  assumptions related to equality
+  \item Minimize the use of classical logic; every place where it was necessary,
+  make decidability hypotheses explicit in every place where it could not be avoided.
+  \item The vast majority of results are completely constructive and therefore,
+  they compute.
+  \item The goal is to have the results of basic abstract rewriting
+  formalized in a canonical way, so that they can be used in building
+  libraries of formalized programming language theory
+  \item Since this application ....
+  \item In other words, we wanted to stay as close as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that in every explicitly given situation, our proofs will compute.
+\end{itemize}
+
+One big item in this development was studying various incaranations of the concept of well-foundedness in constructive context.
+(Strong normalization is well-foundedness of the converse relation.)
+The ``standard'' constructive definition does not even allow one to show that SN implies WN, see Example \ref{ex:undec}.  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent.  This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
+
+Along the way, we found marginal improvements to a number of standard theorems.
+For example, the termination assumption of the famous Newman's Lemma can be slightly weakened....
+
+There are also large classes of ARSs where some needed classical principles are simply valid.  For example, finitely branching relations encompass most ARSs resulting from first-order term rewrite systems.  For such relations, the implication SN to WN requires nothing else beyond plain decidability of
+the relation itself $Rxy \lor \lnot Rxy$.
+
+The main conclusion of our work is that most of basic ARS results can be made completely effective, at least for the most basic instance of first-order TRSs.
+(This also includes the usual lambda calculus.)
+
+For more exotic rewrite systems, like $\lambda \bot$ or coinductive rewriting,
+these decidability assumptions no longer hold, and the utility of ARS results diminishes proportionally.
+
+Finally, our Agda implementation provides a standard ``entry point'' for using these results in formal language development.
+
+\end{document}
+
+
+META
+This is a report about the work that was completed.
+Putting ARS on a constructive foundation -- stress that.
