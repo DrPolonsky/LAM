@@ -1,39 +1,38 @@
 \section{Formalization of Terese}
 \label{sec:Formalization}
-The original ambition of this project was to formalize the contents of the \emph{abstract reduction 
-systems} chapter in Term Rewriting Systems [TeReSe], a standard text in rewriting. 
-The motivation for the project was to provide construvtive proofs in Agda 
-of the propositions and theorems in the chapter. This in turn provides a foundation for 
-future work in programming languages theory. 
+This sections acts as a guide of our formalization of \terese and explains the deviations we took.  
 
-In order to formalize the chapter we have aimed to provide constructive counterparts to the 
-classical proofs found in the text, and to make explicit any classical properties we depend 
-on when a constructive proof could not be found. It is from this formalization that our 
-original work has emerged. We have gone beyond \terese in fleshing out the interrelationship 
-of the properties most interesting from the perspective of programming languages theory (namely 
-being confluent and strongly normalizing). 
-For some properties we suggest alternatives which are more conducive to a constructive project. 
-We look into many notions of well-foundedness and again explore their interrelationship. 
+\subsection{Formalization of Definitions}
+We have formalized those definitions which were necessary for the formalization of the propositions and theorems found 
+in Chapter 1 of \terese. We use Agda's built-in \texttt{Set} for sets and define a relation in \texttt{Predicates.agda}.
+The closure operators are formalized in \texttt{ARS-Closure.agda}. 
+The definitions given in \terese in \texttt{1.1.8 DEFINITION (confluence)} 
+are formalized in \texttt{ARS-Base.agda}. We only cover $\WCR$ and $\CR$ of the definitions from this section 
+as the other definitions were not involved in the more interesting formalizations.
 
-This section explains the deviations we took from \terese and lays the groundwork for the original work 
-that we have carried out. 
+The definitions given in \terese in \texttt{1.1.13 DEFINITION (normalization)} 
+are formalized in \texttt{ARS-Properties.agda}.  
 
-\sacomment{Maybe mention where we have stayed true to the book, but I don't think this is key}
 
-Our first deviation from \terese is in defining strong normalization. The book defines 
-an element as strongly normalizing if every reduction sequence starting from it is finite. 
-We wanted to avoid introducing the notion of finiteness to our definition and so we 
-followed the alternative definition given in \terese : a relation is strongly normalizing when its 
-converse is well founded. In \terese a particular definition of well-foundedness is given but 
-it is one with which we were not satisfied and so we explored different definitions of 
-well-foundedness. This exploration is detailed in section \ref{sec:Well-foundedness}. 
+The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}. 
+\begin{description}
+    \item[$\SN$] We make use of the well-founded defintion, rather than the finite reduction sequence definition.
+    \item[$\NPe$] We use the equivalent $\NP$ definition. 
+    \item[$\Inc$] We use the more general property $\RP$.      
+\end{description}
 
-Another deviation we have taken from \terese relates to the use of the definition of an 
-increasing relation (see dfn:\ref{d:inc}). This property was one we found particularly difficult 
-to make use of in a constructive setting (for example showing that it along with the properties 
-of being WCR and WN implies SN) and so we suggest an alternative property, $\RP$.
-(dfn:\ref{d:RP}). 
+Our motivation for using $\RP$ rather than $\Inc$ is that we found $\Inc$ to be a particularly difficult property 
+to use in a constructive setting. 
 
+\subsection{Propositions}
+There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
+The formalization of the proofs are in \texttt{ARS-Propositions.agda}. These formalizations were straightforward 
+and as such are not the focus of this paper. 
+
+\subsection{Theorems}
+\subsubsection{Newman's Lemma}
+There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given in \terese. 
+The first and third of these proofs make use of classical properties, 
 
 
 We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weaker definition that 
