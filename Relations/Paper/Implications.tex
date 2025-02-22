@@ -10,6 +10,89 @@ From the perspective of programming language theory, the two properties of abstr
 systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 show chains of implications starting from these properties.
 
+\begin{definition} The folowing definitions relate to being minimal. Let $A$ and $R$ be as above, and let $a \in A$.
+    \begin{description}
+        \item[$a \in \MF_R$] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
+        \item[$a \in \WM_R$] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
+        \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is also strongly minimalizing.
+        \item[$a \in \MP_R$] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
+
+    \end{description}
+\end{definition}
+
+Again, we found that there was a strong interrelationship between the properties, captured in Figure \ref{fig:conf-hierarchy}, which are explored in Section \ref{sec:Implications}.
+
+\begin{figure}[h] 
+    \centering
+
+        \begin{tikzpicture}[auto,
+          arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
+          % A box style
+          \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]
+      
+          % Place the nodes vertically (top to bottom)
+          \node (Confluent) [boxnode] at (-4,0) {$\CR$};
+          \node (RP)        [boxnode, right=.5cm of Confluent] {$\MP$};
+          \node (WN)        [boxnode, right=.5cm of RP] {$\NP$};
+          \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
+      
+          % Draw arrows downwards
+          \draw[arrowstyle] (Confluent) -- (RP);
+          \draw[arrowstyle] (RP) -- (WN);
+          \draw[arrowstyle] (WN) -- (UN);
+       
+          \end{tikzpicture}
+          \caption{A hierarchy of confluent properties.}
+          \label{fig:conf-hierarchy}
+    
+\end{figure}
+We found that there was a strong interrelationship between the normalizing properties and the minimal properties. This relationship is 
+captured in Figure \ref{fig:norm-hierarchy}.
+
+\begin{figure}[h]   
+    \centering
+        \begin{tikzpicture}[auto,
+            arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
+            % A box style
+            \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]   
+            % Define the nodes
+            \node (SN) [boxnode] at (4,0) {$\SN$};
+            \node (WN) [boxnode, above right=0.5cm and 0.5cm of SN] {$\WN$};
+            \node (SR) [boxnode, below right=0.5cm and 0.5cm of SN] {$\SM$};
+            \node (WR) [boxnode, below right=0.5cm and 0.5cm of WN] {$\WM$};
+            
+            % Draw the arrows to form a diamond
+            \draw [arrowstyle] (SN) -- (WN);
+            \draw [arrowstyle] (SN) -- (SR);
+            \draw [arrowstyle] (WN) -- (WR);
+            \draw [arrowstyle] (SR) -- (WR);
+        \end{tikzpicture}
+        \caption{A hierarchy of normalizing and minimal properties.}
+        \label{fig:norm-hierarchy}
+\end{figure}
+
+The implications will be explored in detail in Section \ref{sec:Implications}. 
+
+Proposition \ref{prop:SMRP} connects $\SM$ with $\RP$ and $\BP$. \sacomment{Need to relate SM and SMseq. Probably define SMseq and metion 
+we can only prove this for SMseq.}
+\begin{proposition}\label{prop:SMRP}
+    $SM \leftrightarrow RP \land BP$
+\end{proposition}
+\begin{proof}
+    See,\\ \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|
+    \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
+\end{proof}
+
+A trivial implication not captured in the above figure is covered in Proposition \ref{prop:nftomf}. 
+\begin{proposition}\label{prop:nftomf}
+    $a\in NF_R \implies a \in MF_R$ 
+\end{proposition}    
+\begin{proof}
+    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
+\end{proof}
+
+
+
 \begin{center}
 
     \begin{tikzpicture}[auto,

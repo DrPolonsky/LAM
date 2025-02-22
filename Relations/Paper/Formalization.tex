@@ -1,4 +1,4 @@
-\section{Formalization of Terese}
+\section{Formalization of \terese}
 \label{sec:Formalization}
 This sections acts as a guide of our formalization of \terese and explains the deviations we took.  
 
@@ -22,12 +22,12 @@ The following is a summary of the differences in definition we have used as ment
 \end{description}
 
 Our motivation for using $\RP$ rather than $\Inc$ is that we found $\Inc$ to be a particularly difficult property 
-to use in a constructive setting. 
+to use in a constructive setting. \sacomment{Say more on this motivation and decide where it will be placed.}
 
 \subsection{Propositions}
 There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
 The formalization of the proofs are in \texttt{ARS-Propositions.agda}. These formalizations were straightforward 
-and as such are not the focus of this paper. 
+and as such are not the focus of this paper. \sacomment{Do we include more information on these propositions?}
 
 \subsection{Theorems}
 \subsubsection{Newman's Lemma}
@@ -35,12 +35,7 @@ There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given i
 The first and third of these proofs make use of classical properties, 
 
 
-We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weaker definition that 
-did not rely on the notion of $\MF$. We were able to proove that this weaker definition is 
-in fact an equivalent definition in the following proof in Agda: 
 
-\verb|RP-↔RP : R is RP- ↔ R is RP| \footnotemark[1]
-\footnotetext[1]{\texttt{ARS-implications.agda}}
 Three proofs are given in \terese of Newman's Lemma (Theorem 1.2.1). The first and third of 
 these proofs we found to rely on classical principles. The second proof was amenablbe to a 
 constructive formalization which we carried out in the function 
