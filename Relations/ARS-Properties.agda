@@ -5,6 +5,7 @@ open import Predicates
 open import Logic
 open import Relations.ARS-Base
 open import Datatypes using (ℕ; zero)
+open import Relations.Seq
 
 
 {- Local and global properties for ARS -}
@@ -31,8 +32,8 @@ module LocalProperties {R : 𝓡 A} where
     MF x = ∀ y → (R ⋆) x y → (R ⋆) y x
 
     -- Weak normal form property
-    WNFP : 𝓟 A
-    WNFP x = ∀ {y z} → NF y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
+    NP : 𝓟 A
+    NP x = ∀ {y z} → NF y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
 
     -- Unique normal form property
     UN : 𝓟 A
@@ -48,8 +49,8 @@ module LocalProperties {R : 𝓡 A} where
       SMacc : ∀ x → (∀ y → R x y → SM y) → SM x
 
     -- Weakly minimal form property
-    WMFP : 𝓟 A
-    WMFP x = ∀ {y z} → MF y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
+    MP : 𝓟 A
+    MP x = ∀ {y z} → MF y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
 
 module GlobalProperties (R : 𝓡 A) where
 
@@ -70,11 +71,11 @@ module GlobalProperties (R : 𝓡 A) where
     _isSM : Set
     _isSM = ∀ x → SM x
 
-    _isWNFP : Set
-    _isWNFP = ∀ x → WNFP x
-
     _isNP : Set
-    _isNP = ∀ {x y} → NF y → (R ⁼) x y → (R ⋆) x y
+    _isNP = ∀ x → NP x
+
+    _isNP₀ : Set
+    _isNP₀ = ∀ {x y} → NF y → (R ⁼) x y → (R ⋆) x y
 
     -- [AP.  What's the problem with getting this from local UN?]
     _isUN : Set

@@ -142,12 +142,26 @@ in counterexample (\sacomment{TODO: put counterexample here when section is comp
     A sequence is \emph{bounded} if there exists an element $a \in A$ to which all elements of the sequence reduce.
 \end{definition}
 
+
 \begin{definition}
     An element $a \in A$ has the \emph{minimal form property} ($MF$) if $a \mstep b \implies b \mstep a$ for all $b \in A$.
 \end{definition}
 
 Note that being a normal form is a trivial case of the minimal form property (as we prove in ARS-implications.agda
 function $\mathtt{NF\subseteq MF : \forall {x} \to NF x \to MF x}$).
+
+\begin{definition}\label{d:RP}
+    A relation $R$ has the \emph{recurrence property} (RP) if every bounded, increasing sequence 
+    has an element $a \in MF$.
+\end{definition}
+
+
+\begin{definition}\label{d:RP-}
+    A relation $R$ has the \emph{weak recurrence property} (RP-) if for every increasing 
+    sequence with bound $a$, there is an element $i$ of the sequence such that 
+    $a \mstep f(i)$.
+\end{definition}
+
 
 \begin{definition}
     An element $a \in A$ is \emph{$R$-weakly minimal} ($WM_{R}$)if $a \mstep b$ for some minimal form $b \in A$.
@@ -169,6 +183,12 @@ function $\mathtt{NF\subseteq MF : \forall {x} \to NF x \to MF x}$).
    $c \mstep b$, for all $c \in A$ and all $b \in A$ with the minimal form property.
 
    A relation $R$ has the \emph{weak minimal form property} (WMFP) if every $a \in A$ has the $R$-weak minimal form property.
+\end{definition}
+\begin{definition}
+    \label{d:inc}
+    A relation $R \sse A \times A$ is called \emph{increasing} if there
+    exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $x, y \in A$,
+    \[ Rxy \to |x| < |y| \]
 \end{definition}
 
 Definitions to add:

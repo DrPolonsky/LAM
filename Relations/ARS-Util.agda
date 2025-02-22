@@ -44,6 +44,8 @@ wCR→Conf : R isWCR → SN ⊆ CR
 wCR→Conf RisWCR = acc⊆ind (λ x → CR x) (wCR→conflInd RisWCR)
   where open BasicImplications
 
+
+
 open import Relations.Decidable
 
 SN⊆∁∁WN : SN ⊆ ∁ (∁ WN)

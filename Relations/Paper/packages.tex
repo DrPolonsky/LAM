@@ -6,8 +6,16 @@
 \usepackage{mathrsfs}
 \usepackage{amssymb}
 \usepackage{xcolor}
+\usepackage{colortbl}
 \usepackage{tikz-cd}
 \usepackage{caption}
+\usepackage{newunicodechar}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{ucs}
+% \DeclareUnicodeCharacter{03A3}{\ensuremath{\Sigma}}
+
 
 
 \usetikzlibrary{positioning,shapes.geometric,fit,arrows.meta}
@@ -15,3 +23,10 @@
 
 \captionsetup{justification=centering}
 
+% Not sure if needed, but below will reset footnotes on a per page basis:
+% \usepackage{perpage}
+% \MakePerPage{footnote}
+
+
+\usepackage{multicol} % For multi-column layout
+\usepackage{adjustbox} % To scale diagrams if necessary

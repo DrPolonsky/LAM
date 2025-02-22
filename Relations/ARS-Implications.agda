@@ -2,6 +2,7 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 open import Datatypes using (ℕ; zero;  succ)
+open import Relations.Seq
 
 
 module Relations.ARS-Implications {A : Set } {R : 𝓡 A} where
@@ -20,8 +21,8 @@ CR→WCR RisCR x Rxy Rxz = RisCR x (Rxy ,⋆ ε⋆) (Rxz ,⋆ ε⋆)
 module Hierarchy-Implications where
     -- These implications establish the hierarchy of normalizing properties and confluent properties as set out in the report.
 
-    CR→WMFP : ∀ {x} → CR x → WMFP x
-    CR→WMFP x∈CR y∈MF R*xy R*xz with x∈CR R*xy R*xz
+    CR→MP : ∀ {x} → CR x → MP x
+    CR→MP x∈CR y∈MF R*xy R*xz with x∈CR R*xy R*xz
     ... | q ,, R*yq , R*zq with y∈MF q R*yq
     ... | R*qy = R*zq ⋆!⋆ R*qy
 
@@ -29,11 +30,11 @@ module Hierarchy-Implications where
     NF⊆MF x∈NF y ε⋆ = ε⋆
     NF⊆MF x∈NF y (Rxx₁ ,⋆ R*x₁y) = ∅ (x∈NF Rxx₁)
 
-    WMFP→WNFP : ∀ {x} → WMFP x → WNFP x
-    WMFP→WNFP x∈WMFP y∈NF R*xy R*xz = x∈WMFP (NF⊆MF y∈NF) R*xy R*xz
+    MP→NP : ∀ {x} → MP x → NP x
+    MP→NP x∈MP y∈NF R*xy R*xz = x∈MP (NF⊆MF y∈NF) R*xy R*xz
 
-    WMFP→UN : ∀ {x} → WNFP x → UN x
-    WMFP→UN x∈WNFP y∈NF z∈NF R*xy R*xz with x∈WNFP y∈NF R*xy R*xz
+    NP→UN : ∀ {x} → NP x → UN x
+    NP→UN x∈NP y∈NF z∈NF R*xy R*xz with x∈NP y∈NF R*xy R*xz
     ... | ε⋆ = refl
     ... | Rzz₁ ,⋆ R*z₁y = ∅ (z∈NF Rzz₁)
 
@@ -60,59 +61,78 @@ module Hierarchy-Implications where
     SN→WN∧SM : (~R R) isMinDec → ∀ {x} → SN x → (WN x × SMseq R x)
     SN→WN∧SM decR {x} x∈SN = SNdec→WN decR x x∈SN , SN→SMseq x∈SN
 
-    SM→WR : (~R R) isMinDec → ∀ {x} → SM x → WM x
-    SM→WR decR {x} (SMrec .x x∈rec) = x ,, ε⋆ , x∈rec
-    SM→WR decR {x} (SMacc .x x∈acc) with decR x
+    SM→WM : (~R R) isMinDec → ∀ {x} → SM x → WM x
+    SM→WM decR {x} (SMrec .x x∈rec) = x ,, ε⋆ , x∈rec
+    SM→WM decR {x} (SMacc .x x∈acc) with decR x
     ... | in2 xIsMin = x ,, (ε⋆ , λ { y ε⋆ → ε⋆
                                     ; y (Rxx₁ ,⋆ R*x₁y) → ∅ (xIsMin _ Rxx₁)})
-    ... | in1 (y ,, Rxy) with SM→WR decR (x∈acc y Rxy)
+    ... | in1 (y ,, Rxy) with SM→WM decR (x∈acc y Rxy)
     ... | r ,, R*yr , r∈acc = r ,, (Rxy ,⋆ R*yr) , r∈acc
 
 -- Equivalence of RP definitions
 open Hierarchy-Implications
 
 module Confluent-Implications where
-    WM∧WMFP→CR : ∀ {x} → WM x → WMFP x → CR x
-    WM∧WMFP→CR (q ,, (R*xq , q∈MF)) x∈WMFP R*xy R*xz = q ,, (x∈WMFP q∈MF R*xq R*xy) , (x∈WMFP q∈MF R*xq R*xz)
+    WM∧MP→CR : ∀ {x} → WM x → MP x → CR x
+    WM∧MP→CR (q ,, (R*xq , q∈MF)) x∈MP R*xy R*xz = q ,, (x∈MP q∈MF R*xq R*xy) , (x∈MP q∈MF R*xq R*xz)
 
-    WN∧WNFP→CR : ∀ {x} → WN x → WNFP x → CR x
-    WN∧WNFP→CR (n ,, (R*xn , x∈NF)) x∈WNFP R*xy R*xz = n ,, x∈WNFP x∈NF R*xn R*xy , x∈WNFP x∈NF R*xn R*xz
+    WN∧NP→CR : ∀ {x} → WN x → NP x → CR x
+    WN∧NP→CR (n ,, (R*xn , x∈NF)) x∈NP R*xy R*xz = n ,, x∈NP x∈NF R*xn R*xy , x∈NP x∈NF R*xn R*xz
+
+    UN→∧WN→CR : R isUN→ → R isWN → R isCR
+    UN→∧WN→CR RisUN→ RisWN x {y}{z} R*xy R*xz with RisWN y | RisWN z 
+    ... | n₀ ,, R*yn₀ , n₀∈NF |  n₁ ,, R*zn₁ , n₁∈NF with 
+                RisUN→ x n₀∈NF n₁∈NF (R*xy ⋆!⋆ R*yn₀) (R*xz ⋆!⋆ R*zn₁) 
+    ... | n₀≡n₁ = n₀ ,, (R*yn₀ , transp ((R ⋆) z) (~ n₀≡n₁) R*zn₁)
 
 module Normalizing-Implications where
     NF⊆SN : ∀ {x} → NF x → SN x
     NF⊆SN {x} x∈NF = acc λ y Rxy → ∅ (x∈NF Rxy)
 
-    WN∧R→SN : ∀ {x} → WN x → MF x → SN x
-    WN∧R→SN (n ,, R*xn , n∈NF) x∈MF =
+    WN∧MF→SN : ∀ {x} → WN x → MF x → SN x
+    WN∧MF→SN (n ,, R*xn , n∈NF) x∈MF =
         acc (λ y Rxy → ∅ (NF↓⊆NF n∈NF (x∈MF n R*xn) Rxy))
 
-    WN∧WNFP∧SM→SN : ∀ {x} → WN x → WNFP x → SM x → SN x
-    WN∧WNFP∧SM→SN {x} x∈WN x∈WNFP (SMrec .x x∈MF) = WN∧R→SN x∈WN x∈MF
-    WN∧WNFP∧SM→SN {x} (n ,, R*xn , n∈NF) x∈WNFP (SMacc .x xAcc) = acc f where
+    WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x
+    WN∧NP∧SM→SN {x} x∈WN x∈NP (SMrec .x x∈MF) = WN∧MF→SN x∈WN x∈MF
+    WN∧NP∧SM→SN {x} (n ,, R*xn , n∈NF) x∈NP (SMacc .x xAcc) = acc f where
         f : ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
-        f y Rxy = WN∧WNFP∧SM→SN
-                    (n ,, x∈WNFP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
-                    (λ {w} {z} H R*yw R*yz → x∈WNFP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
+        f y Rxy = WN∧NP∧SM→SN
+                    (n ,, x∈NP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
+                    (λ {w} {z} H R*yw R*yz → x∈NP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
                     (xAcc y Rxy)
+    
+    isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x 
+    isWN∧SM→SN RisWN {x} (SMrec .x x∈MF) = WN∧MF→SN (RisWN x) x∈MF
+    isWN∧SM→SN RisWN {x} (SMacc .x x∈SMacc) with RisWN x 
+    ... | .x ,, ε⋆ , n∈NF = NF⊆SN n∈NF
+    ... | n ,, (Rxy ,⋆ R*xn) , n∈NF = acc f where 
+        f :  ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
+        f y Rxy = isWN∧SM→SN RisWN  (x∈SMacc y Rxy)
+
+    isWN∧isSM→isSN : R isWN → R isSM → R isSN 
+    isWN∧isSM→isSN RisWN RisSM x =  isWN∧SM→SN RisWN (RisSM x)    
+
+
 
 
 module Desired-Implications where
     -- These are implications we still hope to show
 
-    WNFP→NP : R isWNFP → R isNP
-    WNFP→NP RisWNFP y∈NF ε⋆ = ε⋆
-    WNFP→NP RisWNFP y∈NF (_,⋆_ {y = w} Rsxw R=wy) with WNFP→NP RisWNFP y∈NF R=wy
-    WNFP→NP RisWNFP y∈NF (_,⋆_ {y = w} (axˢ+ Rxw) R=wy) | R*wy = Rxw ,⋆ R*wy
-    WNFP→NP RisWNFP y∈NF (_,⋆_ {y = w} (axˢ- Rwx) R=wy) | R*wy = RisWNFP w y∈NF R*wy (Rwx ,⋆ ε⋆)
+    NP→NP₀ : R isNP → R isNP₀
+    NP→NP₀ RisNP y∈NF ε⋆ = ε⋆
+    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} Rsxw R=wy) with NP→NP₀ RisNP y∈NF R=wy
+    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} (axˢ+ Rxw) R=wy) | R*wy = Rxw ,⋆ R*wy
+    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} (axˢ- Rwx) R=wy) | R*wy = RisNP w y∈NF R*wy (Rwx ,⋆ ε⋆)
 
-    NP→WNFP : R isNP → R isWNFP
-    NP→WNFP RisNP x {y} {z} y∈NF  R*xy R*xz = RisNP y∈NF R=zy
+    NP₀→NP : R isNP₀ → R isNP
+    NP₀→NP RisNP₀ x {y} {z} y∈NF  R*xy R*xz = RisNP₀ y∈NF R=zy
         where
             R=zy : (R ⁼) z y
             R=zy = (~ˢ⋆ (⋆⊆⁼ R R*xz)) ⋆!⋆ (⋆⊆⁼ R R*xy)
 
-    NP↔WNFP : R isNP ↔ R isWNFP
-    NP↔WNFP = NP→WNFP , WNFP→NP
+    NP₀↔NP : R isNP₀ ↔ R isNP
+    NP₀↔NP = NP₀→NP , NP→NP₀
 
     -- Counterexample: (n <- a -> b <-> c <- d -> m)
     -- n,m ∈ NF, R isUN→, n R⁼ m, but n ≢ m.
@@ -137,15 +157,15 @@ module Desired-Implications where
     RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP
     RisSMseq→RisRP RisSM f f-inc a a-bnd = RisSM f refl f-inc
 
-    open import Relations.ARS-Theorems {A}
-    open Theorem-1-2-3 {R}
+    -- open import Relations.ARS-Theorems {A}
+    -- open Theorem-1-2-3 {R}
 
     RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP
     RisSMseq→RisBP RisSM f f-inc with RisSM f refl f-inc
     ... | i ,, i∈rec = (f i) ,, boundProof
         where
         boundProof  : (x : ℕ) → (R ⋆) (f x) (f i)
-        boundProof n with seq-lemma2 f f-inc i n
+        boundProof n with seq-lemma2 R f f-inc i n
         ... | in1 R*fᵢfₙ = i∈rec (f n) R*fᵢfₙ
         ... | in2 R*fₙfᵢ = R*fₙfᵢ
 
@@ -165,18 +185,21 @@ RP-→RP RP- f f-inc a aisf-bound with RP- f f-inc a aisf-bound
             ... | yisf-bound with RP- f f-inc y yisf-bound
             ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
 
+RP-↔RP : R isRP- ↔ (R isRP) 
+RP-↔RP  = RP-→RP , RP→RP- 
 
-WCR∧SNx→WNFPx : R isWCR → SN ⊆ WNFP
-WCR∧SNx→WNFPx RisWCR x x∈SN y∈NF ε⋆ ε⋆ = ε⋆
-WCR∧SNx→WNFPx RisWCR x x∈SN y∈NF ε⋆ (Rxx₀ ,⋆ R*x₀z) = ∅ (y∈NF Rxx₀)
-WCR∧SNx→WNFPx RisWCR x x∈SN y∈NF (Rxy₀ ,⋆ R*y₀y) ε⋆ = Rxy₀ ,⋆ R*y₀y
-WCR∧SNx→WNFPx RisWCR x (acc xacc) y∈NF (Rxy₀ ,⋆ R*y₀y) (Rxz₀ ,⋆ R*z₀z) with RisWCR x Rxy₀ Rxz₀
-... | w ,, R*y₀w , R*z₀w with WCR∧SNx→WNFPx RisWCR  _ (xacc _ Rxy₀) y∈NF R*y₀y R*y₀w
-... | R*wy = WCR∧SNx→WNFPx RisWCR _ (xacc _ Rxz₀) y∈NF (R*z₀w ⋆!⋆ R*wy) R*z₀z
+
+WCR∧SNx→NPx : R isWCR → SN ⊆ NP
+WCR∧SNx→NPx RisWCR x x∈SN y∈NF ε⋆ ε⋆ = ε⋆
+WCR∧SNx→NPx RisWCR x x∈SN y∈NF ε⋆ (Rxx₀ ,⋆ R*x₀z) = ∅ (y∈NF Rxx₀)
+WCR∧SNx→NPx RisWCR x x∈SN y∈NF (Rxy₀ ,⋆ R*y₀y) ε⋆ = Rxy₀ ,⋆ R*y₀y
+WCR∧SNx→NPx RisWCR x (acc xacc) y∈NF (Rxy₀ ,⋆ R*y₀y) (Rxz₀ ,⋆ R*z₀z) with RisWCR x Rxy₀ Rxz₀
+... | w ,, R*y₀w , R*z₀w with WCR∧SNx→NPx RisWCR  _ (xacc _ Rxy₀) y∈NF R*y₀y R*y₀w
+... | R*wy = WCR∧SNx→NPx RisWCR _ (xacc _ Rxz₀) y∈NF (R*z₀w ⋆!⋆ R*wy) R*z₀z
 
 
 WCR∧SNx→UNx : R isWCR → ∀ (x : A) → SN x → UN x
-WCR∧SNx→UNx RisWCR x x∈SN y∈NF z∈NF R*xy R*xz with WCR∧SNx→WNFPx RisWCR x x∈SN y∈NF R*xy R*xz
+WCR∧SNx→UNx RisWCR x x∈SN y∈NF z∈NF R*xy R*xz with WCR∧SNx→NPx RisWCR x x∈SN y∈NF R*xy R*xz
 ... | R*zy = ~ (NF→ε z∈NF R*zy)
 
 open import Relations.Decidable
@@ -185,15 +208,17 @@ WN→isMinDec- : ∀ (x : A) → x ∈ WN  → x ∈ MinDec- (~R R)
 WN→isMinDec- x (.x ,, ε⋆ , n∈NF) x∉NF = ∅ (x∉NF (λ y → n∈NF))
 WN→isMinDec- x (n ,, (_,⋆_ {y = y} Rxy R*yn) , n∈NF) x∉NF = y ,, Rxy
 
-decMin∧SNx∧UNx→WNFP  : (~R R) isMinDec  → ∀ x → SN x → UN x → WNFP x     -- Formerly UN-lemma
-decMin∧SNx∧UNx→WNFP decNF x x∈SN x∈UN y∈NF R*xy  ε⋆ = R*xy
-decMin∧SNx∧UNx→WNFP decNF x (acc xacc) x∈UN y∈NF R*xy (Rxz₀ ,⋆ R*z₀z)
+decMin∧SNx∧UNx→NP  : (~R R) isMinDec  → ∀ x → SN x → UN x → NP x     -- Formerly UN-lemma
+decMin∧SNx∧UNx→NP decNF x x∈SN x∈UN y∈NF R*xy  ε⋆ = R*xy
+decMin∧SNx∧UNx→NP decNF x (acc xacc) x∈UN y∈NF R*xy (Rxz₀ ,⋆ R*z₀z)
     with SNdec→WN decNF _ (xacc _ Rxz₀)
 ... | z' ,, R*z₀z' , z'∈NF with x∈UN y∈NF z'∈NF R*xy (Rxz₀ ,⋆ R*z₀z')
-... | refl = decMin∧SNx∧UNx→WNFP decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y∈NF R*z₀z' R*z₀z
+... | refl = decMin∧SNx∧UNx→NP decNF _ (xacc _ Rxz₀) (λ {a} {b} → z₀∈UN {a} {b}) y∈NF R*z₀z' R*z₀z
     where z₀∈UN =  λ {a} {b} a∈NF b∈NF R*z₀a R*z₀b → x∈UN (λ Rav → a∈NF Rav)  (λ Rbw → b∈NF Rbw) (Rxz₀ ,⋆ R*z₀a) (Rxz₀ ,⋆ R*z₀b)
 
 SN∧UN→CRelem : (~R R) isMinDec → ∀ x → SN x → UN x → CR x
 SN∧UN→CRelem decNF x x∈SN x∈UN R*xb R*xc with SNdec→WN decNF x x∈SN
-... | (z ,, R*xz , z∈NF) = (z ,, decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN  z∈NF R*xz  R*xb
-                                , decMin∧SNx∧UNx→WNFP  decNF x x∈SN x∈UN z∈NF R*xz R*xc )
+... | (z ,, R*xz , z∈NF) = (z ,, decMin∧SNx∧UNx→NP  decNF x x∈SN x∈UN  z∈NF R*xz  R*xb
+                                , decMin∧SNx∧UNx→NP  decNF x x∈SN x∈UN z∈NF R*xz R*xc )
+
+
