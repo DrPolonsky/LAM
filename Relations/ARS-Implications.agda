@@ -157,8 +157,6 @@ module Desired-Implications where
     RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP
     RisSMseq→RisRP RisSM f f-inc a a-bnd = RisSM f refl f-inc
 
-    -- open import Relations.ARS-Theorems {A}
-    -- open Theorem-1-2-3 {R}
 
     RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP
     RisSMseq→RisBP RisSM f f-inc with RisSM f refl f-inc

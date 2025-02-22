@@ -1,14 +1,7 @@
 \section{Definitions}
 \label{sec:Definitions}
-\sacomment{Need to update move from WNFP to NP, WMFP to MP, NP to NP\_0}
-\sacomment{Need to update to refer to macros for properties}
 The following definitions are provided to ensure clarity and precision
-in our discussion.
- When useful, we also include the name and type of
-definition as we have implemented it in Agda, allowing the report to guide the code
-and vice versa.
-
-
+in our discussion. Each subsection specifies the Agda file(s) which contain formalizations of the given definitions.
 
 \begin{definition}
     An abstract rewrite system (\emph{ARS}) is a structure $\mathcal{A} = (A, R_\alpha)$ where
@@ -22,7 +15,7 @@ and a binary type family $R : A \to A \to \bset$.)
 \greyout{We denote by $\tilde R$ the relational converse of $R$ ($(x,y) \in \tilde R \iff (y,x) \in R$),
 and by $R;R'$ the relational composition of $R$ and $R'$.}
 
-
+\subsection{Closure operators (\texttt{ClosureOperators.agda})}
 \begin{notation}
   The following notions are standard.  For precise definitions,
   see \texttt{ClosureOperators.agda}.
@@ -44,13 +37,13 @@ $a \bstep b$ for $(b,a) \in R$.  When the relation $R$ is clear from the context
 we may drop the corresponding subscript.
 
 We next define rewriting-theoretic concepts like confluence and normalization relative to a fixed element of $A$; global versions of these properties are obtained by universal quantification.
-For equivalent definitions, see \texttt{ARS-Properties.agda}.
-
+\subsection{Normalization (\texttt{ARS-Properties.agda})}
 \begin{definition} The following definitions relate to normalization. Let $A$ and $R$ be as above, and let $a \in A$.
   \begin{description}
     \item[$a \in \NF_R$] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$ 
     \item[$a \in \WN_R$] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
-    \item[$a \in \SN_R$]  \emph{$a$ is $R$-accessible}, see Definition \ref{d:WFacc}.
+    \item[$a \in \SN_R$]  \emph{$a$ is strongly normalizing} if every reduction sequence starting from $a$ is well-founded\footnote{See Section \ref{sec:Well-foundedness} for definitions of being well-founded. Note that we are 
+    making use of the alternative definition of $\SN$ provided in \terese.}. \sacomment{Check this defn}
   \end{description}
 \end{definition} 
 
@@ -59,7 +52,7 @@ For equivalent definitions, see \texttt{ARS-Properties.agda}.
     \begin{description}
         \item[$a \in \MF_R$] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[$a \in \WM_R$] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
-        \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$ or every element one $R$ step from $a$ is also strongly minimalizing.
+        \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is also strongly minimalizing.
     \end{description}
 \end{definition}
 We found that there was a strong interrelationship between the normalizing properties and the minimal properties. This relationship is 
@@ -96,7 +89,7 @@ A trivial implication not captured in the above figure is covered in Proposition
 \begin{proof}
     See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
 \end{proof}
-
+\subsection{Confluence (\texttt{ARS-Properties.agda})}
 \begin{definition} The following definitions relate to confluence. Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description}
         \item[$a \in \WCR_R$] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
@@ -136,155 +129,58 @@ Again, we found that there was a strong interrelationship between the properties
     
 \end{figure}
 
-\sacomment{Make sure somewhere it is mentioned that NP equals $NP_=$ and that UN does not equal UNto.}
-
-
-\sacomment{Work for Saturday: Get the final definitions written up: namely the RP definitions and maybe make a figure to show those interrelationships}.
-%     \begin{definition}
-    
-%   An element $a \in A$ is \emph{R-weakly confluent} ($WCR_R$) if all single step relations from $a$ can always converge
-%     via multi-step relations to some common reduct.
-
-%     A relation $R$ is \emph{weakly confluent} (AKA weakly Church-Rosser (WCR)) if every $a \in A$ is R-weakly confluent.
-% \end{definition}
-
-% \begin{definition}
-%     An element $a \in A$ is \emph{R-confluent} ($CR_R$) if all multi-step relations from $a$ can always converge
-%     via multi-step relations to some common reduct.
-%     A relation $R$ is \emph{confluent} (AKA Church-Rosser (CR)) if every $a \in A$ is R-confluent.
-% \end{definition}
-
-\begin{definition}
-  \label{d:WFacc}
-  An element is \emph{accessible} if ...
+\begin{proposition}
+    $\NPe \leftrightarrow \NP$ 
+\end{proposition}
+\begin{proof}
+    See, \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{ARS-Implications.agda}.
+\end{proof}
+\begin{proposition}
+    $\UN \implies \UNto $
+\end{proposition}
+\begin{proof}
+    See, \verb|UN→UN→ : R isUN → R isUN→| in \texttt{ARS-Implications.agda}
+\end{proof}
+The implication $\UNto \implies \UN$ does not hold, as can be seen in CE-\ref{CE:un} in Subsection \ref{subsec:counterexamples}.
+\subsection{Sequences and Recurrence (\texttt{ARS-Properties.agda}, \texttt{Seq.agda})}
+\begin{definition} The following definitions relate to the minimal definitions and are key to formalizing Theorem 1.2.3 in \terese. Let $A$ and $R$ be as above, and let $a \in A$.
+    \begin{description}
+        \item[$s : \nat \to A$] \emph{A sequence $s \in A$} is a function from the natural numbers to $A$.  
+        \item[$s \in R-increasing$] \emph{A sequence $s \in A$ is $R$-increasing} if every term is $R$-related to its preceding term.
+        \item[$a \in \BP$] \emph{$a$ is a bound} if there exists a sequence $s$ such that $s (i) \mstep a$ for any $i \in \nat$. 
+        \item[$R\, is\, \RP$] \emph{$R$ has the recurrence property} if every bounded, increasing sequence has an element $a \in MF$.
+        \item[$R\, is\, \RPm$] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an element $i$ of the sequence such that $a \mstep s (i)$.
+        \item[$R\, is\, Inc$] \emph{$R$ is increasing} if there exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $a, b \in A$,
+        \[ Rab \to |a| < |b| \]       
+    \end{description}
 \end{definition}
+Proposition \ref{prop:SMRP} connects $\SM$ with $\RP$ and $\BP$.
+\begin{proposition}\label{prop:SMRP}
+    $SM \leftrightarrow RP \land BP$
+\end{proposition}
+\begin{proof}
+    See,\\ \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|
+    \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
+\end{proof}
 
-% \begin{definition}
-%     An element $a \in A$ is \emph{$R$-weakly normalizing} ($WN_{R}$)if $a \mstep b$ for some normal form $b \in A$.
+\begin{proposition}
+    If $R$ is increasing, then no infinite $R$-increasing sequence is bounded.
+\end{proposition}
+\begin{proof}
+    Let $(a_i) = a_0 \to a_1 \to a_2 \to \cdots$ be an $R$-increasing sequence
+    and suppose that $(a_i)$ is bounded.  Let $b$ be the bound, so that $a_i \to b$ for all $i$.
 
-%     A relation $R$ is weakly normalizing (WN) if every $a \in A$ is $R$- weakly normalizing.
-% \end{definition}
+    If $m = |b|$ then we have
+    \[ 0 \le |a_0| < |a_1| < |a_2| < \cdots < |a_m| < |b| = m \]
+    % \[ m > |a_m| > |a_{m-1}| > \cdots > |a_0| \ge 0 \]
+    which is a contradiction, since there are only $m-1$ integers strictly less than $m$.
+\end{proof}
+It follows that every relation that is increasing in the sense of \terese
+vacuously satisfies the RP condition.
 
-% \begin{definition}
-%     An element $a \in A$ is \emph{$R$-strongly normalizing} ($SN_R$) if every sequence of relations starting from $a$ is finite.
+\begin{corollary}
+    If $R$ is increasing, then $R$ has the recurrence property.
+\end{corollary}
+We discuss in Section \ref{sec:Formalization} the motivation for finding an alternative for the increasing property found in \terese. 
 
-%     A relation $R$ is strongly normalizing (SN) if every
-%     $a \in A$ is $R$-strongly normalizing.
-% \end{definition}
-
-The above definition of SN is taken from [TeReSe].
-When working in Agda, we make use of the alternative definition presented in [TeReSe] ($\leftarrow$ is accessibly well-founded).
-The \ref{sec:Well-foundedness} section clarifies this definition.
-
-% \begin{definition}
-%     An element $a \in A$ has the \emph{$R$-weak normal form property} ($WNFP_{R}$) if $a \mstep b$ and
-%     $a \mstep c \implies c \mstep b$, for all $c \in A$ and all normal form $b \in A$.
-
-%     A relation $R$ has the \emph{weak normal form property} (WNFP) if every $a \in A$ has the $R$-weak normal form property.
-% \end{definition}
-
-% \begin{definition}
-%     The \emph{equivalence relation} of $R$ is the smallest relation $\estep$ that contains $R$ and is reflexive, transitive, and symmetric.
-% \end{definition}
-
-% \begin{definition}
-% An element $a \in A$ has the \emph{$R$-normal form property} ($NFP_{R}$) if
-% $a \estep b$  $\implies$
-% $a \mstep b$, for any normal form $b \in A$.
-
-% A relation $R$ has the \emph{normal form property} (NFP) if every $a \in A$ has the $R$-normal form property.
-% \end{definition}
-
-% In ARS-Implications.agda we show the equivalence of WNFP and NFP when applied globally in the function $\mathtt{NP \leftrightarrow WNFP}$.
-
-% In the next definition we deonte two elements $a, b \in A$ being equivalent with $a \equiv b$.
-% \begin{definition}
-% An element $a \in A$ has the \emph{{R}-unique normal form property} ($UN_{R}$) if
-% $a \estep b$  $\implies$
-% $a \equiv b$, for any normal form $b \in A$.
-
-% A relation $R$ has the \emph{unique normal form property} ($UN$) if every $a \in A$ has the $R$-unique normal form property.
-% \end{definition}
-
-
-% \begin{definition}
-% An element $a \in A$ has the \emph{${R}$-unique normal form property with respect to reduction} ($UN^ \to _{R}$) if
-% $b \bmstep  \cdot  \mstep c$  $\implies$ $b \equiv c$, for all normal forms $b,c \in A$.
-
-% A relation $R$ has the \emph{unique normal form property with respect to reduction} ($UN^\to$) if every $a \in A$ has the
-% $R$-unique normal form property with respect to reduction.
-% \end{definition}
-% In ARS-Implications.agda we show that $UN$ implies $UN\to$ but the inverse implication doesn't hold, as seen
-% in counterexample (\sacomment{TODO: put counterexample here when section is complete}).
-
-\begin{definition}
-    A \emph{sequence (in $A$)} is a function from the natural numbers to $A$:
-    \begin{align*}
-      &s : \nat \to A \\
-      &s = (s_0,s_1,s_2,\dots)
-    \end{align*}
-\end{definition}
-
-\begin{definition}
-    A sequence is \emph{$R$-increasing} if every term is $R$-related to its preceding term.
-\end{definition}
-
-\begin{definition}
-    A sequence is \emph{bounded} if there exists an element $a \in A$ to which all elements of the sequence reduce.
-\end{definition}
-
-
-% \begin{definition}
-%     An element $a \in A$ has the \emph{minimal form property} ($MF$) if $a \mstep b \implies b \mstep a$ for all $b \in A$.
-% \end{definition}
-
-% Note that being a normal form is a trivial case of the minimal form property (as we prove in ARS-implications.agda
-% function $\mathtt{NF\subseteq MF : \forall {x} \to NF x \to MF x}$).
-
-\begin{definition}\label{d:RP}
-    A relation $R$ has the \emph{recurrence property} (RP) if every bounded, increasing sequence 
-    has an element $a \in MF$.
-\end{definition}
-
-
-\begin{definition}\label{d:RP-}
-    A relation $R$ has the \emph{weak recurrence property} (RP-) if for every increasing 
-    sequence with bound $a$, there is an element $i$ of the sequence such that 
-    $a \mstep f(i)$.
-\end{definition}
-
-
-% \begin{definition}
-%     An element $a \in A$ is \emph{$R$-weakly minimal} ($WM_{R}$)if $a \mstep b$ for some minimal form $b \in A$.
-
-%     A relation $R$ is weakly minimal (WM) if every $a \in A$ is $R$-weakly minimal.
-% \end{definition}
-
-% \begin{definition}
-%     An element $a \in A$ is \emph{$R$-strongly minimal} ($SM_R$) if either $a$ itself is a minimal form or every element one $R$ step
-%     from $a$ is also strongly minimal.
-
-%     A relation $R$ is strongly minimal (SM) if every
-%     $a \in A$ is $R$-strongly minimal.
-% \end{definition}
-
-% \begin{definition}
-%    An element $a \in A$ has the \emph{${R}$-weak minimal form property} ($WMFP_R$) if
-%    $a \mstep b$ and $a \mstep c$  $\implies$
-%    $c \mstep b$, for all $c \in A$ and all $b \in A$ with the minimal form property.
-
-%    A relation $R$ has the \emph{weak minimal form property} (WMFP) if every $a \in A$ has the $R$-weak minimal form property.
-% \end{definition}
-\begin{definition}
-    \label{d:inc}
-    A relation $R \sse A \times A$ is called \emph{increasing} if there
-    exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $x, y \in A$,
-    \[ Rxy \to |x| < |y| \]
-\end{definition}
-
-Definitions to add:
-\begin{enumerate}
-    \item Finite branching
-    \item Any other terms from well foundedness
-    \item The other terms we have for strongly
-\end{enumerate}
+\sacomment{Anything else to define such as finitely branching?}
