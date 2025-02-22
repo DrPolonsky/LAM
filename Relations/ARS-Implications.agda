@@ -119,20 +119,20 @@ module Normalizing-Implications where
 module Desired-Implications where
     -- These are implications we still hope to show
 
-    NP→NP₀ : R isNP → R isNP₀
-    NP→NP₀ RisNP y∈NF ε⋆ = ε⋆
-    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} Rsxw R=wy) with NP→NP₀ RisNP y∈NF R=wy
-    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} (axˢ+ Rxw) R=wy) | R*wy = Rxw ,⋆ R*wy
-    NP→NP₀ RisNP y∈NF (_,⋆_ {y = w} (axˢ- Rwx) R=wy) | R*wy = RisNP w y∈NF R*wy (Rwx ,⋆ ε⋆)
+    NP→NP₌ : R isNP → R isNP₌
+    NP→NP₌ RisNP y∈NF ε⋆ = ε⋆
+    NP→NP₌ RisNP y∈NF (_,⋆_ {y = w} Rsxw R=wy) with NP→NP₌ RisNP y∈NF R=wy
+    NP→NP₌ RisNP y∈NF (_,⋆_ {y = w} (axˢ+ Rxw) R=wy) | R*wy = Rxw ,⋆ R*wy
+    NP→NP₌ RisNP y∈NF (_,⋆_ {y = w} (axˢ- Rwx) R=wy) | R*wy = RisNP w y∈NF R*wy (Rwx ,⋆ ε⋆)
 
-    NP₀→NP : R isNP₀ → R isNP
-    NP₀→NP RisNP₀ x {y} {z} y∈NF  R*xy R*xz = RisNP₀ y∈NF R=zy
+    NP₌→NP : R isNP₌ → R isNP
+    NP₌→NP RisNP₌ x {y} {z} y∈NF  R*xy R*xz = RisNP₌ y∈NF R=zy
         where
             R=zy : (R ⁼) z y
             R=zy = (~ˢ⋆ (⋆⊆⁼ R R*xz)) ⋆!⋆ (⋆⊆⁼ R R*xy)
 
-    NP₀↔NP : R isNP₀ ↔ R isNP
-    NP₀↔NP = NP₀→NP , NP→NP₀
+    NP₌↔NP : R isNP₌ ↔ R isNP
+    NP₌↔NP = NP₌→NP , NP→NP₌
 
     -- Counterexample: (n <- a -> b <-> c <- d -> m)
     -- n,m ∈ NF, R isUN→, n R⁼ m, but n ≢ m.

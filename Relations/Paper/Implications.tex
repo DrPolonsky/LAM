@@ -1,6 +1,11 @@
 \section{Implications}
 \label{sec:Implications}
 
+\newenvironment{counterexample}[1][]{%
+    \refstepcounter{CEcounter} % Increment the counter
+    \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
+}
+
 From the perspective of programming language theory, the two properties of abstract rewriting 
 systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 show chains of implications starting from these properties.
@@ -53,13 +58,14 @@ $y$ and because we know that we have the property of $\SN$ we must eventually re
 Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
 
 The following tables show which combination of these properties implies a property higher in the hierarchy. Where a combination 
-does not imply a higher property an explanatory counterexample is given. The counterexamples referenced are in section \ref{sec:Counterexamples}.
+does not imply a higher property an explanatory counterexample is given. The counterexamples referenced are shown below the tables in subsection \ref{subsec:counterexamples}. 
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. The proofs that the 
 following implications hold are primarily found in \texttt{ARS-implications.agda} unless they have been proven as part of the formalization 
 of \terese, in which case they will be found in either \texttt{ARS-thoerems.agda} or \texttt{ARS-NewmansLemma.agda}.
 
-
+\sacomment{When the table and CE are finished, write an explanation that the CE to the local table 
+assume local WCr and the global table CEs assume global WCR!}
 \sacomment{UPDATE COUNTEREXAMPLES WHEN CE SECTION FINISHED}
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{table}[h!]
@@ -69,13 +75,13 @@ of \terese, in which case they will be found in either \texttt{ARS-thoerems.agda
     \hline
     \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
     \hline
-    $\UNto$ &  CE-, CE-     & CE, CE-       & $\CR$\footnotemark[1] , CE-          & $\CR$\footnotemark[1], CE            & $\CR$\footnotemark[2] , $\SN$ \\
+    $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & CE-\ref{CE:4} , CE-\ref{CE:9}          & CE-\ref{CE:4}, CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
     \hline
-    $\NP$ & CE-, CE-      & $\CR$, CE-    & $\CR$\footnotemark[1] , CE-          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & CE-\ref{CE:11} , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
-    $\MP$ & $\CR$ , CE-    & $\CR$, CE-    & $\CR$\footnotemark[2] , CE- & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
-    $\CR$   & $\CR$, CE-     & $\CR$, CE-     & $\CR$, CE-        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
+    $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
     \hline
     
     \end{tabular}
@@ -87,13 +93,13 @@ of \terese, in which case they will be found in either \texttt{ARS-thoerems.agda
     \hline
     \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
     \hline
-    $\UNto$ &  CE-, CE-     & $\CR$, CE-    & $\CR$\footnotemark[1] , CE-          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\UNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
-    $\NP$ & CE-, CE-      & $\CR$, CE-    & $\CR$\footnotemark[1] , CE-          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\NP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
-    $\MP$ & $\CR$ , CE    & $\CR$, CE-    & $\CR$\footnotemark[2] , CE- & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
-    $\CR$   & $\CR$, CE     & $\CR$, CE     & $\CR$, CE-        & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
+    $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
     \hline
     
     \end{tabular}
@@ -103,14 +109,158 @@ of \terese, in which case they will be found in either \texttt{ARS-thoerems.agda
 $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
+\subsection{Counterexamples}\label{subsec:counterexamples}
+% Setting up the ce counter 
+\newcounter{CEcounter}
+\renewcommand{\theCEcounter}{\arabic{CEcounter}}
+
+    \begin{center}
+        \begin{tabular}{ccc}  % Three columns per row
+            % First Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:1}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Second Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:2}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d \arrow[loop right]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Third Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:3}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a \arrow[loop left] & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d \arrow[loop right]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            \\  % New row
+            \\
+            
+            % Fourth Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:4}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        & a \arrow[d] \arrow[dl] \\ e & b \arrow[l] \arrow[r] & c \arrow[r, bend left] & d \arrow[l, bend left]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Fifth Counterexample
+            % \begin{minipage}{0.3\textwidth}
+            %     \centering
+            %     \begin{counterexample}\label{CE:5}
+            %         \begin{tikzcd}[row sep=small, column sep=small]
+            %             d & a \arrow[l, two heads] \arrow[r, two heads] & b \arrow[r, bend left] & c \arrow[l, bend left]
+            %         \end{tikzcd} \\
+            %     \end{counterexample}
+            % \end{minipage}
+            
+            % Sixth Counterexample - This one shows why UN -> doesn't imply UN
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:un}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        n & c \arrow[l] \arrow[r] & a \arrow[r, bend left] & b \arrow[l, bend left]
+                        & d \arrow[l] \arrow[r] & m
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+        % \\ % New row
+        % \\
+        &
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:7}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                f_0 \arrow[r] \arrow[dr] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[dl] \arrow[r] & \dots \arrow[dll] \\
+                & n 
+            \end{tikzcd} \\
+            \end{counterexample}
+        \end{minipage}
+        \\ % new row
+        \\
+        
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:8}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                f_0 \arrow[r] \arrow[d] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[r] \arrow[d] & \dots \arrow[d] \\
+                n_0  & n_1  & n_2 & \dots 
+            \end{tikzcd} \\
+            \end{counterexample}
+        \end{minipage}
+        
+        &
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:9}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                a \arrow[r, bend left] & b \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    % \\ % New row
+    % \\
+    &
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{counterexample}\label{CE:10}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &  
+                b \arrow[r, bend left] & c \arrow[l, bend left] \\  
+                f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots  
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    % New row
+    \\
+    \\
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{counterexample}\label{CE:11}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r] 
+                & d \arrow[r, bend left] & e \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    &
+    &
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{counterexample}\label{CE:12}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                c & a \arrow[r, bend left] \arrow[l] & b \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    
+    
+\end{tabular}
+\end{center}
 
 \sacomment{Need to update the tables with appropriate symbols for global and local. Colour for first row and column?}
 
-The tables show that there are two changes when moving from properties holding locally to globally. 
+\sacomment{Rewrite the below to reflect changes to the table.}
+The tables show a number of changes when moving from properties holding locally to globally. 
 Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 
 globally but not locally. 
 
 Theorem 1.2.2 ii in \terese is the claim that $\WN \land \UN \implies \CR$ holds, and we formalize this in
+
 
 \verb|ii : R isWN × R isUN → R isCR| \footnotemark[3]
 

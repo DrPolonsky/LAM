@@ -57,27 +57,27 @@ We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weak
 did not rely on the notion of $\MF$. We were able to proove that this weaker definition is 
 in fact an equivalent definition in the following proof in Agda: 
 
-\verb|RP-↔RP : R is RP- ↔ R is RP| \footnote{ARS-implications.agda}
-
+\verb|RP-↔RP : R is RP- ↔ R is RP| \footnotemark[1]
+\footnotetext[1]{\texttt{ARS-implications.agda}}
 Three proofs are given in \terese of Newman's Lemma (Theorem 1.2.1). The first and third of 
 these proofs we found to rely on classical principles. The second proof was amenablbe to a 
 constructive formalization which we carried out in the function 
 
 
-\verb|NewmansLemma : R isSN → R isWCR → R isCR| \footnote{ARS-NewmansLemma.agda}
-
+\verb|NewmansLemma : R isSN → R isWCR → R isCR| \footnotemark[2]
+\footnotetext[2]{\texttt{ARS-NewmansLemma.agda}}
 We show in section \ref{sec:Implications} that $\SN$ implies $\SM$, and it is from this implication 
 that we produce a new generalization of Newman's lemma. Every relation with the properties 
 $\SM$ and $\WCR$ has the property of $\CR$. This holds true both locally and globally as we show in:
 
-\verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR| \footnote{ARS-NewmansLemma.agda}
+\verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR| \footnotemark[2]
 
-and \verb|GlobalNewmansLemmaRecurrent : R isWCR → R isSM → R isCR| \footnote{ARS-NewmansLemma.agda}
+and \verb|GlobalNewmansLemmaRecurrent : R isWCR → R isSM → R isCR| \footnotemark[2]
 
 The formalization of the proof that $\WCR \land \WN \land \Inc \implies \SN$ proved particularly difficult. 
 As already mentioned, we substituted out the property $\Inc$ for the property $\RP$ however 
 we found that we still require a classical principle in order for the proof to hold (as can be seen in the type of our proof):
-\verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN| \footnote{ARS-Theorems.agda}
+\verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN| \footnotemark[3] \footnotetext[3]{\texttt{ARS-Theorems.agda}}
 The classical property $\decSN$ is a property that states it is decidable whether a given 
 element has the property of being $\SN$. \sacomment{Should say more on this proof.}
 

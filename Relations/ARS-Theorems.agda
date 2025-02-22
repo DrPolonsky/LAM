@@ -17,13 +17,13 @@ open WeakerWF
 {-This file contains formalization of the theorems of TeReSe Chapter 1-}
 
 module Theorem-1-2-2 where
-    CR→NP : R isCR → R isNP₀
+    CR→NP : R isCR → R isNP₌
     CR→NP RisCR {x} {y} y∈NF R⁼xy with Proposition-1-1-10.i→vi (CR→confluent RisCR )  x y R⁼xy
     ... | z ,, R*xz , ε⋆ = R*xz
     ... | z ,, R*xz , (Ryy₀ ,⋆ R*y₀z) = ∅ (y∈NF Ryy₀)
 
-    NP→UN : R isNP₀ → R isUN
-    NP→UN RisNP₀ x∈NF y∈NF R⁼xy = NF→ε x∈NF (RisNP₀ y∈NF R⁼xy)
+    NP→UN : R isNP₌ → R isUN
+    NP→UN RisNP₌ x∈NF y∈NF R⁼xy = NF→ε x∈NF (RisNP₌ y∈NF R⁼xy)
 
     CP→UN : R isCR → R isUN
     CP→UN RisCR = NP→UN (CR→NP RisCR)
