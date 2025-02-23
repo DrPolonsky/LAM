@@ -14,3 +14,5 @@ latex/Relations/ARS.tex
 *.ps
 *.toc
 *.vtc
+*.ptb
+Relations/MeetingNotes.tex

@@ -94,7 +94,7 @@ $y$ and because we know that we have the property of $\SN$ we must eventually re
 
 Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
 
-We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\CR$ and $\SN$). 
+We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\gCR$ and $\gSN$). 
 The following tables show either that a given combination is complete, or the appropriate counterexample which demonstrates why 
 those properties do not provide a property higher on the taxonomical hierarchy. 
 
@@ -109,9 +109,9 @@ first table assume $\WCR$ and in the second table assume $\gWCR$.
     \hline
     \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
     \hline
-    $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & CE-\ref{CE:4} , CE-\ref{CE:9}          & CE-\ref{CE:4}, CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
+    $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$\footnotemark[1] , CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
     \hline
-    $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & CE-\ref{CE:11} , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1]  , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
     $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
     \hline
@@ -125,21 +125,21 @@ first table assume $\WCR$ and in the second table assume $\gWCR$.
     \caption{Global implications}
     \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
     \hline
-    \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+    \rowcolor{gray!30}     & $\gWM$         & $\gWN$         & $\gSM$             & $\gSMandWN$        & $\gSN$ \\
     \hline
-    $\UNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\gUNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
     \hline
-    $\NP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\gNP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
     \hline
-    $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+    $\gMP$ & $\gCR$ , CE-\ref{CE:9}    & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[2] , CE-\ref{CE:9} & $\gCR$, $\gSN$    & $\gCR$\footnotemark[2] , $\gSN$ \\
     \hline
-    $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$      & $\CR$ , $\SN$ \\
+    $\gCR$   & $\gCR$, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}     & $\gCR$, CE-\ref{CE:9}        & $\gCR$, $\gSN$      & $\gCR$ , $\gSN$ \\
     \hline
     
     \end{tabular}
 \end{table}
-\footnotetext[1]{This implication also requires global $\WCR$.}
-\footnotetext[2]{This implication also requires either global $\WCR$ or the classical property required to go from 
+\footnotetext[1]{This implication also requires $\gWCR$.}
+\footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from 
 $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
@@ -286,40 +286,34 @@ $\SN \to \WN$ or $\SM \to \WM$.}
 \end{tabular}
 \end{center}
 
-\sacomment{Need to update the tables with appropriate symbols for global and local. Colour for first row and column?}
+\subsubsection{Generalized Newman's Lemma}\label{subsec:newnewman}
+One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma. 
 
-\sacomment{Rewrite the below to reflect changes to the table.}
-The tables show a number of changes when moving from properties holding locally to globally. 
-Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 
-globally but not locally. 
+\begin{proposition}
+    $\gWCR \land \SM \implies \CR$
+\end{proposition}
+\begin{proof}
+    See, \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|
+\end{proof}
 
-Theorem 1.2.2 ii in \terese is the claim that $\WN \land \UN \implies \CR$ holds, and we formalize this in
+This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but 
+uses the generalization $\SM$ of $\SN$. 
 
-
-\verb|ii : R isWN × R isUN → R isCR| \footnotemark[3]
-
-We have modestly generalized this theorem by showing that $\WN \land \UNto \implies \CR$ holds (and indeed this is the basis for our proof of the theorem). 
-Counterexample \sacomment{REF HERE} shows why this implication cannot hold when the properties are only local. Our proof is in the function:
-
-\verb|UN→∧WN→CR : R isUN→ → R isWN → R isCR| \footnotemark[1]
-
-To show that $\SM \land \WN \implies \SN$ we built on our proof that locally $\SM \land \WN \land \NP \implies \SN$. If $\WN$ applies 
-globally then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
+% The tables show a number of changes when moving from properties holding locally to globally. 
+% Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 
+% globally but not locally. 
+\subsection{Relation between $\SM$, $\WN$, and $\SN$}
+One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\WN$. We also 
+obtain completeness when we have $\gWN$ and $\gSM$. 
+To show that $\gSM \land \gWN \implies \gSN$ we built on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds 
+then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
 
 \verb|WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x| 
 
 \verb|isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x|
 
-\verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN| \footnotemark[1]
+\verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN| 
 
 
-that $\SN$ implies $\SM$, and it is from this implication 
-that we produce a new generalization of Newman's lemma. Every relation with the properties 
-$\SM$ and $\WCR$ has the property of $\CR$. This holds true both locally and globally as we show in:
-
-\verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR| \footnotemark[2]
-
-and \verb|GlobalNewmansLemmaRecurrent : R isWCR → R isSM → R isCR| \footnotemark[2]
-
-
+\sacomment{Are there any other features of the table that we would like to draw out?}
 \sacomment{We should remember that If global WCR and local SM implies local CR, then if we also have local WN, we get local SN.}
