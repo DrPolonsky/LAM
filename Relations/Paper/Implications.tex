@@ -85,16 +85,12 @@ explore the following broader taxonomy of concepts relating to termination and c
       \end{tikzpicture}
 \end{center}
 
-The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. The classical property of being minimally decidable is 
-required to complete the implication from $\SN$ to $\WN$, as can be seen in our formalization \sacomment{Rewrite this section}
+The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. 
+The implication from $\SN$ to $\WN$ relies on the classical decidability of the property 
+of being $R$-minimal, as demonstrated in our formalization:
 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
  
-The isMinDec property \sacomment{refer to list of classical properties here} states that all elements either have a relation to some other element, or 
-there is no other element to which they have a relation. \greyout{If the element relates to no other element then it is terminating 
-and so trivially $\WN$. If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
-$y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element.} 
-
 The same property is similarly required in order to show that $\SM$ implies $\WM$.
 
 We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\gCR$ and $\gSN$). 

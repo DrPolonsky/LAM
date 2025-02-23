@@ -11,7 +11,8 @@
 %
 
 
-We present a formalization of the basic Abstract Rewriting Systems (ARS) theory in the Agda proof assistant.
+We present a formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in Term Rewriting Systems [TeReSe]
+ \cite{Terese}, using the Agda proof assistant.
 This work is part of a larger effort to develop a library of formalized programming language theory (PL)
 at Appalachian State University.
 Since Term Rewriting Systems (TRS) play a foundational role in programming languages,
@@ -110,8 +111,8 @@ have as few of them as possible.
 Since Strong Normalization is a central concept in ARS theory,
 special attention in our work was given to various incaranations of the concept of well-foundedness in the constructive context.
 (Strong normalization is well-foundedness of the converse relation.)
-The standard constructive definition does not even allow one to show that SN implies WN, see Example \ref{ex:undec} \apcomment{Refer to DecidableCounterexamples.agda?}.
-  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent.  This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
+The standard constructive definition does not even allow one to show that SN implies WN, as we discuss in Section \ref{sec:Well-foundedness} and formalize in \texttt{WFCounters.agda}.
+  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent. %This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
 
 We have also identified classes of ARSs where the needed classical principles are simply valid.  In particular, for finitely branching relations, the implication SN to WN requires nothing else beyond plain decidability of the relation itself: $Rxy \lor \lnot Rxy$.  For example, an ARS induced by a first-order TRS with a finite set of rules is both finitely branching and decidable.
 
