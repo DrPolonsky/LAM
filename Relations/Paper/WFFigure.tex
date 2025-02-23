@@ -3,9 +3,9 @@
     \begin{tikzpicture}[node distance=2cm, auto]
       % Standard definitions
       \node (std1) [draw] {isWFacc};
-      \node (std2) [right of=std1, draw] {isWFind};
-      \node (std3) [right of=std2, draw] {isWFseq};
-      \node (std4) [right of=std3, draw] {isWFmin};
+      \node (std2) [right of=std1, draw, xshift=1cm] {isWFind};
+      \node (std3) [right of=std2, draw, xshift=1cm] {isWFseq};
+      \node (std4) [right of=std3, draw, xshift=1cm] {isWFmin};
   
       % Weaker definitions
       \node (weak1) [below of=std1,  draw, yshift=1cm] {isWFacc-};

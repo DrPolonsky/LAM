@@ -51,13 +51,13 @@ We next define rewriting-theoretic concepts like confluence and normalization re
 \subsection{Confluence (\texttt{ARS-Properties.agda})}
 \begin{definition} The following definitions relate to confluence.
     \begin{description}
-        \item[$a \in \WCR_R$] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
-        \item[$a \in \CR_R$] \emph{$a$ is Church-Rosser (or confluent)} if $c \bmstep a \mstep b \implies c \mstep d \bmstep b$.
-        \item[$a \in \CRs_R$] \emph{$a$ is subcommutative} if $c \bmstep a \mstep b \implies c \rrstep d \brstep b$.
-        \item[$a \in \NPe_R$] \emph{$a$ has the conversion normal form property} if $a \estep b \implies a\mstep b$ for any $b \in \NF$.
-        \item[$a \in \NP_R$] \emph{$a$ has the normal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \NF$.
-        \item[$a \in \UN_R$] \emph{$a$ has the unique normal form property} if $a \estep b \implies a \equiv b$  for any $a, b \in \NF$.
-        \item[$a \in \UNto_R$] \emph{$a$ has the unique normal form property with respect to reduction} if $c \bmstep a \mstep b  \implies b \equiv c$  for any $b, c \in \NF$.
+        \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
+        \item[\ule{$a \in \CR_R$}] \emph{$a$ is Church-Rosser (or confluent)} if $c \bmstep a \mstep b \implies c \mstep d \bmstep b$.
+        \item[\ule{$a \in \CRs_R$}] \emph{$a$ is subcommutative} if $c \bmstep a \mstep b \implies c \rrstep d \brstep b$.
+        \item[\ule{$a \in \NPe_R$}] \emph{$a$ has the conversion normal form property} if $a \estep b \implies a\mstep b$ for any $b \in \NF$.
+        \item[\ule{$a \in \NP_R$}] \emph{$a$ has the normal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \NF$.
+        \item[\ule{$a \in \UN_R$}] \emph{$a$ has the unique normal form property} if $a \estep b \implies a \equiv b$  for any $a, b \in \NF$.
+        \item[\ule{$a \in \UNto_R$}] \emph{$a$ has the unique normal form property with respect to reduction} if $c \bmstep a \mstep b  \implies b \equiv c$  for any $b, c \in \NF$.
     \end{description}
 \end{definition}
 
@@ -134,7 +134,7 @@ in fact equivalent in the following proof in \texttt{ARS-Implications.agda}:
 
 \begin{definition} \hfill
     \begin{description}
-        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there are finitely many $b \in A$ such that $a \rstep b$.
+        \item[\ule{$a \in \FB$}] \emph{$a$ is finitely branching} if there are finitely many $b \in A$ such that $a \rstep b$.
     \end{description}
 \end{definition}
 
