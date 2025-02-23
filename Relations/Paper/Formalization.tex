@@ -11,15 +11,17 @@ The definitions grouped as normalizing in \terese are formalized in \texttt{ARS-
 
 The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}. 
 \begin{itemize}
-    \item $\SN$ : We make use of the well-founded defintion, rather than the finite reduction sequence definition.
+    \item $\SN$ : We make use of the well-founded definition, rather than the finite reduction sequence definition.
     \item $\NPe$ : We use the equivalent $\NP$ definition. 
     \item $\Inc$ : We use the more general property $\RP$.      
 \end{itemize}
 
 As already mentioned, the $\Inc$ property was one we wanted to move away from. We saw that $\Inc$ was being used only in Theorem 1.2.3 
-and that the crucial facet of $\Inc$ for the proof of the theorem was that every sequence has a bound \sacomment{is this the correct characterization?}. 
-So we established that the properties in Definition \ref{def:rp} were sufficient for the proving the theorems. This in turn led us to examining 
-a generalization of a normal form, the minimal form. We explore this further in Section \ref{sec:Implications}.
+and that the crucial facet of $\Inc$ for the proof of the theorem was that no $R$-increasing 
+sequence can have an upper bound.
+We established that the properties $\RP$ and $\RPm$ were sufficient for the proving the theorems. This in turn led us to 
+examine the condition in $\RP$ more closely. This condition provides a generalization of the notion of normal form, 
+which we analyze in detail in Section \ref{sec:Implications}. \sacomment{Try and get this para to flow better.}
 
 \subsection{Propositions}
 There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
@@ -34,9 +36,7 @@ constructive formalization as shown in the following function in \texttt{ARS-New
 
 \verb|NewmansLemma : R isSN → R isWCR → R isCR|.
 
-\sacomment{This is a point where it may be useful to examine MF earlier. However, the alternative is to discuss the generalization of NL in the section on implications.}
-
-We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma. \sacomment{Delete this comment when that generalization is written.}
+We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using $\MF$. 
 
 The formalizations of the remaining theorems are all found in \texttt{ARS-Theorems.agda}. 
 \subsubsection{Theorem 1.2.2}
@@ -58,7 +58,8 @@ There are three parts to this theorem.
 \begin{itemize}
     \item \verb|ii : R isWN × R isUN → R isCR|
 \end{itemize}
-In our formalization we show that $\gWN \land \gUNto \implies \gCR$ is true and so provide a generalization of ($ii$) as $\gUN \implies \gUNto$. 
+\sacomment{Make below comment tidier}
+Note that we have provided a proof with the weaker hypothesis of $\gUNto$. 
 
 ($iii$) is formalized in:
 \begin{itemize}
@@ -66,12 +67,21 @@ In our formalization we show that $\gWN \land \gUNto \implies \gCR$ is true and 
 \end{itemize}
 
 \subsubsection{Theorem 1.2.3}
+The following definition is required for this theorem.
+\begin{definition} Let $a \in A$.
+    \begin{description}
+        \item[$a \in CP_R$] \emph{$a$ has the cofinality property} if there exists a 
+        (not necessarily strictly) increasing sequence starting from $a$ such that every
+        reduct of $a$ reduces to some element of the sequence.
+    \end{description}
+\end{definition}
+
 There are four parts to this theorem. 
 \begin{description}
     \item[($i$)] $\gWN \and \gUN \implies \gBP$
     \item[($ii$)] $\gBP \land \gInc \implies \gSN$  
     \item[($iii$)] $\gWCR \land \gWN \land \gInc \implies \gSN$
-    \item[($iv$)] $\gCR \iff \gCR$ ($\implies$ only holds if the ARS is countable.)
+    \item[($iv$)] $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
 \end{description}
 ($i$) is formalized in: 
 \begin{itemize}
@@ -94,7 +104,7 @@ As can be seen we have substituted $\gInc$ with $\gRPm$ which generalizes this t
 is decidable \sacomment{Is decidability being discussed elsewhere in the paper that we can reference here.} as this property enables us 
 to construct a witness for an element that either does or does not have the property $\SN$. Such a witness was necessary for our proof. \sacomment{More to say on this theorem?}
 
-
+\sacomment{neeed to define CP}
 The reverse implication of ($iv$) is formalized in: 
 \begin{itemize}
     \item \verb|iv : R isCP → R isCR|

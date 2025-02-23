@@ -19,10 +19,10 @@ we came to the below definitions.
         \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is also strongly minimalizing.
         \item[$a \in \MP_R$] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
 
-    \end{description}
+    \end{description} 
 \end{definition}
 
-\sacomment{Need to relate SM and SMseq. Probably define SMseq and metion 
+\sacomment{Need to relate SM and SMseq. Probably define SMseq and mention 
 we can only prove this for SMseq.}
 \begin{proposition}\label{prop:SMRP}
     $SM \leftrightarrow RP \land BP$
@@ -81,7 +81,7 @@ With these minimal definitions we can see the taxonomy of concepts that relate t
 \end{center}
 
 The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. The classical property of being minimally decidable is 
-required to complete the implcation from $\SN$ to $\WN$, as can be seen in our formalization
+required to complete the implication from $\SN$ to $\WN$, as can be seen in our formalization
 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
 
