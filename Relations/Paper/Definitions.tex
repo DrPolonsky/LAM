@@ -9,8 +9,7 @@ in our discussion. Each subsection specifies the Agda file(s) which contain form
 \end{definition}
 
 For the rest of this section, let $A$ be a fixed set, and $R$ be a relation on $A$.
-(In the Agda code supplement, this is represented by a type $A : \bset$,
-and a binary type family $R : A \to A \to \bset$.)
+
 
 % \greyout{We denote by $\tilde R$ the relational converse of $R$ ($(x,y) \in \tilde R \iff (y,x) \in R$),
 % and by $R;R'$ the relational composition of $R$ and $R'$.}
@@ -53,6 +52,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
     \begin{description}
         \item[$a \in \WCR_R$] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
         \item[$a \in \CR_R$] \emph{$a$ is Church-Rosser (or confluent)} if $c \bmstep a \mstep b \implies c \mstep d \bmstep b$.
+        \item[$a \in \CRs_R$] \emph{$a$ is subcommutative} if $c \bmstep a \mstep b \implies c \rrstep d \brstep b$.
         \item[$a \in \NPe_R$] \emph{$a$ has the equivalence normal form property} if $a \estep b \implies a\mstep b$ for any $b \in \NF$.
         \item[$a \in \NP_R$] \emph{$a$ has the normal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \NF$. 
         \item[$a \in \UN_R$] \emph{$a$ has the unique normal form property} if $a \estep b \implies a \equiv b$  for any $a, b \in \NF$.
@@ -63,52 +63,58 @@ For each of the subsets defined above we denote in bold face the proposition tha
 That is, for $\mathrm{X} \in \{\WCR , \CR , \NP , \UN \}$ we write $\mathbf{X}$ for the statement that $x \in \mathrm{X}_R$ for all $x \in A$.
 
 
-In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote normal form. Moreover, ${\gNP}$ and ${\gNPe}$ are equivalent when 
+In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote normal form. 
 
-\begin{proposition}
-    $\NPe \leftrightarrow \NP$ 
+\begin{proposition}\hfill 
+    \begin{enumerate}
+        \item $\gNP \iff \gNPe$ 
+        \item $\gUN \implies \gUNto$
+    \end{enumerate}
 \end{proposition}
-\begin{proof}
-    See, \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{ARS-Implications.agda}.
+\begin{proof} \hfill
+    \begin{enumerate}
+        \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{ARS-Implications.agda}.
+        \item \verb|UN→UN→ : R isUN → R isUN→| in \texttt{ARS-Implications.agda}. 
+    \end{enumerate} 
 \end{proof}
-\begin{proposition}
-    $\UN \implies \UNto $
-\end{proposition}
-\begin{proof}
-    See, \verb|UN→UN→ : R isUN → R isUN→| in \texttt{ARS-Implications.agda}
-\end{proof}
-The implication $\UNto \implies \UN$ does not hold, as can be seen in CE-\ref{CE:un} in Subsection \ref{subsec:counterexamples}.
+
+The implication $\UNto \implies \UN$ does not hold, as can be seen in Example \ref{CE:un} in Subsection \ref{subsec:counterexamples}.
+
 \subsection{Sequences and Recurrence (\texttt{ARS-Properties.agda}, \texttt{Seq.agda})}
 The following definitions are key to formalizing Theorem 1.2.3 in \terese.
-$R \models \mathbf{X}$ is $\forall a. a \in \mathrm{X}_R$. When $R$ is clear from the context, we will write $\gNP$ for $R \models \gNP$, etc. \sacomment{Mention this earlier}
+
+\begin{notation}
+    $R \models \mathbf{X}$ is $\forall a.\; a \in \mathrm{X}_R$. When $R$ is clear from the context, we will write $\gNP$ for $R \models \gNP$, etc. 
+\end{notation}
 
 \begin{definition}
     \begin{description}
         \item[$R \models Inc$] \emph{$R$ is increasing} if there exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $a, b \in A$,
         $Rab \to |a| < |b|$  
+        \item[$a \in \CP$] \sacomment{Need a definition of cofinality here}
     \end{description}
 \end{definition}
 
-\sacomment{motivate here going from above defn to the following.}
-
-\begin{definition} Let $A$ and $R$ be as above, and let $a \in A$.
-    \begin{description}
+Having a "size function" that maps to the natural numbers is computationally taxing to satisfy. 
+Futher, it takes us outside of pure relational theory. The following definitions are for properties which allow us to forgo $\Inc$, for further discussion see Subsection \ref{subsec:def}.
+\begin{definition} \label{def:rp} Let $A$ and $R$ be as above, and let $a \in A$.
+    \begin{description} 
         \item[$s : \nat \to A$] \emph{A sequence $s \in A$} is a function from the natural numbers to $A$.  
         \item[$s \in R-increasing$] \emph{A sequence $s \in A$ is $R$-increasing} if every term is $R$-related to its preceding term.
         \item[$a$ is an $s$-bound] if $s (i) \mstep a$ for all $i \in \nat$. 
-        \item[$a \in \BP_R$] if all $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound. 
+        \item[$a \in \BP_R$] if all $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound.  
         \item[$R \models \RPm$] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
         \item[$R \models \RP$] \emph{$R$ has the recurrence property} if every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that 
-        $s (i) \in \MF$.
+        $s (i) \in \MF$. See Definition \ref{def:mf}. 
     \end{description}
 \end{definition}
-
+In \terese $\mathsf{Ind}$ is used to denote $\BP$. 
 
 The following is immediate.
 \begin{proposition}\hfill 
     \begin{enumerate}
-        \item $\Inc \implies \RPm$
-        \item $\RPm \implies \RP$
+        \item $\gInc \implies \gRPm$
+        \item $\gRPm \implies \gRP$
     \end{enumerate}
 \end{proposition}
 
@@ -116,21 +122,17 @@ The following is immediate.
 It follows that every relation that is increasing in the sense of \terese
 vacuously satisfies the RP condition.
 
-\sacomment{tidy up below on rp iff rp- .}
 We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weaker definition that 
-did not rely on the notion of $\MF$. We were able to proove that this weaker definition is 
-in fact an equivalent definition in the following proof in Agda: 
+did not rely on the notion of $\MF$. We show that this weaker definition is 
+in fact an equivalent definition in the following proof in \texttt{ARS-Implications.agda}: 
 
-\verb|RP-↔RP : R is RP- ↔ R is RP| \footnotemark[1]
+\verb|RP-↔RP : R is RP- ↔ R is RP|. 
 
-
-\footnotetext[1]{\texttt{ARS-implications.agda}}
-\subsection{Finitely branching}
+\subsection{Finitely branching (\texttt{FinitelyBranching.agda})}
 \sacomment{This property is what makes a lot of the classical properties valid which otherwise wouldn't be. Valid in most interesting rewriting systems. Most 
 programming languages will satisfy finite branching.}
-\begin{definition}
+\begin{definition} Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description}
-        \item[TODO] TODO 
+        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there is a finite amount of  $b \in A$ such that $a \rstep b$. 
     \end{description}
 \end{definition}
-\sacomment{Anything else to define such as finitely branching?}

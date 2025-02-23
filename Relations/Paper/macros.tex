@@ -27,29 +27,47 @@
 % %\theoremsymbol{\Box}
 % % \newtheorem{proof}{Proof}
 
-\newcommand{\RP}{\mathsf{RP}}
-\newcommand{\RPm}{\mathsf{RP-}}
-\newcommand{\NF}{\mathsf{NF}}
-\newcommand{\MF}{\mathsf{MF}}
-\newcommand{\UN}{\mathsf{UN}}
-\newcommand{\UNto}{\mathsf{UN}^{\to}}
-\newcommand{\SN}{\mathsf{SN}}
-\newcommand{\decSN}{\mathsf{dec(SN)}}
-\newcommand{\SM}{\mathsf{SM}}
-\newcommand{\WN}{\mathsf{WN}}
-\newcommand{\SMandWN}{\mathsf{SM\land WN}}
-\newcommand{\WM}{\mathsf{WM}}
-\newcommand{\WNFP}{\mathsf{WNFP}}
+\newcommand{\RP}{\mathrm{RP}}
+\newcommand{\gRP}{\mathbf{RP}}
+\newcommand{\RPm}{\mathrm{RP-}}
+\newcommand{\gRPm}{\mathbf{RP-}}
+\newcommand{\NF}{\mathrm{NF}}
+\newcommand{\MF}{\mathrm{MF}}
+\newcommand{\UN}{\mathrm{UN}}
+\newcommand{\gUN}{\mathbf{UN}}
+\newcommand{\UNto}{\mathrm{UN}^{\to}}
+\newcommand{\gUNto}{\mathbf{UN}^{\to}}
+\newcommand{\SN}{\mathrm{SN}}
+\newcommand{\gSN}{\mathbf{SN}}
+\newcommand{\decSN}{\mathrm{dec(SN)}}
+\newcommand{\SM}{\mathrm{SM}}
+\newcommand{\WN}{\mathrm{WN}}
+\newcommand{\gWN}{\mathbf{WN}}
+\newcommand{\SMandWN}{\mathrm{SM\land WN}}
+\newcommand{\WM}{\mathrm{WM}}
+\newcommand{\WNFP}{\mathrm{WNFP}}
 \newcommand{\NP}{\mathrm{NP}}
 \newcommand{\gNP}{\mathbf{NP}}
 \newcommand{\NPe}{\mathrm{NP_=}}
 \newcommand{\gNPe}{\mathbf{NP_=}}
-\newcommand{\WMFP}{\mathsf{WMFP}}
-\newcommand{\MP}{\mathsf{MP}}
-\newcommand{\CR}{\mathsf{CR}}
-\newcommand{\WCR}{\mathsf{WCR}}
-\newcommand{\Inc}{\mathsf{Inc}}
-\newcommand{\BP}{\mathsf{BP}}
+\newcommand{\WMFP}{\mathrm{WMFP}}
+\newcommand{\MP}{\mathrm{MP}}
+\newcommand{\CR}{\mathrm{CR}}
+\newcommand{\CRs}{\mathrm{CR^{\le 1}}}
+\newcommand{\gCRs}{\mathbf{CR^{\le 1}}}
+\newcommand{\gCR}{\mathbf{CR}}
+\newcommand{\WCR}{\mathrm{WCR}}
+\newcommand{\gWCR}{\mathbf{WCR}}
+\newcommand{\Inc}{\mathrm{Inc}}
+\newcommand{\gInc}{\mathbf{Inc}}
+\newcommand{\BP}{\mathrm{BP}}
+\newcommand{\gBP}{\mathbf{BP}}
+\newcommand{\FB}{\mathrm{FB}}
+\newcommand{\CP}{\mathrm{CP}}
+\newcommand{\gCP}{\mathbf{CP}}
+
+
+
 \newcommand{\from}{\leftarrow}
 
 
@@ -61,7 +79,8 @@
 \newcommand{\rstep}{\mathbin{\longrightarrow_R}}
 \newcommand{\mstep}{\mathbin{\longrightarrow_R^*}}
 \newcommand{\estep}{\mathbin{\longrightarrow_R^=}}
-\newcommand{\tstep}{\mathbin{\longrightarrow_R^+}}
+\newcommand{\rrstep}{\mathbin{\longrightarrow_R^r}}
+\newcommand{\brstep}{\mathbin{_R^r\longleftarrow}}
 \newcommand{\bstep}{\mathbin{\longleftarrow_R}}
 \newcommand{\bmstep}{\mathbin{_R^*\longleftarrow}}
 

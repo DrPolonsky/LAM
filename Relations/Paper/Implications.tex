@@ -6,11 +6,13 @@
     \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
 }
 
-From the perspective of programming language theory, the two properties of abstract rewriting 
-systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
-show chains of implications starting from these properties.
+% From the perspective of programming language theory, the two properties of abstract rewriting 
+% systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
+% show chains of implications starting from these properties.
+As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
+we came to the below definitions. 
 
-\begin{definition} The folowing definitions relate to being minimal. Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition}\label{def:mf}  Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description}
         \item[$a \in \MF_R$] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[$a \in \WM_R$] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
@@ -20,60 +22,7 @@ show chains of implications starting from these properties.
     \end{description}
 \end{definition}
 
-Again, we found that there was a strong interrelationship between the properties, captured in Figure \ref{fig:conf-hierarchy}, which are explored in Section \ref{sec:Implications}.
-
-\begin{figure}[h] 
-    \centering
-
-        \begin{tikzpicture}[auto,
-          arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
-          % A box style
-          \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]
-      
-          % Place the nodes vertically (top to bottom)
-          \node (Confluent) [boxnode] at (-4,0) {$\CR$};
-          \node (RP)        [boxnode, right=.5cm of Confluent] {$\MP$};
-          \node (WN)        [boxnode, right=.5cm of RP] {$\NP$};
-          \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
-      
-          % Draw arrows downwards
-          \draw[arrowstyle] (Confluent) -- (RP);
-          \draw[arrowstyle] (RP) -- (WN);
-          \draw[arrowstyle] (WN) -- (UN);
-       
-          \end{tikzpicture}
-          \caption{A hierarchy of confluent properties.}
-          \label{fig:conf-hierarchy}
-    
-\end{figure}
-We found that there was a strong interrelationship between the normalizing properties and the minimal properties. This relationship is 
-captured in Figure \ref{fig:norm-hierarchy}.
-
-\begin{figure}[h]   
-    \centering
-        \begin{tikzpicture}[auto,
-            arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
-            % A box style
-            \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]   
-            % Define the nodes
-            \node (SN) [boxnode] at (4,0) {$\SN$};
-            \node (WN) [boxnode, above right=0.5cm and 0.5cm of SN] {$\WN$};
-            \node (SR) [boxnode, below right=0.5cm and 0.5cm of SN] {$\SM$};
-            \node (WR) [boxnode, below right=0.5cm and 0.5cm of WN] {$\WM$};
-            
-            % Draw the arrows to form a diamond
-            \draw [arrowstyle] (SN) -- (WN);
-            \draw [arrowstyle] (SN) -- (SR);
-            \draw [arrowstyle] (WN) -- (WR);
-            \draw [arrowstyle] (SR) -- (WR);
-        \end{tikzpicture}
-        \caption{A hierarchy of normalizing and minimal properties.}
-        \label{fig:norm-hierarchy}
-\end{figure}
-
-The implications will be explored in detail in Section \ref{sec:Implications}. 
-
-Proposition \ref{prop:SMRP} connects $\SM$ with $\RP$ and $\BP$. \sacomment{Need to relate SM and SMseq. Probably define SMseq and metion 
+\sacomment{Need to relate SM and SMseq. Probably define SMseq and metion 
 we can only prove this for SMseq.}
 \begin{proposition}\label{prop:SMRP}
     $SM \leftrightarrow RP \land BP$
@@ -83,7 +32,7 @@ we can only prove this for SMseq.}
     \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
 \end{proof}
 
-A trivial implication not captured in the above figure is covered in Proposition \ref{prop:nftomf}. 
+Trivially, the following also holds. 
 \begin{proposition}\label{prop:nftomf}
     $a\in NF_R \implies a \in MF_R$ 
 \end{proposition}    
@@ -91,7 +40,7 @@ A trivial implication not captured in the above figure is covered in Proposition
     See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
 \end{proof}
 
-
+With these minimal definitions we can see the taxonomy of concepts that relate to termination and confluence.
 
 \begin{center}
 
@@ -113,23 +62,28 @@ A trivial implication not captured in the above figure is covered in Proposition
    
         
         % Define the nodes
-        \node (SN) [boxnode] at (4,0) {$\SN$};
-        \node (WN) [boxnode, above right=0.5cm and 0.5cm of SN] {$\WN$};
-        \node (SR) [boxnode, below right=0.5cm and 0.5cm of SN] {$\SM$};
-        \node (WR) [boxnode, below right=0.5cm and 0.5cm of WN] {$\WM$};
+        \node (NF) [boxnode] at (3,0) {$\NF$};
+        \node (MF) [boxnode] at (3,-1) {$\MF$};
+        \node (SN) [boxnode] at (5,0) {$\SN$};
+        \node (SR) [boxnode] at (5,-1) {$\SM$};
+        \node (WN) [boxnode] at (7,0) {$\WN$};
+        \node (WR) [boxnode] at (7,-1) {$\WM$};
         
         % Draw the arrows to form a diamond
+        \draw [arrowstyle] (NF) -- (SN);
+        \draw [arrowstyle] (NF) -- (MF);
+        \draw [arrowstyle] (MF) -- (SR);
         \draw [arrowstyle] (SN) -- (WN);
         \draw [arrowstyle] (SN) -- (SR);
         \draw [arrowstyle] (WN) -- (WR);
         \draw [arrowstyle] (SR) -- (WR);
       \end{tikzpicture}
 \end{center}
-  
-The classical property of being minimally decidable is required to complete the implcation 
-from $\SN$ to $\WN$, as can be seen in our formalization
 
-\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| \footnotemark[1]
+The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. The classical property of being minimally decidable is 
+required to complete the implcation from $\SN$ to $\WN$, as can be seen in our formalization
+
+\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
 
 \sacomment{Are we going to define this property here or elsewhere?}
 
@@ -140,16 +94,13 @@ $y$ and because we know that we have the property of $\SN$ we must eventually re
 
 Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
 
-The following tables show which combination of these properties implies a property higher in the hierarchy. Where a combination 
-does not imply a higher property an explanatory counterexample is given. The counterexamples referenced are shown below the tables in subsection \ref{subsec:counterexamples}. 
+We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\CR$ and $\SN$). 
+The following tables show either that a given combination is complete, or the appropriate counterexample which demonstrates why 
+those properties do not provide a property higher on the taxonomical hierarchy. 
 
-The first table explores where the properties hold locally, the second explores where the properties hold globally. The proofs that the 
-following implications hold are primarily found in \texttt{ARS-implications.agda} unless they have been proven as part of the formalization 
-of \terese, in which case they will be found in either \texttt{ARS-thoerems.agda} or \texttt{ARS-NewmansLemma.agda}.
+The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the 
+first table assume $\WCR$ and in the second table assume $\gWCR$.
 
-\sacomment{When the table and CE are finished, write an explanation that the CE to the local table 
-assume local WCr and the global table CEs assume global WCR!}
-\sacomment{UPDATE COUNTEREXAMPLES WHEN CE SECTION FINISHED}
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{table}[h!]
     \centering
@@ -360,3 +311,15 @@ globally then our proof no longer requires the property $\NP$. This progression 
 \verb|isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x|
 
 \verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN| \footnotemark[1]
+
+
+that $\SN$ implies $\SM$, and it is from this implication 
+that we produce a new generalization of Newman's lemma. Every relation with the properties 
+$\SM$ and $\WCR$ has the property of $\CR$. This holds true both locally and globally as we show in:
+
+\verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR| \footnotemark[2]
+
+and \verb|GlobalNewmansLemmaRecurrent : R isWCR → R isSM → R isCR| \footnotemark[2]
+
+
+\sacomment{We should remember that If global WCR and local SM implies local CR, then if we also have local WN, we get local SN.}

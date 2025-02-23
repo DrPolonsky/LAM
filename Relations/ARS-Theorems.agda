@@ -27,7 +27,7 @@ module Theorem-1-2-2 where
 
     CP→UN : R isCR → R isUN
     CP→UN RisCR = NP→UN (CR→NP RisCR)
-    -- The above provides i)
+    
 
     ii : R isWN × R isUN → R isCR
     ii (RisWN , RisUN) = Confluent-Implications.UN→∧WN→CR (Desired-Implications.UN→UN→ RisUN) RisWN 
