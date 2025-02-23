@@ -164,6 +164,13 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
         φ-ind : R -inductive φ
         φ-ind x IH x∈P ¬Σ = ¬Σ (x ,, x∈P , λ y y∈P Ryx → IH y Ryx y∈P ¬Σ )
       in λ ¬Σ → RisWFind- φ φ-ind d (λ H → H d∈P ¬Σ )
+
+  isWFminDNE-→isWFmin- : isWFminDNE- R → isWFmin- R
+  isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP
+    with RisWFminDNE- (∁ (∁ P)) (λ x y z → y λ w → w z ) (λ z → z d∈P)
+  ... | c = c λ { (x ,, ¬x∉P , H) → ¬x∉P (λ x∈P →
+                   ¬∃minP (x ,, x∈P , λ y y∈P Ryx → H y (λ z → z y∈P) Ryx ) )  }
+
 open WeakImplications public
 
 

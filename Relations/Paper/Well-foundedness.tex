@@ -1,2 +1,188 @@
 \section{Well-foundedness}
+
+\newcommand{\isWFacc}{\mathtt{isWFacc}}
+\newcommand{\isWFseq}{\mathtt{isWFseq}}
+\newcommand{\isWFmin}{\mathtt{isWFmin}}
+\newcommand{\isWFaccm}{\mathtt{isWFacc-}}
+\newcommand{\isWFseqm}{\mathtt{isWFseq-}}
+\newcommand{\isWFminm}{\mathtt{isWFmin-}}
+\newcommand{\then}{\Longrightarrow}
 \label{sec:Well-foundedness}
+
+An abstract reduction $\to_R$ is strongly normalizing
+if and only if the converse relation is well-founded.
+In this section, we will compare several definitions of well-foundedness.
+They will be based on the following notions.
+
+\begin{definition}
+  Let $R \subseteq A \times A$.
+  \begin{enumerate}
+    \item $P \subseteq A$ is \emph{inductive}
+    if, for each $x \in A$, $(\forall y. Ryx \to y \in P)$ implies $x \in P$.
+
+    \item $x \in A$ is \emph{accessible} if $x \in P$ for each inductive $P$.
+
+    \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
+    $Ryx$ implies $y \notin P$.
+
+    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(n)) \in R$.
+  \end{enumerate}
+\end{definition}
+
+In TeReSe, well-foundedness is defined in the classical way,
+as the absence of an infinite $R$-decreasing sequence.
+Translating this directly into type theory yields the condition
+\[\isWFseqm : \lnot \big(\exists s : \nat \to A \forall k : \nat. (s(k+1),s(k)) \in R \big) \]
+
+Constructively, this is not a useful hypothesis, as it does not provide any positive computational content and requires an explicit sequence to be given.
+
+A stronger formulation asserts that, for any sequence, there exists an element
+in the sequence that does not reduce to the next one.  This yields
+\[\isWFseq : \forall s : \nat \to A \exists k : \nat. (s(k),s(k+1)) \notin R \]
+
+These are classically equivalent, but not constructively so.
+Indeed, we have $\isWFseq$ implying $\isWFseqm$, but not vice versa.
+
+Another classical formulation of well-foundedness
+asserts that every non-empty subset
+contains a minimal element.  That is,
+\[ \isWFmin : \forall P \subseteq A. P \neq \emptyset \to \exists x \in P. (\forall y. Ryx \to y\notin P) \]
+
+While classically equivalent to the above, see  \cite{Terese, Exercise 1.11?},
+constructively we only have the implication $\isWFmin \then \isWFseq$.
+
+The canonical constructive definition is that
+every inductive predicate is universally true.
+This is constructively equivalent to the statement that every element
+is accessible.  In Agda, these concepts are encoded as follows.
+{\small
+\begin{verbatim}
+  data _-accessible : 𝓟 A where
+    acc : ∀ {x : A} → (∀ y → R y x → _-accessible y) → _-accessible x
+
+  _isWFacc : Set
+  _isWFacc = ∀ (x : A) → x ∈ _-accessible
+
+  _-inductive_ : 𝓟 A → Set
+  _-inductive_ φ = ∀ x → (∀ y → R y x → φ y) → φ x
+
+  _isWFind : Set₁
+  _isWFind = ∀ (φ : 𝓟 A) → _-inductive_ φ → ∀ x → φ x
+\end{verbatim}
+}
+
+\greyout{ SN does not imply WN, we can now discuss this in detail.
+Notice that $x \in WFmin$ certainly implies WN, because we can ask for
+the minimal element of the predicate $P(y) = x \mstep y$
+(the reduction graph of $x$).  Note that this subset is nonempty because $P(x)$ holds.
+}
+
+We have now seen five notions of a well-founded relations, only two of which
+appear to be logically equivalent.
+
+This raises several questions.
+\begin{itemize}
+\item Are all these notions truly distinct?  If one cannot furnish a proof of implication,
+can we provide a counterexample?
+\item Under what hypotheses do the implications become provable?
+\item How ``admissible'' are these hypotheses, and how often can we hope for them to be valid?
+\end{itemize}
+
+The situation of constructing counterexamples is complicated by the fact that, for all
+\emph{definable} predicates, the notions do coincide.  (We have not formalized this,
+but see for example \cite{Berardi}, $A$-translation.)
+So there is little hope to separate these notions with explicit counterexamples.
+Rather, we could attempt to show that one does not imply the other by proving that
+such an implication would yield a ``constructive taboo'': a proposition known to be
+unprovable without addtional classical assumptions.
+
+These questions motivated us to take a closer look at the issue of well-foundedness.
+Our analysis revealed a number of additional related hypotheses, having a complex
+network of relations.  These are displayed in Figure \ref{f:wf}.
+
+Let us elaborate each of these further.
+
+First, we noticed that, analogously to $\isWFseq$ and $\isWFseqm$, there are weaker notions of
+$\isWFacc$ and $\isWFmin$.  These are
+\begin{align*}
+\isWFaccm &= \cdots \\
+\isWFminm &= \cdots \\
+\end{align*}
+
+Each notion of those listed trivially implies the weaker one.
+
+Moreover, we can show that \apcomment{add the ``easy'' relationships from the old report.}
+These elementary implications are summarized in the following diagram.
+
+\apcomment{insert the diagram with X implying X- downward, and chains horizontally,
+as X ranges of isWFacc, isWFind, isWFseq, isWFmin}
+
+Since $\isWFmin$ appears to be stronger than the rest, one may wonder whether
+it can be weakened.  Indeed, in the classical proof of the implication
+$\isWFacc \to \isWFmin$, the predicate $P$ is instantiated by the \emph{complement}
+of a given one.
+
+This yields the following two :
+  \begin{align*}
+    isWFminDNE
+    isWFmiEM
+  \end{align*}
+
+Surprisingly, although $\isWFmin$ seems very strong, it is not sufficient to
+conclude $\isWFacc$.  The culprit is in the conclusion, that the predicate becomes
+negated twice.
+
+This suggests an alternative restriction, where one directly works with the
+complement of a given predicate.  This leads us to two more variations.
+\begin{align*}
+  isWFmin+\\
+  isWFminRed+
+\end{align*}
+
+Of course, each of these also has weaker versions,
+with $\lnot\lnot$ in front of the existential quantifier.
+
+\apcomment{Should collect all these definitions in one table.
+Display this table next to the diagram showing all of the established implications.
+Perhaps do the same in section 4 as well...     }
+
+\subsection{Other things to say}
+\begin{itemize}
+  \item $\isWFmin$ splits into the restrictions on the predicate and the complement
+  \item The distinction between $\isWFseq$ and $\isWFmin$ concerns
+  the non-determinism/choice/coreductivity of the predicate.
+  With sequences, the path is deterministic and we don't have to
+  search for a reduct where the predicate retains its truth value.
+
+  But in case of minimality, it is not known how to find the successor
+  where the truth condition is preserved.
+
+  One remedy is to ask for this choice function directly --- this yields
+  the coreductivity hypothesis.
+
+  The other remedy is finite branching.
+
+  \item Generally, iswFMin EM will imply isWFseq.  This should be easy to prove.
+
+  \greyout{It should also imply/be implied by min+cor, maybe }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{itemize}
