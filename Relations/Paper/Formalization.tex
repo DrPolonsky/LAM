@@ -1,12 +1,10 @@
 \section{Formalization of \terese}
 \label{sec:Formalization}
-This sections acts as a guide of our formalization of \terese and explains the deviations we took.  
+This sections is a guide to our formalization of \terese and explains the deviations we take from the text.  
 
 \subsection{Formalization of Definitions}\label{subsec:def}
-We have formalized those definitions which were necessary for the formalization of the propositions and theorems found 
-in Chapter 1 of \terese. 
 The closure operators are formalized in \texttt{ARS-Closure.agda}. 
-The definitions grouped as confluent \terese are formalized in \texttt{ARS-Base.agda}. 
+The definitions grouped as confluent in \terese are formalized in \texttt{ARS-Base.agda}. 
 The definitions grouped as normalizing in \terese are formalized in \texttt{ARS-Properties.agda}.  
 
 The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}. 
@@ -16,28 +14,27 @@ The following is a summary of the differences in definition we have used as ment
     \item $\Inc$ : We use the more general property $\RP$.      
 \end{itemize}
 
-As already mentioned, the $\Inc$ property has undesired requirements. $\Inc$ is used only in Theorem 1.2.3 
-and the crucial facet of $\Inc$ for the proof of the theorem is that no $R$-increasing 
+As mentioned, the $\Inc$ property imposes a computationally demanding requirement. However, $\Inc$ is used only in Theorem 1.2.3 
+and the only crucial aspect of $\Inc$ needed for the proof is that no $R$-increasing 
 sequence can have an upper bound.
-We established that the properties $\RP$ and $\RPm$ were sufficient for proving the theorem (see Subsection \ref{subsec:theorems}). This in turn led us to 
-examine the condition in $\RP$ more closely. This condition provides a generalization of the notion of normal form, 
-which we analyze in detail in Section \ref{sec:Implications}. 
+We establish that the properties $\RP$ and $\RPm$ were sufficient for replacing $\Inc$ in the theorem (see Subsection \ref{subsec:theorems}), 
+which led us to examine the condition in $\RP$ more closely. This condition provides a generalization of the notion of a normal form, 
+which we explore in detail in Section \ref{sec:Implications}. 
 
 \subsection{Propositions}
 There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
-The formalization of the proofs are in \texttt{ARS-Propositions.agda}. These formalizations were straightforward 
-and as such are not the focus of this paper. \sacomment{Do we include more information on these propositions?}
+The formalization of the proofs are in \texttt{ARS-Propositions.agda}. These formalizations are straightforward 
+and as such are not the focus of this paper. 
 
 \subsection{Theorems}\label{subsec:theorems}
 \subsubsection{Newman's Lemma}
 There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given in \terese. 
-The first and third of these proofs make use of classical properties. The second proof is amenable to a 
+The first and third of these proofs make use of classical assumptions. The second proof is amenable to a 
 constructive formalization as shown in the following function in \texttt{ARS-NewmansLemma.agda}:
 
 \verb|NewmansLemma : R isSN → R isWCR → R isCR|.
 
 We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using $\MF$. 
-
 The formalizations of the remaining theorems are all found in \texttt{ARS-Theorems.agda}. 
 \subsubsection{Theorem 1.2.2}
 There are three parts to this theorem. 
@@ -58,7 +55,6 @@ There are three parts to this theorem.
 \begin{itemize}
     \item \verb|ii : R isWN × R isUN → R isCR|
 \end{itemize}
-\sacomment{Make below comment tidier}
 Note that we have provided a proof with the weaker hypothesis of $\gUNto$. 
 
 ($iii$) is formalized in:
@@ -83,11 +79,13 @@ There are four parts to this theorem.
     \item[($iii$)] $\gWCR \land \gWN \land \gInc \implies \gSN$
     \item[($iv$)] $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
 \end{description}
+
 ($i$) is formalized in: 
 \begin{itemize}
     \item \verb|i : R isWN → R isUN → R isBP|
     \item \verb|i→ : R isWN → R isUN→ → R isBP|
 \end{itemize}
+
 In $\mathtt{i\to}$ we again provide a generalization by using $\gUNto$ rather than $\gUN$.
 
 A formalization of ($ii$) is provided in: 
@@ -95,7 +93,6 @@ A formalization of ($ii$) is provided in:
     \item \verb|iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)|
 \end{itemize}
 This is a fundamentally classical result, and so the result is only classically equivalent to $\gSN$.
-\sacomment{Double check the above explanation.}
 
 ($iii$) is formalized in: 
 \begin{itemize}
@@ -103,13 +100,13 @@ This is a fundamentally classical result, and so the result is only classically 
 \end{itemize}
 As can be seen we have substituted $\gInc$ with $\gRPm$ which generalizes this theorem. We have also included the assumption that $\gSN$ 
 is decidable as this property enables us 
-to construct a witness for an element that either does or does not have the property $\SN$. Such a witness was necessary for our proof. \sacomment{More to say on this theorem?}
+to construct a witness for an element that either does or does not have the property $\SN$. Such a witness was necessary for our proof. \sacomment{Link to decidable in later section?}
 
 
 The reverse implication of ($iv$) is formalized in: 
 \begin{itemize}
     \item \verb|iv : R isCP → R isCR|
 \end{itemize}
-We did not formalize $\gCR \to \gCP$ as it requires the ARS to be countable \sacomment{Add this proof to future todo}.
+We did not formalize $\gCR \to \gCP$ as it requires the ARS to be countable.
 
 

@@ -39,7 +39,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
 \subsection{Normalization (\texttt{ARS-Properties.agda})}
 \begin{definition} The following definitions relate to normalization. Let $A$ and $R$ be as above, and let $a \in A$.
   \begin{description}
-    \item[$a \in \NF_R$] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$ 
+    \item[$a \in \NF_R$] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.   
     \item[$a \in \WN_R$] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
     \item[$a \in \SN_R$] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = {(y,x) | (x,y) \in R}$. See Section \ref{sec:Well-foundedness}. 
   \end{description}
@@ -59,6 +59,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
         \item[$a \in \UNto_R$] \emph{$a$ has the unique normal form property with respect to reduction} if $c \bmstep a \mstep b  \implies b \equiv c$  for any $b, c \in \NF$.
     \end{description}
 \end{definition}
+
 For each of the subsets defined above we denote in bold face the proposition that the subset contains all of $A$.
 That is, for $\mathrm{X} \in \{\WCR , \CR , \NP , \UN \}$ we write $\mathbf{X}$ for the statement that $x \in \mathrm{X}_R$ for all $x \in A$.
 
@@ -89,25 +90,26 @@ The following definitions are key to formalizing Theorem 1.2.3 in \terese.
 
 \begin{definition} \hfill
     \begin{description}
-        \item[$R \models Inc$] \emph{$R$ is increasing} if there exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $a, b \in A$,
+        \item[$R \models \gInc$] \emph{$R$ is increasing} if there exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $a, b \in A$,
         $Rab \to |a| < |b|$  
     \end{description}
 \end{definition}
 
 Having a size function that maps to the natural numbers is computationally taxing to satisfy. 
-Further, it takes us outside of purely relational theory. The following definitions are for properties which allow us to forgo $\Inc$, for further discussion see Subsection \ref{subsec:def}.
+Further, it takes us outside of purely relational theory. The following definitions are for properties which allow us to forgo $\gInc$, for further discussion see Subsection \ref{subsec:def}.
 \begin{definition} \label{def:rp} Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description} 
         \item[$s : \nat \to A$] \emph{A sequence $s \in A$} is a function from the natural numbers to $A$.  
         \item[$s \in R-increasing$] \emph{A sequence $s \in A$ is $R$-increasing} if every term is $R$-related to its preceding term.
         \item[$a$ is an $s$-bound] if $s (i) \mstep a$ for all $i \in \nat$. 
-        \item[$a \in \BP_R$] if all $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound.  
-        \item[$R \models \RPm$] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
-        \item[$R \models \RP$] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that 
+        \item[$a \in \BP_R$] if for all $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound.  
+        \item[$R \models \gRPm$] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
+        \item[$R \models \gRP$] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that 
         $s (i) \mstep x \implies x \mstep s (i)$ for all $x\in A$. See Definition \ref{def:mf}. 
     \end{description}
 \end{definition}
-In \terese $\mathsf{Ind}$ is used to denote $\BP$. 
+
+In \terese $\mathrm{Ind}$ is used to denote $\BP$. 
 
 The following is immediate.
 \begin{proposition}\hfill 
@@ -121,7 +123,7 @@ The following is immediate.
 It follows that every relation that is increasing in the sense of \terese
 vacuously satisfies the RP condition.
 
-We investigated $\RP$ and thought that with $\RPm$ we had a candidate for a weaker definition that 
+We wanted to generalize $\RP$ and thought that with $\RPm$ we had a good candidate for a weaker definition that 
 did not rely on the notion of $\MF$. We show that this weaker definition is 
 in fact an equivalent definition in the following proof in \texttt{ARS-Implications.agda}: 
 
@@ -131,10 +133,11 @@ in fact an equivalent definition in the following proof in \texttt{ARS-Implicati
 
 \begin{definition} Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description}
-        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there is a finitely many $b \in A$ such that $a \rstep b$.  
+        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there is finitely many $b \in A$ such that $a \rstep b$.  
     \end{description}
 \end{definition}
+
 Our Agda formulation of the above definition makes use of the List type constructor. 
 \verb|FB a = Σ[ xs ∈ List A ] (∀ b → R b a → b ∈List xs)|
 
-$\FB$ is a property that plays an important role in our discussion of well-foundedness in Section \ref{sec:Well-foundedness}.
+$\FB$ is a property that plays an important role in our discussion of well-foundedness (see Section \ref{sec:Well-foundedness}).

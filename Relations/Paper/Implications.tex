@@ -9,7 +9,7 @@
 % From the perspective of programming language theory, the two properties of abstract rewriting 
 % systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 % show chains of implications starting from these properties.
-As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative property for $\Inc$. It is through examining $\RP$ that 
+As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
 we came to the definitions below. 
 
 \begin{definition}\label{def:mf}  Let $A$ and $R$ be as above, and let $a \in A$.
@@ -24,7 +24,7 @@ we came to the definitions below.
     \end{description} 
 \end{definition}
 
-We show that $\SM \implies \SMseq$, however $\SMseq$ is only classically equivalent to $\SM$. The 
+$\SMseq$ is only classically equivalent to $\SM$. The 
 following proposition relates these new definitions with our previous $\RP$ definitions.
 \begin{proposition}\label{prop:SMRP}
     $SMseq \leftrightarrow RP \land BP$
@@ -88,8 +88,8 @@ required to complete the implication from $\SN$ to $\WN$, as can be seen in our 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
 
 The isMinDec property \sacomment{refer to list of classical properties here} states that all elements either have a relation to some other element, or 
-there is no other element to which they have a relation. If the element relates to no other element then it is terminating 
-and so trivially $\WN$. \greyout{If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
+there is no other element to which they have a relation. \greyout{If the element relates to no other element then it is terminating 
+and so trivially $\WN$. If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
 $y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element.} 
 
 Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
@@ -293,7 +293,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
         \item The property $\gWCR$ can sometimes be a substitute for the classical 
         property required for $\SN \implies \WN$ (and similarly $\SM \implies WM$).   
         \item $\gWN \land \gUNto \implies \gCR$ doesn't require any classical assumptions
-         or $\gWCR$ for $\gCR$, unlike $\gSN \land \gUNto$. 
+         or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$. 
         \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. The 
         counterexample provided illustrates why $\WCR \land \WN \land \UNto \nRightarrow \CR$.
         \item Both $\SM$ and $\WN$ are required for $\SN$, this connection is explored in Subsection \ref{subsec:SMWNSN}.
