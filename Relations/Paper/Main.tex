@@ -8,10 +8,10 @@
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-
 \title{Formalization of Abstract Rewriting}
 
-
+\author{Samuel Arkle}{Appalachian State University, USA}
+{arklesd@appstate.edu}{}{}
 \author{Andrew Polonsky}{Appalachian State University, USA}
 {polonskya@appstate.edu}
 {}
@@ -21,12 +21,10 @@
 % Please provide at least the name of the affiliation and the country.
 % The full address is optional. Use additional curly braces to indicate the correct
 %  name splitting when the last name consists of multiple name parts.
-\author{Samuel Arkle}{Appalachian State University, USA (Recent graduate)}
-{arklesd@appstate.edu}{}{}
 
-\authorrunning{A. Polonsky and S. Arkle}
+\authorrunning{S.\ Arkle and A.\ Polonsky}
 
-\Copyright{Andrew Polonsky and Samuel Arkle}
+\Copyright{Samuel Arkle and Andrew Polonsky}
 
 \ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
 
@@ -40,8 +38,8 @@
 
 \begin{abstract}
     We present a constructive formalization of Abstract Reduction Systems (ARS)
-     in the Agda proof assistant, focusing on the results given in Term Rewriting
-     Systems (Terese). We define a taxonomy of concepts related to termination and
+     in the Agda proof assistant, focusing on the results given in
+     the standard reference on Term Rewriting Systems \cite{Terese}. We define a taxonomy of concepts related to termination and
      confluence and investigate their relationships between each other and their
      classical counterparts. We identify, and eliminate where possible, the use of classical
      logic in the proofs of standard ARS results. Our analysis leads to refinements and mild
@@ -53,6 +51,7 @@
 \input{Formalization.tex}
 \input{Implications.tex}
 \input{Well-foundedness.tex}
+\input{Conclusion.tex}
 \input{FinalTODO.tex}
 
 
