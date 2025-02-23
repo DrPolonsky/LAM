@@ -42,11 +42,11 @@ development of elementary ARS theory.
 Before we proceed further, let us consider two formalization scenarios where
 a constructive ARS library can be useful.
 
-\begin{example}[Formalization of typed lambda calculus]
+\begin{example}[Formalization of a typed lambda calculus]
 Suppose one is formalizing the standard metatheory of
 a typed lambda calculus.  To show confluence, one can
-first establish the Church--Rosser theorem for the untyped lambda calculus,
-then invoke the Subject Reduction theorem.
+first establish the Church--Rosser theorem (CR) for the untyped lambda calculus,
+and then proceed via the Subject Reduction theorem.
 However, suppose that Strong Normalization had already been verified independently.
 Invoking Newman's lemma, one can conclude confluence from the weak
 diamond property --- which is generally easier to prove than full CR.
@@ -102,50 +102,44 @@ principles during our development.
   \item Stay as faithful as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that in every explicit application, our proofs would compute.
 \end{itemize}
 
+\subsection{Decidability}
 In several places, we had to assume certain decidability hypotheses in order to make
 the proofs go through.  These were always flagged explicitly, and an effort was made to
 have as few of them as possible.
+
+Since Strong Normalization is a central concept in ARS theory,
+special attention in our work was given to various incaranations of the concept of well-foundedness in the constructive context.
+(Strong normalization is well-foundedness of the converse relation.)
+The standard constructive definition does not even allow one to show that SN implies WN, see Example \ref{ex:undec} \apcomment{Refer to DecidableCounterexamples.agda?}.
+  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent.  This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
 
 We have also identified classes of ARSs where the needed classical principles are simply valid.  In particular, for finitely branching relations, the implication SN to WN requires nothing else beyond plain decidability of the relation itself: $Rxy \lor \lnot Rxy$.  For example, an ARS induced by a first-order TRS with a finite set of rules is both finitely branching and decidable.
 
 The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi.
 
 For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible lambda theories), or coinductive rewriting ---
-these decidability assumptions no longer hold, and the utility of ARS results diminishes proportionally.
-
-% \subsection{Well-foundedness and classical logic}
-Since Strong Normalization is a central concept in ARS theory,
-special attention in our work was given to various incaranations of the concept of well-foundedness in the constructive context.
-(Strong normalization is well-foundedness of the converse relation.)
-The standard constructive definition does not even allow one to show that SN implies WN, see Example \ref{ex:undec}.  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent.  This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
+these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
 
 \subsection{Contributions}
 Our contributions are as follows.
 \begin{itemize}
   \item Formalization of elementary ARS theory as presented in
-  Chapter 1 of \cite{Terese};
+  \cite{Terese}, including relevant background;
+  % Chapter 1 of
   \item An ontology of termination and confluence properties, and a detailed analysis of logical relationships between them;
-  \item Definition of a few new ARS concepts that serve to streamline the constructive verification of these relationships;
+  \item Definitions of new ARS concepts that refine our understanding of these relationships;
   \item Marginal improvements to classical confluence and termination criteria;
-  \item An exploration of several distinct notions of well-foundedness.
+  \item An examination of several distinct notions of well-foundedness
+  in the constructive setting.
 \end{itemize}
 
-\subsection{OLD>DELETE}
-{ \color{gray}
-Term Rewriting Systems (TRS) play a foundational role in the theory of
-programming languages.
+\subsection{Plan of the paper}
 
-- Operational semantics
-- Reduction strategies
-
-At Appalachian State University, we are building a library of formalized theory,
-lambda calculus, and type theory. This is a first contribution in this effort.
-
-ARS is Establishing those properties of relations relevant for rewriting theory.
-
-- Formalization of "Abstract Rewriting" content from TeReSe,
-including background on logic, relations, etc.
-- Identifying constructive formulations of classical concepts and proofs
-- Studying implications between notions related to confluence and termination
-- Isolating classical principles from proofs and eliminating them where possible.
-}
+The structure of the paper roughly corresponds with the progression of the Agda code.
+% Agda files.
+% (with the exception of section \ref{sec:Well-foundedness}, which is put at the end)
+In the next section, we lay out the main properties of relations studied in ARS theory,
+setting the ground for what follows.  In Section \ref{sec:Formalization}, we
+outline our formalization of the ARS chapter from \cite{Terese}.
+Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Implications}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness.  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
+We conclude with a brief summary and suggestions for future work.
