@@ -12,17 +12,26 @@
 As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
 we came to the definitions below. 
 
-\begin{definition}\label{def:mf}  Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition}\label{def:mf} \hfill
     \begin{description}
         \item[$a \in \MF_R$] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[$a \in \WM_R$] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
         \item[$a \in \SMseq_R$] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists 
         an $i \in \nat$ such that $s (i) \in \MF$. 
-        \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is also strongly minimalizing.
+        \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This 
+        definition is to be understood inductively).
         \item[$a \in \MP_R$] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
 
     \end{description} 
 \end{definition}
+
+Trivially, the following holds. 
+\begin{proposition}\label{prop:nftomf}
+    $\NF \implies \MF$ 
+\end{proposition}    
+\begin{proof}
+    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
+\end{proof}
 
 $\SMseq$ is only classically equivalent to $\SM$. The 
 following proposition relates these new definitions with our previous $\RP$ definitions.
@@ -34,15 +43,9 @@ following proposition relates these new definitions with our previous $\RP$ defi
     \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
 \end{proof}
 
-Trivially, the following also holds. 
-\begin{proposition}\label{prop:nftomf}
-    $\NF \implies \MF$ 
-\end{proposition}    
-\begin{proof}
-    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
-\end{proof}
 
-With these minimal definitions we can see the taxonomy of concepts that relate to termination and confluence.
+Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination property in its own right. This leads us to 
+explore the following broader taxonomy of concepts relating to termination and confluence.
 
 \begin{center}
 
@@ -83,24 +86,24 @@ With these minimal definitions we can see the taxonomy of concepts that relate t
 \end{center}
 
 The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. The classical property of being minimally decidable is 
-required to complete the implication from $\SN$ to $\WN$, as can be seen in our formalization
+required to complete the implication from $\SN$ to $\WN$, as can be seen in our formalization \sacomment{Rewrite this section}
 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
-
+ 
 The isMinDec property \sacomment{refer to list of classical properties here} states that all elements either have a relation to some other element, or 
 there is no other element to which they have a relation. \greyout{If the element relates to no other element then it is terminating 
 and so trivially $\WN$. If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
 $y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element.} 
 
-Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
+The same property is similarly required in order to show that $\SM$ implies $\WM$.
 
 We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\gCR$ and $\gSN$). 
 The following tables show either that a given combination is complete, or the appropriate counterexample which demonstrates why 
-those properties do not provide a property higher on the taxonomical hierarchy. 
+those properties do not provide the next property on the hierarchy. 
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the 
 first table assume $\WCR$ and in the second table assume $\gWCR$.
-
+\clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{table}[h!]
     \centering
@@ -291,17 +294,17 @@ $\SN \to \WN$ or $\SM \to \WM$.}
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
         \item The property $\gWCR$ can sometimes be a substitute for the classical 
-        property required for $\SN \implies \WN$ (and similarly $\SM \implies WM$).   
-        \item $\gWN \land \gUNto \implies \gCR$ doesn't require any classical assumptions
+        property required for $\SN \implies \WN$ (and similarly $\SM \implies \WM$).   
+        \item $\gWN \land \gUNto \implies \gCR$ does not require any classical assumptions
          or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$. 
         \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. The 
         counterexample provided illustrates why $\WCR \land \WN \land \UNto \nRightarrow \CR$.
-        \item Both $\SM$ and $\WN$ are required for $\SN$, this connection is explored in Subsection \ref{subsec:SMWNSN}.
         \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$. This is explored in Subsection \ref{subsec:newnewman}.
+        \item Both $\SM$ and $\WN$ are required for $\SN$, this connection is explored in Subsection \ref{subsec:SMWNSN}.
     \end{enumerate}
 \end{remark}
 
-\subsubsection{Generalized Newman's Lemma}\label{subsec:newnewman}
+\subsection{Generalized Newman's Lemma}\label{subsec:newnewman}
 One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma. 
 
 \begin{proposition}
@@ -312,7 +315,7 @@ One interesting outcome from investigating the normalization taxonomy was a gene
 \end{proof}
 
 This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but 
-uses the generalization $\SM$ of $\SN$. 
+uses the weaker assumption $\SM$ in place of $\SN$. 
 
 % The tables show a number of changes when moving from properties holding locally to globally. 
 % Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 

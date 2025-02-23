@@ -9,16 +9,17 @@ The definitions grouped as normalizing in \terese are formalized in \texttt{ARS-
 
 The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}. 
 \begin{itemize}
-    \item $\SN$ : We make use of the well-founded definition, rather than the finite reduction sequence definition.
+    \item $\SN$ : We define this via the notion of accessibility rather than the non-existence of infinite reduction sequences. 
+     See Section \ref{sec:Well-foundedness} for further discussion.
     \item $\NPe$ : We use the equivalent $\NP$ definition. 
     \item $\Inc$ : We use the more general property $\RP$.      
 \end{itemize}
 
-As mentioned, the $\Inc$ property imposes a computationally demanding requirement. However, $\Inc$ is used only in Theorem 1.2.3 
+As mentioned, the $\Inc$ property can impose a computationally demanding requirement. However, $\Inc$ is used only in Theorem 1.2.3 
 and the only crucial aspect of $\Inc$ needed for the proof is that no $R$-increasing 
 sequence can have an upper bound.
-We establish that the properties $\RP$ and $\RPm$ were sufficient for replacing $\Inc$ in the theorem (see Subsection \ref{subsec:theorems}), 
-which led us to examine the condition in $\RP$ more closely. This condition provides a generalization of the notion of a normal form, 
+We establish that the equivalent properties $\RP$ and $\RPm$ are sufficient for replacing $\Inc$ in the theorem (see Subsection \ref{subsec:theorems}), 
+which led us to examine the condition on $s (i)$ appearing inside $\RP$ more closely. This condition provides a generalization of the notion of a normal form, 
 which we explore in detail in Section \ref{sec:Implications}. 
 
 \subsection{Propositions}
@@ -29,12 +30,12 @@ and as such are not the focus of this paper.
 \subsection{Theorems}\label{subsec:theorems}
 \subsubsection{Newman's Lemma}
 There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given in \terese. 
-The first and third of these proofs make use of classical assumptions. The second proof is amenable to a 
+The first and third of these proofs make use of classical reasoning. The second proof is amenable to a 
 constructive formalization as shown in the following function in \texttt{ARS-NewmansLemma.agda}:
 
 \verb|NewmansLemma : R isSN → R isWCR → R isCR|.
 
-We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using $\MF$. 
+We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using a condition distilled from $\RP$. 
 The formalizations of the remaining theorems are all found in \texttt{ARS-Theorems.agda}. 
 \subsubsection{Theorem 1.2.2}
 There are three parts to this theorem. 
@@ -48,14 +49,13 @@ There are three parts to this theorem.
 \begin{itemize}
     \item \verb|CR→NP : R isCR → R isNP₌|
     \item \verb|NP→UN : R isNP₌ → R isUN|
-    \item \verb|CP→UN : R isCR → R isUN|
 \end{itemize}
 
-($ii$) is formalized in:
+($ii$) is formalized also from the weaker hypothesis of $\gUNto$:
 \begin{itemize}
     \item \verb|ii : R isWN × R isUN → R isCR|
+    \item \verb|UN→∧WN→CR : R isUN→ → R isWN → R isCR|
 \end{itemize}
-Note that we have provided a proof with the weaker hypothesis of $\gUNto$. 
 
 ($iii$) is formalized in:
 \begin{itemize}
@@ -64,7 +64,7 @@ Note that we have provided a proof with the weaker hypothesis of $\gUNto$.
 
 \subsubsection{Theorem 1.2.3}
 The following definition is required for this theorem.
-\begin{definition} Let $a \in A$.
+\begin{definition}\hfill
     \begin{description}
         \item[$a \in CP_R$] \emph{$a$ has the cofinality property} if there exists a 
         (not necessarily strictly) increasing sequence starting from $a$ such that every
@@ -86,13 +86,13 @@ There are four parts to this theorem.
     \item \verb|i→ : R isWN → R isUN→ → R isBP|
 \end{itemize}
 
-In $\mathtt{i\to}$ we again provide a generalization by using $\gUNto$ rather than $\gUN$.
+In $\mathtt{i\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
 
 A formalization of ($ii$) is provided in: 
 \begin{itemize}
     \item \verb|iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)|
 \end{itemize}
-This is a fundamentally classical result, and so the result is only classically equivalent to $\gSN$.
+This is an inherently classical result, and so the result is only classically equivalent to $\gSN$.
 
 ($iii$) is formalized in: 
 \begin{itemize}
@@ -107,6 +107,8 @@ The reverse implication of ($iv$) is formalized in:
 \begin{itemize}
     \item \verb|iv : R isCP → R isCR|
 \end{itemize}
-We did not formalize $\gCR \to \gCP$ as it requires the ARS to be countable.
+We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions.
+
+% the ARS to be countable.
 
 

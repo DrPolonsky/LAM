@@ -1,14 +1,14 @@
 \section{Definitions}
 \label{sec:Definitions}
 The following definitions are provided to ensure clarity and precision
-in our discussion. Each subsection specifies the Agda file(s) which contain formalizations of the given definitions.
+in our discussion. Each subsection specifies the Agda file(s) which contains formalizations of the given definitions.
 
 \begin{definition}
     An abstract rewrite system (\emph{ARS}) is a structure $\mathcal{A} = (A, R_\alpha)$ where
-     $A$ is a set of elements and $R_\alpha$ is a set of binary relations on $A$.
+     $A$ is a set and $R_\alpha$ is a set of binary relations on $A$.
 \end{definition}
 
-For the rest of this section, let $A$ be a fixed set, and $R$ be a relation on $A$.
+For the rest of this paper, let $A$ be a fixed set, $R$ be a relation on $A$, and $a \in A$.
 
 
 % \greyout{We denote by $\tilde R$ the relational converse of $R$ ($(x,y) \in \tilde R \iff (y,x) \in R$),
@@ -16,8 +16,8 @@ For the rest of this section, let $A$ be a fixed set, and $R$ be a relation on $
 
 \subsection{Closure operators (\texttt{ClosureOperators.agda})}
 
-\begin{notation} \hfill
-The following notations are standard.  For precise definitions, see \texttt{ClosureOperators.agda}.
+\begin{notation} 
+The following notations are standard.
   \begin{enumerate}
     \item $R^r$ denotes the \emph{reflexive closure} of $R$.
     \item $R^s$ denotes the \emph{symmetric closure} of $R$.
@@ -37,34 +37,38 @@ we may drop the corresponding subscript.
 
 We next define rewriting-theoretic concepts like confluence and normalization relative to a fixed element of $A$; global versions of these properties are obtained by universal quantification.
 \subsection{Normalization (\texttt{ARS-Properties.agda})}
-\begin{definition} The following definitions relate to normalization. Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition} The following definitions relate to normalization. 
   \begin{description}
-    \item[$a \in \NF_R$] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
-    \item[$a \in \WN_R$] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
-    \item[$a \in \SN_R$] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = {(y,x) | (x,y) \in R}$. See Section \ref{sec:Well-foundedness}.
+    \item[\ule{$\mathbf{a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
+    \item[\ule{$a \in \WN_R$}] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
+    \item[\ule{$a \in \SN_R$}] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$ 
+    (see Section \ref{sec:Well-foundedness} for the notion of accessibility).
   \end{description}
 \end{definition}
 
 
 
 \subsection{Confluence (\texttt{ARS-Properties.agda})}
-\begin{definition} The following definitions relate to confluence. Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition} The following definitions relate to confluence.
     \begin{description}
         \item[$a \in \WCR_R$] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
         \item[$a \in \CR_R$] \emph{$a$ is Church-Rosser (or confluent)} if $c \bmstep a \mstep b \implies c \mstep d \bmstep b$.
         \item[$a \in \CRs_R$] \emph{$a$ is subcommutative} if $c \bmstep a \mstep b \implies c \rrstep d \brstep b$.
-        \item[$a \in \NPe_R$] \emph{$a$ has the equivalence normal form property} if $a \estep b \implies a\mstep b$ for any $b \in \NF$.
+        \item[$a \in \NPe_R$] \emph{$a$ has the conversion normal form property} if $a \estep b \implies a\mstep b$ for any $b \in \NF$.
         \item[$a \in \NP_R$] \emph{$a$ has the normal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \NF$.
         \item[$a \in \UN_R$] \emph{$a$ has the unique normal form property} if $a \estep b \implies a \equiv b$  for any $a, b \in \NF$.
         \item[$a \in \UNto_R$] \emph{$a$ has the unique normal form property with respect to reduction} if $c \bmstep a \mstep b  \implies b \equiv c$  for any $b, c \in \NF$.
     \end{description}
 \end{definition}
 
-For each of the subsets defined above we denote in bold face the proposition that the subset contains all of $A$.
-That is, for $\mathrm{X} \in \{\WCR , \CR , \NP , \UN \}$ we write $\mathbf{X}$ for the statement that $x \in \mathrm{X}_R$ for all $x \in A$.
+\begin{notation}
+    For each of the subsets $\mathrm{X}$ defined above we write 
+    $R \models \mathbf{X}$ if $\forall a.\; a \in \mathrm{X}_R$. When $R$ is clear from the context, we will write $\gNP$ for $R \models \gNP$, etc.
+    That is, for $\mathrm{X} \in \{\WCR , \CR , \NP , \UN, \dots \}$ we write $\mathbf{X}$ for the statement that $x \in \mathrm{X}_R$ for all $x \in A$.
+\end{notation}
 
 
-In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote normal form.
+In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote the set of normal forms.
 
 \begin{proposition}\hfill
     \begin{enumerate}
@@ -84,28 +88,25 @@ The implication $\UNto \implies \UN$ does not hold, as can be seen in Example \r
 \subsection{Sequences and Recurrence (\texttt{ARS-Properties.agda}, \texttt{Seq.agda})}
 The following definitions are key to formalizing Theorem 1.2.3 in \terese.
 
-\begin{notation}
-    $R \models \mathbf{X}$ is $\forall a.\; a \in \mathrm{X}_R$. When $R$ is clear from the context, we will write $\gNP$ for $R \models \gNP$, etc.
-\end{notation}
 
 \begin{definition} \hfill
     \begin{description}
-        \item[$R \models \gInc$] \emph{$R$ is increasing} if there exists a ``size function'' $|-| : A \to \nat$ satisfying, for all $a, b \in A$,
-        $Rab \to |a| < |b|$
+        \item[\ule{$R \models \gInc$}] \emph{$R$ is increasing} if there exists a ``size function'' $|{-}| : A \to \nat$ satisfying, for all $a, b \in A$,
+        $(a \rstep b) \implies |a| < |b|$
     \end{description}
 \end{definition}
 
-Having a size function that maps to the natural numbers is computationally taxing to satisfy.
+Having a size function that maps to the natural numbers can be computationally taxing to satisfy.
 Further, it takes us outside of purely relational theory. The following definitions are for properties which allow us to forgo $\gInc$, for further discussion see Subsection \ref{subsec:def}.
-\begin{definition} \label{def:rp} Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition} \label{def:rp} \hfill
     \begin{description}
-        \item[$s : \nat \to A$] \emph{A sequence $s \in A$} is a function from the natural numbers to $A$.
-        \item[$s \in R-increasing$] \emph{A sequence $s \in A$ is $R$-increasing} if every term is $R$-related to its preceding term.
-        \item[$a$ is an $s$-bound] if $s (i) \mstep a$ for all $i \in \nat$.
-        \item[$a \in \BP_R$] if for all $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound.
-        \item[$R \models \gRPm$] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
-        \item[$R \models \gRP$] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that
-        $s (i) \mstep x \implies x \mstep s (i)$ for all $x\in A$. See Definition \ref{def:mf}.
+        \item[\ule{$s : \nat \to A$}] \emph{A sequence $s \in A$} is a function from the natural numbers to $A$.
+        \item[\ule{$s$ is $R$-increasing}] \emph{A sequence $s \in A$ is $R$-increasing} if every term is $R$-related to its preceding term.
+        \item[\ule{$a$ is an $s$-bound}] if $s (i) \mstep a$ for all $i \in \nat$.
+        \item[\ule{$a \in \BP_R$}] \emph{$a$ has the bound property} if for each $R$-increasing sequence $s$ with $s (0) = a$ there exists an $s$-bound.
+        \item[\ule{$R \models \gRP$}] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that
+        $s (i) \mstep x \implies x \mstep s (i)$ for all $x\in A$. 
+        \item[\ule{$R \models \gRPm$}] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
     \end{description}
 \end{definition}
 
@@ -114,8 +115,8 @@ In \terese $\mathrm{Ind}$ is used to denote $\BP$.
 The following is immediate.
 \begin{proposition}\hfill
     \begin{enumerate}
-        \item $\gInc \implies \gRPm$
-        \item $\gRPm \implies \gRP$
+        \item $\gInc \implies \gRP$
+        \item $\gRP \implies \gRPm$
     \end{enumerate}
 \end{proposition}
 
@@ -123,17 +124,17 @@ The following is immediate.
 It follows that every relation that is increasing in the sense of \terese
 vacuously satisfies the RP condition.
 
-We wanted to generalize $\RP$ and thought that with $\RPm$ we had a good candidate for a weaker definition that
-did not rely on the notion of $\MF$. We show that this weaker definition is
-in fact an equivalent definition in the following proof in \texttt{ARS-Implications.agda}:
+We wanted to generalize $\RP$ and thought that with $\RPm$ we had a good candidate.
+ We show that this weaker definition is
+in fact equivalent in the following proof in \texttt{ARS-Implications.agda}:
 
 \verb|RP-↔RP : R is RP- ↔ R is RP|.
 
 \subsection{Finitely branching (\texttt{FinitelyBranching.agda})}
 
-\begin{definition} Let $A$ and $R$ be as above, and let $a \in A$.
+\begin{definition} \hfill
     \begin{description}
-        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there is finitely many $b \in A$ such that $a \rstep b$.
+        \item[$a \in \FB$] \emph{$a$ is finitely branching} if there are finitely many $b \in A$ such that $a \rstep b$.
     \end{description}
 \end{definition}
 
