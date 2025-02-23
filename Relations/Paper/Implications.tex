@@ -9,23 +9,25 @@
 % From the perspective of programming language theory, the two properties of abstract rewriting 
 % systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 % show chains of implications starting from these properties.
-As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
-we came to the below definitions. 
+As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative property for $\Inc$. It is through examining $\RP$ that 
+we came to the definitions below. 
 
 \begin{definition}\label{def:mf}  Let $A$ and $R$ be as above, and let $a \in A$.
     \begin{description}
         \item[$a \in \MF_R$] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[$a \in \WM_R$] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
+        \item[$a \in \SMseq_R$] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists 
+        an $i \in \nat$ such that $s (i) \in \MF$. 
         \item[$a \in \SM_R$]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is also strongly minimalizing.
         \item[$a \in \MP_R$] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
 
     \end{description} 
 \end{definition}
 
-\sacomment{Need to relate SM and SMseq. Probably define SMseq and mention 
-we can only prove this for SMseq.}
+We show that $\SM \implies \SMseq$, however $\SMseq$ is only classically equivalent to $\SM$. The 
+following proposition relates these new definitions with our previous $\RP$ definitions.
 \begin{proposition}\label{prop:SMRP}
-    $SM \leftrightarrow RP \land BP$
+    $SMseq \leftrightarrow RP \land BP$
 \end{proposition}
 \begin{proof}
     See,\\ \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|
@@ -34,7 +36,7 @@ we can only prove this for SMseq.}
 
 Trivially, the following also holds. 
 \begin{proposition}\label{prop:nftomf}
-    $a\in NF_R \implies a \in MF_R$ 
+    $\NF \implies \MF$ 
 \end{proposition}    
 \begin{proof}
     See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
@@ -85,12 +87,10 @@ required to complete the implication from $\SN$ to $\WN$, as can be seen in our 
 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
 
-\sacomment{Are we going to define this property here or elsewhere?}
-
-The isMinDec property states that all elements either have a relation to some other element, or 
+The isMinDec property \sacomment{refer to list of classical properties here} states that all elements either have a relation to some other element, or 
 there is no other element to which they have a relation. If the element relates to no other element then it is terminating 
-and so trivially $\WN$. If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
-$y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element. 
+and so trivially $\WN$. \greyout{If the element does relate to some other element $y \in A$, then we recursively apply our claim to 
+$y$ and because we know that we have the property of $\SN$ we must eventually reach a terminating element.} 
 
 Similarly, the property of being minimally decidable is required in order to show that $\SM$ implies $\WM$.
 
@@ -104,39 +104,41 @@ first table assume $\WCR$ and in the second table assume $\gWCR$.
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{table}[h!]
     \centering
-    \caption{Local implications}
     \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
-    \hline
-    \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
-    \hline
-    $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$\footnotemark[1] , CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
-    \hline
-    $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1]  , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
-    \hline
-    $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
-    \hline
-    $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
-    \hline
-    
+        \hline
+        \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+        \hline
+        $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$\footnotemark[1] , CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
+        \hline
+        $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1]  , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+        \hline
+        $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+        \hline
+        $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
+        \hline
+        
     \end{tabular}
-\end{table}
+    \caption{Local implications}
+\end{table} 
+\vspace{-1cm}
+% \\[-0.5cm]
 \begin{table}[h!]
     \centering
-    \caption{Global implications}
     \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
-    \hline
-    \rowcolor{gray!30}     & $\gWM$         & $\gWN$         & $\gSM$             & $\gSMandWN$        & $\gSN$ \\
-    \hline
-    $\gUNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
-    \hline
-    $\gNP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
-    \hline
-    $\gMP$ & $\gCR$ , CE-\ref{CE:9}    & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[2] , CE-\ref{CE:9} & $\gCR$, $\gSN$    & $\gCR$\footnotemark[2] , $\gSN$ \\
-    \hline
-    $\gCR$   & $\gCR$, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}     & $\gCR$, CE-\ref{CE:9}        & $\gCR$, $\gSN$      & $\gCR$ , $\gSN$ \\
-    \hline
-    
+        \hline
+        \rowcolor{gray!30}     & $\gWM$         & $\gWN$         & $\gSM$             & $\gSMandWN$        & $\gSN$ \\
+        \hline
+        $\gUNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
+        \hline
+        $\gNP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
+        \hline
+        $\gMP$ & $\gCR$ , CE-\ref{CE:9}    & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[2] , CE-\ref{CE:9} & $\gCR$, $\gSN$    & $\gCR$\footnotemark[2] , $\gSN$ \\
+        \hline
+        $\gCR$   & $\gCR$, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}     & $\gCR$, CE-\ref{CE:9}        & $\gCR$, $\gSN$      & $\gCR$ , $\gSN$ \\
+        \hline
+        
     \end{tabular}
+    \caption{Global implications}
 \end{table}
 \footnotetext[1]{This implication also requires $\gWCR$.}
 \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from 
@@ -286,6 +288,19 @@ $\SN \to \WN$ or $\SM \to \WM$.}
 \end{tabular}
 \end{center}
 
+\begin{remark} The following are the key takeaways from the implication tables. \hfill
+    \begin{enumerate}
+        \item The property $\gWCR$ can sometimes be a substitute for the classical 
+        property required for $\SN \implies \WN$ (and similarly $\SM \implies WM$).   
+        \item $\gWN \land \gUNto \implies \gCR$ doesn't require any classical assumptions
+         or $\gWCR$ for $\gCR$, unlike $\gSN \land \gUNto$. 
+        \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. The 
+        counterexample provided illustrates why $\WCR \land \WN \land \UNto \nRightarrow \CR$.
+        \item Both $\SM$ and $\WN$ are required for $\SN$, this connection is explored in Subsection \ref{subsec:SMWNSN}.
+        \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$. This is explored in Subsection \ref{subsec:newnewman}.
+    \end{enumerate}
+\end{remark}
+
 \subsubsection{Generalized Newman's Lemma}\label{subsec:newnewman}
 One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma. 
 
@@ -302,8 +317,8 @@ uses the generalization $\SM$ of $\SN$.
 % The tables show a number of changes when moving from properties holding locally to globally. 
 % Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 
 % globally but not locally. 
-\subsection{Relation between $\SM$, $\WN$, and $\SN$}
-One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\WN$. We also 
+\subsection{Relation between $\SM$, $\WN$, and $\SN$} \label{subsec:SMWNSN}
+One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\NP$. We also 
 obtain completeness when we have $\gWN$ and $\gSM$. 
 To show that $\gSM \land \gWN \implies \gSN$ we built on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds 
 then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
@@ -315,5 +330,3 @@ then our proof no longer requires the property $\NP$. This progression of proofs
 \verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN| 
 
 
-\sacomment{Are there any other features of the table that we would like to draw out?}
-\sacomment{We should remember that If global WCR and local SM implies local CR, then if we also have local WN, we get local SN.}

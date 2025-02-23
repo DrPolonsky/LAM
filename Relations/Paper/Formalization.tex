@@ -16,19 +16,19 @@ The following is a summary of the differences in definition we have used as ment
     \item $\Inc$ : We use the more general property $\RP$.      
 \end{itemize}
 
-As already mentioned, the $\Inc$ property was one we wanted to move away from. We saw that $\Inc$ was being used only in Theorem 1.2.3 
-and that the crucial facet of $\Inc$ for the proof of the theorem was that no $R$-increasing 
+As already mentioned, the $\Inc$ property has undesired requirements. $\Inc$ is used only in Theorem 1.2.3 
+and the crucial facet of $\Inc$ for the proof of the theorem is that no $R$-increasing 
 sequence can have an upper bound.
-We established that the properties $\RP$ and $\RPm$ were sufficient for the proving the theorems. This in turn led us to 
+We established that the properties $\RP$ and $\RPm$ were sufficient for proving the theorem (see Subsection \ref{subsec:theorems}). This in turn led us to 
 examine the condition in $\RP$ more closely. This condition provides a generalization of the notion of normal form, 
-which we analyze in detail in Section \ref{sec:Implications}. \sacomment{Try and get this para to flow better.}
+which we analyze in detail in Section \ref{sec:Implications}. 
 
 \subsection{Propositions}
 There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
 The formalization of the proofs are in \texttt{ARS-Propositions.agda}. These formalizations were straightforward 
 and as such are not the focus of this paper. \sacomment{Do we include more information on these propositions?}
 
-\subsection{Theorems}
+\subsection{Theorems}\label{subsec:theorems}
 \subsubsection{Newman's Lemma}
 There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given in \terese. 
 The first and third of these proofs make use of classical properties. The second proof is amenable to a 
@@ -78,7 +78,7 @@ The following definition is required for this theorem.
 
 There are four parts to this theorem. 
 \begin{description}
-    \item[($i$)] $\gWN \and \gUN \implies \gBP$
+    \item[($i$)] $\gWN \land \gUN \implies \gBP$
     \item[($ii$)] $\gBP \land \gInc \implies \gSN$  
     \item[($iii$)] $\gWCR \land \gWN \land \gInc \implies \gSN$
     \item[($iv$)] $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
@@ -90,25 +90,26 @@ There are four parts to this theorem.
 \end{itemize}
 In $\mathtt{i\to}$ we again provide a generalization by using $\gUNto$ rather than $\gUN$.
 
-A near formalization of ($ii$) is provided in: 
+A formalization of ($ii$) is provided in: 
 \begin{itemize}
     \item \verb|iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)|
 \end{itemize}
-\sacomment{Explain here why have we provided a near formalization rather than sticking to the same properties}
+This is a fundamentally classical result, and so the result is only classically equivalent to $\gSN$.
+\sacomment{Double check the above explanation.}
 
 ($iii$) is formalized in: 
 \begin{itemize}
     \item \verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN|
 \end{itemize}
 As can be seen we have substituted $\gInc$ with $\gRPm$ which generalizes this theorem. We have also included the assumption that $\gSN$ 
-is decidable \sacomment{Is decidability being discussed elsewhere in the paper that we can reference here.} as this property enables us 
+is decidable as this property enables us 
 to construct a witness for an element that either does or does not have the property $\SN$. Such a witness was necessary for our proof. \sacomment{More to say on this theorem?}
 
-\sacomment{neeed to define CP}
+
 The reverse implication of ($iv$) is formalized in: 
 \begin{itemize}
     \item \verb|iv : R isCP → R isCR|
 \end{itemize}
-We did not formalize $\gCR \to gCP$ as it requires the ARS to be countable \sacomment{More to say?}.
+We did not formalize $\gCR \to \gCP$ as it requires the ARS to be countable \sacomment{Add this proof to future todo}.
 
 
