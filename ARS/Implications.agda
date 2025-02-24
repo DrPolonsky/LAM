@@ -5,11 +5,11 @@ open import Datatypes using (ℕ; zero;  succ)
 open import Relations.Seq
 
 
-module Relations.ARS-Implications {A : Set } {R : 𝓡 A} where
+module ARS.Implications {A : Set } {R : 𝓡 A} where
 
-open import Relations.ARS-Util
-open import Relations.ARS-Closure
-open import Relations.ARS-Properties {A}
+open import ARS.Util
+open import ARS.Closure
+open import ARS.Properties {A}
 open LocalProperties {R}
 open MiscProperties
 
@@ -80,9 +80,9 @@ module Confluent-Implications where
     WN∧NP→CR (n ,, (R*xn , x∈NF)) x∈NP R*xy R*xz = n ,, x∈NP x∈NF R*xn R*xy , x∈NP x∈NF R*xn R*xz
 
     UN→∧WN→CR : R isUN→ → R isWN → R isCR
-    UN→∧WN→CR RisUN→ RisWN x {y}{z} R*xy R*xz with RisWN y | RisWN z 
-    ... | n₀ ,, R*yn₀ , n₀∈NF |  n₁ ,, R*zn₁ , n₁∈NF with 
-                RisUN→ x n₀∈NF n₁∈NF (R*xy ⋆!⋆ R*yn₀) (R*xz ⋆!⋆ R*zn₁) 
+    UN→∧WN→CR RisUN→ RisWN x {y}{z} R*xy R*xz with RisWN y | RisWN z
+    ... | n₀ ,, R*yn₀ , n₀∈NF |  n₁ ,, R*zn₁ , n₁∈NF with
+                RisUN→ x n₀∈NF n₁∈NF (R*xy ⋆!⋆ R*yn₀) (R*xz ⋆!⋆ R*zn₁)
     ... | n₀≡n₁ = n₀ ,, (R*yn₀ , transp ((R ⋆) z) (~ n₀≡n₁) R*zn₁)
 
 module Normalizing-Implications where
@@ -101,17 +101,17 @@ module Normalizing-Implications where
                     (n ,, x∈NP n∈NF R*xn (Rxy ,⋆ ε⋆) , n∈NF)
                     (λ {w} {z} H R*yw R*yz → x∈NP H (Rxy ,⋆ R*yw) (Rxy ,⋆ R*yz) )
                     (xAcc y Rxy)
-    
-    isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x 
+
+    isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x
     isWN∧SM→SN RisWN {x} (SMrec .x x∈MF) = WN∧MF→SN (RisWN x) x∈MF
-    isWN∧SM→SN RisWN {x} (SMacc .x x∈SMacc) with RisWN x 
+    isWN∧SM→SN RisWN {x} (SMacc .x x∈SMacc) with RisWN x
     ... | .x ,, ε⋆ , n∈NF = NF⊆SN n∈NF
-    ... | n ,, (Rxy ,⋆ R*xn) , n∈NF = acc f where 
+    ... | n ,, (Rxy ,⋆ R*xn) , n∈NF = acc f where
         f :  ∀ (y : A) → ~R R y x → y ∈ ~R R -accessible
         f y Rxy = isWN∧SM→SN RisWN  (x∈SMacc y Rxy)
 
-    isWN∧isSM→isSN : R isWN → R isSM → R isSN 
-    isWN∧isSM→isSN RisWN RisSM x =  isWN∧SM→SN RisWN (RisSM x)    
+    isWN∧isSM→isSN : R isWN → R isSM → R isSN
+    isWN∧isSM→isSN RisWN RisSM x =  isWN∧SM→SN RisWN (RisSM x)
 
 
 
@@ -183,8 +183,8 @@ RP-→RP RP- f f-inc a aisf-bound with RP- f f-inc a aisf-bound
             ... | yisf-bound with RP- f f-inc y yisf-bound
             ... | j ,, R*yfⱼ = R*yfⱼ ⋆!⋆ (aisf-bound j ⋆!⋆ R*afᵢ)
 
-RP-↔RP : R isRP- ↔ (R isRP) 
-RP-↔RP  = RP-→RP , RP→RP- 
+RP-↔RP : R isRP- ↔ (R isRP)
+RP-↔RP  = RP-→RP , RP→RP-
 
 
 WCR∧SNx→NPx : R isWCR → SN ⊆ NP
@@ -218,5 +218,3 @@ SN∧UN→CRelem : (~R R) isMinDec → ∀ x → SN x → UN x → CR x
 SN∧UN→CRelem decNF x x∈SN x∈UN R*xb R*xc with SNdec→WN decNF x x∈SN
 ... | (z ,, R*xz , z∈NF) = (z ,, decMin∧SNx∧UNx→NP  decNF x x∈SN x∈UN  z∈NF R*xz  R*xb
                                 , decMin∧SNx∧UNx→NP  decNF x x∈SN x∈UN z∈NF R*xz R*xc )
-
-

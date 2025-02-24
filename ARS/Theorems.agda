@@ -5,14 +5,14 @@ open import Logic
 open import Datatypes using (ℕ; zero; succ)
 open import Relations.Seq
 
-module Relations.ARS-Theorems {A : Set } {R : 𝓡 A} where
+module ARS.Theorems {A : Set } {R : 𝓡 A} where
 
-open import Relations.ARS-Util
-open import Relations.ARS-Implications
-open import Relations.ARS-Properties {A}
+open import ARS.Util
+open import ARS.Implications
+open import ARS.Properties {A}
 open LocalProperties {R}
-open import Relations.ARS-Propositions
-open import Relations.ARS-Base
+open import ARS.Propositions
+open import ARS.Base
 open WeakerWF
 {-This file contains formalization of the theorems of TeReSe Chapter 1-}
 
@@ -27,10 +27,10 @@ module Theorem-1-2-2 where
 
     CP→UN : R isCR → R isUN
     CP→UN RisCR = NP→UN (CR→NP RisCR)
-    
+
 
     ii : R isWN × R isUN → R isCR
-    ii (RisWN , RisUN) = Confluent-Implications.UN→∧WN→CR (Desired-Implications.UN→UN→ RisUN) RisWN 
+    ii (RisWN , RisUN) = Confluent-Implications.UN→∧WN→CR (Desired-Implications.UN→UN→ RisUN) RisWN
 
     iii : subcommutative R → R isCR
     iii RisSC x R*xy R*xz = Proposition-1-1-10.v→i (λ { b c (a ,, Rab , R*ac) → f b c a Rab R*ac } ) (x ,, (R*xy , R*xz))  where
@@ -131,7 +131,7 @@ module Theorem-1-2-3 where
 
   WCR→SN⊆NP : R isWCR → ∀ x → SN x → NP x
   WCR→SN⊆NP RisWCR x x∈SN y∈NF R*xy R*xz
-    with Relations.ARS-Util.wCR→Conf (λ a  Rab  Rac → RisWCR a Rab Rac) x x∈SN R*xy R*xz
+    with ARS.Util.wCR→Conf (λ a  Rab  Rac → RisWCR a Rab Rac) x x∈SN R*xy R*xz
   ... | w ,, ε⋆ , R*zw = R*zw
   ... | w ,, (Ry- ,⋆ _) , R*zw = ∅ (y∈NF Ry-)
 

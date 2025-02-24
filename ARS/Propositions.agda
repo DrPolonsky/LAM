@@ -1,9 +1,9 @@
-module Relations.ARS-Propositions {A : Set} where
+module ARS.Propositions {A : Set} where
 
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Relations.ARS-Base
+open import ARS.Base
 
 {- This file contains formalizations for Proposition 1.1.9, 1.1.10, 1.1.11 from TeReSe Chapter 1 -}
 

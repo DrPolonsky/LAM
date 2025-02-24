@@ -1,4 +1,4 @@
-module Relations.ARS-Base {A : Set} where
+module ARS.Base {A : Set} where
 
 open import Relations.Relations
 open import Predicates

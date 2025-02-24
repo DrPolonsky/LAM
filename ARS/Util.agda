@@ -2,11 +2,11 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 
-module Relations.ARS-Util {A : Set } {R : 𝓡 A} where
+module ARS.Util {A : Set } {R : 𝓡 A} where
 
-open import Relations.ARS-Properties {A}
+open import ARS.Properties {A}
 open LocalProperties {R}
-open import Relations.ARS-Base
+open import ARS.Base
 
 {- This file contains utility functions used throughout the ARS formalization
  which do not cleanly fit within a particular theme-}

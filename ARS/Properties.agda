@@ -1,9 +1,9 @@
-module Relations.ARS-Properties {A : Set} where
+module ARS.Properties {A : Set} where
 
 open import Relations.Relations
 open import Predicates
 open import Logic
-open import Relations.ARS-Base
+open import ARS.Base
 open import Datatypes using (ℕ; zero)
 open import Relations.Seq
 

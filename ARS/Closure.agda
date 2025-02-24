@@ -2,9 +2,9 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 
-module Relations.ARS-Closure {A : Set } {R : 𝓡 A} where
+module ARS.Closure {A : Set } {R : 𝓡 A} where
 
-open import Relations.ARS-Properties {A}
+open import ARS.Properties {A}
 
 open LocalProperties {R}
 
