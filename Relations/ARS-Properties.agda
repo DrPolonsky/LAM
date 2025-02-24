@@ -7,7 +7,6 @@ open import Relations.ARS-Base
 open import Datatypes using (ℕ; zero)
 open import Relations.Seq
 
-
 {- Local and global properties for ARS -}
 
 module LocalProperties {R : 𝓡 A} where
@@ -133,3 +132,7 @@ module MiscProperties (R : 𝓡 A) where
 
   SRv2 : 𝓟 A
   SRv2 x = ∀ (f : ℕ → A) → f ∈ (R ʳ) -increasing → Σ[ i ∈ ℕ ] (MF (f i))
+
+  WFmin→WN : (~R R) isWFmin → R isWN
+  WFmin→WN ~RisWFmin x with ~RisWFmin ((R ⋆) x) x ε⋆
+  ... | (n ,, R*xn , nmin) = n ,, R*xn , λ Rny → nmin _ (R*xn ⋆!⋆ (Rny ,⋆ ε⋆) )  Rny
