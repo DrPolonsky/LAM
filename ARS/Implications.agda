@@ -113,8 +113,13 @@ module Normalizing-Implications where
     isWN∧isSM→isSN : R isWN → R isSM → R isSN
     isWN∧isSM→isSN RisWN RisSM x =  isWN∧SM→SN RisWN (RisSM x)
 
+    open import ARS.NewmansLemma
+    open Newmans-Lemma-SM
 
-
+    isWCR→WN∩SM⊆SN : R isWCR → ∀ {x} → x ∈ WN → x ∈ SM → x ∈ SN
+    isWCR→WN∩SM⊆SN RisWCR {x} x∈WN x∈SM
+      with LocalNewmansLemmaRecurrent R RisWCR _ x∈SM
+    ... | x∈CR = WN∧NP∧SM→SN x∈WN ((MP→NP ∘ CR→MP) x∈CR ) x∈SM
 
 module Desired-Implications where
     -- These are implications we still hope to show

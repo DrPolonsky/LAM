@@ -12,7 +12,6 @@ open import ARS.Implications
 open import ARS.Properties {A}
 open LocalProperties {R}
 open import ARS.Propositions
-open import ARS.Base
 open WeakerWF
 {-This file contains formalization of the theorems of TeReSe Chapter 1-}
 
@@ -116,8 +115,15 @@ module Theorem-1-2-3 where
       s→n : (R ⋆) s n
       s∈SN : SN s
 
-  x∉SN→∃y∉SN : dec (SN) → ∀ {x} → ¬(SN x) → Σ[ y ∈ A ] (¬(SN y) × R x y)
-  x∉SN→∃y∉SN decSN {x} x∉SN = {!   !}
+  -- open WFDefinitions
+  open MinimalComplement
+
+  AccCor : Set
+  AccCor = (~R R) -coreductive (~R R -accessible)
+
+  x∉SN→∃y∉SN : AccCor → ∀ {x} → ¬(SN x) → Σ[ y ∈ A ] (¬(SN y) × R x y)
+  x∉SN→∃y∉SN accCor {x} x∉SN with accCor x x∉SN
+  ... | (y ,, Rxy , y∉SN) = y ,, y∉SN , Rxy
 
   preSNlemma1 : dec (SN) → ∀ {x n} → (R ⋆) x n → NF n → ¬ SN x →
                                   Σ[ y ∈ A ] ((R ⋆) x y × preSN n y)
@@ -135,27 +141,27 @@ module Theorem-1-2-3 where
   ... | w ,, ε⋆ , R*zw = R*zw
   ... | w ,, (Ry- ,⋆ _) , R*zw = ∅ (y∈NF Ry-)
 
-  preSNlemma2 : R isWCR → dec (SN) →
+  preSNlemma2 : R isWCR → dec (SN) → AccCor →
                 ∀ n x → preSN n x → Σ[ y ∈ A ] ((R ⁺) x y × preSN n y)
-  preSNlemma2 RisWCR decSN n x (pSN n∈NF x∉SN s x→s s→n s∈SN)
-    with x∉SN→∃y∉SN decSN x∉SN
+  preSNlemma2 RisWCR decSN accCor n x (pSN n∈NF x∉SN s x→s s→n s∈SN)
+    with x∉SN→∃y∉SN accCor x∉SN
   ... | (y ,, y∉SN , Rxy)
     with RisWCR x x→s Rxy
   ... | (z ,, R*sz , R*yz)
     with preSNlemma1 decSN (R*yz ⋆!⋆ WCR→SN⊆NP RisWCR s s∈SN n∈NF s→n R*sz )  n∈NF y∉SN
   ... | (v ,, R*yv , p) = (v ,, RR⋆⊆R⁺ R Rxy R*yv , p)
 
-  preSNlemma3 : R isWCR → dec (SN) → ∀ n x → preSN n x →
+  preSNlemma3 : R isWCR → dec (SN) → AccCor → ∀ n x → preSN n x →
                   Σ[ f ∈ (ℕ → A) ] ((∀ k → preSN n (f k)) × f ∈ (R ⁺) -increasing)
-  preSNlemma3 RisWCR decSN n x p = f ,, pf , finc where
+  preSNlemma3 RisWCR decSN acccor n x p = f ,, pf , finc where
     f : ℕ → A
     pf : ∀ (k : ℕ) → preSN n (f k)
     f zero = x
-    f (succ k) = fst (preSNlemma2 RisWCR decSN n (f k) (pf k))
+    f (succ k) = fst (preSNlemma2 RisWCR decSN acccor n (f k) (pf k))
     pf zero = p
-    pf (succ k) = pr2 (snd (preSNlemma2 RisWCR decSN n (f k) (pf k)))
+    pf (succ k) = pr2 (snd (preSNlemma2 RisWCR decSN acccor n (f k) (pf k)))
     finc : f ∈ (R ⁺) -increasing
-    finc k = pr1 (snd (preSNlemma2 RisWCR decSN n (f k) (pf k)))
+    finc k = pr1 (snd (preSNlemma2 RisWCR decSN acccor n (f k) (pf k)))
 
 
   seq→sseq : ∀ (f : ℕ → A) → f ∈ (R ⁺) -increasing → ∀ (k : ℕ) → Σ[ a ∈ A ] (R ⋆) a (f k)
@@ -185,21 +191,21 @@ module Theorem-1-2-3 where
   seq→sseq-bnd f finc b fbnd k = snd (seq→sseq f finc k) ⋆!⋆ (fbnd k)
 
 
-  Theorem123Lemma : R isWCR → dec (SN) → ∀ n x → preSN n x →
+  Theorem123Lemma : R isWCR → dec (SN) → AccCor → ∀ n x → preSN n x →
                     Σ[ f ∈ (ℕ → A) ] (f ∈ R -increasing × is R - f bound n)
-  Theorem123Lemma RisWCR decSN n x p
-    with preSNlemma3 RisWCR decSN n x p
+  Theorem123Lemma RisWCR decSN ac n x p
+    with preSNlemma3 RisWCR decSN ac n x p
   ... | (f ,, pf , fisR+inc) =
         (λ k → fst (seq→sseq f fisR+inc k))
         ,,  seq→sseq-inc f fisR+inc
           , seq→sseq-bnd f fisR+inc n (λ k → x→s (pf k) ,⋆ s→n (pf k) ) where open preSN
 
-  iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN
-  iii RisWN RisWCR RisRP decSN x with decSN x
+  iii : R isWN → R isWCR → R isRP- → dec (SN) → AccCor → R isSN
+  iii RisWN RisWCR RisRP decSN ac x with decSN x
   ... | in1 x∈SN = x∈SN
   ... | in2 x∉SN with RisWN x
   ... | n ,, R*xn , n∈NF with preSNlemma1 decSN R*xn n∈NF x∉SN
-  ... | b₀ ,, R*xb₀ , nb₀∈preSN with Theorem123Lemma RisWCR decSN n b₀ nb₀∈preSN
+  ... | b₀ ,, R*xb₀ , nb₀∈preSN with Theorem123Lemma RisWCR decSN ac n b₀ nb₀∈preSN
   ... | s ,, s-inc , n∈s-bound with RisRP s s-inc n n∈s-bound
   ... | i ,, ε⋆ = ∅ (n∈NF (s-inc i))
   ... | i ,, (Rnz ,⋆ R*zsᵢ) = ∅ (n∈NF Rnz)

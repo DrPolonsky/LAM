@@ -5,8 +5,9 @@ open import Logic
 module ARS.Util {A : Set } {R : 𝓡 A} where
 
 open import ARS.Properties {A}
+open import ARS.Propositions -- remove this import when Weakly confluent is removed
 open LocalProperties {R}
-open import ARS.Base
+-- open import ARS.Base
 
 {- This file contains utility functions used throughout the ARS formalization
  which do not cleanly fit within a particular theme-}

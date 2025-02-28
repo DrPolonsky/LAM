@@ -1,12 +1,18 @@
 \documentclass{scrartcl}
 
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 
 \newcommand{\hired}[1]{{\color{red}{#1}}}
 
 \begin{document}
 
-\section*{Notes}
+\section{Final notes about well-foundedness}
+
+\begin{enumerate}
+  \item The implication acc $\to$ seq requires only decidability of the relation itself.
+  \item Finitely branching and decidable implies that they're all equivalent, almost.
+
+\end{enumerate}
 
 \section{Plan}
 \begin{itemize}
@@ -16,20 +22,78 @@
   \item At some point, there should be like a summary of what's been done and what are some interesting discoveries
 \end{itemize}
 
+
+
 In the conclusion, we should recap the main takeaways from each piece.
 The key role of finitely branching condition in making many results effective.
 That it also collapses many well-foundedness properties.
 The ``sufficiency frontier'' for completeness (termination and confluence).
 
 Also discuss open problems, unprovable implications, etc.
-Maybe mention the Kleene tree idea, or at least include the reference to the Bezem-Coquand paper.
+Maybe mention the Kleene tree idea, or at least include the reference to the Bezem--Coquand paper.
 
-\section{Motivation}
+\section{Introduction}
+We present a formalization of the basic Abstract Rewriting Systems (ARS) theory in the Agda proof assistant.
+This is part of a larger effort to develop a library of formalized programming language theory (PL)
+at Appalachian State University.
+Since Term Rewriting Systems (TRS) play a foundational role in programming languages,
+while ARS encompass the basic facts about rewriting relations in general,
+establishing these facts is part of the necessary infrastructure required to
+pursue the broader project.  The present contribution can therefore be seen as
+``bootstrapping'' Appstate's new formalized PL repository.
 
-The standard presentation in Terese makes liberal use of classical logic.
-Should stress effectivity of type-theoretic formalization.
+This broader goal also drives the main design choices in our approach.
+Since rewriting theory is concerned with a fine-grained analysis of computation,
+the most natural vehicle for formalizing it is type theory based on the
+Curry--Howard isomorphism, which Agda implements.  Proofs in this language
+are automatically effective, and implicitly carry the code implementing the
+transformations from the hypotheses to the conclusion.  For example,
+a proof that a given TRS is terminating automatically renders a function that
+computes a normal form of any term in its domain.
+
+Staying within this paradigm requires the proofs to be constructive.
+Moreover, it requires us to avoid any axioms or postulates, such as function
+extensionality, uniqueness of identity proofs, univalence, etc.
+While most of ARS results are indeed constructive, standard presentations,
+ including \hired{[Terese]}, make liberal use of classical logic.
+Our paper can thus be read as a thoroughly constructive
+development of elementary ARS theory.
+
+Before we proceed further, let us consider two formalization scenarios where
+our contribution can be useful.
+
+\subsubsection*{Example 1. Formalization of typed lambda calculus.}
+
+Suppose one is formalizing the standard metatheory of
+a typed lambda calculus.  To show confluence, one possible approach is to
+first establish the Church--Rosser theorem for the untyped lambda calculus,
+then invoke the Subject Reduction Theorem.
+However, suppose one has already independently verified Strong Normalization.
+Invoking Newman's lemma, one can then conclude confluence from the weak
+diamond property, which is generally a much simpler fact to prove.
+
+\subsubsection*{Example 2. Quotients of types.}
+Suppose one wishes to construct the initial model of an algebraic theory.
+The classical definition involves the quotient of a free algebra by
+the equivalence relation induced by the theory.
+The quotient is problematic operation in type theory.
+While there are various solutions, such as Higher Inductive Types,
+or Quotient Inductive--Inductive Types, these require one to extend the
+basic type theory with new constructs.
+
+However, if the algebraic theory in question admits a convergent presentation,
+by a confluent and terminating relation $R : A \to A \to Set$, one can define the type of
+$R$-normal forms as
+\[  (\Sigma n : A) (\Pi x : A) \lnot P n x \]
+In many applications, this type can substitute the true quotient satisfactorily.
+(In univalent or cubical type theories, one can moreover show this type to be
+a set, provided the domain $A$ is.)
+
+As these examples illustrate, a fully effective implementation of basic ARS results
+can be very helpful in many settings arising in programming language theory.
+
 \section{Contributions}
-
+Our contributions
 \begin{itemize}
   \item Formalization of ``elementary ARS theory'' as presented in
   Chapter 1 of [TeReSe].
@@ -39,7 +103,10 @@ Should stress effectivity of type-theoretic formalization.
   \item Collecting implications between constructive notions of well-foundedness
 \end{itemize}
 
-\section{Formalization principles}
+\subsection{Formalization principles}
+\hired{One of our design goals is to stay within pure type theory as much as possible,
+therefore we adopt the following principles.}
+
 
 \begin{itemize}
   \item No function extensionality
@@ -56,6 +123,7 @@ Should stress effectivity of type-theoretic formalization.
   \item In other words, we wanted to stay as close as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that in every explicitly given situation, our proofs will compute.
 \end{itemize}
 
+\subsection{Misc.}
 One big item in this development was studying various incaranations of the concept of well-foundedness in constructive context.
 (Strong normalization is well-foundedness of the converse relation.)
 The ``standard'' constructive definition does not even allow one to show that SN implies WN, see Example \ref{ex:undec}.  We therefore looked at a number of variations of this notion, their classical counterparts all being logically equivalent.  This gave rise to a rich set of concepts, see Figure \ref{f:wf}.

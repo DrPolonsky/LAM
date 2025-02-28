@@ -310,6 +310,8 @@ module MinimalComplement {A : Set} (R : 𝓡 A) where
   --         f x (acc xa) x∉P with accCi x
   --         ... | (y ,, Rxy , y∉acc) = f y {!   !} {!   !}
 
+
+
 module ClassicalImplications {A : Set} (R : 𝓡 A) where
 
   {- We will consider four decidability hypotheses here:

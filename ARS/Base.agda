@@ -4,8 +4,6 @@ open import Relations.Relations
 open import Predicates
 open import Logic
 
-
-
 {- The essential type definitions for ARS-}
 
 _↘_↙_ : A → 𝓡 A → A → Set
