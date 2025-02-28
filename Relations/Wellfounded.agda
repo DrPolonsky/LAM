@@ -141,6 +141,14 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
     where f : ∀ x → x ∈ P → x ∈ R -accessible → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
           f x x∈P (acc xac) ¬Σ = ¬Σ (x ,, x∈P , (λ y y∈P Ryx → f y y∈P (xac y Ryx) ¬Σ))
 
+  isWFind-→isWFmin- : isWFind- R → isWFmin- R
+  isWFind-→isWFmin- RisWFind- P {d} d∈P =
+    let φ : 𝓟 A
+        φ x = x ∈ P → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
+        φ-ind : R -inductive φ
+        φ-ind x IH x∈P ¬Σ = ¬Σ (x ,, x∈P , λ y y∈P Ryx → IH y Ryx y∈P ¬Σ )
+      in λ ¬Σ → RisWFind- φ φ-ind d (λ H → H d∈P ¬Σ )
+
   isWFmin-→isWFseq- : isWFmin- R → isWFseq- R
   isWFmin-→isWFseq- RisWFmin- s s-dec = RisWFmin- B (zero ,, refl) f
     where B = (λ d → Σ[ n ∈ ℕ ] (s n ≡ d))
@@ -156,14 +164,6 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
       f x (acc xacc) s s-inc s0=x =
         f (s 1) (xacc (s 1) (transp (R (s 1)) s0=x (s-inc 0) ) )
           (s ∘ succ) (λ n → s-inc (succ n)) refl
-
-  isWFind-→isWFmin- : isWFind- R → isWFmin- R
-  isWFind-→isWFmin- RisWFind- P {d} d∈P =
-    let φ : 𝓟 A
-        φ x = x ∈ P → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
-        φ-ind : R -inductive φ
-        φ-ind x IH x∈P ¬Σ = ¬Σ (x ,, x∈P , λ y y∈P Ryx → IH y Ryx y∈P ¬Σ )
-      in λ ¬Σ → RisWFind- φ φ-ind d (λ H → H d∈P ¬Σ )
 
   isWFminDNE-→isWFmin- : isWFminDNE- R → isWFmin- R
   isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP
@@ -369,7 +369,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     -- ... | in2 sk∈NF | _ = {!   !}
 
     -- This is obviously provable with decidability
-    -- isWFseq→isWFminEM : isWFseq R → isWFminEM R
+    -- isWFseq→isWFminEM : R isWFseq → R isWFminEM
     -- isWFseq→isWFminEM RisWFseq P Pdec = {! isWFminDNe→isWFminDNE  !}
 
     -- -- This seems to lead to the same issue as above
