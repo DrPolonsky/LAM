@@ -44,7 +44,7 @@ pass : ℕ → List (MM³)
 pass n = filter (findM³ n) someM³
 
 test1 : Set
-test1 = {! List→ M→𝕄 (take 100 (allM 5))  !}
+test1 = {! pass 5  !}
 
 test : Set
 test = {! List→ M³→𝕄 (List→ M→M³ (take 100 (allM 5)))  !}
