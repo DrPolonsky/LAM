@@ -151,149 +151,150 @@ module Proposition-1-1-11  where
 
 open ClassicalImplications using (decMin;isMinDec;isMinDec-)
 
+module LocalProperties {R : 𝓡 A} where
+
+  WN : 𝓟 A
+  WN x = Σ[ n ∈ A ] ((R ⋆) x n × NF n)
+
+  SN : 𝓟 A
+  SN = is (~R R) -accessible x
+
+  -- Weak normal form property (denoted NP in notes)
+  NP : 𝓟 A
+  NP x = ∀ {y z} → NF y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
+
+  UN : 𝓟 A
+  UN x = ∀ {y} {z} → NF y → NF z → (R ⋆) x y → (R ⋆) x z → y ≡ z
+
+  CR : 𝓟 A
+  CR x = ∀ {b c} → (R ⋆) x b → (R ⋆) x c → b ↘ R ⋆ ↙ c
+
+  WCR : 𝓟 A
+  WCR x = ∀ {b c} → R x b → R x c → b ↘ R ⋆ ↙ c
+
+  -- Candidate names: MF
+  MF : 𝓟 A
+  MF x = ∀ y → (R ⋆) x y → (R ⋆) y x
+
+module GlobalProperties (R : 𝓡 A) where
+_isCR : Set
+_isCR = ∀ x → CR x
+
+_isWCR : Set
+_isWCR = ∀ x → WCR x
+
+_isWN : Set
+_isWN = ∀ x → WN x
+
+_isSN : Set
+_isSN = ∀ x → SN x
+
+_isNP : Set
+_isNP = ∀ {a b} → NF b → (R ⁼) a b → (R ⋆) a b
+
+-- [AP.  What's the problem with getting this from local UN?]
+_isUN : Set
+_isUN = ∀ {a b : A} → a ∈ NF → b ∈ NF → (R ⁼) a b → a ≡ b
+-- NB. This is stronger than global UN, which is UN→ below
+
+_isUN→ : Set
+_isUN→ = ∀ x → UN x
+
+-- AKA Convergent
+_isComplete : Set
+_isComplete = CR × SN
+
+_isSemicomplete : Set
+_isSemicomplete = UN × WN
+
+-- Miscelaneous properties
+is_-_bound_ : (f : ℕ → A) → A → Set
+is_-_bound_ f a = ∀ n → (R ⋆) (f n) a
+
+bounded : Set
+bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+
+BP : Set
+BP = bounded
+
+BP+ : Set
+BP+ = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
+
+-- Trivially, BP+ → BP
+-- Classically, BP → BP+.  Need to decide whether a non-strictly increasing
+-- sequence is in fact increasing infinitely often.
+
+dominatedByWF : 𝓡 A → Set
+dominatedByWF Q = isWFacc Q × (R ⊆ Q)
+
+is_-cofinal_ : 𝓟 A → Set
+is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
+
+-- Cofinality Property
+CP : Set
+CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
+                  (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
+
+
 -- Notions related to termination in ARSs
 module Termination (R : 𝓡 A)  where
 
   open import Relations.Wellfounded
 
-  is_-NF_ : 𝓟 A
-  is_-NF_ x = ∀ y → ¬ R x y
-  -- is_-NF_ x = R x ⊆ K⊥
+  -- NF x = R x ⊆ K⊥
 
-  is_-WN_ : 𝓟 A
-  is_-WN_ x = Σ[ n ∈ A ] ((R ⋆) x n × is_-NF_ n)
-
-  is_-SNacc_ : 𝓟 A
-  is_-SNacc_ x = is (~R R) -accessible x
-
-  is_-SN_ : 𝓟 A
-  is_-SN_ = is_-SNacc_
-
-  -- Weak normal form property (denoted NP in notes)
-  is_-WNFP_ : 𝓟 A
-  is_-WNFP_ x = ∀ {y z} → is_-NF_ y → (R ⋆) x y → (R ⋆) x z → (R ⋆) z y
-
-  is_-UN_ : 𝓟 A
-  is_-UN_ x = ∀ {y} {z} → is_-NF_ y → is_-NF_ z → (R ⋆) x y → (R ⋆) x z → y ≡ z
-
-  is_-CR_ : 𝓟 A
-  is_-CR_ x = ∀ {b c} → (R ⋆) x b → (R ⋆) x c → b ↘ R ⋆ ↙ c
-
-  is_-WCR_ : 𝓟 A
-  is_-WCR_ x = ∀ {b c} → R x b → R x c → b ↘ R ⋆ ↙ c
-
-  is_-recurrent_ : 𝓟 A
-  is_-recurrent_ x = ∀ y → (R ⋆) x y → (R ⋆) y x
-
-  CR : Set
-  CR = ∀ x → is_-CR_ x
-
-  WCR : Set
-  WCR = ∀ x → is_-WCR_ x
-
-  WN : Set
-  WN = ∀ x → is_-WN_ x
-
-  SN : Set
-  SN = ∀ x → is_-SN_ x
-
-  NFP : Set
-  NFP = ∀ {a b} → is_-NF_ b → (R ⁼) a b → (R ⋆) a b
-
-  UN : Set
-  UN = ∀ {a b : A} → a ∈ is_-NF_ → b ∈ is_-NF_ → (R ⁼) a b → a ≡ b
-  -- NB. This is stronger than global UN, which is UN→ below
-
-  UN→ : Set
-  UN→ = ∀ x → is_-UN_ x
-
-  -- AKA Convergent
-  isComplete : Set
-  isComplete = CR × SN
-
-  isSemicomplete : Set
-  isSemicomplete = UN × WN
-
-  -- Miscelaneous properties
-  is_-_bound_ : (f : ℕ → A) → A → Set
-  is_-_bound_ f a = ∀ n → (R ⋆) (f n) a
-
-  bounded : Set
-  bounded = ∀ (f : ℕ → A) → is R -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
-
-  BP : Set
-  BP = bounded
-
-  BP+ : Set
-  BP+ = ∀ (f : ℕ → A) → is (R ʳ) -increasing f → Σ[ a ∈ A ] (is_-_bound_ f a )
-
-  -- Trivially, BP+ → BP
-  -- Classically, BP → BP+.  Need to decide whether a non-strictly increasing
-  -- sequence is in fact increasing infinitely often.
-
-  dominatedByWF : 𝓡 A → Set
-  dominatedByWF Q = isWFacc Q × (R ⊆ Q)
-
-  is_-cofinal_ : 𝓟 A → Set
-  is_-cofinal_ B = ∀ (x : A) → Σ[ y ∈ A ] ((R ⋆) x y × y ∈ B)
-
-  -- Cofinality Property
-  CP : Set
-  CP = ∀ (a : A) → Σ[ s ∈ (ℕ → A) ] ((is (R ʳ) -increasing s) ×
-                    (s zero ≡ a × (∀ b → (R ⋆) a b → Σ[ n ∈ ℕ ] ((R ⋆) b (s n))) ))
-
-  NF→ε : ∀ {x} → x ∈ is_-NF_ → ∀ {y} → (R ⋆) x y → x ≡ y
+  NF→ε : ∀ {x} → x ∈ NF → ∀ {y} → (R ⋆) x y → x ≡ y
   NF→ε {x} x∈NF {.x} ε⋆ = refl
   NF→ε {x} x∈NF {y} (Rxy₀ ,⋆ R⋆y₀y) = ∅ (x∈NF _ Rxy₀ )
 
-  SN⊆WN→isMinDec- : ∀ x → is_-WN_ x → isMinDec- (~R R) x
+  SN⊆WN→isMinDec- : ∀ x → WN x → isMinDec- (~R R) x
   SN⊆WN→isMinDec- x (.x ,, ε⋆ , n∈NF) x∉NF = ∅ (x∉NF n∈NF)
   SN⊆WN→isMinDec- x (n ,, (_,⋆_ {y = y} Rxy R*yn) , n∈NF) x∉NF = y ,, Rxy
 
-  SN⊆∁∁WN : is_-SN_ ⊆ ∁ (∁ is_-WN_)
+  SN⊆∁∁WN : SN ⊆ ∁ (∁ WN)
   SN⊆∁∁WN x (acc xacc) ¬WNx = ¬WNx (x ,, ε⋆ , x∈NF ) where
     x∈NF : ∀ y → ¬ R x y
     x∈NF y Rxy = SN⊆∁∁WN y (xacc y Rxy)
            (λ { (n ,, (R*yn , n∈NF)) → ¬WNx ((n ,, (Rxy ,⋆ R*yn) , n∈NF )) } )
 
-  -- ¬¬WN∩isMinDec-⊆WN : ∀ x → ¬¬ (is_-WN_ x) → isMinDec- (~R R) x → is_-WN_ x
+  -- ¬¬WN∩isMinDec-⊆WN : ∀ x → ¬¬ (WN x) → isMinDec- (~R R) x → WN x
   -- ¬¬WN∩isMinDec-⊆WN x nnWNx md = {!   !}
 
-  SN∩isMinDec-⊆WN : ∀ x → (is_-SN_ x) → (∀ y → isMinDec- (~R R) y) → is_-WN_ x
+  SN∩isMinDec-⊆WN : ∀ x → (SN x) → (∀ y → isMinDec- (~R R) y) → WN x
   SN∩isMinDec-⊆WN x (acc xa) md = {!   !}
 
-  SNdec→WN : decMin (~R R) → is_-SN_ ⊆ is_-WN_
+  SNdec→WN : decMin (~R R) → SN ⊆ WN
   SNdec→WN decR x (acc accx) with decR x
   ... | in2 y∈NF = x ,, (ε⋆ , y∈NF)
   ... | in1 (y ,, Rxy) with SNdec→WN decR y (accx y Rxy)
   ... | (n ,, R*yn , n∈NF) = (n ,, (Rxy ,⋆ R*yn) , n∈NF)
 
-  WN⊆WN↑ : ∀ {x y} → is_-WN_ y → (R ⋆) x y → is_-WN_ x
+  WN⊆WN↑ : ∀ {x y} → WN y → (R ⋆) x y → WN x
   WN⊆WN↑ y∈WN ε⋆ = y∈WN
   WN⊆WN↑ y∈WN (Rxz ,⋆ R*zy) with WN⊆WN↑ y∈WN R*zy
   ... | (n ,, R*zn , n∈NF) = n ,, (Rxz ,⋆ R*zn) , n∈NF
 
-  SN⊆WWWN : ∀ a → is_-SN_ a → (∀ v → (R ⋆) a v → is_-WN_ v → is_-WN_ a) → is_-WN_ a
+  SN⊆WWWN : ∀ a → SN a → (∀ v → (R ⋆) a v → WN v → WN a) → WN a
   SN⊆WWWN a (acc aacc) Ha = {!   !} where
-    x∈WNaF* : ∀ y → (R ⋆) a y → is_-WN_ a
+    x∈WNaF* : ∀ y → (R ⋆) a y → WN a
     x∈WNaF* y R*ay = {! H  !}
-    x∈WNaF : ∀ y → R a y → is_-WN_ a
+    x∈WNaF : ∀ y → R a y → WN a
     x∈WNaF y Ray with SN⊆WWWN y (aacc y Ray) (λ { v R*yv (n ,, R*vn , n∈NF) → n ,, (R*yv ⋆!⋆ R*vn) , n∈NF } )
     ... | (n ,, R*yn , n∈NF) = n ,, Ray ,⋆ R*yn , n∈NF
-    -- SN⊆WWWN' : ∀ x → is_-SN_ x → (R ⋆) a x → (∀ y → (R ⋆) x y → is_-WN_ y → is_-WN_ a) → is_-WN_ a
+    -- SN⊆WWWN' : ∀ x → SN x → (R ⋆) a x → (∀ y → (R ⋆) x y → WN y → WN a) → WN a
     -- SN⊆WWWN' x (acc xacc) R*ax Hx = {! Hx   !}  where
-    --   x∈WNaF : ∀ y → R x y → is_-WN_ a
+    --   x∈WNaF : ∀ y → R x y → WN a
     --   x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
-  -- SN⊆WWWN : ∀ a → is_-SN_ a → (∀ v → (R ⋆) a v → is_-WN_ v → is_-WN_ a) → is_-WN_ a
+  -- SN⊆WWWN : ∀ a → SN a → (∀ v → (R ⋆) a v → WN v → WN a) → WN a
   -- SN⊆WWWN a (acc aacc) Ha = SN⊆WWWN' a (acc aacc) ε⋆ Ha where
-  --   x∈WNaF : ∀ y → R a y → is_-WN_ a
+  --   x∈WNaF : ∀ y → R a y → WN a
   --   x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
-  --   SN⊆WWWN' : ∀ x → is_-SN_ x → (R ⋆) a x → (∀ y → (R ⋆) x y → is_-WN_ y → is_-WN_ a) → is_-WN_ a
+  --   SN⊆WWWN' : ∀ x → SN x → (R ⋆) a x → (∀ y → (R ⋆) x y → WN y → WN a) → WN a
   --   SN⊆WWWN' x (acc xacc) R*ax Hx = {! Hx   !}  where
-  --     x∈WNaF : ∀ y → R x y → is_-WN_ a
+  --     x∈WNaF : ∀ y → R x y → WN a
   --     x∈WNaF y Rxy = SN⊆WWWN' y (xacc y Rxy) (R*ax ⋆!⋆ (Rxy ,⋆ ε⋆) ) (λ z R*yz z∈WN → Hx z (Rxy ,⋆ R*yz) z∈WN )
 
-  -- SN⊆WWWN : ∀ a → is_-SN_ a → ∀ x → (R ⋆) a x → (is_-WN_ x → is_-WN_ a) → is_-WN_ a
+  -- SN⊆WWWN : ∀ a → SN a → ∀ x → (R ⋆) a x → (WN x → WN a) → WN a
   -- SN⊆WWWN a (acc aacc) x R*ax WNx→WNa = {!   !}
 
 open Termination public
@@ -573,7 +574,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
       s→n : (R ⋆) s n
       s∈SN : is R -SN s
 
-  preSNlemma1 : dec (is_-SN_ R) → ∀ {x n} → (R ⋆) x n → is R -NF n → ¬ is R -SN x →
+  preSNlemma1 : dec (SN R) → ∀ {x n} → (R ⋆) x n → is R -NF n → ¬ is R -SN x →
                                   Σ[ y ∈ A ] ((R ⋆) x y × preSN n y)
   preSNlemma1 decSN {x} {.x} ε⋆ n∈NF x∉SN = ∅ (¬SN∧NF→⊥ x∉SN n∈NF )
   preSNlemma1 decSN {x} {n} (_,⋆_ {y = y} Rxy R*yn) n∈NF x∉SN
@@ -591,7 +592,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
   ... | w ,, ε⋆ , R*zw = R*zw
   ... | w ,, (Ry- ,⋆ _) , R*zw = ∅ (y∈NF _ Ry-)
 
-  preSNlemma2 : WCR R → dec (is_-SN_ R) →
+  preSNlemma2 : WCR R → dec (SN R) →
                 ∀ n x → preSN n x → Σ[ y ∈ A ] ((R ⁺) x y × preSN n y)
   preSNlemma2 RisWCR decSN n x (pSN n∈NF x∉SN s x→s s→n s∈SN)
     with x∉SN→∃y∉SN x∉SN
@@ -601,7 +602,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
     with preSNlemma1 decSN (R*yz ⋆!⋆ WCR→SN⊆NP RisWCR s s∈SN n∈NF s→n R*sz )  n∈NF y∉SN
   ... | (v ,, R*yv , p) = (v ,, RR⋆⊆R⁺ R Rxy R*yv , p)
 
-  preSNlemma3 : WCR R → dec (is_-SN_ R) → ∀ n x → preSN n x →
+  preSNlemma3 : WCR R → dec (SN R) → ∀ n x → preSN n x →
                   Σ[ f ∈ (ℕ → A) ] ((∀ k → preSN n (f k)) × is (R ⁺) -increasing f)
   preSNlemma3 RisWCR decSN n x p = f ,, pf , finc where
     f : ℕ → A
@@ -639,7 +640,7 @@ module Theorem-1-2-3 (R : 𝓡 A) where
                is R - f bound b → is R - (λ k → fst (seq→sseq f finc k)) bound b
   seq→sseq-bnd f finc b fbnd k = snd (seq→sseq f finc k) ⋆!⋆ (fbnd k)
 
-  Theorem123Lemma : WCR R → dec (is_-SN_ R) → ∀ n x → preSN n x →
+  Theorem123Lemma : WCR R → dec (SN R) → ∀ n x → preSN n x →
                     Σ[ f ∈ (ℕ → A) ] (is R -increasing f × is R - f bound n)
   Theorem123Lemma RisWCR decSN n x p
     with preSNlemma3 RisWCR decSN n x p
@@ -649,166 +650,16 @@ module Theorem-1-2-3 (R : 𝓡 A) where
           , seq→sseq-bnd f fisR+inc n (λ k → x→s (pf k) ,⋆ s→n (pf k) ) where open preSN
 
 
-  -- iii : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
-  -- iii RisWN RisWCR rp- decSN x with decSN x
-  -- ... | in1 x∈SN = x∈SN
-  -- ... | in2 x∉SN with RisWN x
-  -- ... | n ,, R*xn , n∈NF with preSNlemma3 decSN x∉SN n∈NF R*xn
-  -- ... | (f ,, (f0=x , fisR+inc) , (f⊆preSN , f→n) ) = {!   !}
+  Theorem123_iii : WN R → WCR R → RP- R → dec (is_-SN_ R) → SN R
+  Theorem123_iii RisWN RisWCR RisRP decSN x with decSN x
+  ... | in1 x∈SN = x∈SN
+  ... | in2 x∉SN with RisWN x
+  ... | n ,, R*xn , n∈NF with preSNlemma1 decSN R*xn n∈NF x∉SN
+  ... | b₀ ,, R*xb₀ , nb₀∈preSN with Theorem123Lemma RisWCR decSN n b₀ nb₀∈preSN
+  ... | s ,, s-inc , n∈s-bound with RisRP s s-inc n n∈s-bound
+  ... | i ,, ε⋆ = ∅ (n∈NF _ (s-inc i))
+  ... | i ,, (Rnz ,⋆ R*zsᵢ) = ∅ (n∈NF _ Rnz)
 
-  -- preSN : 𝓟 A
-  -- preSN x = ¬ (is R -SN x) × Σ[ n ∈ A ] (is R -SN n × R x n)
-  -- -- Note that if x is preSN, and R is WCR,
-  -- -- then each 1-step reduct of x, reduces to a SN term.
-
-  -- preSN has replaced this we think
-  -- lemma-lastNonSN : ∀ {a n} → is R -NF n → (R ⋆) a n →  Σ[ b ∈ A ] ((¬ (is R -SN b)) × ((R ⋆) a b × (R ⋆) b n) )
-  -- lemma-lastNonSN {a}{n} n∈NF R*an = {!   !}
-
-  -- preSNlemma1 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
-  --                         → Σ[ y ∈ A ] (preSN y × ((R ⋆) x y × (R ⋆) y n))
-  -- preSNlemma1 SNdec {x} {.x} x∉SN x∈NF ε⋆ = ∅ (¬SN∧NF→⊥ x∉SN x∈NF)
-  -- preSNlemma1 SNdec {x} {n} x∉SN n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _
-  -- ... | in1 x₁∈SN = x ,, ((x∉SN , (_ ,, x₁∈SN , Rxx₁)) , (ε⋆ , (Rxx₁ ,⋆ R⋆x₁n)))
-  -- ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n
-  -- ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((Rxx₁ ,⋆ R*x₁z) , R*zn))
-
-  -- preSNlemma2 : dec (is_-SN_ R) → ∀ {x} {n} → preSN x → is R -NF n → (R ⋆) x n
-  --                         → Σ[ y ∈ A ] (preSN y × ((R ⁺) x y × (R ⋆) y n))
-  -- preSNlemma2 SNdec {x} {.x} (x∉SN , _) x∈NF ε⋆ = ∅ (¬SN∧NF→⊥ x∉SN x∈NF)
-  -- preSNlemma2 SNdec {x} {n} (x∉SN , j) n∈NF (Rxx₁ ,⋆ R⋆x₁n) with SNdec _
-  -- ... | in1 x₁∈SN = {!   !} -- ,, ((x∉SN , (_ ,, x₁∈SN , Rxx₁)) , (ε⁺ , (Rxx₁ ,⋆ R⋆x₁n)))
-  -- ... | in2 x₁∉SN with preSNlemma1 SNdec x₁∉SN n∈NF R⋆x₁n
-  -- ... | z ,, z∈preSN , (R*x₁z , R*zn) = z ,, (z∈preSN , ((RR⋆⊆R⁺ R Rxx₁ R*x₁z) , R*zn))
-  --
-  -- preSNlemma4 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
-  --   → Σ[ a ] ((((R ⋆) x (f 0)) × (is (R ⁺) -increasing f)) × ((∀ k → preSN (f k)) × (∀ k → (R ⋆) (f k) n) ))
-
-  -- preSNlemma3 : dec (is_-SN_ R) → ∀ {x} {n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
-  --   → Σ[ f ∈ (ℕ → A) ] ((((R ⋆) x (f 0)) × (is (R ⁺) -increasing f)) × ((∀ k → preSN (f k)) × (∀ k → (R ⋆) (f k) n) ))
-  -- preSNlemma3 SNdec {x} {n} x∉SN n∈NF R*xn = (f ,, (f0=x , fisR+inc) , (f⊆preSN , f→n)) where
-  --   f→n = {!   !}
-  --   f⊆preSN = {!   !}
-  --   f : ℕ → A
-  --   f zero = x
-  --   f (succ k) with preSNlemma2 SNdec (f⊆preSN k) n∈NF (f→n k)
-  --   ... | (y ,, y∈preSN , (R+xy , R*yn)) = y
-  --   f0=x = ε⋆
-  --   fisR+inc = {!   !}
-
-  -- WCRNPlemma : WCR R → ∀ x y → (R ⋆) x y → is R -WNFP y →
-  --                      ∀ n   → (R ⋆) y n → is R -NF n →
-  --                      ∀ z   → (R ⋆) x z → (R ⋆) z n
-  -- WCRNPlemma RisWCR x .x ε⋆ y∈WNFP n R*yn n∈NF z R*xz = y∈WNFP n∈NF R*yn R*xz
-  -- WCRNPlemma RisWCR x y (_,⋆_ {y = u} Rxu R*uy) y∈WNFP n R*yn n∈NF .x ε⋆ = Rxu ,⋆ (R*uy ⋆!⋆ R*yn)
-  -- WCRNPlemma RisWCR x y R*xy@(_,⋆_ {y = u} Rxu R*uy) y∈WNFP n R*yn n∈NF z (_,⋆_ {y = v} Rxv R*vz)
-  --   with WCRNPlemma RisWCR u y R*uy y∈WNFP n R*yn n∈NF
-  -- ... | Hc = {!   !}
-  --
-  -- WCR→NP↑⊆NP : WCR R → ∀ x y → (R ⋆) x y → is R -WNFP y → is R -WNFP x
-  -- WCR→NP↑⊆NP RisWCR x .x ε⋆ y∈WNFP = y∈WNFP
-  -- WCR→NP↑⊆NP RisWCR x y (_,⋆_ {y = v} Rxv R*vy) y∈WNFP {.x} {.x} m∈NP ε⋆ ε⋆ = ε⋆
-  -- WCR→NP↑⊆NP RisWCR x y (_,⋆_ {y = v} Rxv R*vy) y∈WNFP {.x} {z} m∈NP ε⋆ (r ,⋆ _) = ∅ (m∈NP _ r )
-  -- WCR→NP↑⊆NP RisWCR x y (_,⋆_ {y = v} Rxv R*vy) y∈WNFP {m} {z} m∈NP (_,⋆_ {y = l} Rxl R*lm) R*xz
-  --   with WCR→NP↑⊆NP RisWCR v y R*vy y∈WNFP
-  -- ... | v∈WNFP = {!   !}
-
-  -- preSNlemma3 : ∀ {y} → WCR R → preSN y → is R -WNFP y
-  -- preSNlemma3 {y} RisWCR (y∉SN , _) {.y} {z} n∈NF ε⋆ R*yz = ∅ (¬SN∧NF→⊥ y∉SN n∈NF  )
-  -- preSNlemma3 {y} RisWCR y∈preSN {n} {.y} n∈NF R*yn ε⋆ = R*yn
-  -- preSNlemma3 {y} RisWCR (y∉SN , (s ,, s∈SN , Rys)) {n} {z} n∈NF (_,⋆_ {y = x} Ryx R*xn) (_,⋆_ {y = w} Ryw R*wz)
-  --   with RisWCR y Ryx Rys | RisWCR y Ryw Rys
-  -- ... | (u ,, R*xu , R*su) | (v ,, R*wv , R*sv)
-  --   with wCR→conf (λ (a ,, Rab , Rac) → RisWCR a Rab Rac ) s s∈SN R*su R*sv
-  -- ... | (m ,, R*um , R*vm) = {!   !}
-
-
-  -- -- -- For each pre-sn element there is a positive-length reduction to another pre-sn element.
-  -- preSNlemma2 : WCR R → dec (is_-SN_ R) → ∀ {x} {n} → preSN x → is R -NF n → (R ⋆) x n
-  --               → Σ[ y ∈ A ] (preSN y × ((R ⁺) x y × (R ⋆) y n))
-  -- preSNlemma2 RisWCR SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF ε⋆ = ∅ (n∈NF v Rxv)
-  -- preSNlemma2 RisWCR SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF (_,⋆_ {y = m} Rxm  R*mn)
-  --   with x∉SN→∃y∉SN {x} x∉SN
-  -- ... | z ,, z∉SN , Rxz
-  --   with RisWCR x Rxv Rxz | RisWCR x Rxv Rxm
-  -- ... | w ,, R*vw , R*zw  | u ,, R*vu , R*mu
-  --   with wCR→conf (λ (a ,, Rab , Rac) → RisWCR a Rab Rac ) v v∈SN R*vw R*vu
-  -- ... | d ,, R*wd , R*ud = {!   !} --  SNdec x∉SN n∈NF R*xn
-  -- -- ... | w ,, w∉SN , (R*zw , R*wn) =  {!   !}
-
-  -- preSNlemma2 SNdec {x} {n} (x∉SN , (v ,, v∈SN , Rxv)) n∈NF R*xn
-  --   with preSNlemma1 SNdec x∉SN n∈NF R*xn
-  -- ... | y ,, y∉SN , ((Rxz ,⋆ R*zy) , R*yn) = y ,, y∉SN , (RR⋆⊆R⁺ R Rxz R*zy , R*yn)
-  -- ... | y ,, y∉SN , (ε⋆ , R*yn) with x∉SN→∃y∉SN {x} x∉SN
-  -- ... | z ,, z∉SN , Rxz with preSNlemma1 SNdec z∉SN n∈NF R*zn
-  --   where R*zn = {!   !}
-  -- ... | w ,, w∉SN , (R*zw , R*wn) = w ,, w∉SN , (RR⋆⊆R⁺ R Rxz R*zw , R*wn)
-
-  -- x∉SN→preSNseq : ∀ {x n} → ¬ (is R -SN x) → is R -NF n → (R ⋆) x n
-  --   → Σ[ s ∈ (ℕ → A) ] (is (R ⁺) -increasing s × (∀ i → (R ⋆) (s i) n × preSN (s i)))
-  -- x∉SN→preSNseq {x} x∉SN = (s ,, sIsRinc) where
-  --   s : ℕ → A
-  --   s⊆∁SN : ∀ n → ¬ (is R -SN (s n))
-  --   s zero = x
-  --   s (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = y
-  --   s⊆∁SN zero = x∉SN
-  --   s⊆∁SN (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = y∉SN
-  --   sIsRinc : is R -increasing s
-  --   sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = Rsny
-
-
-  -- have this
-  -- WFacc→WFSeq : isWFacc (~R R) → isWFseq (~R R)
-  -- WFacc→WFSeq RisWFacc s with RisWFacc (s 0)
-  -- ... | acc accs₀ = {!   !}
-
-  -- SN(R) IS WFacc (~R R)
-  -- SN∧WN→WFseq : SN R → WN R → isWFseq (~R R)
-  -- SN∧WN→WFseq RisSN RisWN s  with RisSN (s 0)
-  -- ... | acc xacc with RisWN (s 0)
-  -- ... | n ,, R*s₀n , n∈NF = {!   !}
-
-  -- x∉SN→infSeq : ∀ {x} → ¬ (is R -SN x) → Σ[ s ∈ (ℕ → A) ] (is R -increasing s)
-  -- x∉SN→infSeq {x} x∉SN = (s ,, sIsRinc) where
-  --   s : ℕ → A
-  --   s⊆∁SN : ∀ n → ¬ (is R -SN (s n))
-  --   s zero = x
-  --   s (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = y
-  --   s⊆∁SN zero = x∉SN
-  --   s⊆∁SN (succ n) with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = y∉SN
-  --   sIsRinc : is R -increasing s
-  --   sIsRinc n with x∉SN→∃y∉SN {(s n)} (s⊆∁SN n)
-  --   ... | (y ,, y∉SN , Rsny) = Rsny
-  --
-  -- iii-EMSN : WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → SN R
-  -- iii-EMSN RisWN RisWCR rp- decSN x with decSN x
-  -- ... | in1 x∈SN = x∈SN
-  -- ... | in2 x∉SN with RisWN x
-  -- ... | n ,, R*xn , n∈NF with preSNlemma1 decSN x∉SN n∈NF R*xn
-  -- ... | b₀ ,, (b₀∉SN , (m₀ ,, m₀∈SN , Rb₀m₀)) , (R*xb₀ , R*b₀n) with x∉SN→∃y∉SN b₀∉SN
-  -- ... | c₀ ,, c₀∉SN , Rb₀c₀ with RisWCR (b₀ ,, Rb₀m₀ , Rb₀c₀)
-  -- ... | d₀ ,, R*m₀d₀ , R*c₀d₀ with ReductionClosureProperties.SN↓⊆SN R m₀∈SN R*m₀d₀
-  -- ... | d₀∈SN with x∉SN→infSeq x∉SN
-  -- ... | (s ,, sIsRInc) with rp- s sIsRInc n {!   !} -- Need to find a way to connect this normal form n to the sequence.
-  -- ... | i ,, ε⋆ = ∅ (n∈NF (s (succ i)) (sIsRInc i) )
-  -- ... | i ,, (Rny ,⋆ R*ysᵢ) = ∅ (n∈NF _ Rny )
-
-  -- iii-EM :  WN R → weakly-confluent R → RP- R → dec (is_-SN_ R) → isWFseq (~R R)
-  -- iii-EM RisWN RisWCR rp- decSN s with decSN (s 0)
-  -- ... | in1 RisSNs₀@(acc s₀acc) with Newmans-Lemma.WCR∧SN→UN R RisWCR (fst (RisWN (s zero)))
-  -- ... | RisUNs₀ with ReductionClosureProperties.SN↓⊆SN R RisSNs₀
-  -- ... | z with RisWN (s 0)
-  -- ... | n ,, R*s₀n , n∈NF = {!   !}
-  -- iii-EM RisWN RisWCR rp decSN s | in2 s₀∉SN = {!   !}
-  -- -- iii-EM RisWN RisWCR rp (in1 R∈SN) x = R∈SN x
-  -- -- iii-EM RisWN RisWCR rp (in2 R∉SN) a with RisWN a
-  -- -- ... | n ,, R*an , n∈NF with lemma-lastNonSN n∈NF R*an
-  -- -- ... | b₀ ,, b∉SN , (R*ab₀ , R*b₀n) = {!   !}
 
 
   iv : CP R → confluent R

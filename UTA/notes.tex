@@ -15,6 +15,9 @@
 \newcommand{\ita}{\mathpzc{Ita}}
 \newcommand{\msl}{\mathpzc{Msl}}
 
+\newcommand{\mcI}{\mathcal{I}}
+
+
 \begin{document}
 
 \section*{01.17}
@@ -136,5 +139,78 @@ The \emph{general satisfiability problem} is as follows.
 
 Given sets of equations $E_1$, $E_2$, determine whether there exists
 a type algebra morphism $h : \types/E_1 \to \types/E_2$.
+
+\section{Conjecture}
+
+Let $\types$ be the set of simple types.
+An \emph{inequational type theory} is a set of type inequalities
+  \[ \mcI = \setof{A_i \le B_i \mid i \in I, A_i \in \types, B_i \in \types} \]
+
+In most cases, we will be interested in the case when $I = |\mcI|$ is a finite set.
+
+Let $n \in \nat$, $I = \setof{1,..,n}$, and $\mcI$ an inequational type theory
+over $I$.
+
+Let $V$ be the set of type atoms --- to be treated as type variables ---
+occuring in $\mcI$.
+
+The theory $\mcI$ can be transformed into a set $\mcI^+,\mcI^-$, where
+each $(A \le B) \in \mcI^+$ is of the form $\alpha \le T$,
+for some $\alpha \in V$ and $T \in \types$, and
+each $(A \le B) \in \mcI^-$ is of the form $T \le \alpha$,
+for some $\alpha \in V$ and $T \in \types$.
+
+For $\alpha \in V$, put
+\begin{align*}
+\mcI^+(\alpha) &= \setof{A \mid (\alpha \le A) \in \mcI^+}\\
+\mcI^-(\alpha) &= \setof{A \mid (A \le \alpha) \in \mcI^-}
+\end{align*}
+
+We can further transform this subtyping theory by replacing the set of variables
+$V$ by $V^+ \cup V^-$, where
+\begin{align*}
+  V^+ &= \setof{\alpha^+ \mid \alpha \in V} \\
+  V^- &= \setof{\alpha^- \mid \alpha \in V}
+\end{align*}
+
+For $\alpha \in V$, and for $A=A(\alpha) \in \types$, let $A(\alpha^-,\alpha^+)$
+be obtained by replacing all positive occurrences of $\alpha$ in $A$ with $\alpha^+$,
+and all negative occurrences of $\alpha$ in $A$ with $\alpha^-$.
+
+Let $\mcS^0 = \setof{\alpha^- \le \alpha^+ \mid \alpha \in V}$.
+
+Let $\mcS(\mcI) = \mcS^0 \cup \mcS^+ \cup \mcS^-$, where
+\begin{align*}
+  \mcS^+ = \setof{\alpha^+ \le A(\alpha^+,\alpha^-) \mid A \in \mcI^+(\alpha)}\\
+  \mcS^- = \setof{A(\alpha^-,\alpha^+) \le \alpha^- \mid A \in \mcI^-(\alpha)}
+\end{align*}
+
+By taking inversion closure, these sets can be assumed to be minimal.
+
+\textsc{Proposition.}  $\mcI$ admits a solution in $\types_\cap$ if and only if
+$\mcS(\mcI)$ admits a solution in $\types_\cap$.
+
+\textsc{Conjecture.} $\mcS(\mcI)$ admits a solution in $\types_\cap$ if and only if
+there is no ``circular constraint'': a type $B$ such that, for some
+$\alpha \in V$, $A^+ \in \mcI^+(\alpha)$, $A^- \in \mcI^-(\alpha)$, one has:
+% \[ \greyout{A^+(\alpha^-,\alpha^+) \le B \le A^-(\alpha^-,\alpha^+)} \]
+\[ A^+(\alpha^+,\alpha^-) \le B \le A^-(\alpha^-,\alpha^+) \]
+
+\subsection*{2024.06.11 -- Reasons for believing the conjecture}
+
+The condition is obviously necessary, since a circular constraint immediately
+results in $\alpha = A(\alpha)$, which is not solvable in $\types_\cap$.
+
+As for the necessity, we can make the following observations.
+
+First, the ``positive'' side, $\mcS^+$ can be solved by taking
+$\alpha^+ := \alpha \cap A_1 \cap \cdots \cap A_k$, where $\mcI^+(\alpha) = \setof{A_1,\dots,A_k}$.
+
+As for the negative side, we could invert the constraints by mapping everything into
+a new type atom, $\gamma$.
+
+But how do we get the most ``general'' unifier?  That is, how do we get to the situation
+where, we know that the constraints are solvable, but want the most generic scheme
+of the solution types?
 
 \end{document}
