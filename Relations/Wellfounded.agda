@@ -179,6 +179,9 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
         f (s 1) (xacc (s 1) (transp (R (s 1)) s0=x (s-inc 0) ) )
           (s ∘ succ) (λ n → s-inc (succ n)) refl
 
+  isWFmin-→isWFminDNE- : isWFmin- R → isWFminDNE- R
+  isWFmin-→isWFminDNE- RisWFmin- P  = λ _ → RisWFmin- P 
+  
   isWFminDNE-→isWFmin- : isWFminDNE- R → isWFmin- R
   isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP
     with RisWFminDNE- (∁ (∁ P)) (λ x y z → y λ w → w z ) (λ z → z d∈P)
