@@ -29,6 +29,9 @@ module WFDefinitions {A : Set} (R : 𝓡 A) where
   _isWFind : Set₁
   _isWFind = ∀ (φ : 𝓟 A) → _-inductive_ φ → ∀ x → φ x
 
+  WFseq : 𝓟 A
+  WFseq a = ∀ (s : ℕ → A) → s 0 ≡ a → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
+
   -- Well-foundedness defined as: every sequence contains a non-decreasing index
   _isWFseq : Set
   _isWFseq = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
@@ -60,6 +63,9 @@ module BasicImplications {A : Set} {R : 𝓡 A} where
   acc⊆ind : ∀ (φ : 𝓟 A) → R -inductive φ → R -accessible ⊆ φ
   acc⊆ind φ φisRind x (acc IH) = φisRind x (λ y Ryx → acc⊆ind φ φisRind y (IH y Ryx) )
 
+  -- acc⊆WFseq : R -accessible ⊆ WFseq R
+  -- acc⊆WFseq a (acc ac) s s0=a = acc⊆WFseq (s 1) {!   !} {!   !} {!   !}
+  --
   ¬acc : ∀ {x : A} → x ∉ R -accessible → ¬ (∀ y → R y x → y ∈ R -accessible)
   ¬acc ¬xisRacc ∀yisRacc = ¬xisRacc (acc ∀yisRacc)
 
@@ -78,15 +84,15 @@ module BasicImplications {A : Set} {R : 𝓡 A} where
   isWFind→isWFacc : R isWFind → R isWFacc
   isWFind→isWFacc wfInd = wfInd (R -accessible) λ x → acc
 
-  isWFmin→isWFseq : R isWFmin → R isWFseq
-  isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) (s zero) (zero ,, refl)
-  ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
-
   isWFmin→isWFminDNE : R isWFmin → R isWFminDNE
   isWFmin→isWFminDNE RisWFmin P PDNE = RisWFmin P
 
   isWFminDNE→isWFminEM : R isWFminDNE → R isWFminEM
   isWFminDNE→isWFminEM RisWFminDNE P PEM = RisWFminDNE P (λ x → pr2 (EM→WEM×DNE (P x) (PEM x) ) )
+
+  isWFmin→isWFseq : R isWFmin → R isWFseq
+  isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) (s zero) (zero ,, refl)
+  ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
 module WeakerWF {A : Set} (R : 𝓡 A) where
   -- Weaker notions of well-foundedness
@@ -124,11 +130,17 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
   ¬¬isWFind→isWFind- : ¬¬ (R isWFind) → isWFind- R
   ¬¬isWFind→isWFind- ¬¬WFiR   = λ φ φind x ¬φx → ¬¬WFiR (λ isWFiR → ¬φx (isWFiR φ φind x) )
 
+  isWFseq-→¬¬isWFseq : isWFseq- R →  ¬¬ (R isWFseq)
+  isWFseq-→¬¬isWFseq RisWFseq- ¬RisWF = ¬RisWF (λ s → {!   !} )
+
   ¬¬isWFseq→isWFseq- : ¬¬ (R isWFseq) → isWFseq- R
   ¬¬isWFseq→isWFseq- ¬¬WFs = λ s sdec  → ¬¬WFs (λ WFs → snd (WFs s) (sdec (fst (WFs s)) ) )
 
   ¬¬isWFmin→isWFmin- : ¬¬ (R isWFmin) → isWFmin- R
   ¬¬isWFmin→isWFmin- ¬¬WFmR   = λ P p ¬Σ → ¬¬WFmR (λ WFmR → ¬Σ (WFmR P _ p ) )
+
+  isWFminDNE→isWFminDNE- : R isWFminDNE → isWFminDNE- R
+  isWFminDNE→isWFminDNE- a b c d e = e (a b c _ d)
 
   isWFacc-→isWFind- : isWFacc- R → isWFind- R
   isWFacc-→isWFind- RisWFacc- P Pind d ¬Pd = RisWFacc- d (λ disRacc → ¬Pd (acc⊆ind P Pind d disRacc) )
@@ -141,6 +153,7 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
     where f : ∀ x → x ∈ P → x ∈ R -accessible → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
           f x x∈P (acc xac) ¬Σ = ¬Σ (x ,, x∈P , (λ y y∈P Ryx → f y y∈P (xac y Ryx) ¬Σ))
 
+  -- redundant [AP]
   isWFind-→isWFmin- : isWFind- R → isWFmin- R
   isWFind-→isWFmin- RisWFind- P {d} d∈P =
     let φ : 𝓟 A
@@ -157,6 +170,7 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
           ... | n ,, sn≡d = pr2 dRBmin (s (succ n)) (succ n ,, refl)
                                 (transp (R (s (succ n))) sn≡d (s-dec n))
 
+  -- redundant [AP]
   isWFacc-→isWFseq- : isWFacc- R → isWFseq- R
   isWFacc-→isWFseq- RisWFacc- s0 s0-inc =
     RisWFacc- (s0 0) (λ s00∈acc → f (s0 0) s00∈acc s0 s0-inc refl ) where
@@ -171,11 +185,212 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
   ... | c = c λ { (x ,, ¬x∉P , H) → ¬x∉P (λ x∈P →
                    ¬∃minP (x ,, x∈P , λ y y∈P Ryx → H y (λ z → z y∈P) Ryx ) )  }
 
+  ¬¬lemma : ∀ (X : Set) (Q : 𝓡 X) (P : 𝓟 X) (a : X) → ¬¬ (Σ[ b ∈ X ] (Q b a × P b) ⊔ (∀ b → Q b a → ¬ P b))
+  ¬¬lemma X Q P a ¬⊔ = ¬⊔ (in2 λ b Qba b∈P → ¬⊔ (in1 (b ,, Qba , b∈P) ) )
+
+  ¬¬lemmaA : ∀ (P : 𝓟 A) (a : A) → ¬¬ (Σ[ b ∈ A ] (R b a × P b) ⊔ (∀ b → R b a → ¬ P b))
+  ¬¬lemmaA P a ¬⊔ = ¬⊔ (in2 λ b Rba b∈P → ¬⊔ (in1 (b ,, Rba , b∈P) ) )
+
+  -- ¬¬lemmaC : ∀ (P : 𝓟 A) (a : A) → ¬¬ (Σ[ b ∈ A ] (R b a × ¬ P b) ⊔ (∀ b → R b a → P b))
+  -- ¬¬lemmaC P a ¬⊔ = ¬⊔ (in2 λ b Rba → {!   !} )
+  --
+  ¬¬lemmaC : ∀ (P : 𝓟 A) → (∁ (∁ P) ⊆ P) → (a : A) →
+        ¬¬ (    (Σ[ bRba ∈ (Σ[ b ∈ A ] R b a) ] (¬ P (fst bRba)))
+             ⊔  (∀ (bRba :  Σ[ b ∈ A ] R b a)    → P (fst bRba)))
+  ¬¬lemmaC P CCP⊆P a ¬⊔ = ¬⊔ (in2 λ { (b ,, Rba) → CCP⊆P b (λ b∉P → ¬⊔ (in1 ((b ,, Rba) ,, b∉P ) ) )  } )
+
+  isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
+  isWFminDNE-→isWFacc- RisWFminDNE- x x∉acc =
+    RisWFminDNE- (∁ (R -accessible)) p x∉acc f
+    where p = λ a b c → b (λ d → d c)
+          f : ¬ Σ[ m ∈ A ] (m ∈ R - (∁ (R -accessible)) -minimal)
+          f (m ,, m∉acc , mmin) = {!   !}
+
+  isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
+  isWFseq-→isWFminDNE- RisWFseq- P CCP⊆P {a} a∈P ¬∃minP =
+    -- ¬¬lemma ℕ (λ m n → m ≡ succ n) (λ n → Σ-syntax A λ b → b ∈ P) 0 f
+    ¬¬lemmaA (λ x → x ∈ P) a f
+    where
+      f : _
+      f (in1 (b ,, Rba , b∈P)) = {!   !} -- isWFseq-→isWFminDNE- RisWFseq- P CCP⊆P b∈P ¬∃minP
+      f (in2 all) = ¬∃minP (a ,, a∈P , λ y y∈P Rya → all y Rya (y∈P ) )
+      nns : ℕ → ¬¬ Σ[ b ∈ A ] (b ∈ P)
+      nns 0        ne = ne (a ,, a∈P)
+      nns (succ k) ne = nns k (λ {(b ,, b∈P) → ¬¬lemmaA P b
+          (case (λ {(c ,, Rcb , c∈P) → ne (c ,, c∈P)})
+                λ H → ¬∃minP ((b ,, b∈P , λ y y∈P Ryb → H y Ryb y∈P )) ) })
+    -- nns (succ k) ne = nns k (λ {(b ,, b∈P) → ¬¬lemmaC P CCP⊆P b
+    --     (case (λ {((c ,, Rcb) ,, c∉P) → ¬∃minP (b ,, b∈P , {!   !} ) })
+    --           {!   !} ) })
+    -- nns : ¬ (ℕ → Σ[ b ∈ A ] (b ∈ P)) → ℕ → Σ[ b ∈ A ] (b ∈ P)
+    -- nns ¬s 0 = (a ,, a∈P)
+    -- nns ¬s (succ n) = {!   !}
+    -- s : ℕ → Σ[ b ∈ A ] (b ∈ P)
+    -- s 0 = (a ,, a∈P)
+    -- s (succ n) = {!   !}
+
+  -- isWFminDNE→isWFacc- :
+  -- requires shifting double-negation of accessibility through one R-step,
+  -- see FB→isWFminDNE-→isWFacc- in the finitely bounded submodule
+
+  deMorgan : 𝓟 A → Set
+  deMorgan P = ∀ a → (Σ[ bRba ∈ (Σ[ b ∈ A ] R b a) ] (¬ P (fst bRba)))
+                  ⊔  (∀ (bRba :  Σ[ b ∈ A ] R b a)    → P (fst bRba))
+
+  isWFminDM : Set₁
+  isWFminDM = ∀ P → deMorgan P → Σ[ m ∈ A ] (m ∈ (R - P -minimal))
+
+  -- isWFminDM→isWFacc : isWFminDM → R isWFacc
+  -- isWFminDM→isWFacc wfdm x = acc f where
+  --   f : _
+  --   f y Ryx with wfdm P = {!   !}
+
+  {-
+  To do:
+  - WFmin[ind]
+  - WFmin[CCind]
+  - replace implications WFseq- -> WFacc- and WFDNE- -> WFacc- to use CCaccInd
+  - from WFacc and strong decidability of acc (acc∈cored), prove wf[ind]
+  -}
+
+
 open WeakImplications public
 
+-- Implications relying on decidability of minimality.
+module WFMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) where
 
--- Implications relying on finite branching of the relation.
+  isMinDec→isWFacc→isWFminEM : R isWFacc → R isWFminEM
+  isMinDec→isWFacc→isWFminEM RisWFacc P Pdec a = f a (RisWFacc a) ε⋆ where
+    f : ∀ x → x ∈ R -accessible → (R ⋆) x a → a ∈ P → Σ[ m ∈ A ] (m ∈ R - P -minimal)
+    f x (acc xa) R*xa a∈P with dM x
+    ... | in1 (y ,, Ryx) = f y (xa y Ryx) (Ryx ,⋆ R*xa) a∈P
+    ... | in2 x∈NF = {!   !}
+
+  dMseq : A → ℕ → A
+  dMseq a0 zero = a0
+  dMseq a0 (succ n) with dM (dMseq a0 n)
+  ... | in1 (b ,, bRsn) = b
+  ... | in2 x = dMseq a0 n
+
+  ¬¬∃seqDec : ∀ a → ¬¬ (   (Σ[ k ∈ ℕ ] ∀ x → ¬ R x (dMseq a k))
+                         ⊔ (∀ k → R (dMseq a (succ k)) (dMseq a k)))
+  ¬¬∃seqDec a ¬EM = ¬EM (in2 f) where
+    f : (dMseq a) ∈ R -decreasing
+    f k with dM (dMseq a k) | dMseq a (succ k) in e
+    ... | in1 (c ,, Rcsk) | b = transp (~R R (dMseq a k)) e Rcsk
+    ... | in2 x∈NF | b = ∅ (¬EM (in1 (k ,, x∈NF)))
+
+  isMinDec→isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
+  isMinDec→isWFseq-→isWFminDNE- RisWFseq- P Pdne {a} a∈P ¬∃minP = ¬¬∃seqDec a f
+    where f : ((Σ[ k ∈ ℕ ] ∀ x → ¬ R x (dMseq a k)) ⊔ (dMseq a) ∈ R -decreasing) → ⊥
+          f (in1 (k ,, sk∈NF)) = {!   !}
+          f (in2 sdec) = RisWFseq- (dMseq a) sdec
+
+  isMinDec→isWFseq→isWFminDNE- : R isWFseq → isWFminDNE- R
+  isMinDec→isWFseq→isWFminDNE- RisWFseq P Pdne {a} a∈P ¬∃minP
+    with RisWFseq (dMseq a)
+  ... | k ,, kmin
+    with dM (dMseq a k) | dMseq a (succ k) in e
+  ... | in1 H | b = {!   !}
+  ... | in2 x | b = {!   !}
+
+
+  -- isMinDec→isWFacc→isWFmin : R isWFacc → R isWFmin
+  -- isMinDec→isWFacc→isWFmin RisWFacc P a = f a (RisWFacc a) where
+  --   f : ∀ x → x ∈ R -accessible → Σ[ m ∈ A ] (m ∈ R - P -minimal)
+  --   f x R*ax (acc xacc) with dM x
+  --   ... | in1 (y ,, Ryx) = f y (xacc y {! Ryx  !} )
+  --   ... | in2 a∈NF = a ,, a∈P , λ y _ → a∈NF y
+
+  -- isMinDec→isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
+  -- isMinDec→isWFseq-→isWFminDNE- RisWFseq- P Pdne {a} a∈P ¬∃minP =
+  --   RisWFseq- (dMseq a) sdec where
+  --     sdec : (dMseq a) ∈ R -decreasing
+  --     sdec n with dMseq a n in e
+  --     ... | c = ?
+
+      -- sdec zero with dM a | dMseq a 1 in e
+      -- ... | in1 (b ,, Rba) | d = transp (λ z → R z a) e Rba
+      -- ... | in2 a∈NF | d = ∅ (¬∃minP (a ,, (a∈P , λ y _ → a∈NF y ) ) )
+      -- sdec (succ n) with dMseq a (succ n) in e -- dM (dMseq a n)
+      -- ... | c = {!   !}
+      -- with dM (dMseq a n) | dMseq a (succ n) in e
+      -- ... | x | y = {!   !}
+
+      -- sdec n with dMseq a n | dM (dMseq a n)
+      -- ... | p | q = ?
+
+  --   with RisWFseq- (dMseq a)
+  -- ... | (k ,, kmin) = ?
+
+  --   FB→DNS R (∁ P) a (RisFB a) {!   !} λ H → ¬∃minP (a ,, a∈P , λ y y∈P Rya → H y Rya y∈P )
+  -- isWFseq-→isWFminDNE- RisWFseq- P Pdne {a} a∈P ¬∃minP = RisWFseq- s sdec
+  --   where s : ℕ → A
+  --         s zero = a
+  --         s (succ n) = {!   !}
+  --         sdec : s ∈ R -decreasing
+  --         sdec = {!   !}
+
+  -- isMinDec→isWFseq→isWFminDNE : R isWFseq → R isWFminDNE
+  -- isMinDec→isWFseq→isWFminDNE RisWFseq P Pdne a a∈P
+  --   with RisWFseq (dMseq a)
+  -- ... | k ,,  p = {!   !}
+  --   with dMseq a k
+  -- ... | c = {!   !}
+
+  -- ... | in1 (x ,, Ryx) | x∈NF = ∅ (x∈NF Ryx)
+  -- ... | in2 sk∈NF | _ = {!   !}
+
+  -- -- This seems to lead to the same issue as above
+  -- isWFseq-→isWFmin- : isWFseq- R → isWFminDNE- R
+  -- isWFseq-→isWFmin- RisWFseq P CCP⊆P {a} a∈P ¬Σmin = RisWFseq (dMseq a) s-dec where
+  --   s-dec : (R -decreasing) (dMseq a)
+  --   s-dec 0 with dM a
+  --   ... | in1 (y ,, Rya) = Rya
+  --   ... | in2 no = ∅ (¬Σmin (( a ,, a∈P , (λ y _ Rya → no y Rya) )) )
+  --   s-dec (succ n) with dM (dMseq a (succ n))
+  --   ... | in1 (y ,, yRsn) = yRsn
+  --   ... | in2 snRmin = ∅ (snRmin (dMseq a n) {!   !} )
+
+
+  {- It seems we need the following lemma. -}
+  -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
+  --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
+
+  -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero)
+
+  -- isWFseq→isWFmin : isWFseq R → isWFmin R
+  -- isWFseq→isWFmin RisWFseq P {a} a∈P with RisWFseq (dMseq a)
+  -- ... | n ,, snRn with dM (dMseq a n)
+  -- ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
+  -- ... | in2 snRmin = {!   !}
+
+  -- This is obviously provable with decidability
+  -- isMinDec→isWFacc→isWFminEM : R isWFacc → R isWFminEM
+  -- isMinDec→isWFacc→isWFminEM RisWFacc P Pdec a = f a (RisWFacc a) where
+  --   f : ∀ x → x ∈ R -accessible → x ∈ P → Σ[ m ∈ A ] (m ∈ R - P -minimal)
+  --   f x (acc xa) x∈P with dM x
+  --   ... | in1 (y ,, Ryx) = {!   !}
+  --   ... | in2 x∈NF = {!   !}
+
+  -- FB→¬¬isWFseq-→isWFminDNE- : ¬¬(R isWFseq) → isWFminDNE- R
+  -- FB→¬¬isWFseq-→isWFminDNE- ¬¬RisWFseq P Pdne {a} a∈P ¬∃minP = ¬¬RisWFseq f
+  --   where s : ℕ → A
+  --         s zero = a
+  --         s (succ n) = {!   !}
+  --         f : ¬ R isWFseq
+  --         f RisWFseq = FB→DNS R (∁ P) a (RisFB a) {!   !}
+  --                         λ H → ¬∃minP (a ,, a∈P , λ y y∈P Rya → H y Rya y∈P )
+  --
+
+  -- only provable for finitely branching relations
+  -- isWFseq→isWFminEM : R isWFseq → R isWFminEM
+  -- isWFseq→isWFminEM RisWFseq P Pdec a a∈P = {!   !}
+  --   where s : ℕ → A
+  --         s
+
 open import Relations.FinitelyBranching
+-- Implications relying on finite branching of the relation.
 module FBImplications {A : Set} {R : 𝓡 A} (RisFB : R isFB) where
 
   FB→isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
@@ -193,12 +408,28 @@ module FBImplications {A : Set} {R : 𝓡 A} (RisFB : R isFB) where
 
   -- For finitely branching relations, isDec implies MinDec
   open import Lists
-  FB→isDec→MinDec : R isDec → R isMinDec
-  FB→isDec→MinDec RisDec x₀ with decList∃ (~R R x₀) (λ _ → RisDec) (fst (RisFB x₀))
+  FB→isDec→isMinDec : R isDec → R isMinDec
+  FB→isDec→isMinDec RisDec x₀ with decList∃ (~R R x₀) (λ _ → RisDec) (fst (RisFB x₀))
   ... | in2 ∄y = in2 (λ y Ryx₀ →
    ∄y (List∃intro (~R R x₀) (fst (RisFB x₀)) y (snd (RisFB x₀) y Ryx₀ , Ryx₀)))
   ... | in1 ∃y with List∃elim (~R R x₀) (fst (RisFB x₀)) ∃y
   ... | (y ,, _ , Ryx₀) = in1 (y ,, Ryx₀ )
+
+  FB→isWFminDNE→isWFseq : R isWFminDNE → R isWFseq
+  FB→isWFminDNE→isWFseq wfMinDNE s = {!    !} where
+    RisWFseq- : isWFseq- R
+    RisWFseq- = isWFmin-→isWFseq- R (isWFminDNE-→isWFmin- R (isWFminDNE→isWFminDNE- R wfMinDNE))
+    P : 𝓟 A
+    P x = Σ[ n ∈ ℕ ] (x ≡ s n × ¬ (s ∘ add n) ∈ R -decreasing)
+    ps0 : P (s 0)
+    ps0 = 0 ,, (refl , RisWFseq- _ )
+    CCP⊆P : ¬¬Closed P
+    CCP⊆P x ¬x∉P = {!    !}
+
+  -- with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) (s zero) (zero ,, refl)
+  -- ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
+
+
 
 open FBImplications public
 
@@ -214,6 +445,16 @@ module MinimalComplement {A : Set} (R : 𝓡 A) where
   -- Cor→¬¬ind P ¬¬cP ciP x IHx = ¬¬cP x (λ ¬px → f (ciP x ¬px) ) where
   --   f : Σ[ y ∈ A ] (R y x × ¬ P y) → ⊥
   --   f (y ,, Ryx , ¬Py) = ¬Py (IHx y Ryx)
+
+  -- MinDec→CCacc∈coreductive : R isMinDec → _-coreductive_ (∁ R -accessible)
+  -- MinDec→CCacc∈coreductive RisMD x x∉acc with RisMD x
+  -- ... | in1 (y ,, Ryx) = y ,, Ryx , {!   !}
+  -- ... | in2 x∈NF with = {!   !}
+
+  -- MinDec→CCacc∈coreductive : R isMinDec → _-coreductive_ (∁ (∁ R -accessible))
+  -- MinDec→CCacc∈coreductive RisMD x ¬x∉acc with RisMD x
+  -- ... | in1 (y ,, Ryx) = y ,, Ryx , λ ¬y∈acc → ¬x∉acc (λ x∉acc → {!  !} )
+  -- ... | in2 x∈NF = {!   !}
 
   -- A variation of ``minimal'' with focus on the complement of the given predicate
   isWFmin+ : Set₁
@@ -346,44 +587,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
     -}
 
     -- [AP. This section should be deleted. Everything provable moved elsewhere.]
-    dMseq : A → ℕ → A
-    dMseq a0 zero = a0
-    dMseq a0 (succ n) with dM (dMseq a0 n)
-    ... | in1 (b ,, bRsn) = b
-    ... | in2 x = dMseq a0 n
 
-    {- It seems we need the following lemma. -}
-    -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero) → ∀ (n : ℕ) → ¬ (P (s n))
-    --              → Σ[ m  ∈ ℕ ] → ¬ P (s m) × ∀ (k : ℕ) → k < m → P (s k)
-
-    -- lemmaMin : ∀ (P : 𝓟 A) (s : ℕ → A) → P (s zero)
-
-    -- isWFseq→isWFmin : isWFseq R → isWFmin R
-    -- isWFseq→isWFmin RisWFseq P {a} a∈P with RisWFseq (dMseq a)
-    -- ... | n ,, snRn with dM (dMseq a n)
-    -- ... | in1 (y ,, yRsn) = ∅ (snRn yRsn)
-    -- ... | in2 snRmin = {!   !}
-
-    -- isWFseq→isWFminDNE : isWFseq R → isWFminDNE R
-    -- isWFseq→isWFminDNE RisWFseq P Pdne {a} a∈P with RisWFseq (dMseq a)
-    -- ... | (k ,, p) with dM (dMseq a k) | p
-    -- ... | in1 (x ,, Ryx) | x∈NF = ∅ (x∈NF Ryx)
-    -- ... | in2 sk∈NF | _ = {!   !}
-
-    -- This is obviously provable with decidability
-    -- isWFseq→isWFminEM : R isWFseq → R isWFminEM
-    -- isWFseq→isWFminEM RisWFseq P Pdec = {! isWFminDNe→isWFminDNE  !}
-
-    -- -- This seems to lead to the same issue as above
-    -- isWFseq-→isWFmin- : isWFseq- R → isWFmin- R
-    -- isWFseq-→isWFmin- RisWFseq P {a} a∈P ¬Σmin = RisWFseq (dMseq a) s-dec where
-    --   s-dec : is R -decreasing (dMseq a)
-    --   s-dec 0 with dM a
-    --   ... | in1 (y ,, Rya) = Rya
-    --   ... | in2 no = ∅ (¬Σmin (( a ,, a∈P , (λ y _ Rya → no y Rya) )) )
-    --   s-dec (succ n) with dM (dMseq a (succ n))
-    --   ... | in1 (y ,, yRsn) = yRsn
-    --   ... | in2 snRmin = ∅ (snRmin (dMseq a n) {!   !} )
 
       -- isWFminDNE→isWFseq : isWFminDNE R → isWFseq R
       -- isWFminDNE→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) ¬¬CP {s zero } (zero ,, refl)
