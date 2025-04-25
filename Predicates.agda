@@ -37,6 +37,10 @@ infix 18 _∉_
 𝓟^← {zero}   f P = P
 𝓟^← {succ n} f P = λ a → 𝓟^← f (P (f a))
 
+-- Second-order predicates
+𝓟₁ : Set → Set₂
+𝓟₁ A = A → Set₁
+
 module LogicOps {A : Set} where
   -- Constantly true predicate
   K⊤ : ∀ {n} → 𝓟^ n A
@@ -63,6 +67,19 @@ module LogicOps {A : Set} where
   ∁_ {zero}   P = ¬ P
   ∁_ {succ n} P = λ x → ∁ (P x)
 
+  -- ¬¬-closure
+  ∁∁_ : ∀ {n} → 𝓟^ n A → 𝓟^ n A
+  ∁∁_ P = ∁ (∁ P)
+
+  infix 19 ∁∁_
+  infix 17 _∩_
+  infix 17 _∪_
+  infix 19 ∁_
+
+open LogicOps public
+
+module ContainmentAndEquivalence {A : Set} where
+
   -- Subset relation
   _⊆_ : ∀ {n : ℕ} → 𝓟^ n A → 𝓟^ n A → Set
   _⊆_ {zero}   P Q = P → Q
@@ -74,10 +91,8 @@ module LogicOps {A : Set} where
 
   infixr 15 _⇔_
   infix 16 _⊆_
-  infix 17 _∩_
-  infix 17 _∪_
-  infix 19 ∁_
 
+  -- Properties of operations on relations
   Elem : ∀ {n} → 𝓟^ n A → Set
   Elem {zero}   X = X
   Elem {succ n} P = Σ[ a ∈ A ] (Elem (P a))
@@ -118,7 +133,23 @@ module LogicOps {A : Set} where
 
   _⇔!⊆_ : ∀ {n : ℕ} → {P Q R : 𝓟^ n A} → P ⇔ Q → Q ⊆ R → P ⊆ R
   _⇔!⊆_ {n} (PQ , QP) QR = PQ ⊆!⊆ QR
-open LogicOps public
+
+open ContainmentAndEquivalence public
+
+module ClassicalProperties {A : Set} where
+
+  open import Classical
+
+  dec : 𝓟 A → Set
+  dec P = ∀ x → EM (P x)
+
+  ¬¬Closed : 𝓟 A → Set
+  ¬¬Closed P = P ⊆ ∁∁ P
+
+  DNS : 𝓟 A → Set
+  DNS P = (∀ x → ¬¬ (P x)) → ¬¬ (∀ x → P x)
+
+open ClassicalProperties public
 
 module BigOps {A : Set} where
 

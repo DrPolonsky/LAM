@@ -10,52 +10,8 @@ open import Relations.Seq
 
 module Relations.Wellfounded where
 
-module WFDefinitions {A : Set} (R : 𝓡 A) where
-
-  -- An element is R-accessible if all elements R-below it are R-accessible
-  data _-accessible : 𝓟 A where
-    acc : ∀ {x : A} → (∀ y → R y x → _-accessible y) → _-accessible x
-
-  -- Well-foundedness defined as: every element is accessible
-  _isWFacc : Set
-  _isWFacc = ∀ (x : A) → x ∈ _-accessible
-
-  -- A predicate φ is R-inductive if:
-  --   φ x is true whenever φ y is true for all elements y R-below x.
-  _-inductive_ : 𝓟 A → Set
-  _-inductive_ φ = ∀ x → (∀ y → R y x → φ y) → φ x
-
-  -- Well-foundedness defined as: every inductive predicate is universally true
-  _isWFind : Set₁
-  _isWFind = ∀ (φ : 𝓟 A) → _-inductive_ φ → ∀ x → φ x
-
-  WFseq : 𝓟 A
-  WFseq a = ∀ (s : ℕ → A) → s 0 ≡ a → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
-
-  -- Well-foundedness defined as: every sequence contains a non-decreasing index
-  _isWFseq : Set
-  _isWFseq = ∀ (s : ℕ → A) → Σ[ n ∈ ℕ ] (¬ (R (s (succ n)) (s n)))
-
-  -- x is R-φ-minimal if φ(x) is true and φ(y) is false for all y below x
-  _-_-minimal : 𝓟 A → 𝓟 A
-  _-_-minimal φ x = x ∈ φ × (∀ y → y ∈ φ → R y x → ⊥)
-
-  -- Well-foundedness defined as: every non-empty subset contains a minimal element
-  _isWFmin : Set₁
-  _isWFmin = ∀ (P : 𝓟 A) → ∀ a → a ∈ P → Σ[ m ∈ A ] _-_-minimal P m
-
-  -- Like isWFmin, but restricted to ¬¬-closed predicates
-  _isWFminDNE : Set₁
-  _isWFminDNE = ∀ (P : 𝓟 A) → ¬¬Closed P → ∀ a → a ∈ P → Σ[ m ∈ A ] _-_-minimal P m
-
-  -- Like isWFmin, but restricted to decidable predicates
-  _isWFminEM : Set₁
-  _isWFminEM = ∀ (P : 𝓟 A) → dec P → ∀ a → a ∈ P → Σ[ m ∈ A ] _-_-minimal P m
-
-  -- When used without qualification, "WF" refers to the first definition.
-  _isWF = _isWFacc
-
-open WFDefinitions public
+open import Relations.WFDefinitions public
+open import Relations.WeakWFDefinitions public
 
 module BasicImplications {A : Set} {R : 𝓡 A} where
 
@@ -79,14 +35,15 @@ module BasicImplications {A : Set} {R : 𝓡 A} where
 
   -- implications between the base definitions
   isWFacc→isWFind : R isWFacc → R isWFind
-  isWFacc→isWFind wfAcc φ φ-ind = λ x → acc⊆ind φ φ-ind x (wfAcc x)
+  isWFacc→isWFind wfAcc x φ φ-ind = acc⊆ind φ φ-ind x (wfAcc x)
 
   isWFind→isWFacc : R isWFind → R isWFacc
-  isWFind→isWFacc wfInd = wfInd (R -accessible) λ x → acc
+  isWFind→isWFacc wfInd x = wfInd x (WFacc R ) λ y → acc
 
   isWFmin→isWFminDNE : R isWFmin → R isWFminDNE
   isWFmin→isWFminDNE RisWFmin P PDNE = RisWFmin P
 
+  {-
   isWFminDNE→isWFminEM : R isWFminDNE → R isWFminEM
   isWFminDNE→isWFminEM RisWFminDNE P PEM = RisWFminDNE P (λ x → pr2 (EM→WEM×DNE (P x) (PEM x) ) )
 
@@ -94,30 +51,7 @@ module BasicImplications {A : Set} {R : 𝓡 A} where
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) (s zero) (zero ,, refl)
   ... | x ,, (k ,, p) , H = (k ,, λ Ryx → H (s (succ k)) (succ k ,, refl ) (transp (R (s (succ k))) p Ryx ) )
 
-module WeakerWF {A : Set} (R : 𝓡 A) where
-  -- Weaker notions of well-foundedness
-
-  isWFacc- : Set
-  isWFacc- = ∀ x → ¬¬ (x ∈ R -accessible)
-
-  isWFind- : Set₁
-  isWFind- = ∀ (φ : 𝓟 A) → R -inductive φ → ∀ x → ¬¬ (φ x)
-
-  -- The classical concept of a well-founded relation [TeReSe]
-  isWFseq- : Set
-  isWFseq- = ∀ (s : ℕ → A) → ¬ (s ∈ R -decreasing)
-
-  isWFmin- : Set₁
-  isWFmin- = ∀ (P : 𝓟 A) → ∀ {d} → d ∈ P → ¬¬ Σ[ y ∈ A ] (y ∈ R - P -minimal)
-
-  isWFminDNE- : Set₁
-  isWFminDNE- = ∀ (P : 𝓟 A) → ¬¬Closed P → ∀ {a} → a ∈ P → ¬¬ Σ[ m ∈ A ] (m ∈ R - P -minimal)
-
-  isWFminEM- : Set₁
-  isWFminEM- = ∀ (P : 𝓟 A) → dec P → ∀ {a} → a ∈ P → ¬¬ Σ[ m ∈ A ] (m ∈ R - P -minimal)
-
 open BasicImplications
-open WeakerWF
 
 module WeakImplications {A : Set} (R : 𝓡 A) where
   -- Implications between weaker well-foundedness notions
@@ -180,8 +114,8 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
           (s ∘ succ) (λ n → s-inc (succ n)) refl
 
   isWFmin-→isWFminDNE- : isWFmin- R → isWFminDNE- R
-  isWFmin-→isWFminDNE- RisWFmin- P  = λ _ → RisWFmin- P 
-  
+  isWFmin-→isWFminDNE- RisWFmin- P  = λ _ → RisWFmin- P
+
   isWFminDNE-→isWFmin- : isWFminDNE- R → isWFmin- R
   isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP
     with RisWFminDNE- (∁ (∁ P)) (λ x y z → y λ w → w z ) (λ z → z d∈P)
@@ -742,4 +676,5 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   isWFmin→isWFind- : isWFmin R → isWFind- R
   isWFmin→isWFind- RisWFmin φ φ-ind x ¬φx with RisWFmin (λ y → ¬ φ y) ¬φx
   ... | d ,, (¬φd , d-min) = {!   !}
+-}
 -}
