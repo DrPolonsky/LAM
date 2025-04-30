@@ -8,7 +8,7 @@ open import Relations.Seq
 
 module Relations.WeakWFDefinitions {A : Set} (R : 𝓡 A) where
 
--- open LocalWFDefinitions 
+-- open LocalWFDefinitions
 
 -- Weaker notions of well-foundedness
 

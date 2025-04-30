@@ -44,8 +44,7 @@ module BasicImplications {A : Set} {R : 𝓡 A} where
   isWFmin→isWFminDNE RisWFmin P PDNE = RisWFmin P
 
   isWFminDNE→isWFminEM : R isWFminDNE → R isWFminEM
-  isWFminDNE→isWFminEM RisWFminDNE P PEM = RisWFminDNE P (λ x Px ¬Px → ¬Px Px)  
-   
+  isWFminDNE→isWFminEM RisWFminDNE P PEM = RisWFminDNE P (dec→¬¬Closed P PEM )
 
   isWFmin→isWFseq : R isWFmin → R isWFseq
   isWFmin→isWFseq wfMin s with wfMin (λ a → Σ[ n ∈ ℕ ] (s n ≡ a)) (s zero) (zero ,, refl)
@@ -63,9 +62,10 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
   -- The converse of this is exactly the DNS for all inductive φ
   ¬¬isWFind→isWFind- : ¬¬ (R isWFind) → isWFind- R
   ¬¬isWFind→isWFind- ¬¬WFiR   = λ φ φind x ¬φx → ¬¬WFiR (λ isWFiR → ¬φx (isWFiR x φ φind))
-  
-  isWFseq-→¬¬isWFseq : isWFseq- R →  ¬¬ (R isWFseq)
-  isWFseq-→¬¬isWFseq RisWFseq- ¬RisWF = ¬RisWF (λ s → {!   !} )
+
+  -- Not provable
+  -- isWFseq-→¬¬isWFseq : isWFseq- R →  ¬¬ (R isWFseq)
+  -- isWFseq-→¬¬isWFseq RisWFseq- ¬RisWF = ¬RisWF (λ s → {!   !} )
 
   ¬¬isWFseq→isWFseq- : ¬¬ (R isWFseq) → isWFseq- R
   ¬¬isWFseq→isWFseq- ¬¬WFs = λ s sdec  → ¬¬WFs (λ WFs → snd (WFs s) (sdec (fst (WFs s)) ) )
@@ -115,13 +115,12 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
 
   isWFmin-→isWFminDNE- : isWFmin- R → isWFminDNE- R
   isWFmin-→isWFminDNE- RisWFmin- P  = λ _ → RisWFmin- P
- 
+
   --  Double check this solution as it went from being long to simple.
   isWFminDNE-→isWFmin- : isWFminDNE- R → isWFmin- R
-  isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP = RisWFminDNE- P (λ x Px ¬Px → ¬Px Px ) d∈P ¬∃minP
-  --   with RisWFminDNE- (∁ (∁ P)) (λ x y z → y λ w → w z ) (λ z → z d∈P)
-  -- ... | c = c λ { (x ,, ¬x∉P , H) → ¬x∉P (λ x∈P →
-  --                  ¬∃minP (x ,, x∈P , λ y y∈P Ryx → H y (λ z → z y∈P) Ryx ) )  }
+  isWFminDNE-→isWFmin- RisWFminDNE- P {d} d∈P ¬∃minP with RisWFminDNE- (∁ (∁ P)) (λ x y z → y λ w → w z ) (λ z → z d∈P)
+  ... | c = c λ { (x ,, ¬x∉P , H) → ¬x∉P (λ x∈P →
+                   ¬∃minP (x ,, x∈P , λ y y∈P Ryx → H y (λ z → z y∈P) Ryx ) )  }
 
   ¬¬lemma : ∀ (X : Set) (Q : 𝓡 X) (P : 𝓟 X) (a : X) → ¬¬ (Σ[ b ∈ X ] (Q b a × P b) ⊔ (∀ b → Q b a → ¬ P b))
   ¬¬lemma X Q P a ¬⊔ = ¬⊔ (in2 λ b Qba b∈P → ¬⊔ (in1 (b ,, Qba , b∈P) ) )
@@ -138,6 +137,7 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
   ¬¬lemmaC P CCP⊆P a ¬⊔ = ¬⊔ (in2 λ { (b ,, Rba) → CCP⊆P b (λ b∉P → ¬⊔ (in1 ((b ,, Rba) ,, b∉P ) ) )  } )
 
   -- 28th April: Should we scrap this goal?
+  -- 30th April: Move it to an "experiments" file
   isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
   isWFminDNE-→isWFacc- RisWFminDNE- x x∉acc = {!   !}
     -- RisWFminDNE- (∁ (R -accessible)) p x∉acc f
@@ -146,6 +146,8 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
     --       f (m ,, m∉acc , mmin) = {!   !}
 
   -- Similarly should we scrap this or move it to a misc folder?
+  -- Same, probably unprovable, but should be moved there
+  -- This seems like a hard one that still deserves to be looked at.
   isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
   isWFseq-→isWFminDNE- RisWFseq- P CCP⊆P {a} a∈P ¬∃minP =
     -- ¬¬lemma ℕ (λ m n → m ≡ succ n) (λ n → Σ-syntax A λ b → b ∈ P) 0 f
@@ -176,8 +178,11 @@ module WeakImplications {A : Set} (R : 𝓡 A) where
   deMorgan : 𝓟 A → Set
   deMorgan P = ∀ a → (Σ[ bRba ∈ (Σ[ b ∈ A ] R b a) ] (¬ P (fst bRba)))
                   ⊔  (∀ (bRba :  Σ[ b ∈ A ] R b a)    → P (fst bRba))
-  
+
   -- April 28th: Do we want to include this notion of WF?
+  -- April 30th: Let's move it to misc,
+  -- perhaps we will have a generic "isWFmin" parametrized by a higher-order
+  -- property of predicates Φ ∈ (EM, DNE, deMorgan, coRec, etc.)
   isWFminDM : Set₁
   isWFminDM = ∀ P → deMorgan P → Σ[ m ∈ A ] (m ∈ (R - P -minimal))
 
@@ -202,6 +207,7 @@ open WeakImplications public
 module WFMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) where
 
   -- April 28th: Delete?
+  -- April 30th: Let's move it to misc/open problems
   isMinDec→isWFacc→isWFminEM : R isWFacc → R isWFminEM
   isMinDec→isWFacc→isWFminEM RisWFacc P Pdec a = f a (RisWFacc a) ε⋆ where
     f : ∀ x → x ∈ R -accessible → (R ⋆) x a → a ∈ P → Σ[ m ∈ A ] (m ∈ R - P -minimal)
@@ -223,12 +229,15 @@ module WFMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) where
     ... | in1 (c ,, Rcsk) | b = transp (~R R (dMseq a k)) e Rcsk
     ... | in2 x∈NF | b = ∅ (¬EM (in1 (k ,, x∈NF)))
 
+  -- If the above was provable, this would be the next question.
   isMinDec→isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
   isMinDec→isWFseq-→isWFminDNE- RisWFseq- P Pdne {a} a∈P ¬∃minP = ¬¬∃seqDec a f
     where f : ((Σ[ k ∈ ℕ ] ∀ x → ¬ R x (dMseq a k)) ⊔ (dMseq a) ∈ R -decreasing) → ⊥
           f (in1 (k ,, sk∈NF)) = {!   !}
           f (in2 sdec) = RisWFseq- (dMseq a) sdec
 
+  -- this might be slightly easier to prove (or not)
+  -- can be moved to misc
   isMinDec→isWFseq→isWFminDNE- : R isWFseq → isWFminDNE- R
   isMinDec→isWFseq→isWFminDNE- RisWFseq P Pdne {a} a∈P ¬∃minP
     with RisWFseq (dMseq a)
@@ -337,8 +346,8 @@ open import Relations.FinitelyBranching
 module FBImplications {A : Set} {R : 𝓡 A} (RisFB : R isFB) where
 
   FB→isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
-  FB→isWFminDNE-→isWFacc- RisWF x₀ x₀∉acc = 
-    RisWF (∁ (R -accessible)) (λ a nnnac ac → ac nnnac) x₀∉acc f 
+  FB→isWFminDNE-→isWFacc- RisWF x₀ x₀∉acc =
+    RisWF (∁ (R -accessible)) (?) x₀∉acc f
       where f : ¬ Σ-syntax A (R - ∁ (R -accessible)-minimal)
             f (z ,, z∉acc , z∈min) =
               FB→DNS R (R -accessible) z (RisFB z)
@@ -423,14 +432,14 @@ module MinimalComplement {A : Set} (R : 𝓡 A) where
   -- 28th April: TODO needs fixing.
   isWFmin+→isWFminDNE : isWFmin+ → R isWFminDNE
   isWFmin+→isWFminDNE RisWFmin+ P ∁∁P⊆P a a∈P with RisWFmin+ (∁ P) (λ a∉P → a∉P a∈P)
-  ... | x ,, ¬¬x∈P , xmin =  x ,, {!   ∁∁P⊆P!} , λ y y∈P Ryx → ∁∁P⊆P y y∈P (xmin y Ryx)
-    -- (x ,, ∁∁P⊆P x ¬¬x∈P , λ y y∈P Ryx → xmin y Ryx y∈P )
+  ... | x ,, ¬¬x∈P , xmin = {!   !} --  x ,, {!   ∁∁P⊆P!} , ?
+  -- ... |  (x ,, ∁∁P⊆P x ¬¬x∈P , λ y y∈P Ryx → xmin y Ryx y∈P )
 
   isWFminDNE→isWFminCor+ : R isWFminDNE → isWFminCor+
-  isWFminDNE→isWFminCor+ RisWFminDNE P Pco {a} a∉P 
-    with  RisWFminDNE (∁ P) DNS¬ a a∉P 
-    where DNS¬ = λ x ¬Px ¬¬Px → ¬¬Px ¬Px
-  ... | (y ,, ¬Py , ymin) with Pco y ¬Py 
+  isWFminDNE→isWFminCor+ RisWFminDNE P Pco {a} a∉P
+    with  RisWFminDNE (∁ P) DNS¬ a a∉P
+    where DNS¬ = λ x ¬Px ¬¬Px → {!   !}
+  ... | (y ,, ¬Py , ymin) with Pco y ¬Py
   ... | (z ,, Rzy , ¬Pz) = ∅ (ymin z ¬Pz Rzy)
 
   isWFminCor+→isWFminCor : isWFminCor+ → isWFminCor
@@ -556,9 +565,9 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   AccDNE : Set
   AccDNE = ¬¬Closed (R -accessible)
 
-  -- April 28th: Todo fix this 
+  -- April 28th: Todo fix this
   DNEacc→isWFminDNE→isWFacc : AccDNE → R isWFminDNE → R isWFacc
-  DNEacc→isWFminDNE→isWFacc dne wfDNE x = {! dne!} 
+  DNEacc→isWFminDNE→isWFacc dne wfDNE x = {! dne!}
     where f : ¬¬ (x ∈ R -accessible)
           f = {!   !}
     --  dne x f where
@@ -567,10 +576,10 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   --   f x∉acc with wfDNE (∁ (R -accessible)) (λ y nnny ya → nnny (λ z → z ya)) x x∉acc
   --   ... | (y ,, y∉acc , yIH) = y∉acc (acc λ z Rzy → dne z (λ z∉acc → yIH z z∉acc Rzy ) )
 
-  -- April 28th: Todo Fix this 
+  -- April 28th: Todo Fix this
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : AccDNE → isWFacc- R → ¬¬ (R isWFacc)
-  isWFacc-→¬¬isWFacc AccDNE RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → {!   !}  
+  isWFacc-→¬¬isWFacc AccDNE RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → {!   !}
     -- ¬RisWFacc λ x → AccDNE x (RisWFacc- x)
 
   {-
@@ -694,4 +703,3 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   ... | d ,, (¬φd , d-min) = {!   !}
 -}
 -}
-    
