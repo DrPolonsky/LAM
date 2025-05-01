@@ -210,3 +210,4 @@ module Lambda^ where
   Λ^ {succ n} {A} P (app t1 t2) = app^ (Λ^ P t1) (Λ^ P t2)
   Λ^ {succ n} {A} P (abs t0)    = abs^ (Λ^ (↑^ P) t0)
 open Lambda^ public
+ 
