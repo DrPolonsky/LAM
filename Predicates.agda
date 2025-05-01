@@ -144,10 +144,13 @@ module ClassicalProperties {A : Set} where
   dec P = ∀ x → EM (P x)
 
   ¬¬Closed : 𝓟 A → Set
-  ¬¬Closed P = P ⊆ ∁∁ P
+  ¬¬Closed P = ∁∁ P ⊆ P
 
   DNS : 𝓟 A → Set
   DNS P = (∀ x → ¬¬ (P x)) → ¬¬ (∀ x → P x)
+
+  dec→¬¬Closed : ∀ (P : 𝓟 A) → dec P → ¬¬Closed P
+  dec→¬¬Closed P dp a ¬¬pa = case I (λ ¬pa → ∅ (¬¬pa ¬pa) ) (dp a) 
 
 open ClassicalProperties public
 
