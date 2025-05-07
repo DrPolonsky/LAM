@@ -1,4 +1,4 @@
--- This file contains both potential avenues to explore and dead ends. 
+-- This file contains both potential avenues to explore and dead ends.
 open import Logic
 open import Predicates
 open import Relations.Core
@@ -8,13 +8,13 @@ open import Relations.ClosureOperators
 open import Relations.Seq
 
 
-module Relations.WellfoundedMisc where 
+module Relations.WellfoundedMisc where
 
 open import Relations.WFDefinitions public
 open import Relations.WeakWFDefinitions public
 open import Relations.Wellfounded public
 
-    
+
 module ToExplore {A : Set} {R : 𝓡 A} where
   isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
   isWFminDNE-→isWFacc- RisWFminDNE- x x∉acc = RisWFminDNE- (∁ (R -accessible)) p x∉acc f
@@ -63,13 +63,13 @@ module ToExplore {A : Set} {R : 𝓡 A} where
   --   f y Ryx with wfdm P = {!   !}
 
 module ToExploreMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) where
-    isMinDec→isWFacc→isWFminEM : R isWFacc → R isWFminEM
-    isMinDec→isWFacc→isWFminEM RisWFacc P Pdec a = f a (RisWFacc a) ε⋆ where
-        f : ∀ x → x ∈ R -accessible → (R ⋆) x a → a ∈ P → Σ[ m ∈ A ] (m ∈ R - P -minimal)
-        f x (acc xa) R*xa a∈P with dM x
-        ... | in1 (y ,, Ryx) = f y (xa y Ryx) (Ryx ,⋆ R*xa) a∈P
-        ... | in2 x∈NF = {!     !}
- 
+  isMinDec→isWFacc→isWFminEM : R isWFacc → R isWFminEM
+  isMinDec→isWFacc→isWFminEM RisWFacc P Pdec a = f a (RisWFacc a) ε⋆ where
+      f : ∀ x → x ∈ R -accessible → (R ⋆) x a → a ∈ P → Σ[ m ∈ A ] (m ∈ R - P -minimal)
+      f x (acc xa) R*xa a∈P with dM x
+      ... | in1 (y ,, Ryx) = f y (xa y Ryx) (Ryx ,⋆ R*xa) a∈P
+      ... | in2 x∈NF = {!     !}
+
 --   -- If ¬¬∃seqDec was provable, this would be the next question.
 --     isMinDec→isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
 --     isMinDec→isWFseq-→isWFminDNE- RisWFseq- P Pdne {a} a∈P ¬∃minP = ¬¬∃seqDec a f
@@ -165,15 +165,18 @@ module ToExploreMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) wher
   --   ... | in1 (y ,, Ryx) = {!   !}
   --   ... | in2 x∈NF = {!   !}
 
-  -- FB→¬¬isWFseq-→isWFminDNE- : ¬¬(R isWFseq) → isWFminDNE- R
-  -- FB→¬¬isWFseq-→isWFminDNE- ¬¬RisWFseq P Pdne {a} a∈P ¬∃minP = ¬¬RisWFseq f
-  --   where s : ℕ → A
-  --         s zero = a
-  --         s (succ n) = {!   !}
-  --         f : ¬ R isWFseq
-  --         f RisWFseq = FB→DNS R (∁ P) a (RisFB a) {!   !}
-  --                         λ H → ¬∃minP (a ,, a∈P , λ y y∈P Rya → H y Rya y∈P )
-  --
+  open import Relations.FinitelyBranching
+
+  FB→¬¬isWFseq→isWFminDNE- : R isFB → ¬¬(R isWFseq) → isWFminDNE- R
+  FB→¬¬isWFseq→isWFminDNE- RisFB ¬¬RisWFseq P Pdne {a} a∈P ¬∃minP = ¬¬RisWFseq f
+    where s : ℕ → A
+          s zero = a
+          s (succ n) = {!   !}
+          f : ¬ R isWFseq
+          f RisWFseq = FB→DNS R (∁ P) a (RisFB a)
+                          {!   !}
+                          λ H → ¬∃minP (a ,, a∈P , λ y y∈P Rya → H y Rya y∈P )
+
 
   -- only provable for finitely branching relations
   -- isWFseq→isWFminEM : R isWFseq → R isWFminEM
@@ -182,7 +185,7 @@ module ToExploreMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) wher
   --         s
 
 
-    
+
 
 module MinimalComplementMisc {A : Set} (R : 𝓡 A) where
   -- Cor→¬¬ind : ∀ (P : 𝓟 A) → _-coreductive_ P → ¬¬Closed P → R -inductive P
@@ -228,7 +231,7 @@ module MinimalComplementMisc {A : Set} (R : 𝓡 A) where
   --         ... | (y ,, Rxy , y∉acc) = f y {!   !} {!   !}
 
 
-module DeadEnds {A : Set} {R : 𝓡 A} where 
+module DeadEnds {A : Set} {R : 𝓡 A} where
   -- Not provable
   -- isWFseq-→¬¬isWFseq : isWFseq- R →  ¬¬ (R isWFseq)
   -- isWFseq-→¬¬isWFseq RisWFseq- ¬RisWF = ¬RisWF (λ s → {!   !} )
