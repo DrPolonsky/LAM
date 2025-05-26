@@ -17,6 +17,61 @@
 
 \begin{document}
 
+\section*{2025.05.22}
+\subsection*{Misc.\ notes}
+\begin{itemize}
+  \item Iterating linear functors does not change the roots
+  \item To compute the roots of $H(H(X))$, should solve $H(x) = r_i$, where $r_i$ are the roots of $H(x)$.
+\end{itemize}
+
+\subsection*{Questions}
+\begin{enumerate}
+  \item Are colimits of the diagram induced by an arbitrary polynomial functor $P$ and $P \circ P$ the same?
+
+  (Obviously, Yes.)
+
+  \item Can that be generalized to arbitrary unfoldings?
+
+  Can that be generalized to ``$1.5$-unfoldings'' ?
+
+  \item When we ``add a non-zero root'', do we automatically get a
+  rig isomorphism inducing an isomorphism to the original $\mu$-type?
+
+  \item Prove the surjectivity criterion relating the image of the fold
+  from the initial algebra to the final coalgebra?
+
+  \item Big goal: When an F-algebra structure is given by a rig iso,
+  the induced fold is epi (and thus iso).
+
+  \item What are the most generic iso rules for the mu-constructor?
+
+  \item Can every ADT $T(\vec x)$ (with any nesting of $\mu$s) be realized
+  ``with all $\mu$s on the outside''?
+
+  Strong version:  $T(\vec x) = \mu \vec y. P(\vec x, \vec y)$, where $P(\vec x, \vec y)$ is a polynomial.
+
+  Weak version:  $T(\vec x) = U(\vec x, \mu \vec y. P(\vec x, \vec y))$, where $U(\vec x)$,
+  $P(\vec x, \vec y)$ are polynomials.
+
+  Weaker version: Same, but allowing simultaneous solution to a system of equations
+  (I.E., working with fixed points of functors on $Set^n$.)
+
+  \item Prove that $\mu x. \mu y. P(x,y) = \mu x. P(x,x)$?
+
+  (Almost certainly yes.)
+
+  It would immediately follow that e.g.,
+  $\mu \vec x. P(\vec x) = \mu x. P(x,\dots,x) = \mu \vec x. P(\vec{\pi x})$,
+  where $\vec{\pi x}$ is any permutation/mere function
+  of $\vec x$.
+
+  \item Look at $\nat \times \nat$.
+
+  \item Look at equational laws between rig isos/elements of the iso type.
+
+  \item
+\end{enumerate}
+
 \maketitle
 
 \section{Standard ADTs}
