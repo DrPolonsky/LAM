@@ -119,11 +119,22 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
 
 \begin{table}[h!]
     \centering
-    {\setlength{\arrayrulewidth}{1.5pt}  % Set horizontal rule thickness
-    \begin{tabular}{|>{\columncolor{gray!30}}l!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c|}
-        \hline
-        \rowcolor{gray!30} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SMandWN$} & \multicolumn{2}{c|}{$\SN$} \\
-        \hline
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30} 
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SN$} \\
+        \Xhline{1.5pt}
         $\UNto$ & CE-\ref{CE:4} & CE-\ref{CE:12} & CE-\ref{CE:4} & CE-\ref{CE:7} & $\CR$\footnotemark[1] & CE-\ref{CE:9} & $\CR$\footnotemark[1] & CE-\ref{CE:4} & $\CR$\footnotemark[1] & $\SN$ \\
         \hline
         $\NP$ & CE-\ref{CE:10} & CE-\ref{CE:9} & $\CR$ & CE-\ref{CE:7} & $\CR$\footnotemark[1] & CE-\ref{CE:9} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
@@ -132,26 +143,39 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         \hline
         $\CR$ & $\CR$ & CE-\ref{CE:9} & $\CR$ & CE-\ref{CE:7} & $\CR$ & CE-\ref{CE:9} & $\CR$ & $\SN$ & $\CR$ & $\SN$ \\
         \hline
-    \end{tabular}}
+        \Xhline{1.5pt}
+    \end{tabular}
     \caption{Local implications}
 \end{table}
+
 \vspace{-1cm}
 % \\[-0.5cm]
 \begin{table}[h!]
     \centering
-    \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30} 
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSN$} \\
+        \Xhline{1.5pt}
+        $\gUNto$ & CE-\ref{CE:2} & CE-\ref{CE:9} & $\gCR$ & CE-\ref{CE:7} & $\gCR$\footnotemark[1] & CE-\ref{CE:9} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        \rowcolor{gray!30}     & $\gWM$         & $\gWN$         & $\gSM$             & $\gSMandWN$        & $\gSN$ \\
+        $\gNP$ & CE-\ref{CE:3} & CE-\ref{CE:9} & $\gCR$ & CE-\ref{CE:7} & $\gCR$\footnotemark[1] & CE-\ref{CE:9} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        $\gUNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
+        $\gMP$ & $\gCR$ & CE-\ref{CE:9} & $\gCR$ & CE-\ref{CE:7} & $\gCR$\footnotemark[2] & CE-\ref{CE:9} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        $\gNP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
-        \hline
-        $\gMP$ & $\gCR$ , CE-\ref{CE:9}    & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[2] , CE-\ref{CE:9} & $\gCR$, $\gSN$    & $\gCR$\footnotemark[2] , $\gSN$ \\
-        \hline
-        $\gCR$   & $\gCR$, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}     & $\gCR$, CE-\ref{CE:9}        & $\gCR$, $\gSN$      & $\gCR$ , $\gSN$ \\
-        \hline
-        
+        $\gCR$ & $\gCR$ & CE-\ref{CE:9} & $\gCR$ & CE-\ref{CE:7} & $\gCR$ & CE-\ref{CE:9} & $\gCR$ & $\gSN$ & $\gCR$ & $\gSN$ \\
+        \Xhline{1.5pt}
     \end{tabular}
     \caption{Global implications}
 \end{table}
