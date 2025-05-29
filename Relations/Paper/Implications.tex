@@ -1,5 +1,5 @@
-\section{Implications}
-\label{sec:Implications}
+\section{Hierarchy}
+\label{sec:Hierarchy}
 
 \newenvironment{counterexample}[1][]{%
     \refstepcounter{CEcounter} % Increment the counter
@@ -9,8 +9,15 @@
 % From the perspective of programming language theory, the two properties of abstract rewriting 
 % systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 % show chains of implications starting from these properties.
+This section examines the hierarchy of ARS properties. 
+In programming language theory, $\SN$ and $\CR$ constitute the essential properties that 
+jointly establish completeness. 
+Consequently, our analysis centers on two primary categories of properties: those associated 
+with termination and those associated with confluence.
+% Possibly redundant introductory paragraph
+
 As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
-we came to the definitions below. 
+we came to the 'minimal` family of properties below. These properties help to augment our ARS hierarchy. 
 
 \begin{definition}\label{def:mf} \hfill
     \begin{description}
@@ -48,11 +55,14 @@ Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination p
 explore the following broader taxonomy of concepts relating to termination and confluence.
 
 \begin{center}
-
     \begin{tikzpicture}[auto,
       arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
       % A box style
-      \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]
+      \tikzstyle{boxnode} = [draw, rectangle, text centered, minimum width=1.2cm, inner sep=3pt]
+      
+      % Title nodes
+      \node[text width=4cm, align=center, font=\bfseries] at (-1.5,1) {Confluence Hierarchy};
+      \node[text width=4cm, align=center, font=\bfseries] at (5,1) {Termination Hierarchy};
   
       % Place the nodes vertically (top to bottom)
       \node (Confluent) [boxnode] at (-4,0) {$\CR$};
@@ -66,26 +76,30 @@ explore the following broader taxonomy of concepts relating to termination and c
       \draw[arrowstyle] (WN) -- (UN);
    
         
-        % Define the nodes
-        \node (NF) [boxnode] at (3,0) {$\NF$};
-        \node (MF) [boxnode] at (3,-1) {$\MF$};
-        \node (SN) [boxnode] at (5,0) {$\SN$};
-        \node (SR) [boxnode] at (5,-1) {$\SM$};
-        \node (WN) [boxnode] at (7,0) {$\WN$};
-        \node (WR) [boxnode] at (7,-1) {$\WM$};
-        
-        % Draw the arrows to form a diamond
-        \draw [arrowstyle] (NF) -- (SN);
-        \draw [arrowstyle] (NF) -- (MF);
-        \draw [arrowstyle] (MF) -- (SR);
-        \draw [arrowstyle] (SN) -- (WN);
-        \draw [arrowstyle] (SN) -- (SR);
-        \draw [arrowstyle] (WN) -- (WR);
-        \draw [arrowstyle] (SR) -- (WR);
-      \end{tikzpicture}
+      % Define the nodes
+      \node (NF) [boxnode] at (3,0) {$\NF$};
+      \node (MF) [boxnode] at (3,-1) {$\MF$};
+      \node (SN) [boxnode] at (5,0) {$\SN$};
+      \node (SR) [boxnode] at (5,-1) {$\SM$};
+      \node (WN) [boxnode] at (7,0) {$\WN$};
+      \node (WR) [boxnode] at (7,-1) {$\WM$};
+      
+      % Draw the arrows to form a diamond
+      \draw [arrowstyle] (NF) -- (SN);
+      \draw [arrowstyle] (NF) -- (MF);
+      \draw [arrowstyle] (MF) -- (SR);
+      \draw [arrowstyle] (SN) -- (WN);
+      \draw [arrowstyle] (SN) -- (SR);
+      \draw [arrowstyle] (WN) -- (WR);
+      \draw [arrowstyle] (SR) -- (WR);
+      
+      % Optional: Add a separation line
+      \draw[dashed] (2.0,-1.5) -- (2.0,1.5);
+    \end{tikzpicture}
 \end{center}
 
 The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. 
+The hierarchy for confluencce requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
 The implication from $\SN$ to $\WN$ relies on the classical decidability of the property 
 of being $R$-minimal, as demonstrated in our formalization:
 
@@ -93,32 +107,34 @@ of being $R$-minimal, as demonstrated in our formalization:
  
 The same property is similarly required in order to show that $\SM$ implies $\WM$.
 
-We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\gCR$ and $\gSN$). 
-The following tables show either that a given combination is complete, or the appropriate counterexample which demonstrates why 
-those properties do not provide the next property on the hierarchy. 
+Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the 
-first table assume $\WCR$ and in the second table assume $\gWCR$.
+first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally). 
+
 \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+
+
+
 \begin{table}[h!]
     \centering
-    \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
+    {\setlength{\arrayrulewidth}{1.5pt}  % Set horizontal rule thickness
+    \begin{tabular}{|>{\columncolor{gray!30}}l!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}c|c|}
         \hline
-        \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+        \rowcolor{gray!30} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$} & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SMandWN$} & \multicolumn{2}{c|}{$\SN$} \\
         \hline
-        $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$\footnotemark[1] , CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
+        $\UNto$ & CE-\ref{CE:4} & CE-\ref{CE:12} & CE-\ref{CE:4} & CE-\ref{CE:7} & $\CR$\footnotemark[1] & CE-\ref{CE:9} & $\CR$\footnotemark[1] & CE-\ref{CE:4} & $\CR$\footnotemark[1] & $\SN$ \\
         \hline
-        $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1]  , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+        $\NP$ & CE-\ref{CE:10} & CE-\ref{CE:9} & $\CR$ & CE-\ref{CE:7} & $\CR$\footnotemark[1] & CE-\ref{CE:9} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
-        $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+        $\MP$ & $\CR$ & CE-\ref{CE:9} & $\CR$ & CE-\ref{CE:7} & $\CR$\footnotemark[2] & CE-\ref{CE:9} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
-        $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
+        $\CR$ & $\CR$ & CE-\ref{CE:9} & $\CR$ & CE-\ref{CE:7} & $\CR$ & CE-\ref{CE:9} & $\CR$ & $\SN$ & $\CR$ & $\SN$ \\
         \hline
-        
-    \end{tabular}
+    \end{tabular}}
     \caption{Local implications}
-\end{table} 
+\end{table}
 \vspace{-1cm}
 % \\[-0.5cm]
 \begin{table}[h!]
