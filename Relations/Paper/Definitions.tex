@@ -39,7 +39,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
 \subsection{Normalization (\texttt{ARS-Properties.agda})}
 \begin{definition} The following definitions relate to normalization. 
   \begin{description}
-    \item[\ule{$\mathbf{a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
+    \item[\ule{${a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
     \item[\ule{$a \in \WN_R$}] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
     \item[\ule{$a \in \SN_R$}] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$ 
     (see Section \ref{sec:Well-foundedness} for the notion of accessibility).
