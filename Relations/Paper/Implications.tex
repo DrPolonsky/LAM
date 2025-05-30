@@ -17,7 +17,7 @@ with termination and those associated with confluence.
 % Possibly redundant introductory paragraph
 
 As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
-we came to the 'minimal` family of properties below. These properties help to augment our ARS hierarchy. 
+we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy. 
 
 \begin{definition}\label{def:mf} \hfill
     \begin{description}
@@ -37,7 +37,7 @@ Trivially, the following holds.
     $\NF \implies \MF$ 
 \end{proposition}    
 \begin{proof}
-    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
+    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
 \end{proof}
 
 $\SMseq$ is only classically equivalent to $\SM$. The 
@@ -46,8 +46,11 @@ following proposition relates these new definitions with our previous $\RP$ defi
     $SMseq \leftrightarrow RP \land BP$
 \end{proposition}
 \begin{proof}
-    See,\\ \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|
-    \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
+    See,\\ 
+    \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ 
+    \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\ 
+    \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
+    in \texttt{Implications.agda}.
 \end{proof}
 
 
@@ -98,8 +101,8 @@ explore the following broader taxonomy of concepts relating to termination and c
     \end{tikzpicture}
 \end{center}
 
-The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. 
-The hierarchy for confluencce requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
+The implications in this diagram are formalized in \texttt{Implications.agda}. 
+The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
 The implication from $\SN$ to $\WN$ relies on the classical decidability of the property 
 of being $R$-minimal, as demonstrated in our formalization:
 
