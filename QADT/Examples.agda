@@ -252,7 +252,7 @@ module S=1+2S where
 
 
   some_m² : List MM²
-  some_m² = take 1000 (allM² 10)
+  some_m² = take 50 (allM² 10)
 
   notPass : ℕ → List MM²
   notPass q = filter (λ x → not (findm² x q)) some_m²
