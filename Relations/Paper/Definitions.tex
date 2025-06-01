@@ -14,7 +14,7 @@ For the rest of this paper, let $A$ be a fixed set, $R$ be a relation on $A$, an
 % \greyout{We denote by $\tilde R$ the relational converse of $R$ ($(x,y) \in \tilde R \iff (y,x) \in R$),
 % and by $R;R'$ the relational composition of $R$ and $R'$.}
 
-\subsection{Closure operators (\texttt{ClosureOperators.agda})}
+\subsection{Closure operators (\texttt{Closure.agda})}
 
 \begin{notation} 
 The following notations are standard.
@@ -36,10 +36,10 @@ $a \bstep b$ for $(b,a) \in R$.  When the relation $R$ is clear from the context
 we may drop the corresponding subscript.
 
 We next define rewriting-theoretic concepts like confluence and normalization relative to a fixed element of $A$; global versions of these properties are obtained by universal quantification.
-\subsection{Normalization (\texttt{ARS-Properties.agda})}
+\subsection{Normalization (\texttt{Properties.agda})}
 \begin{definition} The following definitions relate to normalization. 
   \begin{description}
-    \item[\ule{$\mathbf{a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
+    \item[\ule{${a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
     \item[\ule{$a \in \WN_R$}] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
     \item[\ule{$a \in \SN_R$}] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$ 
     (see Section \ref{sec:Well-foundedness} for the notion of accessibility).
@@ -48,7 +48,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
 
 
 
-\subsection{Confluence (\texttt{ARS-Properties.agda})}
+\subsection{Confluence (\texttt{Properties.agda})}
 \begin{definition} The following definitions relate to confluence.
     \begin{description}
         \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.
@@ -68,7 +68,7 @@ We next define rewriting-theoretic concepts like confluence and normalization re
 \end{notation}
 
 
-In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote the set of normal forms.
+In \terese $\,\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ to denote the set of normal forms.
 
 \begin{proposition}\hfill
     \begin{enumerate}
@@ -78,14 +78,14 @@ In \terese $\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$ t
 \end{proposition}
 \begin{proof} \hfill
     \begin{enumerate}
-        \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{ARS-Implications.agda}.
-        \item \verb|UN→UN→ : R isUN → R isUN→| in \texttt{ARS-Implications.agda}.
+        \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{Implications.agda}.
+        \item \verb|UN→UN→ : R isUN → R isUN→| in \texttt{Implications.agda}.
     \end{enumerate}
 \end{proof}
 
 The implication $\UNto \implies \UN$ does not hold, as can be seen in Example \ref{CE:un} in Subsection \ref{subsec:counterexamples}.
 
-\subsection{Sequences and Recurrence (\texttt{ARS-Properties.agda}, \texttt{Seq.agda})}
+\subsection{Sequences and Recurrence (\texttt{Properties.agda}, \texttt{Seq.agda})}
 The following definitions are key to formalizing Theorem 1.2.3 in \terese.
 
 
@@ -110,7 +110,7 @@ Further, it takes us outside of purely relational theory. The following definiti
     \end{description}
 \end{definition}
 
-In \terese $\mathrm{Ind}$ is used to denote $\BP$.
+In \terese $\mathrm{\,Ind}$ is used to denote $\BP$.
 
 The following is immediate.
 \begin{proposition}\hfill
@@ -126,7 +126,7 @@ vacuously satisfies the RP condition.
 
 We wanted to generalize $\RP$ and thought that with $\RPm$ we had a good candidate.
  We show that this weaker definition is
-in fact equivalent in the following proof in \texttt{ARS-Implications.agda}:
+in fact equivalent in the following proof in \texttt{Implications.agda}:
 
 \verb|RP-↔RP : R is RP- ↔ R is RP|.
 

@@ -1,0 +1,83 @@
+\documentclass{article}
+\usepackage{enumitem,amssymb}
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}%
+\hspace{-2.5pt}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
+
+\begin{document}
+\title{Summer 2025 ToDo}
+\maketitle
+
+\section*{Week starting 21st April}
+\begin{itemize}
+  \item Items from review
+  
+  \begin{todolist}
+    \item (Review 1) Elaborate on our motivations in the introduction (reviewer wasn't sure how relevant this is to ARS theory itself/ sees it as too minor a contribution.)
+    \item [\done] (Review 1) Typo: incaranations $\to$ incarnations. 
+    \item (Review 1) Improve fonts for constant and text (refering to a definition on line 258). General formatting imrpovement for how we set out defns.
+    \item [\done] (Review 1) Improve the layout on line 270 where we set out iiSeq. This should get fixed with an overall improvement in how we set out definitions. We should stop using itemize and verb combination.
+    \item [\done] (Review 1) Typo: we obtaining $\to$ we obtain (this is in the conclusion which we want to rewrite entirely).
+    \item [\done] (Review 1) Citation expansion for program=proof.
+    \item (Review 2) Unconvinced by the motivations for the project, believes the same can be achieved in a classical framework. So maybe we should explain our motivations more clearly.
+    \item (Review 2) Not convinced by our definitions, as they are imprecise and lack quantifiers. 
+    \item (Review 2) Issue with definition of R|=RP on line 188. Use of bounded is ambiguous. We should clarify which use of bounded.
+    \item (Our notes) Improve proposition 11 on line 194, we want to make the clame that RP- $\to$ RP, and either have a one line proof or refer to the proof in Agda. 
+    \item (Review 2) Section 3 is "full of repetitions and paraphrases between the statements in natural language and corresponding formalization". We can try and think of a way to get it to flow better, we do want to provide natural language summaries of what is in the code!
+    \item [\done] (Review 2) Struggled to understand the implications tables. We should add a reminder that bold font is global. We should rethink the tables generally to make them clearer. Don't comma seperate and don't denote counterexamples as CE-XX.
+    \item (Review 2) Struggled to find the relevant agda code for the various definitions. We should find a way to better link the two.
+    \item (Review 2) TeReSe is not state of the art. We need state of the art references. Try this: https://termination-portal.org/wiki/WScT 
+    \item (Review 2) Clarify Notation 7 on line 159: "Choose a uniform notation, X or NP, but not both".
+    \item (Review 2) "l 169: An annoying notational collision between the two arrows -> at different heights."I'm not too sure what they're referring to, though there could be some ambiguity with the arrows here, especially with use of $UN\to$.
+    \item (Review 2) "l 361: Swap s(k+1) and s(k) " We should clarify the definition here otherwise people (evidently) get confused. 
+    \item (Review 2) "l 422: $P_x$ has no arguments?"
+    \item (Review 3) Check out and include the following related work:
+    \begin{itemize}
+        \item Christian Sternagel and René Thieman formalized results on Abstract Rewriting in Isabelle https://www.isa-afp.org/entries/Abstract-Rewriting.html
+        \item André Galdino and Mauricio Ayala-Rincón also developed a theory in PVS regarding ARS and TRS  https://github.com/nasa/pvslib/tree/master/TRS
+        \item What are the differences and improvements of the formalization in this paper and the ones in the literature?  
+    \end{itemize}
+    \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
+    \item (Review 3) In line 270, isWFseq- is used in Section 3 but defined only in Section 5.
+    \item (Review 3) In line 192, the authors state that (in TeReSe) Ind denotes BP. However, in line 186, BP is defined from an R-increasing sequence, whereas this statement is not required in the definition of Ind by TeReSe. How does this difference impact the formalizations and generalizations pointed out in Section 3.3.3? (Maybe we should explicitly address all difference with TeReSe in one location.)
+  \end{todolist}
+
+  \item Other ToDo 
+  \begin{todolist}
+    \item [\done] Make Latex version of WF implications (initial draft).
+    \item [\done] Verify which implications have and have not been formalized from the image.
+    \item (Missing imp) $\lnot \lnot$ WFacc $\leftrightarrow$ $\lnot \lnot WFind$. 
+    \item [\done] (Missing imp) WFmin- $\to$ WFDNE-
+    \item [\done] (Missing imp) All of the implicaions from the standard WF definition to the $\lnot \lnot$ definition. 
+    \item [\done] Sam TODO: I still don't have a coherent understanding in my head as to how we relate the WF and ARS sections of the paper. I need to go through it and either understand it or come with questions to Friday's meeting.
+  \end{todolist}
+\end{itemize}
+
+\section*{Week starting April 28th}
+\begin{itemize}
+  \item Below notes from meeting on April 25th.
+  \begin{todolist}
+    \item Fix Wellfounded.agda after changes made during meeting.
+    \item Carry on refactoring Wellfounded.agda once fixed, breaking it up if necessary.
+    \item Think about how to organize the Git repo going forward. For example, could be good to have a parent folder with ARS and WF, with a private dir for paper 
+    \item (Research item) How to go from WFseq to WFacc - possible that the Kleene Tree is a solution.
+    \item (Research item) Go deeper in the related works and see which are most relevant. Make a list of works and give summaries to be used in future papers. 
+    \item (Research item) Find a concrete application of generalized Newman's Lemma. 
+    \item (Research item) Use TeReSe to create a list of rewrite systems.
+    \item (Research item) Work on the missing implicaitons from the paper. So far we believe this is just CR $\to$ CP in the ARS section. 
+    \item (Research item) Formalize a first order term rewriting system (I can't remember what the motivation for this was).
+    \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counerexamples been shown before?
+    \item (Research item) Do we want to reincorporate Knaster Tarski?  
+  \end{todolist}
+
+\end{itemize}
+\section*{Week starting 26th May}
+\begin{todolist}
+  \item Double check the counterexamples match in the table to the diagrams.
+\end{todolist}
+\end{document}

@@ -22,14 +22,3 @@ pr2 (EM→WEM×DNE A (in2 ¬x)) = λ ¬¬x → ∅ (¬¬x ¬x)
 WEM×DNE→EM : ∀ A → WEM A → DNE A → EM A
 WEM×DNE→EM A (in1 ¬x) DNE = in2 ¬x
 WEM×DNE→EM A (in2 ¬¬x) DNE = in1 (DNE ¬¬x)
-
-open import Predicates
-
-dec : ∀ {A} → 𝓟 A → Set
-dec P = ∀ x → EM (P x)
-
-¬¬Closed : ∀ {A} → 𝓟 A → Set
-¬¬Closed P = ∀ x → ¬¬ P x → P x
-
-DNS : ∀ {A} → 𝓟 A → Set
-DNS P = (∀ x → ¬¬ (P x)) → ¬¬ (∀ x → P x)

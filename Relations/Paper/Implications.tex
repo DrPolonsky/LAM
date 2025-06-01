@@ -1,5 +1,5 @@
-\section{Implications}
-\label{sec:Implications}
+\section{Hierarchy}
+\label{sec:Hierarchy}
 
 \newenvironment{counterexample}[1][]{%
     \refstepcounter{CEcounter} % Increment the counter
@@ -9,8 +9,15 @@
 % From the perspective of programming language theory, the two properties of abstract rewriting 
 % systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
 % show chains of implications starting from these properties.
+This section examines the hierarchy of ARS properties. 
+In programming language theory, $\SN$ and $\CR$ constitute the essential properties that 
+jointly establish completeness. 
+Consequently, our analysis centers on two primary categories of properties: those associated 
+with termination and those associated with confluence.
+% Possibly redundant introductory paragraph
+
 As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
-we came to the definitions below. 
+we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy. 
 
 \begin{definition}\label{def:mf} \hfill
     \begin{description}
@@ -30,7 +37,7 @@ Trivially, the following holds.
     $\NF \implies \MF$ 
 \end{proposition}    
 \begin{proof}
-    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{ARS-Implications.agda}.
+    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
 \end{proof}
 
 $\SMseq$ is only classically equivalent to $\SM$. The 
@@ -39,8 +46,11 @@ following proposition relates these new definitions with our previous $\RP$ defi
     $SMseq \leftrightarrow RP \land BP$
 \end{proposition}
 \begin{proof}
-    See,\\ \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|
-    \\ \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| in \texttt{ARS-Implications.agda}.
+    See,\\ 
+    \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ 
+    \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\ 
+    \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
+    in \texttt{Implications.agda}.
 \end{proof}
 
 
@@ -48,11 +58,14 @@ Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination p
 explore the following broader taxonomy of concepts relating to termination and confluence.
 
 \begin{center}
-
     \begin{tikzpicture}[auto,
       arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
       % A box style
-      \tikzstyle{boxnode} = [draw, rectangle, text centered,minimum width=1.2cm, inner sep=3pt]
+      \tikzstyle{boxnode} = [draw, rectangle, text centered, minimum width=1.2cm, inner sep=3pt]
+      
+      % Title nodes
+      \node[text width=4cm, align=center, font=\bfseries] at (-1.5,1) {Confluence Hierarchy};
+      \node[text width=4cm, align=center, font=\bfseries] at (5,1) {Termination Hierarchy};
   
       % Place the nodes vertically (top to bottom)
       \node (Confluent) [boxnode] at (-4,0) {$\CR$};
@@ -66,26 +79,30 @@ explore the following broader taxonomy of concepts relating to termination and c
       \draw[arrowstyle] (WN) -- (UN);
    
         
-        % Define the nodes
-        \node (NF) [boxnode] at (3,0) {$\NF$};
-        \node (MF) [boxnode] at (3,-1) {$\MF$};
-        \node (SN) [boxnode] at (5,0) {$\SN$};
-        \node (SR) [boxnode] at (5,-1) {$\SM$};
-        \node (WN) [boxnode] at (7,0) {$\WN$};
-        \node (WR) [boxnode] at (7,-1) {$\WM$};
-        
-        % Draw the arrows to form a diamond
-        \draw [arrowstyle] (NF) -- (SN);
-        \draw [arrowstyle] (NF) -- (MF);
-        \draw [arrowstyle] (MF) -- (SR);
-        \draw [arrowstyle] (SN) -- (WN);
-        \draw [arrowstyle] (SN) -- (SR);
-        \draw [arrowstyle] (WN) -- (WR);
-        \draw [arrowstyle] (SR) -- (WR);
-      \end{tikzpicture}
+      % Define the nodes
+      \node (NF) [boxnode] at (3,0) {$\NF$};
+      \node (MF) [boxnode] at (3,-1) {$\MF$};
+      \node (SN) [boxnode] at (5,0) {$\SN$};
+      \node (SR) [boxnode] at (5,-1) {$\SM$};
+      \node (WN) [boxnode] at (7,0) {$\WN$};
+      \node (WR) [boxnode] at (7,-1) {$\WM$};
+      
+      % Draw the arrows to form a diamond
+      \draw [arrowstyle] (NF) -- (SN);
+      \draw [arrowstyle] (NF) -- (MF);
+      \draw [arrowstyle] (MF) -- (SR);
+      \draw [arrowstyle] (SN) -- (WN);
+      \draw [arrowstyle] (SN) -- (SR);
+      \draw [arrowstyle] (WN) -- (WR);
+      \draw [arrowstyle] (SR) -- (WR);
+      
+      % Optional: Add a separation line
+      \draw[dashed] (2.0,-1.5) -- (2.0,1.5);
+    \end{tikzpicture}
 \end{center}
 
-The implications in this diagram are formalized in \texttt{ARS-Implications.agda}. 
+The implications in this diagram are formalized in \texttt{Implications.agda}. 
+The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
 The implication from $\SN$ to $\WN$ relies on the classical decidability of the property 
 of being $R$-minimal, as demonstrated in our formalization:
 
@@ -93,49 +110,75 @@ of being $R$-minimal, as demonstrated in our formalization:
  
 The same property is similarly required in order to show that $\SM$ implies $\WM$.
 
-We are interested in seeing which combination of properties a relation requires in order to be complete (that is, $\gCR$ and $\gSN$). 
-The following tables show either that a given combination is complete, or the appropriate counterexample which demonstrates why 
-those properties do not provide the next property on the hierarchy. 
+Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the 
-first table assume $\WCR$ and in the second table assume $\gWCR$.
+first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally). 
+
 \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+
+
+
 \begin{table}[h!]
     \centering
-    \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30} 
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SN$} \\
+        \Xhline{1.5pt}
+        $\UNto$ & CE-\ref{CE:4} & CE-\ref{CE:11} & CE-\ref{CE:4} & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$\footnotemark[1] & CE-\ref{CE:4} & $\CR$\footnotemark[1] & $\SN$ \\
         \hline
-        \rowcolor{gray!30}     & $\WM$         & $\WN$         & $\SM$             & $\SMandWN$        & $\SN$ \\
+        $\NP$ & CE-\ref{CE:9} & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
-        $\UNto$ &  CE-\ref{CE:4}, CE-\ref{CE:12}     & CE-\ref{CE:4}, CE-\ref{CE:7}       & $\CR$\footnotemark[1] , CE-\ref{CE:9}          & $\CR$\footnotemark[1] , CE-\ref{CE:4}            & $\CR$\footnotemark[1] , $\SN$ \\
+        $\MP$ & $\CR$ & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[2] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
-        $\NP$ & CE-\ref{CE:10},CE-\ref{CE:9}      & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[1]  , CE-\ref{CE:9}          & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
+        $\CR$ & $\CR$ & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$ & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$ & $\SN$ \\
         \hline
-        $\MP$ & $\CR$ , CE-\ref{CE:9}    & $\CR$, CE-\ref{CE:7}    & $\CR$\footnotemark[2] , CE-\ref{CE:9} & $\CR$, $\SN$      & $\CR$\footnotemark[2] , $\SN$ \\
-        \hline
-        $\CR$   & $\CR$, CE-\ref{CE:9}     & $\CR$, CE-\ref{CE:7}     & $\CR$, CE-\ref{CE:9}        & $\CR$, $\SN$     & $\CR$ , $\SN$ \\
-        \hline
-        
+        \Xhline{1.5pt}
     \end{tabular}
     \caption{Local implications}
-\end{table} 
+\end{table}
+
 \vspace{-1cm}
 % \\[-0.5cm]
 \begin{table}[h!]
     \centering
-    \begin{tabular}{|>{\columncolor{gray!30}}l|c|c|c|c|c|}
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30} 
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSN$} \\
+        \Xhline{1.5pt}
+        $\gUNto$ & CE-\ref{CE:2} & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[1] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        \rowcolor{gray!30}     & $\gWM$         & $\gWN$         & $\gSM$             & $\gSMandWN$        & $\gSN$ \\
+        $\gNP$ & CE-\ref{CE:3} & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[1] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        $\gUNto$ &  CE-\ref{CE:2}, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
+        $\gMP$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[2] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
         \hline
-        $\gNP$ & CE-\ref{CE:3} , CE-\ref{CE:9}      & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[1] , CE-\ref{CE:9}          & $\gCR$, $\gSN$      & $\gCR$\footnotemark[2] , $\gSN$ \\
-        \hline
-        $\gMP$ & $\gCR$ , CE-\ref{CE:9}    & $\gCR$, CE-\ref{CE:7}    & $\gCR$\footnotemark[2] , CE-\ref{CE:9} & $\gCR$, $\gSN$    & $\gCR$\footnotemark[2] , $\gSN$ \\
-        \hline
-        $\gCR$   & $\gCR$, CE-\ref{CE:9}     & $\gCR$, CE-\ref{CE:7}     & $\gCR$, CE-\ref{CE:9}        & $\gCR$, $\gSN$      & $\gCR$ , $\gSN$ \\
-        \hline
-        
+        $\gCR$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:7} & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$ & $\gSN$ \\
+        \Xhline{1.5pt}
     \end{tabular}
     \caption{Global implications}
 \end{table}
@@ -143,6 +186,8 @@ first table assume $\WCR$ and in the second table assume $\gWCR$.
 \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from 
 $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
+
+The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:9} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
 \subsection{Counterexamples}\label{subsec:counterexamples}
 % Setting up the ce counter 
@@ -206,7 +251,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
             % Sixth Counterexample - This one shows why UN -> doesn't imply UN
             \begin{minipage}{0.3\textwidth}
                 \centering
-                \begin{counterexample}\label{CE:un}
+                \begin{counterexample}\label{CE:5}
                     \begin{tikzcd}[row sep=small, column sep=small]
                         n & c \arrow[l] \arrow[r] & a \arrow[r, bend left] & b \arrow[l, bend left]
                         & d \arrow[l] \arrow[r] & m
@@ -218,7 +263,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
         &
         \begin{minipage}{0.3\textwidth}
             \centering
-            \begin{counterexample}\label{CE:7}
+            \begin{counterexample}\label{CE:6}
             \begin{tikzcd}[row sep=small, column sep=small]
                 f_0 \arrow[r] \arrow[dr] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[dl] \arrow[r] & \dots \arrow[dll] \\
                 & n 
@@ -230,7 +275,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
         
         \begin{minipage}{0.3\textwidth}
             \centering
-            \begin{counterexample}\label{CE:8}
+            \begin{counterexample}\label{CE:7}
             \begin{tikzcd}[row sep=small, column sep=small]
                 f_0 \arrow[r] \arrow[d] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[r] \arrow[d] & \dots \arrow[d] \\
                 n_0  & n_1  & n_2 & \dots 
@@ -241,7 +286,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
         &
         \begin{minipage}{0.3\textwidth}
             \centering
-            \begin{counterexample}\label{CE:9}
+            \begin{counterexample}\label{CE:8}
             \begin{tikzcd}[row sep=small, column sep=small]
                 a \arrow[r, bend left] & b \arrow[l, bend left]
             \end{tikzcd} \\
@@ -252,7 +297,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
     &
     \begin{minipage}{0.3\textwidth}
         \centering
-        \begin{counterexample}\label{CE:10}
+        \begin{counterexample}\label{CE:9}
             \begin{tikzcd}[row sep=small, column sep=small]
                 d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &  
                 b \arrow[r, bend left] & c \arrow[l, bend left] \\  
@@ -265,7 +310,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
     \\
     \begin{minipage}{0.3\textwidth}
         \centering
-        \begin{counterexample}\label{CE:11}
+        \begin{counterexample}\label{CE:10}
             \begin{tikzcd}[row sep=small, column sep=small]
                 c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r] 
                 & d \arrow[r, bend left] & e \arrow[l, bend left]
@@ -276,7 +321,7 @@ $\SN \to \WN$ or $\SM \to \WM$.}
     &
     \begin{minipage}{0.3\textwidth}
         \centering
-        \begin{counterexample}\label{CE:12}
+        \begin{counterexample}\label{CE:11}
             \begin{tikzcd}[row sep=small, column sep=small]
                 c & a \arrow[r, bend left] \arrow[l] & b \arrow[l, bend left]
             \end{tikzcd} \\

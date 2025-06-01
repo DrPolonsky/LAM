@@ -22,3 +22,5 @@ FB→DNS P a aisFB H1 H2 with aisFB
           ¬¬Allxs ¬allPxs = ListDNS (λ y → R y a → P y) xs (h xs) ¬allPxs
           g : List∀ (λ y → R y a → P y) xs → (∀ y → R y a → P y)
           g allxs y Ray = All∈List (λ z → R z a → P z) (w y Ray) allxs Ray
+
+-- FBfind :
