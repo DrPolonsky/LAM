@@ -50,6 +50,41 @@ ppB→BB : ppB → BB
 ppB→BB bl = lfp (in1 tt)
 ppB→BB (bb x y) = lfp (in2 ((ppB→BB x) , ppB→BB y ) )
 
+-- 2B
+
+2b : ADT 1
+2b = 𝟏 ⊔ ((𝟏 ⊔ 𝕧₀ ²) ⊔ (𝕧₀ ²))
+
+2B : ADT 0
+2B = μ 2b
+
+2BB : Set
+2BB = ⟦ 2B ⟧ Γ₀
+
+2Bleaf1 : 2BB
+2Bleaf1 = lfp (in1 tt )
+2Bleaf2 : 2BB
+2Bleaf2 = lfp (in2 (in1 (in1 tt ) )  )
+2Bnode1 : 2BB → 2BB → 2BB
+2Bnode1 x y = lfp (in2 (in1 (in2 (x , y) ) ) )
+2Bnode2 : 2BB → 2BB → 2BB
+2Bnode2 x y = lfp (in2 (in2  (x , y) ) )
+2Bnode1Curried : 2BB ∧ 2BB → 2BB
+2Bnode1Curried (x , y) = lfp (in2 (in1 (in2 (x , y)) ) )
+2Bnode2Curried : 2BB ∧ 2BB → 2BB
+2Bnode2Curried (x , y) = lfp (in2 (in2 (x , y)))
+
+all2B : ℕ → List 2BB
+all2B 0 = []
+all2B (succ n) =
+  let b² = lazyProd (all2B n) (all2B n)
+      bn1 = List→ 2Bnode1Curried b²
+      bn2 = List→ 2Bnode2Curried b²
+      in 2Bleaf1 ∷ 2Bleaf2 ∷ (merge bn1 bn2)
+
+==2B : 2BB → 2BB → 𝔹
+==2B = ==ADT {2B}
+
 -- B²
 
 B² : ADT 0
@@ -294,7 +329,7 @@ findCycle mm = io (i ∘ sq) ((↑→ sp (findCycleHelper mm mm2 d))) (↑→ sp
 
 
 testS : Set
-testS = ⊤ where  
+testS = ⊤ where
     -- {! e11    !} where
     -- e0 = (lfp (in2 (in1 (lfp (in1 tt)))) , lfp (in1 tt))
     SHOW = List→ M²→𝕄²
@@ -363,3 +398,45 @@ i (sp (sq so)) ∷
 o ∷
 i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ []
 -}
+
+-- 2M = 1 + (1 + 2M + 2M²) + 2M²
+2m : ADT 1
+2m = 𝟏 ⊔ m ⊔ (𝕍 o) ²
+
+2M : ADT 0
+2M = μ 2m
+--
+-- allJ zero = []
+-- allJ (succ n) = let
+--   un1 = List→ Junode1 (allJ n)
+--   un2 = List→ Junode2 (allJ n)
+--   allJ² : List (JJ ∧ JJ)
+--   allJ² = lazyProd (allJ n) (allJ n)
+--   bn = List→ JbnodeCurried allJ²
+--   in Jleaf ∷ merge (merge un1 un2) bn
+
+2MM : Set
+2MM = ⟦ 2M ⟧ Γ₀
+
+2mleaf1 : 2MM
+2mleaf1 = lfp (in1 tt )
+2mleaf2 : 2MM
+2mleaf2 = lfp (in2 (in1 (in1 tt ) ) )
+2munode : 2MM → 2MM
+2munode 2mm = lfp (in2 (in1 (in2 (in1 2mm ) ) ) )
+2mbnode1 : 2MM → 2MM → 2MM
+2mbnode1 2mm1 2mm2 = lfp (in2 (in1 (in2 (in2 (2mm1 , 2mm2 ) ) ) ) )
+2mbnode2 : 2MM → 2MM → 2MM
+2mbnode2 2mm1 2mm2 = lfp (in2 (in2 (2mm1 , 2mm2 ) ) )
+2mbnode1Curried : 2MM ∧ 2MM → 2MM
+2mbnode1Curried (x , y) = lfp (in2 (in1 (in2 (in2 (x , y) ) ) ) )
+2mbnode2Curried : 2MM ∧ 2MM → 2MM
+2mbnode2Curried (x , y) = lfp (in2 (in2 (x , y) ) )
+
+all2M : ℕ → List 2MM
+all2M zero = []
+all2M (succ n) = let
+  un = List→ 2munode (all2M n)
+  bn1 = List→ 2mbnode1Curried (lazyProd (all2M n) (all2M n))
+  bn2 = List→ 2mbnode2Curried (lazyProd (all2M n) (all2M n))
+  in 2mleaf1 ∷ 2mleaf2 ∷ merge un (merge bn1 bn2)
