@@ -13,7 +13,6 @@ open import ARS.Properties {A}
 open LocalProperties {R}
 open MiscProperties
 
-open WeakerWF
 
 CR→WCR : R isCR → R isWCR
 CR→WCR RisCR x Rxy Rxz = RisCR x (Rxy ,⋆ ε⋆) (Rxz ,⋆ ε⋆)

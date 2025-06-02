@@ -92,8 +92,6 @@ module GlobalProperties (R : 𝓡 A) where
     is_-_bound_ : (f : ℕ → A) → A → Set
     is_-_bound_ f x = ∀ n → (R ⋆) (f n) x
 
-    open WeakerWF
-
     _isBP : Set
     _isBP = ∀ (f : ℕ → A) → f ∈ R -increasing → Σ[ x ∈ A ] ( is_-_bound_ f x )
 
@@ -131,7 +129,6 @@ open GlobalProperties public
 module MiscProperties (R : 𝓡 A) where
   -- These properties are variations on the above properties
   open LocalProperties {R}
-  open WeakerWF
   SMseq : 𝓟 A
   SMseq x = ∀ (f : ℕ → A) → f zero ≡ x → f ∈ R -increasing → Σ[ i ∈ ℕ ] (MF (f i))
 

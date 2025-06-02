@@ -12,7 +12,6 @@ open import ARS.Implications
 open import ARS.Properties {A}
 open LocalProperties {R}
 open import ARS.Propositions
-open WeakerWF
 {-This file contains formalization of the theorems of TeReSe Chapter 1-}
 
 module Theorem-1-2-2 where
