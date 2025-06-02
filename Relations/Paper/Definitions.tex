@@ -76,14 +76,16 @@ In \terese $\,\NF$ is used to denote $\NPe$, whereas we have chosen to use $\NF$
         \item $\gUN \implies \gUNto$
     \end{enumerate}
 \end{proposition}
-\begin{proof} \hfill
+\begin{proof} See\footnote{All proofs are formalized in the accompanying Agda code. References within the paper indicate the corresponding function names and their types to facilitate locating the relevant formalizations.} \hfill
     \begin{enumerate}
-        \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP| in \texttt{Implications.agda}.
-        \item \verb|UN→UN→ : R isUN → R isUN→| in \texttt{Implications.agda}.
+        \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP| 
+        \item \verb|UN→|\texttt{UN}$^{\to}$\verb|: R isUN → R is|\texttt{UN}$^{\to}$ \\ in \texttt{Implications.agda}.
     \end{enumerate}
 \end{proof}
 
-The implication $\UNto \implies \UN$ does not hold, as can be seen in Example \ref{CE:un} in Subsection \ref{subsec:counterexamples}.
+\begin{remark}
+    The implication $\UNto \implies \UN$ does not hold, as can be seen in Counterexample~\ref{CE:5} in Subsection~\ref{subsec:counterexamples}.
+\end{remark}
 
 \subsection{Sequences and Recurrence (\texttt{Properties.agda}, \texttt{Seq.agda})}
 The following definitions are key to formalizing Theorem 1.2.3 in \terese.
@@ -112,23 +114,26 @@ Further, it takes us outside of purely relational theory. The following definiti
 
 In \terese $\mathrm{\,Ind}$ is used to denote $\BP$.
 
-The following is immediate.
 \begin{proposition}\hfill
     \begin{enumerate}
         \item $\gInc \implies \gRP$
-        \item $\gRP \implies \gRPm$
+        \item $\gRP \iff \gRPm$
     \end{enumerate}
 \end{proposition}
 
+\begin{proof}
+    See, \hfill
+    \begin{enumerate}
+        \item This is immediate.
+        \item \verb|RP-↔RP : R isRP- ↔ (R isRP)|
+    \end{enumerate}
+    in \texttt{Implications.agda}
+\end{proof}
 
-It follows that every relation that is increasing in the sense of \terese
-vacuously satisfies the RP condition.
-
-We wanted to generalize $\RP$ and thought that with $\RPm$ we had a good candidate.
- We show that this weaker definition is
-in fact equivalent in the following proof in \texttt{Implications.agda}:
-
-\verb|RP-↔RP : R is RP- ↔ R is RP|.
+%TODO: Update below to reflect new convenion for proofs and code.
+\begin{remark}
+    It follows that every relation that is increasing in the sense of \terese $\,$ vacuously satisfies the RP condition.
+\end{remark}
 
 \subsection{Finitely branching (\texttt{FinitelyBranching.agda})}
 

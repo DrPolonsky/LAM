@@ -50,12 +50,12 @@ There are three parts to this theorem.
     \verb|CR→NP : R isCR → R isNP₌|\\
     \verb|NP→UN : R isNP₌ → R isUN|\\
     \verb|ii : R isWN × R isUN → R isCR|\\
-    \verb|UN→∧WN→CR : R isUN→ → R isWN → R isCR|\\
+    \verb||\texttt{UN}$^{\to}$ \verb|∧WN→CR : R |\texttt{isUN}$^{\to}$ \verb| → R isWN → R isCR|\\
     \verb|iii : subcommutative R → R isCR|\\
     in \texttt{Theorems.agda}.
 \end{proof}
 \begin{remark}
-    In $\mathtt{UN→∧WN→CR}$ a more general proof of ($ii$) is given using $\UNto$.
+    In $\mathtt{UN^{→}∧WN→CR}$ a more general proof of ($ii$) is given using $\UNto$.
 \end{remark}
 
 \subsubsection{Theorem 1.2.3}
@@ -78,7 +78,7 @@ There are four parts to this theorem.
 \begin{proof}
     See, \\
     \verb|i : R isWN → R isUN → R isBP|\\
-    \verb|i→ : R isWN → R isUN→ → R isBP|\\
+    \verb|i→ : R isWN → R |\texttt{isUN}$^{\to}$ \verb|→ R isBP|\\
     \verb|iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)|\\
     \verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN|\\
     \verb|iv : R isCP → R isCR| \\

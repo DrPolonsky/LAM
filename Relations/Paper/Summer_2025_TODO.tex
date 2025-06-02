@@ -1,4 +1,5 @@
 \documentclass{article}
+\input{macros}
 \usepackage{enumitem,amssymb}
 \newlist{todolist}{itemize}{2}
 \setlist[todolist]{label=$\square$}
@@ -33,7 +34,7 @@
     \item (Review 2) Struggled to find the relevant agda code for the various definitions. We should find a way to better link the two.
     \item (Review 2) TeReSe is not state of the art. We need state of the art references. Try this: https://termination-portal.org/wiki/WScT 
     \item (Review 2) Clarify Notation 7 on line 159: "Choose a uniform notation, X or NP, but not both".
-    \item (Review 2) "l 169: An annoying notational collision between the two arrows -> at different heights."I'm not too sure what they're referring to, though there could be some ambiguity with the arrows here, especially with use of $UN\to$.
+    \item [\done] (we think) (Review 2) "l 169: An annoying notational collision between the two arrows -> at different heights."I'm not too sure what they're referring to, though there could be some ambiguity with the arrows here, especially with use of $UN\to$.
     \item (Review 2) "l 361: Swap s(k+1) and s(k) " We should clarify the definition here otherwise people (evidently) get confused. 
     \item (Review 2) "l 422: $P_x$ has no arguments?"
     \item (Review 3) Check out and include the following related work:
@@ -80,8 +81,17 @@
 \begin{todolist}
   \item Double check the counterexamples match in the table to the diagrams.
   \item Make clear in proof references to agda code how it should be read (especially the first one). Make clear the module as well. After doing once, the others don't need to be as explicit. 
-  \item find a seperate symbol for -> in the code sections in the paper for UN$\to$. Superscipt would be perfect. 
+  \item [\done] find a seperate symbol for -> in the code sections in the paper for UN$\to$. Superscipt would be perfect. $UN^{\rightarrow}$
   \item Mention theorem 123 ii and iii are inherently classical. For iii we require strong decidability. 
   \item Working on CR $\to$ CP. Low priority.  
+\end{todolist}
+
+\section*{Week starting 2nd June}
+\begin{todolist}
+  \item Should we add quantification to each definition(I think quantification for $a$ is already implied)? E.g.\\ 
+  \item [\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.\\
+   Transforms to 
+  \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$ for all $b, c, d \in A$. 
+  \item For showing inc -> RP we're currently just saying "This is immediate". Is this sufficient? We did have a proof previously but I think we removed it for space reasons. 
 \end{todolist}
 \end{document}
