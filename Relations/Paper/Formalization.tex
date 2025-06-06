@@ -1,49 +1,71 @@
 \section{Formalization of \terese}
 \label{sec:Formalization}
-This sections is a guide to our formalization of \terese $\,$ and explains the deviations we take from the text.  
+This sections is a guide to our formalization of \terese $\,$ and explains the deviations we take from the text.
 
-\subsection{Formalization of Definitions}\label{subsec:def}
-The closure operators are formalized in \texttt{Closure.agda}. 
-The definitions grouped as confluent in \terese $\,$ are formalized in \texttt{Base.agda}. 
-The definitions grouped as normalizing in \terese $\,$ are formalized in \texttt{Properties.agda}.  
+\subsection{Formalization of Definitions (\texttt{Base.agda})}\label{subsec:def}
 
-The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}. 
+\apcomment{Rephrase this?  Or rewrite this subsection.}
+
+Most standard termination and confluence properties are defined in the file \texttt{Properties.agda}
+and related files discussed in the previous seciton.  The file \texttt{Base.agda} imports all of these files
+and introduces a few more notations used specifically for formalizing chapter 1 of \cite{Terese}.
+\apcomment{Discuss these...}
+
+The closure operators are formalized in \texttt{Closure.agda}.
+The definitions grouped as confluent in \terese $\,$ are formalized in \texttt{Base.agda}.
+The definitions grouped as normalizing in \terese $\,$ are formalized in \texttt{Properties.agda}.
+
+\apcomment{Should articulate the fact that normalization is defined as well-foundedness of the \emph{converse}
+relation, per \cite{Terese}.  Will discuss this separately in WF section, but should remind the reader of this
+whenever SN/SM comes up. }
+
+\apcomment{When SMseq comes up, also point to section 5, and the need for classical logic in going from
+sequential versions to inductive ones.  IOW, elaborate the summary below. }
+
+The following is a summary of the differences in definition we have used as mentioned in Section \ref{sec:Definitions}.
 \begin{itemize}
-    \item $\SN$ : We define this via the notion of accessibility rather than the non-existence of infinite reduction sequences. 
+    \item $\SN$ : We define this via the notion of accessibility rather than the non-existence of infinite reduction sequences.
      See Section \ref{sec:Well-foundedness} for further discussion.
-    \item $\NPe$ : We use the equivalent $\NP$ definition. 
-    \item $\Inc$ : We use the more general property $\RP$.      
+    \item $\NPe$ : We use the equivalent $\NP$ definition.
+    \item $\Inc$ : We use the more general property $\RP$.
 \end{itemize}
 
-As mentioned, the $\Inc$ property can impose a computationally demanding requirement. However, $\Inc$ is used only in Theorem 1.2.3 
-and the only crucial aspect of $\Inc$ needed for the proof is that no $R$-increasing 
+As mentioned, the $\Inc$ property can impose a computationally demanding requirement. However, $\Inc$ is used only in Theorem 1.2.3
+and the only crucial aspect of $\Inc$ needed for the proof is that no $R$-increasing
 sequence can have an upper bound.
-We establish that the equivalent properties $\RP$ and $\RPm$ are sufficient for replacing $\Inc$ in the theorem (see Subsection \ref{subsec:theorems}), 
-which led us to examine the condition on $s (i)$ appearing inside $\RP$ more closely. This condition provides a generalization of the notion of a normal form, 
-which we explore in detail in Section \ref{sec:Hierarchy}. 
+We establish that the equivalent properties $\RP$ and $\RPm$ are sufficient for replacing $\Inc$ in the theorem (see Subsection \ref{subsec:theorems}),
+which led us to examine the condition on $s (i)$ appearing inside $\RP$ more closely. This condition provides a generalization of the notion of a normal form,
+which we explore in detail in Section \ref{sec:Hierarchy}.
 
-\subsection{Propositions}
-There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}. 
-The formalization of the proofs are in \texttt{Propositions.agda}. These formalizations are straightforward 
-and as such are not the focus of this paper. 
+\subsection{\texttt{Propositions.agda}}
+There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}.
+The formalization of the proofs are in \texttt{Propositions.agda}. These formalizations are straightforward
+and as such are not the focus of this paper.
 
-\subsection{Theorems}\label{subsec:theorems}
-\subsubsection{Newman's Lemma}
-There are three proofs of Newman's Lemma ($\SN \land \WCR \implies \CR$) given in \terese. 
-The first and third of these proofs make use of classical reasoning. The second proof is amenable to a 
-constructive formalization as shown in the following function in \texttt{ARS-NewmansLemma.agda}:
+\subsection{\texttt{Theorems.agda}} \label{subsec:theorems}
 
-\verb|NewmansLemma : R isSN → R isWCR → R isCR|.
+\begin{theorem}(Newman's Lemma)
+  $\gSN \land \gWCR \implies \gCR$
+\end{theorem}
 
-We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using a condition distilled from $\RP$. 
-The formalizations of the remaining theorems are all found in \texttt{ARS-Theorems.agda}. 
-\subsubsection{Theorem 1.2.2}
-There are three parts to this theorem. 
+\begin{proof}
+  There are three proofs of Newman's Lemma given in \terese.
+  The first and third of these proofs make use of classical reasoning. The second proof is amenable to a
+  constructive formalization as shown in the following function in \texttt{ARS-NewmansLemma.agda}:
+
+  \verb|NewmansLemma : R isSN → R isWCR → R isCR|.
+
+  We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using a condition distilled from $\gRP$.
+  The formalizations of the remaining theorems are all found in \texttt{ARS-Theorems.agda}.
+\end{proof}
+
+\begin{theorem}(Thm 1.2.2 in [Terese])
 \begin{description}
-    \item[($i$)] $\gCR \implies \gNPe \implies \gUN$
-    \item[($ii$)] $\gWN \land \gUN \implies \gCR$  
-    \item[($iii$)] $\gCRs \implies \gCR$
+  \item[($i$)] $\gCR \implies \gNPe \implies \gUN$
+  \item[($ii$)] $\gWN \land \gUN \implies \gCR$
+  \item[($iii$)] $\gCRs \implies \gCR$
 \end{description}
+\end{theorem}
 
 \begin{proof}
     See, \\
@@ -54,46 +76,50 @@ There are three parts to this theorem.
     \verb|iii : subcommutative R → R isCR|\\
     in \texttt{Theorems.agda}.
 \end{proof}
-\begin{remark}
+\begin{proof}[Discussion.]
     In $\mathtt{UN^{→}∧WN→CR}$ a more general proof of ($ii$) is given using $\UNto$.
-\end{remark}
+\end{proof}
+\apcomment{Perhaps change the fourth implication to use $\times$ instead of $\to$ ??}
 
-\subsubsection{Theorem 1.2.3}
-The following definition is required for this theorem.
-\begin{definition}\hfill
-    \begin{description}
-        \item[\ule{$a \in CP_R$}] $a$ has the \emph{cofinality property} if there exists an 
-        (not necessarily strictly) increasing sequence starting from $a$ such that every
-        reduct of $a$ reduces to some element of the sequence.
-    \end{description}
-\end{definition}
+\begin{theorem}(Thm. 1.2.3 in [Terese])
+  \begin{enumerate}[(i)]
+    \item $\gWN \land \gUN \implies \gBP$
+    \item $\gBP \land \gInc \implies \gSN$
+    \item $\gWCR \land \gWN \land \gInc \implies \gSN$
+    \item $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
+  \end{enumerate}
+  % \begin{description}
+  %   \item[($i$)] $\gWN \land \gUN \implies \gBP$
+  %   \item[($ii$)] $\gBP \land \gInc \implies \gSN$
+  %   \item[($iii$)] $\gWCR \land \gWN \land \gInc \implies \gSN$
+  %   \item[($iv$)] $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
+  % \end{description}
+\end{theorem}
+\apcomment{Do the same for 1.2.2, and below!}
 
-There are four parts to this theorem. 
-\begin{description}
-    \item[($i$)] $\gWN \land \gUN \implies \gBP$
-    \item[($ii$)] $\gBP \land \gInc \implies \gSN$  
-    \item[($iii$)] $\gWCR \land \gWN \land \gInc \implies \gSN$
-    \item[($iv$)] $\gCR \iff \gCP$ ($\gCR \implies \gCP$ only holds if the ARS is countable.)
-\end{description}
 \begin{proof}
-    See, \\
-    \verb|i : R isWN → R isUN → R isBP|\\
-    \verb|i→ : R isWN → R |\texttt{isUN}$^{\to}$ \verb|→ R isBP|\\
+    See \texttt{Theorems.agda},\\
+    \verb|i     : R isWN → R isUN → R isBP|\\
+    $\mathtt{i^\to}$\hspace{5mm} \verb|: R isWN → R |\texttt{isUN}$^{\to}$ \verb|→ R isBP|\\
     \verb|iiSeq : R isWN → R isUN → R isRP → isWFseq- (~R R)|\\
-    \verb|iii : R isWN → R isWCR → R isRP- → dec (SN) → R isSN|\\
-    \verb|iv : R isCP → R isCR| \\
-    in \texttt{Theorems.agda}.
+    \verb|iii   : R isWN → R isWCR → R isRP- → dec (SN) → R isSN|\\
+    \verb|iv    : R isCP → R isCR|
+\end{proof}
+\apcomment{Apply similar formatting elsewhere.}
+\begin{proof}[Discussion.]\hfill
+  \begin{description}
+    \item[($i$)] In $\mathtt{i^\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
+    \item[($ii$)] This proof is inherently classical. In $\mathtt{iiSeq}$, we show that these properties imply $\isWFseqm$; establishing the implication to $\gSN$ would require additional classical assumptions. The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
+    \item[($iii$)] In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
+    \item[($iv$)] We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions. \qedhere
+  \end{description}
 \end{proof}
 
-\begin{remark} \hfill
-    \begin{itemize}        
-        \item In $\mathtt{i\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
-        \item ($ii$) is inherently classical. In $\mathtt{iiSeq}$, we show that these properties imply $\isWFseqm$; establishing the implication to $\gSN$ would require additional classical assumptions. The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}. 
-        \item In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
-        \item We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions.
-    \end{itemize}
-\end{remark}
-
-
-
-
+% \begin{remark} \hfill
+%     \begin{itemize}
+%         \item In $\mathtt{i^\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
+%         \item ($ii$) is inherently classical. In $\mathtt{iiSeq}$, we show that these properties imply $\isWFseqm$; establishing the implication to $\gSN$ would require additional classical assumptions. The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
+%         \item In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
+%         \item We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions.
+%     \end{itemize}
+% \end{remark}

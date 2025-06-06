@@ -6,55 +6,54 @@
     \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
 }
 
-% From the perspective of programming language theory, the two properties of abstract rewriting 
-% systems that are most interesting are $\SN$ and $\CR$. The following hierarchies 
+% From the perspective of programming language theory, the two properties of abstract rewriting
+% systems that are most interesting are $\SN$ and $\CR$. The following hierarchies
 % show chains of implications starting from these properties.
-This section examines the hierarchy of ARS properties. 
-In programming language theory, $\SN$ and $\CR$ constitute the essential properties that 
-jointly establish completeness. 
-Consequently, our analysis centers on two primary categories of properties: those associated 
+This section examines the hierarchy of ARS properties.
+In programming language theory, $\SN$ and $\CR$ constitute the essential properties that
+jointly establish completeness.
+Consequently, our analysis centers on two primary categories of properties: those associated
 with termination and those associated with confluence.
 % Possibly redundant introductory paragraph
 
-As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that 
-we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy. 
+As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that
+we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy.
 
-\begin{definition}\label{def:mf} \hfill
+\begin{definition}\label{def:mf} Let $a \in A$. \hfill
     \begin{description}
         \item[\ule{$a \in \MF_R$}] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[\ule{$a \in \WM_R$}] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
-        \item[\ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists 
-        an $i \in \nat$ such that $s (i) \in \MF$. 
-        \item[\ule{$a \in \SM_R$}]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This 
+        \item[\ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
+        an $i \in \nat$ such that $s (i) \in \MF$.
+        \item[\ule{$a \in \SM_R$}]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This
         definition is to be understood inductively).
         \item[\ule{$a \in \MP_R$}] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
-
-    \end{description} 
+    \end{description}
 \end{definition}
 
-Trivially, the following holds. 
+Trivially, the following holds.
 \begin{proposition}\label{prop:nftomf}
-    $\NF \implies \MF$ 
-\end{proposition}    
+    $\NF \implies \MF$
+\end{proposition}
 \begin{proof}
     See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
 \end{proof}
 
-$\SMseq$ is only classically equivalent to $\SM$. The 
+$\SMseq$ is only classically equivalent to $\SM$. The
 following proposition relates these new definitions with our previous $\RP$ definitions.
 \begin{proposition}\label{prop:SMRP}
     $SMseq \leftrightarrow RP \land BP$
 \end{proposition}
 \begin{proof}
-    See,\\ 
-    \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\ 
-    \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\ 
+    See,\\
+    \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\
+    \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\
     \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
     in \texttt{Implications.agda}.
 \end{proof}
 
 
-Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination property in its own right. This leads us to 
+Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination property in its own right. This leads us to
 explore the following broader taxonomy of concepts relating to termination and confluence.
 
 \begin{center}
@@ -62,23 +61,23 @@ explore the following broader taxonomy of concepts relating to termination and c
       arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
       % A box style
       \tikzstyle{boxnode} = [draw, rectangle, text centered, minimum width=1.2cm, inner sep=3pt]
-      
+
       % Title nodes
       \node[text width=4cm, align=center, font=\bfseries] at (-1.5,1) {Confluence Hierarchy};
       \node[text width=4cm, align=center, font=\bfseries] at (5,1) {Termination Hierarchy};
-  
+
       % Place the nodes vertically (top to bottom)
       \node (Confluent) [boxnode] at (-4,0) {$\CR$};
       \node (RP)        [boxnode, right=.5cm of Confluent] {$\MP$};
       \node (WN)        [boxnode, right=.5cm of RP] {$\NP$};
       \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
-  
+
       % Draw arrows downwards
       \draw[arrowstyle] (Confluent) -- (RP);
       \draw[arrowstyle] (RP) -- (WN);
       \draw[arrowstyle] (WN) -- (UN);
-   
-        
+
+
       % Define the nodes
       \node (NF) [boxnode] at (3,0) {$\NF$};
       \node (MF) [boxnode] at (3,-1) {$\MF$};
@@ -86,7 +85,7 @@ explore the following broader taxonomy of concepts relating to termination and c
       \node (SR) [boxnode] at (5,-1) {$\SM$};
       \node (WN) [boxnode] at (7,0) {$\WN$};
       \node (WR) [boxnode] at (7,-1) {$\WM$};
-      
+
       % Draw the arrows to form a diamond
       \draw [arrowstyle] (NF) -- (SN);
       \draw [arrowstyle] (NF) -- (MF);
@@ -95,25 +94,25 @@ explore the following broader taxonomy of concepts relating to termination and c
       \draw [arrowstyle] (SN) -- (SR);
       \draw [arrowstyle] (WN) -- (WR);
       \draw [arrowstyle] (SR) -- (WR);
-      
+
       % Optional: Add a separation line
       \draw[dashed] (2.0,-1.5) -- (2.0,1.5);
     \end{tikzpicture}
 \end{center}
 
-The implications in this diagram are formalized in \texttt{Implications.agda}. 
+The implications in this diagram are formalized in \texttt{Implications.agda}.
 The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
-The implication from $\SN$ to $\WN$ relies on the classical decidability of the property 
+The implication from $\SN$ to $\WN$ relies on the classical decidability of the property
 of being $R$-minimal, as demonstrated in our formalization:
 
-\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN| 
- 
+\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN|
+
 The same property is similarly required in order to show that $\SM$ implies $\WM$.
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 
-The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the 
-first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally). 
+The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the
+first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
 
 \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
@@ -131,7 +130,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         !{\vrule width 1.5pt}c|c
         !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
         \Xhline{1.5pt}
-        \rowcolor{gray!30} 
+        \rowcolor{gray!30}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$}
@@ -164,7 +163,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         !{\vrule width 1.5pt}c|c
         !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
         \Xhline{1.5pt}
-        \rowcolor{gray!30} 
+        \rowcolor{gray!30}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWM$}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWN$}
         & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSM$}
@@ -183,14 +182,14 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
     \caption{Global implications}
 \end{table}
 \footnotetext[1]{This implication also requires $\gWCR$.}
-\footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from 
+\footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
 $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
 The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:9} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
 \subsection{Counterexamples}\label{subsec:counterexamples}
-% Setting up the ce counter 
+% Setting up the ce counter
 \newcounter{CEcounter}
 \renewcommand{\theCEcounter}{\arabic{CEcounter}}
 
@@ -227,7 +226,7 @@ The table should be interpreted as follows: for example, if a relation possesses
             \end{minipage}
             \\  % New row
             \\
-            
+
             % Fourth Counterexample
             \begin{minipage}{0.3\textwidth}
                 \centering
@@ -247,7 +246,7 @@ The table should be interpreted as follows: for example, if a relation possesses
             %         \end{tikzcd} \\
             %     \end{counterexample}
             % \end{minipage}
-            
+
             % Sixth Counterexample - This one shows why UN -> doesn't imply UN
             \begin{minipage}{0.3\textwidth}
                 \centering
@@ -266,23 +265,23 @@ The table should be interpreted as follows: for example, if a relation possesses
             \begin{counterexample}\label{CE:6}
             \begin{tikzcd}[row sep=small, column sep=small]
                 f_0 \arrow[r] \arrow[dr] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[dl] \arrow[r] & \dots \arrow[dll] \\
-                & n 
+                & n
             \end{tikzcd} \\
             \end{counterexample}
         \end{minipage}
         \\ % new row
         \\
-        
+
         \begin{minipage}{0.3\textwidth}
             \centering
             \begin{counterexample}\label{CE:7}
             \begin{tikzcd}[row sep=small, column sep=small]
                 f_0 \arrow[r] \arrow[d] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[r] \arrow[d] & \dots \arrow[d] \\
-                n_0  & n_1  & n_2 & \dots 
+                n_0  & n_1  & n_2 & \dots
             \end{tikzcd} \\
             \end{counterexample}
         \end{minipage}
-        
+
         &
         \begin{minipage}{0.3\textwidth}
             \centering
@@ -299,9 +298,9 @@ The table should be interpreted as follows: for example, if a relation possesses
         \centering
         \begin{counterexample}\label{CE:9}
             \begin{tikzcd}[row sep=small, column sep=small]
-                d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &  
-                b \arrow[r, bend left] & c \arrow[l, bend left] \\  
-                f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots  
+                d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &
+                b \arrow[r, bend left] & c \arrow[l, bend left] \\
+                f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots
             \end{tikzcd} \\
         \end{counterexample}
     \end{minipage}
@@ -312,7 +311,7 @@ The table should be interpreted as follows: for example, if a relation possesses
         \centering
         \begin{counterexample}\label{CE:10}
             \begin{tikzcd}[row sep=small, column sep=small]
-                c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r] 
+                c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r]
                 & d \arrow[r, bend left] & e \arrow[l, bend left]
             \end{tikzcd} \\
         \end{counterexample}
@@ -327,18 +326,18 @@ The table should be interpreted as follows: for example, if a relation possesses
             \end{tikzcd} \\
         \end{counterexample}
     \end{minipage}
-    
-    
+
+
 \end{tabular}
 \end{center}
 
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
-        \item The property $\gWCR$ can sometimes be a substitute for the classical 
-        property required for $\SN \implies \WN$ (and similarly $\SM \implies \WM$).   
+        \item The property $\gWCR$ can sometimes be a substitute for the classical
+        property required for $\SN \implies \WN$ (and similarly $\SM \implies \WM$).
         \item $\gWN \land \gUNto \implies \gCR$ does not require any classical assumptions
-         or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$. 
-        \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. The 
+         or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$.
+        \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. The
         counterexample provided illustrates why $\WCR \land \WN \land \UNto \nRightarrow \CR$.
         \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$. This is explored in Subsection \ref{subsec:newnewman}.
         \item Both $\SM$ and $\WN$ are required for $\SN$, this connection is explored in Subsection \ref{subsec:SMWNSN}.
@@ -346,7 +345,7 @@ The table should be interpreted as follows: for example, if a relation possesses
 \end{remark}
 
 \subsection{Generalized Newman's Lemma}\label{subsec:newnewman}
-One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma. 
+One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma.
 
 \begin{proposition}
     $\gWCR \land \SM \implies \CR$
@@ -355,22 +354,20 @@ One interesting outcome from investigating the normalization taxonomy was a gene
     See, \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|
 \end{proof}
 
-This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but 
-uses the weaker assumption $\SM$ in place of $\SN$. 
+This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but
+uses the weaker assumption $\SM$ in place of $\SN$.
 
-% The tables show a number of changes when moving from properties holding locally to globally. 
-% Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds 
-% globally but not locally. 
+% The tables show a number of changes when moving from properties holding locally to globally.
+% Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds
+% globally but not locally.
 \subsection{Relation between $\SM$, $\WN$, and $\SN$} \label{subsec:SMWNSN}
-One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\NP$. We also 
-obtain completeness when we have $\gWN$ and $\gSM$. 
-To show that $\gSM \land \gWN \implies \gSN$ we built on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds 
+One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\NP$. We also
+obtain completeness when we have $\gWN$ and $\gSM$.
+To show that $\gSM \land \gWN \implies \gSN$ we built on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds
 then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
 
-\verb|WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x| 
+\verb|WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x|
 
 \verb|isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x|
 
-\verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN| 
-
-
+\verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN|
