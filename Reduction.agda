@@ -16,7 +16,7 @@ open import Relations.ClosureOperators
 --             AT THE ROOT of the syntax tree
 -- ⟶ₒ is \-->\_o
 data _⟶ₒ_ {X : Set} : Λ X → Λ X → Set where
-  redex : ∀ {r s t}  →  (s [ t ]ₒ ≡ r)  →  app (abs s) t ⟶ₒ r
+  redex : ∀ {r s t}  →  (e : s [ t ]ₒ ≡ r)  →  app (abs s) t ⟶ₒ r
 
 -- One-step beta reduction is the contextual closure of ⟶ₒ
 data _⟶β_ {X : Set} : Λ X → Λ X → Set where
@@ -177,6 +177,9 @@ refl⟶s {X} {abs t} = abs⟶s refl⟶s
 ⟶β⋆⊆⟶s : ∀ {X} {s t : Λ X} →  s ⟶β⋆ t → s ⟶s t
 ⟶β⋆⊆⟶s = ⟶s!⟶β⋆ refl⟶s
 
+⟶β⋆!⟶s⊆⟶s : ∀ {X} {r s t : Λ X} → r ⟶β⋆ s → s ⟶s t → r ⟶s t
+⟶β⋆!⟶s⊆⟶s = ⟶s!⟶s ∘ ⟶β⋆⊆⟶s
+
 NF : ∀ {X} → 𝓟 (Λ X)
 NF M = ∀ N → ¬ (M ⟶β N)
 
@@ -229,6 +232,45 @@ lift⇉ f g f→g o = var⇉
 ... | (u1 ,, t11⇉u1 , t21⟶u1) | (u2 ,, t21⇉u2 , t22⟶u2) = (app u1 u2 ,, app⇉ t11⇉u1 t21⇉u2 , app⟶s t21⟶u1 t22⟶u2 )
 ⟶s\⇉ (abs⟶s s⟶t1) (abs⇉ s⇉t2) with ⟶s\⇉ s⟶t1 s⇉t2
 ... | (u ,, t1⇉u , t2⟶u) = abs u ,, abs⇉ t1⇉u , abs⟶s t2⟶u
+
+refl⇉ : ∀ {X} {t : Λ X} → t ⇉ t
+refl⇉ {X} {var x} = var⇉
+refl⇉ {X} {app s t} = app⇉ refl⇉ refl⇉
+refl⇉ {X} {abs r} = abs⇉ refl⇉
+
+⟶β⊆⇉ : ∀ {X} {s t : Λ X} → s ⟶β t  →  s ⇉ t
+⟶β⊆⇉ (red⟶β (redex e)) = red⇉ refl⇉ refl⇉ e
+⟶β⊆⇉ (appL⟶β st) = app⇉ (⟶β⊆⇉ st ) refl⇉
+⟶β⊆⇉ (appR⟶β st) = app⇉ refl⇉ (⟶β⊆⇉ st)
+⟶β⊆⇉ (abs⟶β st) = abs⇉ (⟶β⊆⇉ st)
+
+_⇉⋆_ : ∀ {X} → Λ X → Λ X → Set
+_⇉⋆_ = _⇉_ ⋆
+
+⟶s\⇉⋆ : ∀ {X} {s t1 t2 : Λ X} → s ⟶s t1 → s ⇉⋆ t2 → Σ[ u ∈ Λ X ] (t1 ⇉⋆ u × t2 ⟶s u)
+⟶s\⇉⋆ st1 ε⋆ = _ ,, ε⋆ , st1
+⟶s\⇉⋆ st1 (pr0 ,⋆ pr1) with ⟶s\⇉ st1 pr0
+... | (u ,, pr2 , st2) with ⟶s\⇉⋆ st2 pr1
+... | (v ,, pr3 , st3) = v ,, (pr2 ,⋆ pr3) , st3
+
+abs⟶β⋆ : ∀ {X} {r1 r2 : Λ (↑ X)} → r1 ⟶β⋆ r2 → abs r1 ⟶β⋆ abs r2
+abs⟶β⋆ ε⋆ = ε⋆
+abs⟶β⋆ (r0 ,⋆ r12) = abs⟶β r0 ,⋆ abs⟶β⋆ r12
+
+appL⟶β⋆ : ∀ {X} {s1 s2 : Λ X} → s1 ⟶β⋆ s2 → ∀ t → app s1 t ⟶β⋆ app s2 t
+appL⟶β⋆ ε⋆ t = ε⋆
+appL⟶β⋆ (s0 ,⋆ s12) t = appL⟶β s0 ,⋆ appL⟶β⋆ s12 t
+
+appR⟶β⋆ : ∀ {X} {s1 s2 : Λ X} → s1 ⟶β⋆ s2 → ∀ t → app t s1 ⟶β⋆ app t s2
+appR⟶β⋆ ε⋆ t = ε⋆
+appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
+
+⟶s⊆⟶β⋆ : ∀ {X} → _⟶s_ {X} ⊆ _⟶β⋆_ {X}
+⟶s⊆⟶β⋆ s t (red⟶s W st) = ⟶w⊆⟶β W ,⋆ ⟶s⊆⟶β⋆ _ _ st
+⟶s⊆⟶β⋆ (var _) (var _) var⟶s = ε⋆
+⟶s⊆⟶β⋆ (abs r1) (abs r2) (abs⟶s r12) = abs⟶β⋆ (⟶s⊆⟶β⋆ _ _ r12)
+⟶s⊆⟶β⋆ (app s1 s2) (app t1 t2) (app⟶s s12 t12) =
+  appL⟶β⋆ (⟶s⊆⟶β⋆ _ _ s12) s2 ⋆!⋆ appR⟶β⋆ (⟶s⊆⟶β⋆ _ _ t12) t1
 
 {-
 

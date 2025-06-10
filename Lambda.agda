@@ -23,6 +23,10 @@ data Λ (V : Set) : Set where
 Λ⁰ : Set
 Λ⁰ = Λᶠ 0 -- Λ ⊥
 
+-- The type of binary relations on lambda terms 
+ΛRel : Set₁
+ΛRel = ∀ {X : Set} → Λ X → Λ X → Set
+
 -- Functorial action on morphisms
 Λ→ : ∀ {A B : Set} (f : A → B) → Λ A → Λ B
 Λ→ f (var x)   = var (f x)

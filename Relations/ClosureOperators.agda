@@ -74,8 +74,6 @@ module ClosureOpsMonotone {R1 R2 : 𝓡 U} (R12 : R1 ⊆ R2) where
   ⊆⁼ x y (R1ˢxy₁ ,⋆ R1⁼y₁y) =  ⊆ˢ x _ R1ˢxy₁ ,⋆  ⊆⁼ _ y R1⁼y₁y
 open ClosureOpsMonotone public
 
-
-
 -- Inclusions between closure operations
 module ClosureOpsInclusions (R : 𝓡 U) where
 
@@ -147,41 +145,6 @@ module ClosureOpsInclusions (R : 𝓡 U) where
 
 open ClosureOpsInclusions public
 
--- Closure operations and groupoid operations
-module ClosureAndGroupoidOps {R : 𝓡 U} where
-  _ʳ!⋆_ : ∀ {x y z : U} → (R ʳ) x y → (R ⋆) y z → (R ⋆) x z
-  axʳ xy ʳ!⋆ yz = xy ,⋆ yz
-  εʳ     ʳ!⋆ yz = yz
-
-  _⋆!⋆_ : ∀ {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
-  ε⋆          ⋆!⋆ R*yz = R*yz
-  (x ,⋆ R*xy) ⋆!⋆ R*yz = x ,⋆ (R*xy ⋆!⋆ R*yz)
-
-  symm⋆ : symmR R → symmR (R ⋆)
-  symm⋆ ~R⊆R ε⋆ = ε⋆
-  symm⋆ ~R⊆R (Rxz ,⋆ R⋆zy) = symm⋆ ~R⊆R R⋆zy ⋆!⋆ ax⋆ R (~R⊆R Rxz)
-
-  ~ˢ : ∀ {x y : U} → (R ˢ) x y → (R ˢ) y x
-  ~ˢ (axˢ+ Rxy) = axˢ- Rxy
-  ~ˢ (axˢ- Ryx) = axˢ+ Ryx
-
-  _⁼!⁼_ : ∀ {x y z : U} → (R ⁼) x y → (R ⁼) y z → (R ⁼) x z
-  ε⋆ ⁼!⁼ EQRyz = EQRyz
-  (Rˢxy₁ ,⋆ EQRy₁y) ⁼!⁼ EQRyz = Rˢxy₁ ,⋆ (EQRy₁y ⁼!⁼ EQRyz)
-
-  ~⁼ :  ∀ {x y : U} → (R ⁼) x y → (R ⁼) y x
-  ~⁼ ε⋆ = ε⋆
-  ~⁼ (Rˢxy₁ ,⋆ Rˢ*y₁y) = ( ~⁼ Rˢ*y₁y) ⁼!⁼ ˢ⊆⁼ R (~ˢ Rˢxy₁)
-
-  ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
-  ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
-
-open ClosureAndGroupoidOps public
-
-~ˢ⋆ : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
-~ˢ⋆ Rs*xy = symm⋆ ~ˢ Rs*xy
-
-
 module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
 
   ⇔ʳ : R1 ʳ ⇔ R2 ʳ
@@ -224,3 +187,37 @@ module ClosureOpsPreserveEquivalence {R1 R2 : 𝓡 U} (R12 : R1 ⇔ R2) where
   pr2 ⇔⁼ x .x ε⋆ = ε⋆
   -- pr2 ⇔⁼ x y (ax⋆ R2ˢxy) = ax⋆ (pr2 ⇔ˢ x y R2ˢxy)
   pr2 ⇔⁼ x y (R2ˢxy₁ ,⋆ R2⁼y₁y) = (pr2 ⇔ˢ x _ R2ˢxy₁) ,⋆ pr2 ⇔⁼ _ y R2⁼y₁y
+
+-- Closure operations and groupoid operations
+module ClosureAndGroupoidOps {R : 𝓡 U} where
+  _ʳ!⋆_ : ∀ {x y z : U} → (R ʳ) x y → (R ⋆) y z → (R ⋆) x z
+  axʳ xy ʳ!⋆ yz = xy ,⋆ yz
+  εʳ     ʳ!⋆ yz = yz
+
+  _⋆!⋆_ : ∀ {x y z : U} → (R ⋆) x y → (R ⋆) y z → (R ⋆) x z
+  ε⋆          ⋆!⋆ R*yz = R*yz
+  (x ,⋆ R*xy) ⋆!⋆ R*yz = x ,⋆ (R*xy ⋆!⋆ R*yz)
+
+  symm⋆ : symmR R → symmR (R ⋆)
+  symm⋆ ~R⊆R ε⋆ = ε⋆
+  symm⋆ ~R⊆R (Rxz ,⋆ R⋆zy) = symm⋆ ~R⊆R R⋆zy ⋆!⋆ ax⋆ R (~R⊆R Rxz)
+
+  ~ˢ : ∀ {x y : U} → (R ˢ) x y → (R ˢ) y x
+  ~ˢ (axˢ+ Rxy) = axˢ- Rxy
+  ~ˢ (axˢ- Ryx) = axˢ+ Ryx
+
+  _⁼!⁼_ : ∀ {x y z : U} → (R ⁼) x y → (R ⁼) y z → (R ⁼) x z
+  ε⋆ ⁼!⁼ EQRyz = EQRyz
+  (Rˢxy₁ ,⋆ EQRy₁y) ⁼!⁼ EQRyz = Rˢxy₁ ,⋆ (EQRy₁y ⁼!⁼ EQRyz)
+
+  ~⁼ :  ∀ {x y : U} → (R ⁼) x y → (R ⁼) y x
+  ~⁼ ε⋆ = ε⋆
+  ~⁼ (Rˢxy₁ ,⋆ Rˢ*y₁y) = ( ~⁼ Rˢ*y₁y) ⁼!⁼ ˢ⊆⁼ R (~ˢ Rˢxy₁)
+
+  ⋆~!⁼!⋆ : ∀ {a b c d} → (R ⋆) a c → (R ⁼) a b → (R ⋆) b d → (R ⁼) c d
+  ⋆~!⁼!⋆ R*ac R⁼ab R*bd = (~⁼ (⋆⊆⁼ R R*ac)) ⁼!⁼ (R⁼ab ⁼!⁼ ⋆⊆⁼ R R*bd)
+
+open ClosureAndGroupoidOps public
+
+~ˢ⋆ : ∀ {R : 𝓡 U} {x y : U} → ((R ˢ) ⋆) x y → ((R ˢ) ⋆) y x
+~ˢ⋆ Rs*xy = symm⋆ ~ˢ Rs*xy
