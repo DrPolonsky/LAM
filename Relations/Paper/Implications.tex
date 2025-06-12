@@ -100,6 +100,7 @@ explore the following broader taxonomy of concepts relating to termination and c
     \end{tikzpicture}
 \end{center}
 
+
 The implications in this diagram are formalized in \texttt{Implications.agda}.
 The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
 The implication from $\SN$ to $\WN$ relies on the classical decidability of the property
@@ -179,11 +180,11 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         $\gCR$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:7} & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$ & $\gSN$ \\
         \Xhline{1.5pt}
     \end{tabular}
-    \caption{Global implications}
+    \caption{Global implications. \\$^*$~This implication also requires $\gWCR$. \\ $^\dagger$~This implication also requires either $\gWCR$ or the classical property required to go from $\SN \to \WN$ or $\SM \to \WM$.}
 \end{table}
-\footnotetext[1]{This implication also requires $\gWCR$.}
-\footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
-$\SN \to \WN$ or $\SM \to \WM$.}
+% \footnotetext[1]{This implication also requires $\gWCR$.}
+% \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
+% $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
 The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:9} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
@@ -191,9 +192,10 @@ The table should be interpreted as follows: for example, if a relation possesses
 \subsection{Counterexamples}\label{subsec:counterexamples}
 % Setting up the ce counter
 \newcounter{CEcounter}
-\renewcommand{\theCEcounter}{\arabic{CEcounter}}
-
-    \begin{center}
+\begin{figure}[htbp]
+    \centering
+    % \begin{center}
+    \renewcommand{\theCEcounter}{\arabic{CEcounter}}
         \begin{tabular}{ccc}  % Three columns per row
             % First Counterexample
             \begin{minipage}{0.3\textwidth}
@@ -329,7 +331,9 @@ The table should be interpreted as follows: for example, if a relation possesses
 
 
 \end{tabular}
-\end{center}
+\caption{Counterexamples}
+\label{fig:counterexamples}
+\end{figure}
 
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
