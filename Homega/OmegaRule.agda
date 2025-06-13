@@ -19,7 +19,22 @@ open import Homega.LambdaH
 _⊆ΛRel_ : ΛRel → ΛRel → Set₁
 R1 ⊆ΛRel R2 = ∀ {X} → R1 {X} ⊆ R2 {X}
 
-module LambdaCongruences (R : ΛRel) where
+Λ-Closed : ΛRel → Set₁
+Λ-Closed R = ∀ {X Y} → (σ : X → Λ Y) → {s t : Λ X} → R s t → R (s [ σ ]) (t [ σ ])
+
+bindωΛRel : ∀ {R : ΛRel} → Λ-Closed R
+              → ∀ {X Y : Set} (ξ : X → Λ Y) {s t : Λ X}
+              → ωΛRel R s t → ωΛRel R (s [ ξ ]) (t [ ξ ])
+bindωΛRel {R} sub {X} {Y} ξ {s} {t} st σ =
+  let   e1 : (σ : Y → Λ⁰) → s [ bind σ ∘ ξ ] ≡ s [ ξ ] [ σ ]
+        e1 σ = bind-assoc {f = ξ} {σ} s
+        e2 : (σ : Y → Λ⁰) → t [ bind σ ∘ ξ ] ≡ t [ ξ ] [ σ ]
+        e2 σ = (bind-assoc {f = ξ} {σ} t)
+     in transp (R ((s [ ξ ]) [ σ ])) (e2 σ)
+               (transp (λ z → R z (t [ bind σ ∘ ξ ])) (e1 σ)
+                        (st (bind σ ∘ ξ) ) )
+
+module LambdaTheories (R : ΛRel) where
 
   isΛEquivalence : Set₁
   isΛEquivalence = ∀ {X} → isEquivalence (R {X})
@@ -39,6 +54,84 @@ module LambdaCongruences (R : ΛRel) where
       isΛEq   : isΛEquivalence
       isΛCong : isΛCongruence
       isωCong : isωCongruence
+
+open LambdaTheories
+
+module ω-Theory (R : ΛRel) where
+
+  {- Attempt 3. -}
+
+  data ωTh* {X : Set} : Λ X → Λ X → Set where
+    axω*  : ∀ {s t : Λ X} → R s t → ωTh* s t
+    varω* : ∀ {x : X} → ωTh* (var x) (var x)
+    appω* : ∀ {s1 s2 t1 t2 : Λ X} → ωTh* s1 s2 → ωTh* t1 t2 → ωTh* (app s1 t1) (app s2 t2)
+    absω* : ∀ {r1 r2 : Λ (↑ X)} → ωTh* r1 r2 → ωTh* (abs r1) (abs r2)
+    ω-rule*  : ∀ {s t u : Λ X}   → ωΛRel ωTh* s t → ωTh* t u → ωTh* s u
+
+  reflωTh* : ∀ {X} → reflR (ωTh* {X})
+  reflωTh* (var x) = varω*
+  reflωTh* (app s s₁) = appω* (reflωTh* s) (reflωTh* s₁)
+  reflωTh* (abs s) = absω* (reflωTh* s)
+
+  {- This is not passing Agda's termination checker.
+     What is the complexity of this function's termination proof?
+      -}
+  {-# TERMINATING #-}
+  bindωTh* : Λ-Closed R → Λ-Closed ωTh*
+  bindωTh* sub ξ (axω* x) = axω* (sub ξ x )
+  bindωTh* sub ξ varω* = reflωTh* (ξ _ )
+  bindωTh* sub ξ (appω* st st₁) = appω* (bindωTh* sub ξ st) (bindωTh* sub ξ st₁)
+  bindωTh* sub ξ (absω* st) = absω* (bindωTh* sub (lift ξ) st)
+  bindωTh* sub {X} {Y} ξ (ω-rule* {s} {t} {u} x st) =
+    -- ω-rule* (λ σ → transp (λ θ → ωTh* θ _) ({!   !} ! )
+    --               (transp (λ u → ωTh* _ u)  {!   !}  ) )
+    --         (bindωTh* sub ξ st )
+    let   f : (σ : Y → Λ⁰) → ωTh* (t [ bind σ ∘ ξ ]) (u [ bind σ ∘ ξ ])
+          f σ = bindωTh* sub (bind σ ∘ ξ) st
+          e1 : (σ : Y → Λ⁰) → _
+          e1 σ = bind-assoc {f = ξ} {σ} s
+          e2 : (σ : Y → Λ⁰) → _
+          e2 σ = (bind-assoc {f = ξ} {σ} t)
+          e3 : (σ : Y → Λ⁰) → _
+          e3 σ = bindωTh* sub (bind σ ∘ ξ) st
+          r1 = (bindωΛRel {R = ωTh* } (bindωTh* sub) ξ {s} {t} x)
+          r2 = (bindωTh* sub ξ st)
+      in ω-rule* {s = s [ ξ ] } {t = t [ ξ ] } {u = u [ ξ ] } r1 r2
+
+  symmωTh* : Λ-Closed R → (∀ {Y} → symmR (R {Y})) → ∀ {X} → symmR (ωTh* {X})
+  symmωTh* sub sR (axω* x) = axω* (sR x)
+  symmωTh* sub sR varω* = varω*
+  symmωTh* sub sR (appω* st st₁) = appω* (symmωTh* sub sR st) (symmωTh* sub sR st₁)
+  symmωTh* sub sR (absω* st) = absω* (symmωTh* sub sR st )
+    -- where f = ?
+  symmωTh* sub sR (ω-rule* {s} {t} {u} x st) =
+     ω-rule* (λ ξ → bindωTh* sub ξ (symmωTh* sub sR st))
+             (ω-rule* {s = t} {s} {s} (λ ξ → symmωTh* sub sR (x ξ)) (reflωTh* s))
+
+  tranωTh* : Λ-Closed R → ∀ {X} → tranR (ωTh* {X})
+  tranωTh* sub {X} (var v) .(var v) u varω* tu = tu
+  tranωTh* sub {X} (app s1 s2) (app t1 t2) (app u1 u2) (appω* s1t1 s2t2) (appω* t1u1 t2u2)
+    = appω* (tranωTh* sub s1 t1 u1 s1t1 t1u1) (tranωTh* sub s2 t2 u2 s2t2 t2u2)
+  tranωTh* sub {X} (abs s0) (abs t0) (abs u0) (absω* st) (absω* tu)
+    = absω* (tranωTh* sub s0 t0 u0 st tu)
+  tranωTh* sub {X} s t u st tu = ω-rule* (λ ξ → bindωTh* sub ξ st ) tu
+
+  ωTh*isΛEquivalence : Λ-Closed R → (∀ {Y} → symmR (R {Y})) → isΛEquivalence ωTh*
+  ωTh*isΛEquivalence sub sR = record
+    { isRefl = reflωTh* ; isSymm = symmωTh* sub sR ; isTran = tranωTh* sub }
+
+  ωTh*isΛCongruence : isΛCongruence ωTh*
+  ωTh*isΛCongruence = ΛCong (λ x → varω*) appω* absω*
+
+  ωTh*isωCongruence : isωCongruence ωTh*
+  ωTh*isωCongruence s t st = ω-rule* st (reflωTh* t )
+
+  ωTh*isωTheory : Λ-Closed R → (∀ {Y} → symmR (R {Y})) → isωTheory ωTh*
+  ωTh*isωTheory sub sR = record { isΛEq = ωTh*isΛEquivalence sub sR
+                                ; isΛCong = ωTh*isΛCongruence
+                                ; isωCong = ωTh*isωCongruence }
+
+  {- Attempt 2 -}
 
   data ωTh {X : Set} : Λ X → Λ X → Set where
     axω  : ∀ {s t : Λ X} → R s t → ωTh s t
@@ -66,7 +159,7 @@ module LambdaCongruences (R : ΛRel) where
   tranωTh : ∀ {X} → tranR (ωTh {X})
   tranωTh {X} r s t rs st = rs !ωTh st
 
-open LambdaCongruences public
+open ω-Theory public
 
 module UniversalProperty (R : ΛRel) where
 
@@ -94,6 +187,11 @@ module UniversalProperty (R : ΛRel) where
   ... | c ~!ωTh  d = isTran (isΛEq) s _ t (isSymm isΛEq ((ωThElim Q R⊆Q QTh _ _ c)) )
                                           ((ωThElim Q R⊆Q QTh _ _ d)) where open isEquivalence
   ... | ω-rule om = isωCong s t (λ ξ → (ωThElim Q R⊆Q QTh _ _ (om ξ) ) )
+
+
+  -- A comparison between different formulation of 𝓗ω
+  ωTh⊆ωTh* : Λ-Closed R → (∀ {Y} → symmR (R {Y})) → ωTh R ⊆ΛRel ωTh* R
+  ωTh⊆ωTh* sub sR s t st = ωThElim (ωTh* R) (λ x y → axω* ) (ωTh*isωTheory R sub sR) s t st
 
 open UniversalProperty public
 
