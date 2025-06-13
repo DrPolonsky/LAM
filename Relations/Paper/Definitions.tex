@@ -32,10 +32,8 @@ in place of $(a,b) \in R$.  We will also write $a \mstep b$ for $(a,b) \in R^*$,
 $a \bstep b$ for $(b,a) \in R$.  When the relation $R$ is clear from the context,
 we may drop the corresponding subscript.
 
-The file \texttt{ClosureOperators.agda} verifies a number of properties of these operators
-on relations needed in the subsequent development, including interaction between them,
-monotonicity, preservation of logical equivalence, etc.
-\apcomment{Edit/Improve this!}
+The file \texttt{ClosureOperators.agda} verifies key properties of closure operators
+on relations, including their monotonicity, preservation of equivalence, and interactions such as inclusions and equivalences between different closures.
 
 \subsection{Normalization and Confluence (\texttt{Properties.agda})}
 
@@ -54,10 +52,10 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
 % \subsection{Confluence (\texttt{Properties.agda})}
 \begin{definition} Let $a \in A$.
     \begin{description}
-        \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d. c \mstep d \bmstep b\]
-        \item[\ule{$a \in \CR_R$}] \emph{$a$ is Church-Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d. c \mstep d \bmstep b\]
+        \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d.\, c \mstep d \bmstep b\]
+        \item[\ule{$a \in \CR_R$}] \emph{$a$ is Church-Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d.\, c \mstep d \bmstep b\]
         \item[\ule{$a \in \CRs_R$}] \emph{$a$ is subcommutative} if for all $b, c \in A$,
-        \[c \bmstep a \mstep b \implies c \rrstep d \brstep b\]
+        \[c \bmstep a \mstep b \implies \exists d. \, c \rrstep d \brstep b\]
         \item[\ule{$a \in \NPe_R$}] \emph{$a$ has the conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
         \item[\ule{$a \in \NP_R$}] \emph{$a$ has the normal form property} if for all $b \in \NF_R$,
         \[c \bmstep a \mstep b \implies c \mstep b\]
@@ -104,8 +102,7 @@ In \terese $\,\NF$ is used to denote the normal form property $\NPe$, whereas we
 \end{proof}
 
 \begin{remark}
-    The implication $\UNto \implies \UN$ does not hold, as can be seen in Counterexample~\ref{CE:5} in Subsection~\ref{subsec:counterexamples}.
-    \apcomment{Provide a ref to a figure, eventually.}
+    The implication $\UNto \implies \UN$ does not hold, as can be seen in Counterexample~\ref{CE:5} in Figure~\ref{fig:counterexamples}.
 \end{remark}
 
 \subsection{Sequences and Recurrence (\texttt{Seq.agda})}
@@ -151,7 +148,7 @@ The definitions in this subsections are key to formalizing Theorem 1.2.3 in \ter
 
 In \terese, $\mathrm{\,Ind}$ is used to denote $\gBP$.
 
-\terese also defines the following property, which is not included in our formalization.
+\terese $\,$ also defines the following property, which is not included in our formalization.
 
 \begin{definition} \hfill
     \begin{description}
@@ -161,7 +158,7 @@ In \terese, $\mathrm{\,Ind}$ is used to denote $\gBP$.
 \end{definition}
 
 Having a size function that maps all of $A$ to the natural numbers can be computationally taxing to satisfy.
-Furthermore, it takes us outside of a purely relational theory. The weaker property $\gRP$ defined above will substitute $\gInc$ all places that require it. (For further discussion, see Subsection \ref{subsec:def}.)
+Furthermore, it takes us outside of a purely relational theory. The weaker property $\gRP$ defined above will substitute $\gInc$ all places that require it. (For further discussion, see Subsection~\ref{subsec:def}.)
 
 \begin{proposition}\hfill
     \begin{enumerate}
@@ -179,6 +176,7 @@ Furthermore, it takes us outside of a purely relational theory. The weaker prope
 \end{proof}
 
 \apcomment{Make sure to move this stuff to Seq.agda!}
+\sacomment{This will create a circular dependency as Seq is used in properties (the increasing definition is needed for BP, CP, RP, SMseq, SRv2). Simple solution is to leave RP-iffRP in implications.agda.}
 
 % %TODO: Update below to reflect new convenion for proofs and code.
 % \begin{remark}
