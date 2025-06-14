@@ -23,7 +23,7 @@ data Λ (V : Set) : Set where
 Λ⁰ : Set
 Λ⁰ = Λᶠ 0 -- Λ ⊥
 
--- The type of binary relations on lambda terms 
+-- The type of binary relations on lambda terms
 ΛRel : Set₁
 ΛRel = ∀ {X : Set} → Λ X → Λ X → Set
 
@@ -117,6 +117,10 @@ _[_]ᶠ = _[_]
 
 _[_]ₒ : ∀ {X : Set} → Λ (↑ X) → Λ X → Λ X
 M [ N ]ₒ  = M [ io var N ]
+
+infix 30 _[_]
+infix 30 _[_]ᶠ
+infix 30 _[_]ₒ 
 
 bind : ∀ {A B : Set} → (A → Λ B) → Λ A → Λ B
 bind f t = t [ f ]

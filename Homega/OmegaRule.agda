@@ -55,7 +55,7 @@ module LambdaTheories (R : ΛRel) where
       isΛCong : isΛCongruence
       isωCong : isωCongruence
 
-open LambdaTheories
+open LambdaTheories public
 
 module ω-Theory (R : ΛRel) where
 
@@ -163,6 +163,24 @@ open ω-Theory public
 
 module UniversalProperty (R : ΛRel) where
 
+  open isΛCongruence
+
+  -- Universal Property For ωTh*
+  ωTh*-elim : ∀ (Q : ΛRel) → R ⊆ΛRel Q → isΛCongruence Q →
+                (∀ {X} {s t u : Λ X} → ωΛRel Q s t → Q t u → Q s u) → ωTh* R ⊆ΛRel Q
+  ωTh*-elim Q R⊆Q QisΛCong Q⊨ω s t (axω* Rst) = R⊆Q s t Rst
+  ωTh*-elim Q R⊆Q QisΛCong Q⊨ω (var x) (var .x) varω* = varR QisΛCong x
+  ωTh*-elim Q R⊆Q QisΛCong Q⊨ω (app s1 t1) (app s2 t2) (appω* s12 t12)
+    = appR QisΛCong (ωTh*-elim Q R⊆Q QisΛCong Q⊨ω s1 s2 s12)
+                    (ωTh*-elim Q R⊆Q QisΛCong Q⊨ω t1 t2 t12)
+  ωTh*-elim Q R⊆Q QisΛCong Q⊨ω (abs r1) (abs r2) (absω* r12)
+    = absR QisΛCong (ωTh*-elim Q R⊆Q QisΛCong Q⊨ω r1 r2 r12)
+  ωTh*-elim Q R⊆Q QisΛCong Q⊨ω r t (ω-rule* rs st)
+    = Q⊨ω (λ ξ → ωTh*-elim Q R⊆Q QisΛCong Q⊨ω (r [ ξ ]) _ (rs ξ ) )
+          (ωTh*-elim Q R⊆Q QisΛCong Q⊨ω _ t st)
+
+
+
   ωTh-isΛEquivalence : isΛEquivalence (ωTh R)
   ωTh-isΛEquivalence = record { isRefl = reflωTh R ; isSymm = symmωTh R ; isTran = tranωTh R }
   ωTh-isΛCongruence  : isΛCongruence  (ωTh R)
@@ -171,10 +189,11 @@ module UniversalProperty (R : ΛRel) where
   ωTh-isωCongruence s t s=ωt = ω-rule s=ωt
 
   ωTh-isωTheory : isωTheory (ωTh R)
-  ωTh-isωTheory = record { isΛEq = ωTh-isΛEquivalence
+  ωTh-isωTheory = record { isΛEq   = ωTh-isΛEquivalence
                          ; isΛCong = ωTh-isΛCongruence
                          ; isωCong = ωTh-isωCongruence }
 
+  -- Universal Property for ωTh
   -- For any Λ-relation R, ωTh(R) is the least Λ-theory containing R closed under the ω-rule
   ωThElim : ∀ (Q : ΛRel) → R ⊆ΛRel Q → isωTheory Q → ωTh R ⊆ΛRel Q
   ωThElim Q R⊆Q QTh@(record { isΛEq = isΛEq ; isΛCong = (ΛCong varR appR absR) ; isωCong = isωCong })

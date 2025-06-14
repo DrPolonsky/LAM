@@ -61,10 +61,20 @@ abs𝓗 : ∀ {X} {r1 r2 : Λ (↑ X)} → r1 =𝓗 r2 → abs r1 =𝓗 abs r2
 abs𝓗 (𝓗eq lterm rterm lsred rpred l=Ωr)
   = 𝓗eq (abs lterm) (abs rterm) (abs⟶s lsred ) (abs⇉⋆ rpred ) (absΩ l=Ωr )
 
+_𝓗[_] : ∀ {X Y} {s t : Λ X} → s =𝓗 t → ∀ (σ : X → Λ Y) → (s [ σ ]) =𝓗 (t [ σ ])
+_𝓗[_] (𝓗eq lterm rterm lsred rpred l=Ωr)  σ =
+  𝓗eq (lterm [ σ ]) (rterm [ σ ])
+        (⟶s[⟶s] σ σ (λ x → refl⟶s) lsred )
+        (rpred ⇉⋆[ σ ])
+        (=Ω[=Ω] σ σ (λ x → refl=Ω) l=Ωr )
 
+app𝓗 : ∀ {X} {s1 s2 t1 t2 : Λ X} → s1 =𝓗 s2 → t1 =𝓗 t2 → app s1 t1 =𝓗 app s2 t2
+app𝓗 (𝓗eq l1 r1 ls1 rp1 l1=Ωr1) (𝓗eq l2 r2 ls2 rp2 l2=Ωr2) =
+  𝓗eq (app l1 l2) (app r1 r2) (app⟶s ls1 ls2) (app⇉⋆ rp1 rp2 ) (appΩ l1=Ωr1 l2=Ωr2 )
 
-
-
-
-
+symm𝓗 : ∀ {X} {s t : Λ X} → s =𝓗 t → t =𝓗 s
+symm𝓗 (𝓗eq lterm rterm lsred rpred l=Ωr) = 𝓗eq rterm lterm l r e
+  where l = ⟶β⋆⊆⟶s (⇉⋆⊆⟶β⋆ rpred )
+        r = ⟶β⋆⊆⇉⋆ (⟶s⊆⟶β⋆ _ _ lsred)
+        e = ~=Ω l=Ωr
 -- The end
