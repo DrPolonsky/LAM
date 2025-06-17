@@ -52,7 +52,8 @@
   \begin{todolist}
     \item [\done] Make Latex version of WF implications (initial draft).
     \item [\done] Verify which implications have and have not been formalized from the image.
-    \item (Missing imp) $\lnot \lnot$ WFacc $\leftrightarrow$ $\lnot \lnot WFind$.
+    \item [\done] $\lnot \lnot$ WFacc $\leftrightarrow$ $\lnot \lnot WFind$.
+    \apcomment{WFind to be removed, this is addressed in the Friday June 13th notes}
     \item [\done] (Missing imp) WFmin- $\to$ WFDNE-
     \item [\done] (Missing imp) All of the implicaions from the standard WF definition to the $\lnot \lnot$ definition.
     \item [\done] Sam TODO: I still don't have a coherent understanding in my head as to how we relate the WF and ARS sections of the paper. I need to go through it and either understand it or come with questions to Friday's meeting.
@@ -83,7 +84,7 @@
   \item Make clear in proof references to agda code how it should be read (especially the first one). Make clear the module as well. After doing once, the others don't need to be as explicit.
   \item [\done] find a seperate symbol for -> in the code sections in the paper for UN$\to$. Superscipt would be perfect. $UN^{\rightarrow}$
   \item Mention theorem 123 ii and iii are inherently classical. For iii we require strong decidability.
-  \item Working on CR $\to$ CP. Low priority.
+  \item [\done] Working on CR $\to$ CP. Low priority. \apcomment{This is mentioned as one of the research items above}
 \end{todolist}
 
 \section*{Week starting 2nd June}
@@ -92,11 +93,11 @@
   \item [\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.\\
    Transforms to
   \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$ for all $b, c, d \in A$.
-  \item For showing inc -> RP we're currently just saying "This is immediate". Is this sufficient? We did have a proof previously but I think we removed it for space reasons.
+  \item [\done] For showing inc -> RP we're currently just saying "This is immediate". Is this sufficient? We did have a proof previously but I think we removed it for space reasons.
   \item Remove "desired implications" and similar organizational issues in the code (general review)
   \item Consider defining FB in terms of existing list library; especially in the rebooted repo,
   we shouldn't use manual List type just for this.
-  \item Move all definitions and properties from Section 2.3 to Seq.agda, except Inc.
+  \item [\done] Move all definitions and properties from Section 2.3 to Seq.agda, except Inc.
   \item Revise section 3.1
 \end{todolist}
 \section*{Week starting 9th June (some of these items taken from Dr. Polonsky's email sent June 6th)}
@@ -109,4 +110,14 @@
     \item [\done] the * and dagger in the table should be explained in the caption, or in the text.
     \sacomment{I prefer to have this as a footnote. I have put it as a caption for now but I would revert it to what we had before.  }
 \end{todolist}
+
+\subsection*{Notes from meeting on Friday June 13th}
+
+\begin{itemize}
+  \item Perhaps we should not create variations and multiple implications of WFind,
+  but rather prove that it's equivalent to WFacc, but lands in a higher universe.
+  Mention this once at the beginning of section 5 then proceed to analyze
+  connections between WFacc and WFseq/WFmin.
+\end{itemize}
+
 \end{document}
