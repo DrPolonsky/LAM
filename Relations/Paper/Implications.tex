@@ -140,7 +140,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         \Xhline{1.5pt}
         $\UNto$ & CE-\ref{CE:4} & CE-\ref{CE:11} & CE-\ref{CE:4} & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$\footnotemark[1] & CE-\ref{CE:4} & $\CR$\footnotemark[1] & $\SN$ \\
         \hline
-        $\NP$ & CE-\ref{CE:9} & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
+        $\NP$ & CE-\ref{CE:3} & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
         $\MP$ & $\CR$ & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[2] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
         \hline
@@ -187,7 +187,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
 % $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
-The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:9} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
+The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
 \subsection{Counterexamples}\label{subsec:counterexamples}
 % Setting up the ce counter
@@ -295,20 +295,21 @@ The table should be interpreted as follows: for example, if a relation possesses
     \end{minipage}
     % \\ % New row
     % \\
-    &
-    \begin{minipage}{0.3\textwidth}
-        \centering
-        \begin{counterexample}\label{CE:9}
-            \begin{tikzcd}[row sep=small, column sep=small]
-                d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &
-                b \arrow[r, bend left] & c \arrow[l, bend left] \\
-                f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots
-            \end{tikzcd} \\
-        \end{counterexample}
-    \end{minipage}
+    % &
+    % \begin{minipage}{0.3\textwidth}
+    %     \centering
+    %     \begin{counterexample}\label{CE:9}  \\ We think CE:9 is covered by CE:3
+    %         \begin{tikzcd}[row sep=small, column sep=small]
+    %             d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &
+    %             b \arrow[r, bend left] & c \arrow[l, bend left] \\
+    %             f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots
+    %         \end{tikzcd} \\
+    %     \end{counterexample}
+    % \end{minipage}
     % New row
-    \\
-    \\
+    % \\
+    % \\
+    &
     \begin{minipage}{0.3\textwidth}
         \centering
         \begin{counterexample}\label{CE:10}
@@ -318,7 +319,11 @@ The table should be interpreted as follows: for example, if a relation possesses
             \end{tikzcd} \\
         \end{counterexample}
     \end{minipage}
-    &
+    % &
+    % &
+      % New row
+    \\
+    \\
     &
     \begin{minipage}{0.3\textwidth}
         \centering
