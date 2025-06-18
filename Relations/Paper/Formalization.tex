@@ -6,13 +6,9 @@ This sections is a guide to our formalization of \terese $\,$ and explains the d
 
 \apcomment{Rephrase this?  Or rewrite this subsection.}
 
-Most standard termination and confluence properties are defined in the file \texttt{Properties.agda} and related files discussed in the previous section.  The file \texttt{Base.agda} imports all of these files
-and introduces a few more notations used specifically for formalizing chapter 1 of \cite{Terese}.
-\apcomment{Discuss these...}
+As outlined in the previous section, \texttt{Properties.agda}, \texttt{Seq.agda}, and \texttt{ClosureOperators.agda} define most standard termination and confluence properties. The file \texttt{Base.agda} introduces additional defitions which are required for the formalization of the propositions found in Chapter 1 of \terese.
 
-The closure operators are formalized in \texttt{ClosureOperators.agda}.
-The definitions grouped as confluent in \terese $\,$ are formalized in \texttt{Base.agda}.
-The definitions grouped as normalizing in \terese $\,$ are formalized in \texttt{Properties.agda}.
+
 
 \apcomment{Should articulate the fact that normalization is defined as well-foundedness of the \emph{converse}
 relation, per \cite{Terese}.  Will discuss this separately in WF section, but should remind the reader of this
