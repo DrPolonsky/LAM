@@ -6,15 +6,11 @@
     \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
 }
 
-% From the perspective of programming language theory, the two properties of abstract rewriting
-% systems that are most interesting are $\SN$ and $\CR$. The following hierarchies
-% show chains of implications starting from these properties.
 This section examines the hierarchy of ARS properties.
 In programming language theory, $\SN$ and $\CR$ constitute the essential properties that
 jointly establish completeness.
 Consequently, our analysis centers on two primary categories of properties: those associated
 with termination and those associated with confluence.
-% Possibly redundant introductory paragraph
 
 As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that
 we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy.
@@ -45,11 +41,10 @@ following proposition relates these new definitions with our previous $\RP$ defi
     $SMseq \leftrightarrow RP \land BP$
 \end{proposition}
 \begin{proof}
-    See,\\
-    \verb|RP∧BP→SMseq : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\
+    See \texttt{Implications.agda},\\
+    \verb|RP∧BP→SMseq    : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\
     \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\
     \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
-    in \texttt{Implications.agda}.
 \end{proof}
 
 

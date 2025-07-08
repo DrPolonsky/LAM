@@ -64,9 +64,9 @@
 \begin{itemize}
   \item Below notes from meeting on April 25th.
   \begin{todolist}
-    \item Fix Wellfounded.agda after changes made during meeting.
+    \item  Fix Wellfounded.agda after changes made during meeting.
     \item Carry on refactoring Wellfounded.agda once fixed, breaking it up if necessary.
-    \item Think about how to organize the Git repo going forward. For example, could be good to have a parent folder with ARS and WF, with a private dir for paper
+    \item [\done] Think about how to organize the Git repo going forward. For example, could be good to have a parent folder with ARS and WF, with a private dir for paper
     \item (Research item) How to go from WFseq to WFacc - possible that the Kleene Tree is a solution.
     \item (Research item) Go deeper in the related works and see which are most relevant. Make a list of works and give summaries to be used in future papers.
     \item (Research item) Find a concrete application of generalized Newman's Lemma.
@@ -81,24 +81,24 @@
 \section*{Week starting 26th May}
 \begin{todolist}
   \item Double check the counterexamples match in the table to the diagrams.
-  \item Make clear in proof references to agda code how it should be read (especially the first one). Make clear the module as well. After doing once, the others don't need to be as explicit.
+  \item [\done] Make clear in proof references to agda code how it should be read (especially the first one). Make clear the module as well. After doing once, the others don't need to be as explicit.
   \item [\done] find a seperate symbol for -> in the code sections in the paper for UN$\to$. Superscipt would be perfect. $UN^{\rightarrow}$
-  \item Mention theorem 123 ii and iii are inherently classical. For iii we require strong decidability.
+  \item [\done] Mention theorem 123 ii and iii are inherently classical. For iii we require strong decidability.
   \item [\done] Working on CR $\to$ CP. Low priority. \apcomment{This is mentioned as one of the research items above}
 \end{todolist}
 
 \section*{Week starting 2nd June}
 \begin{todolist}
-  \item Should we add quantification to each definition(I think quantification for $a$ is already implied)? E.g.\\
+  \item [\done] Should we add quantification to each definition(I think quantification for $a$ is already implied)? E.g.\\
   \item [\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$.\\
    Transforms to
   \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser (or weakly confluent)} if $c \bstep a \rstep b \implies c \mstep d \bmstep b$ for all $b, c, d \in A$.
   \item [\done] For showing inc -> RP we're currently just saying "This is immediate". Is this sufficient? We did have a proof previously but I think we removed it for space reasons.
-  \item Remove "desired implications" and similar organizational issues in the code (general review)
-  \item Consider defining FB in terms of existing list library; especially in the rebooted repo,
+  \item [\done] Remove "desired implications" and similar organizational issues in the code (general review)
+  \item [\done] Consider defining FB in terms of existing list library; especially in the rebooted repo,
   we shouldn't use manual List type just for this.
   \item [\done] Move all definitions and properties from Section 2.3 to Seq.agda, except Inc.
-  \item Revise section 3.1
+  \item [\done] Revise section 3.1
 \end{todolist}
 \section*{Week starting 9th June (some of these items taken from Dr. Polonsky's email sent June 6th)}
 \begin{todolist}
