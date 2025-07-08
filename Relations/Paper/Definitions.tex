@@ -183,7 +183,7 @@ Furthermore, it takes us outside of a purely relational theory. The weaker prope
     \end{description}
 \end{definition}
 
-Our Agda formulation of the above definition makes use of the List type constructor, which we import from the \href{https://agda.github.io/agda-stdlib/v2.1/Agda.Builtin.List.html}{Agda standard library}.
+Our Agda formulation of the above definition makes use of the List type constructor, which we import from the Agda Standard Library \cite{AgdaLibraryList}. 
 
 
 \verb|FB a = Σ[ xs ∈ List A ] (∀ b → R b a → b ∈List xs)|
@@ -191,5 +191,4 @@ Our Agda formulation of the above definition makes use of the List type construc
 $\FB$ is a property that plays an important role in our discussion of well-foundedness (see Section \ref{sec:Well-foundedness}).
 
 
-\apcomment{Should expand this section, briefly summarize the definition of lists and the relevant lemmas, or
-point to standard the library.}
+
