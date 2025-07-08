@@ -19,17 +19,17 @@ we came to the `minimal' family of properties below. These properties help to au
     \begin{description}
         \item[\ule{$a \in \MF_R$}] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
         \item[\ule{$a \in \WM_R$}] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
-        \item[\ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
-        an $i \in \nat$ such that $s (i) \in \MF$.
         \item[\ule{$a \in \SM_R$}]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This
         definition is to be understood inductively).
+        \item[\ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
+        an $i \in \nat$ such that $s (i) \in \MF$.
         \item[\ule{$a \in \MP_R$}] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
     \end{description}
 \end{definition}
 
 Trivially, the following holds.
 \begin{proposition}\label{prop:nftomf}
-    $\NF \implies \MF$
+    $\forall x.\, x\in \NF \implies x \in \MF$
 \end{proposition}
 \begin{proof}
     See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
@@ -38,7 +38,7 @@ Trivially, the following holds.
 $\SMseq$ is only classically equivalent to $\SM$. The
 following proposition relates these new definitions with our previous $\RP$ definitions.
 \begin{proposition}\label{prop:SMRP}
-    $SMseq \leftrightarrow RP \land BP$
+    $\gSMseq \iff \gRP \land \gBP$
 \end{proposition}
 \begin{proof}
     See \texttt{Implications.agda},\\
@@ -104,6 +104,21 @@ of being $R$-minimal, as demonstrated in our formalization:
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN|
 
 The same property is similarly required in order to show that $\SM$ implies $\WM$.
+
+\begin{proposition}\label{prop:MFtoNF} \hfill
+    \begin{enumerate}
+        \item $\forall x.\, x\in \MF \land x \in \WN \iff x \in \NF$
+        \item $\forall x.\, x\in \MF \land x \in \SN \iff x \in \NF$
+    \end{enumerate}
+
+\end{proposition}
+\begin{proof}
+    See \texttt{module Normalizing-Implications} in \texttt{Implications.agda},\\
+    \verb|MF∧WN↔NF : ∀ {x} → MF x × WN x ↔ NF x|\\
+    \verb|MF∧SN↔NF : ∀ {x} → MF x × SN x ↔ NF x| \qedhere
+\end{proof}
+
+In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a seperate column for the combination of $\SM$ and $\WN$.   
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 

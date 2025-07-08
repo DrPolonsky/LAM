@@ -34,8 +34,8 @@
     \item [\done] Struggled to find the relevant agda code for the various definitions. We should find a way to better link the two.
     \item [\done] Clarify Notation 7 on line 159: "Choose a uniform notation, X or NP, but not both".
     \item [\done] l 169: An annoying notational collision between the two arrows -> at different heights."I'm not too sure what they're referring to, though there could be some ambiguity with the arrows here, especially with use of $UN\to$.
-    \item (Review 2) "l 361: Swap s(k+1) and s(k) " We should clarify the definition here otherwise people (evidently) get confused.
-    \item (Review 2) "l 422: $P_x$ has no arguments?"
+    \item [\done] (Review 2) "l 361: Swap s(k+1) and s(k) " We should clarify the definition here otherwise people (evidently) get confused.
+    \item [\done](Review 2) "l 422: $P_x$ has no arguments?"
     \item (Review 3) Check out and include the following related work:
     \begin{itemize}
         \item Christian Sternagel and René Thieman formalized results on Abstract Rewriting in Isabelle https://www.isa-afp.org/entries/Abstract-Rewriting.html
@@ -44,8 +44,8 @@
         \item (Review 2) TeReSe is not state of the art. We need state of the art references. Try this: https://termination-portal.org/wiki/WScT
     \end{itemize}
     \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
-    \item (Review 3) In line 270, isWFseq- is used in Section 3 but defined only in Section 5.
-    \item (Review 3) In line 192, the authors state that (in TeReSe) Ind denotes BP. However, in line 186, BP is defined from an R-increasing sequence, whereas this statement is not required in the definition of Ind by TeReSe. How does this difference impact the formalizations and generalizations pointed out in Section 3.3.3? (Maybe we should explicitly address all difference with TeReSe in one location.)
+    \item [\done](Review 3) In line 270, isWFseq- is used in Section 3 but defined only in Section 5.
+    \item [\done] (Review 3) In line 192, the authors state that (in TeReSe) Ind denotes BP. However, in line 186, BP is defined from an R-increasing sequence, whereas this statement is not required in the definition of Ind by TeReSe. How does this difference impact the formalizations and generalizations pointed out in Section 3.3.3? (Maybe we should explicitly address all difference with TeReSe in one location.)
   \end{todolist}
 
   \item Other ToDo
@@ -64,23 +64,17 @@
 \begin{itemize}
   \item Below notes from meeting on April 25th.
   \begin{todolist}
-    \item  Fix Wellfounded.agda after changes made during meeting.
-    \item Carry on refactoring Wellfounded.agda once fixed, breaking it up if necessary.
+    \item [\done] Fix Wellfounded.agda after changes made during meeting.
     \item [\done] Think about how to organize the Git repo going forward. For example, could be good to have a parent folder with ARS and WF, with a private dir for paper
-    \item (Research item) How to go from WFseq to WFacc - possible that the Kleene Tree is a solution.
-    \item (Research item) Go deeper in the related works and see which are most relevant. Make a list of works and give summaries to be used in future papers.
-    \item (Research item) Find a concrete application of generalized Newman's Lemma.
-    \item (Research item) Use TeReSe to create a list of rewrite systems.
-    \item (Research item) Work on the missing implicaitons from the paper. So far we believe this is just CR $\to$ CP in the ARS section.
-    \item (Research item) Formalize a first order term rewriting system (I can't remember what the motivation for this was).
-    \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counerexamples been shown before?
-    \item (Research item) Do we want to reincorporate Knaster Tarski?
+    
+    
+    
   \end{todolist}
 
 \end{itemize}
 \section*{Week starting 26th May}
 \begin{todolist}
-  \item Double check the counterexamples match in the table to the diagrams.
+  \item [\done] Double check the counterexamples match in the table to the diagrams.
   \item [\done] Make clear in proof references to agda code how it should be read (especially the first one). Make clear the module as well. After doing once, the others don't need to be as explicit.
   \item [\done] find a seperate symbol for -> in the code sections in the paper for UN$\to$. Superscipt would be perfect. $UN^{\rightarrow}$
   \item [\done] Mention theorem 123 ii and iii are inherently classical. For iii we require strong decidability.
@@ -104,8 +98,8 @@
 \begin{todolist}
   \item [\done] Thm. 19(iv), i don't like that the parens are italicized.  maybe it would be okay if instead of CR => CP we just write "the forward implication"
   \item [\done] Proof of (iii), line 296: do we really need () around SN?
-  \item Page 9, second half (the hierarchy): we should add a proof that $\MF \cap \SN \iff \NF$, say this in the text, and note that this does NOT hold for $\SM$ and $\WN$.  Hence, the tables include a separate column for their combination.
-  \item  In the par before 4.1 counterexamples, add that in the global table, the counterexample 3 satisfies the hypotheses globally.
+  \item [\done] Page 9, second half (the hierarchy): we should add a proof that $\MF \cap \SN \iff \NF$, say this in the text, and note that this does NOT hold for $\SM$ and $\WN$.  Hence, the tables include a separate column for their combination.
+  \item [\done] In the par before 4.1 counterexamples, add that in the global table, the counterexample 3 satisfies the hypotheses globally.
 (I actually wonder whether we need example 9 at all, if we have a counterexample to the global one.  Am I missing something?). \sacomment{I don't think we need to expand that CE:3 satisfies the global hypotheses. I'm hoping that we've done enough to show to the reader how to read the table at this point. If you disagree I'm happy to add it in though. As to why have local and global counterexamples, good point. Unless either of us can think of a reason we'll remove in the next meeting.}
     \item [\done] the * and dagger in the table should be explained in the caption, or in the text.
     \sacomment{I prefer to have this as a footnote. I have put it as a caption for now but I would revert it to what we had before.  }
@@ -119,5 +113,29 @@
   Mention this once at the beginning of section 5 then proceed to analyze
   connections between WFacc and WFseq/WFmin.
 \end{itemize}
+
+\section*{July TODO}
+\begin{todolist}
+  \item Carry on refactoring Wellfounded.agda once fixed, breaking it up if necessary.
+  \item To finish the paper: We should do a final walk through and make sure we haven't introduced errors with our edits. In particular, do all the counterexamples line up. Do all the references to different sections and pieces of code in Agda line up. 
+  \item Do we remove all our local counterexamples in favour of global ones?
+  \item Rework well-foundedness section 
+  \item Rework conclusion 
+  \item Rework introduction 
+  \item Do we introduce a new section for discussing Agda? Talking about why we think there is an advantage to doing this work in Agda vs (say) Isabelle 
+
+\end{todolist}
+
+\section*{Research items}
+\begin{todolist}
+  \item (Research item) Go deeper in the related works and see which are most relevant. Make a list of works and give summaries to be used in future papers. * Look into the literature and related works. There should be an Agda formulation of rewrite systems (check agda standard library stuff on relations). 
+  \item (Research item) Find a concrete application of generalized Newman's Lemma. * Finding a term rewrite system where it's eassier to see that it is weakly cr and that every term is SM (as opposed to being CR).  
+  \item (Research item) Formalize a first order term rewriting system (I can't remember what the motivation for this was). Use TeReSe to create a list of rewrite systems.
+  \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counerexamples been shown before?
+  \item (Research item) Work on the missing implicaitons from the paper. So far we believe this is just CR $\to$ CP in the ARS section. - Will probably be quite a bit of work (low priority)
+  \item (Research item) Do we want to reincorporate Knaster Tarski? - Not this paper 
+  \item (Research item) How to go from WFseq to WFacc - possible that the Kleene Tree is a solution. - Not this paper
+  
+\end{todolist}
 
 \end{document}

@@ -29,14 +29,17 @@ The various formulations of well-foundedness are based on the following notions.
 
 In \cite{Terese}, well-foundedness is defined as in the classical mathematics textbooks,
 as the absence of an infinite $R$-decreasing sequence.
+(Again, well-foundedness of $R$ corresponds to strong normalization of its converse.)
 Translating this statement directly into type theory yields the formula
-\[\tag{$\isWFseqm$} \lnot \big(\exists s : \nat \to A \forall k : \nat. (s(k+1),s(k)) \in R \big) \]
+
+\[\tag{$\isWFseqm$} \lnot \big(\exists s : \nat \to A \forall k : \nat. \  R \,(s\,(k+1)) \, (s\, k) \big) \]
+
 (The label $\isWFseqm$ refers to the name of the corresponding term in \texttt{Wellfoundedness.agda}.)
 Constructively, this is not a useful hypothesis, as it does not provide any positive computational content and requires an explicit sequence to be defined.
 
 A stronger formulation asserts that, for any sequence, there exists an element
 in the sequence that does not reduce to the next one.  This yields the statement
-\[\tag{$\isWFseq$} \forall s : \nat \to A \exists k : \nat. (s(k),s(k+1)) \notin R \]
+\[\tag{$\isWFseq$} \forall s : \nat \to A \exists k : \nat.\, \lnot \, R \,(s\,k)\,(s\,(k+1)) \]
 
 These two conditions are classically equivalent, but not constructively so.
 Indeed, $\isWFseq$ certainly implies $\isWFseqm$, but the converse only holds classically.
@@ -113,7 +116,7 @@ On the other hand, $\isWFmin$ trivially implies that each $x \in A$ is weakly no
 Indeed, given $x \in A$, consider the predicate $P_x(y) = x \mstep y$.
 This predicate is non-empty, since the empty reduction yields a proof of $P_x(x)$.
 Let $n$ be a $P_x$-minimal element.  Then $x \mstep n$.  Moreover, for any $y$,
-If $x \rstep y$, then $\lnot(P_x)$.  But since reductions from $x$ are closed downward,
+If $n \rstep y$, then $\lnot(P_x(y))$.  But since reductions from $x$ are closed downward,
 no such $y$ can exist, and hence $n$ is a normal form of $x$.
 
 % \greyout{From the perspective of rewriting theory, it would seem wild indeed if
