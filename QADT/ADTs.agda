@@ -13,38 +13,38 @@ open import QADT.Functor
 open import Environment
 
 -- Definition of Algebraic Datatypes
-data ADT (n : ℕ) : Set where
-  𝕍 : Fin n → ADT n
-  𝟎 : ADT n
-  𝟏 : ADT n
-  _×_ : ADT n → ADT n → ADT n
-  _⊔_ : ADT n → ADT n → ADT n
-  μ : ADT (succ n) → ADT n
+data ADT (V : Set) : Set where
+  𝕍 : V → ADT V
+  𝟎 : ADT V
+  𝟏 : ADT V
+  _×_ : ADT V → ADT V → ADT V
+  _⊔_ : ADT V → ADT V → ADT V
+  μ : ADT (↑ V) → ADT V
 
 infixr 28 _×_
 infixr 27 _⊔_
 
 -- Some common ADT expressions
-1+ : ∀ {n} → ADT n → ADT n
+1+ : ∀ {V} → ADT V → ADT V
 1+ a = 𝟏 ⊔ a
 
-_² : ∀ {n} → ADT n → ADT n
+_² : ∀ {V} → ADT V → ADT V
 _² a = a × a
 
-_³ : ∀ {n} → ADT n → ADT n
+_³ : ∀ {V} → ADT V → ADT V
 _³ a = a × a ²
 
-_⁴ : ∀ {n} → ADT n → ADT n
+_⁴ : ∀ {V} → ADT V → ADT V
 _⁴ a = a × a ³
 
-_⁵ : ∀ {n} → ADT n → ADT n
+_⁵ : ∀ {V} → ADT V → ADT V
 _⁵ a = a × a ⁴
 
-Num : ∀ {n} → ℕ → ADT n
+Num : ∀ {V} → ℕ → ADT V
 Num zero = 𝟎
 Num (succ n) = 1+ (Num n)
 
-𝕧₀ : ∀ {n} → ADT (succ n)
+𝕧₀ : ∀ {V} → ADT (↑ V)
 𝕧₀ = 𝕍 (o)
 
 infix 50 _²
@@ -53,7 +53,7 @@ infix 50 _⁴
 infix 50 _⁵
 
 -- Set interpretation of ADTs
-⟦_⟧_ : ∀ {n : ℕ} → ADT n → SetEnv n → Set
+⟦_⟧_ : ∀ {V : Set} → ADT V → TypeEnv V → Set
 ⟦ 𝕍 x ⟧ e = e x
 ⟦ 𝟎 ⟧ e = ⊥
 ⟦ 𝟏 ⟧ e = ⊤
@@ -61,8 +61,9 @@ infix 50 _⁵
 ⟦ x ⊔ y ⟧ e = ⟦ x ⟧ e ∨ ⟦ y ⟧ e
 ⟦ μ x ⟧ e = LFP λ X → ⟦ x ⟧ (e ⅋o:= X)
 
+
 -- Functoriality of ADTs
-⟦_⟧→_ : ∀ {n : ℕ} → (e : ADT n) → ∀ {ρ σ : SetEnv n} → SetEnv→ ρ σ → (⟦ e ⟧ ρ → ⟦ e ⟧ σ)
+⟦_⟧→_ : ∀ {V : Set} → (e : ADT V) → ∀ {ρ σ : SetEnv V} → SetEnv→ ρ σ → (⟦ e ⟧ ρ → ⟦ e ⟧ σ)
 ⟦ 𝕍 x ⟧→ ρσ = ρσ x
 ⟦ 𝟎 ⟧→ ρσ = I
 ⟦ 𝟏 ⟧→ ρσ = I
@@ -70,23 +71,24 @@ infix 50 _⁵
 (⟦ e1 ⊔ e2 ⟧→ ρσ) (in1 x) = in1 ((⟦ e1 ⟧→ ρσ) x)
 (⟦ e1 ⊔ e2 ⟧→ ρσ) (in2 y) = in2 ((⟦ e2 ⟧→ ρσ) y)
 ⟦_⟧→_ (μ e) {ρ} {σ} ρσ = LFP→ (λ X → ⟦ e ⟧ (ρ ⅋o:= X)) (λ X → ⟦ e ⟧ (σ ⅋o:= X))
-  (λ f → ⟦ e ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f o ) λ X → (⟦ e ⟧→ ConsSetEnv→ ρσ I o)
+  (λ f → ⟦ e ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f) λ X → (⟦ e ⟧→ ConsSetEnv→ ρσ I)
 
 -- ⟦_⟧→refl : ∀ {n : ℕ} (e : ADT n) (Γ : SetEnv n) x → ⟦ e ⟧→ (reflSetEnv→ Γ) x ≡ x
 -- ⟦ e ⟧→refl Γ x = ?
+
 
 -- Enumeration of ADTS
 Enum : Set → Set
 Enum A = List A
 
-EnumEnv : ∀ {n} → SetEnv n → Set
+EnumEnv : ∀ {V} → SetEnv V → Set
 EnumEnv Γ = ∀ x → Enum (Γ x)
 
 EnumΓ₀ : EnumEnv Γ₀
 EnumΓ₀ = λ ()
 
 {-# TERMINATING #-}
-EnumADT : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → Enum (⟦ e ⟧ Γ)
+EnumADT : ∀ {V} → (e : ADT V) → (Γ : SetEnv V) → EnumEnv Γ → Enum (⟦ e ⟧ Γ)
 EnumADT (𝕍 x) Γ GG = GG x
 EnumADT 𝟎 Γ GG = []
 EnumADT 𝟏 Γ GG = tt ∷ []
@@ -97,7 +99,7 @@ EnumADT (μ e) Γ GG with EnumADT e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ) ) (io𝓟 _ G
 ... | c = List→ lfp c
 
 {-# TERMINATING #-}
-EnumADTk : ∀ {n} → (e : ADT n) → (Γ : SetEnv n) → EnumEnv Γ → ℕ → Enum (⟦ e ⟧ Γ)
+EnumADTk : ∀ {V} → (e : ADT V) → (Γ : SetEnv V) → EnumEnv Γ → ℕ → Enum (⟦ e ⟧ Γ)
 EnumADTk _ _ _ 0 = []
 EnumADTk (𝕍 x) Γ GG k = (GG x)
 EnumADTk 𝟎 Γ GG _ = []
@@ -107,12 +109,11 @@ EnumADTk (e1 ⊔ e2) Γ GG k = merge (List→ in1 (EnumADTk e1 Γ GG k)) (List�
 EnumADTk (μ e) Γ GG (succ k) =
   List→ lfp (EnumADTk e (Γ ⅋o:= (⟦ (μ e) ⟧ Γ))
             (io𝓟 _ GG (EnumADTk (μ e) Γ GG k)) (succ k))
-
 decΓ₀ : decSetEnv Γ₀
 decΓ₀ ()
 
 -- Decidability of ADTs
-decADT : ∀ {n} (a : ADT n) (ρ : SetEnv n) (de : decSetEnv ρ) → dec≡ (⟦ a ⟧ ρ)
+decADT : ∀ {V} (a : ADT V) (ρ : SetEnv V) (de : decSetEnv ρ) → dec≡ (⟦ a ⟧ ρ)
 decADT (𝕍 x) ρ de = λ x₁ y → de x x₁ y
 decADT 𝟎 ρ de = λ x y → ∅ x
 decADT 𝟏 ρ de = λ {tt tt → in1 (refl) }
@@ -131,18 +132,18 @@ decADT (a ⊔ a₁) ρ de (in2 x) (in2 x₁) with decADT a₁ ρ de x x₁
 ... | in2 x₂ = in2 (λ x₃ → x₂ (in2inj x₃) )
 decADT (μ a) ρ de = decLFP ((λ X → ⟦ a ⟧ (ρ ⅋o:= X))) (λ A dA → decADT a ((ρ ⅋o:= A)) (decExtEnv ρ A de dA) )
 
-==ADT : ∀ {A : ADT 0} → (⟦ A ⟧ Γ₀ → ⟦ A ⟧ Γ₀ → 𝔹)
+==ADT : ∀ {A : ADT ⊥} → (⟦ A ⟧ Γ₀ → ⟦ A ⟧ Γ₀ → 𝔹)
 ==ADT {A} x y with decADT A Γ₀ decΓ₀ x y
 ... | in1 _ = true
 ... | in2 _ = false
 
-==ADT-correct : (A : ADT 0) → (x y : ⟦ A ⟧ Γ₀) → (x ≡ y) ↔ ==ADT {A} x y ≡ true
+==ADT-correct : (A : ADT ⊥) → (x y : ⟦ A ⟧ Γ₀) → (x ≡ y) ↔ ==ADT {A} x y ≡ true
 ==ADT-correct A x y with decADT A Γ₀ decΓ₀ x y in r
 ... | in1 x₁ = K refl , K x₁
 ... | in2 x₁ = (λ x₂ → ∅ (x₁ x₂) ) , λ {()}
 
 -- Injectivity of ADTs map functions
-ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)
+ADTFunctorInj : ∀ {V : Set} (e : ADT V) {ρ σ : SetEnv V} (ρ→σ : SetEnv→ ρ σ)
                   → SetEnv→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
 ADTFunctorInj (𝕍 v) ρ→σ ρ→σInj = ρ→σInj v
 ADTFunctorInj 𝟏 ρ→σ ρ→σInj = λ z → z
@@ -155,21 +156,21 @@ ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in1 y} ()
 ADTFunctorInj (e1 ⊔ e2) ρ→σ ρ→σInj {in2 x} {in2 y} x=y = cong in2 (ADTFunctorInj e2 ρ→σ ρ→σInj (in2inj x=y ) )
 -- ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj {lfp x} {lfp y} lx=ly with lfpInj (λ z → ⟦ e ⟧ (σ ⅋o:= z)) lx=ly
 -- ... | x=y = cong lfp (ADTFunctorInj e {!   !} {!   !} {!   !}  )
-ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldInj Fmap Finj α αinj x=y where
+ADTFunctorInj {V} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldInj Fmap Finj α αinj x=y where
       F : Set → Set
       F = λ X → ⟦ e ⟧ ((ρ ⅋o:= X))
       G : Set → Set
       G = λ X → ⟦ e ⟧ ((σ ⅋o:= X))
       Fmap : Functor F
-      Fmap {X} {Y} f z = ⟦_⟧→_ {succ n} e {(ρ ⅋o:= X)} {(ρ ⅋o:= Y)} (ConsSetEnv→ (reflSetEnv→ ρ) f o ) z
+      Fmap {X} {Y} f z = ⟦_⟧→_ {↑ V} e {(ρ ⅋o:= X)} {(ρ ⅋o:= Y)} (ConsSetEnv→ (reflSetEnv→ ρ) f) z
       Finj : FunctorInj F Fmap
-      Finj {A} {B} f finj = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= B)} (ConsSetEnv→ (reflSetEnv→ ρ) f o)
+      Finj {A} {B} f finj = ADTFunctorInj e {(ρ ⅋o:= A)} {(ρ ⅋o:= B)} (ConsSetEnv→ (reflSetEnv→ ρ) f)
            λ { o → finj ; (i z) → I }
       α : F (LFP G) → LFP G
-      α = (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ ρ→σ (λ x₁ → x₁) o) z))
+      α = (λ z → lfp ((⟦ e ⟧→ ConsSetEnv→ ρ→σ (λ x₁ → x₁)) z))
       αinj : inj α
       αinj {u} {v} au=av =
-        ADTFunctorInj e (ConsSetEnv→ ρ→σ I o) (ConsSetEnv→Inj I ρ→σ I ρ→σInj ) (lfpInj G au=av)
+        ADTFunctorInj e (ConsSetEnv→ ρ→σ I) (ConsSetEnv→Inj I ρ→σ I ρ→σInj ) (lfpInj G au=av)
 
 -- ADTFunctorInj (μ e) ρ→σ ρ→σInj {x} {y} x=y = foldInj ? {!   !} {!   !} {!   !} {!   !}
 -- foldInj : ∀ {F : Set → Set} (Fmap : Functor F) → FunctorInj F Fmap
@@ -177,9 +178,9 @@ ADTFunctorInj {n} (μ e) {ρ} {σ} ρ→σ ρ→σInj  {x} {y} x=y = foldInj Fma
 -- ConsSetEnv→ : ∀ {n} {X Y : Set} (f : X → Y) → {e1 e2 : SetEnv n} (e12 : SetEnv→ e1 e2)
 --              → SetEnv→ ((e ⅋o:= X)1) ((e ⅋o:= Y)2)
 
-foldADT : ∀ {n} (a : ADT (succ n)) (ρ : SetEnv n) (X : Set) (f : ⟦ a ⟧ ((ρ ⅋o:= X)) → X)
+foldADT : ∀ {V} (a : ADT (↑ V)) (ρ : SetEnv V) (X : Set) (f : ⟦ a ⟧ ((ρ ⅋o:= X)) → X)
           → ⟦ μ a ⟧ ρ → X
-foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f o )
+foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsSetEnv→ (reflSetEnv→ ρ ) f)
 
 -- ADTFunctorInj : ∀ {n : ℕ} (e : ADT n) {ρ σ : SetEnv n} (ρ→σ : SetEnv→ ρ σ)
 --                   → SetEnv→Inj ρ→σ → inj (⟦ e ⟧→ ρ→σ)
@@ -194,7 +195,7 @@ foldADT {n} a ρ X = fold (λ f →  ⟦ a ⟧→ ConsSetEnv→ (reflSetEnv→ �
 
 open import QADT.EnvIsomorphisms
 -- Interpretation of ADTs preserves isomorphisms
-⟦_⟧≃_ : ∀ {n : ℕ} → (e : ADT n) → ∀ {ρ σ : SetEnv n} → SetEnv≃ ρ σ → ⟦ e ⟧ ρ ≃ ⟦ e ⟧ σ
+⟦_⟧≃_ : ∀ {V : Set} → (e : ADT V) → ∀ {ρ σ : SetEnv V} → SetEnv≃ ρ σ → ⟦ e ⟧ ρ ≃ ⟦ e ⟧ σ
 ⟦ 𝕍 x ⟧≃ ρ≃σ = ρ≃σ x
 ⟦ 𝟎 ⟧≃ ρ≃σ = id≃ ⊥
 ⟦ 𝟏 ⟧≃ ρ≃σ = id≃ ⊤
@@ -205,54 +206,36 @@ open import QADT.EnvIsomorphisms
   f x y xy with coskipSetEnv≃Set≃ xy ρ≃σ
   ... | μ1 = ⟦ e ⟧≃ μ1
 
--- ≃⟦_⟧≃ :
+ADT→ : ∀ {V W} → (V → W) → ADT V → ADT W
+ADT→ f (𝕍 x) = 𝕍 (f x)
+ADT→ f 𝟎 = 𝟎
+ADT→ f 𝟏 = 𝟏
+ADT→ f (a1 × a2) = ADT→ f a1 × ADT→ f a2
+ADT→ f (a1 ⊔ a2) = ADT→ f a1 ⊔ ADT→ f a2
+ADT→ f (μ a) = μ (ADT→ (↑→ f) a )
 
-iso≡trans : ∀ {A B C D : Set} {ab : A ≃ B} {bc : B ≃ C} {cd : C ≃ D} → ((ab iso∘ bc) iso∘ cd) ≡ (ab iso∘ (bc iso∘ cd))
-iso≡trans = {!   !}
+wk₀ : ∀ {V} → ADT V → ADT (↑ V)
+wk₀ = ADT→ i
 
-iso≃ : {A A' B B' : Set} → A ≃ A' → B ≃ B' → (A ≃ B) ≃ (A' ≃ B')
-iso≃ {A} {A'} {B} {B'} aa' bb' = iso f+ f- f-+ f+- where
-  f+ : A ≃ B → A' ≃ B'
-  f+ ab = iso~ aa' iso∘ (ab [=!=] bb' )
-  f- : A' ≃ B' → A ≃ B
-  f- a'b' = (aa' iso∘ a'b' ) iso∘ iso~ bb'
+liftADT : ∀ {V W} → (V → ADT W) → ↑ V → ADT (↑ W)
+liftADT f = io (wk₀ ∘ f) (𝕍 o)
 
-  -- (aa' iso∘ (iso~ aa' iso∘ (ab iso∘ bb' )) ) iso∘ iso~ bb'
-  f-+ : (x : A ≃ B) → f- (f+ x) ≡ x
-  f-+ x = {!   !}
-  f+- : (y : A' ≃ B') → f+ (f- y) ≡ y
-  f+- = {!   !}
+_[_] : ∀ {V W} → ADT V → (V → ADT W) → ADT W
+𝕍 x [ f ] = f x
+𝟎 [ f ] = 𝟎
+𝟏 [ f ] = 𝟏
+(a1 × a2) [ f ] = (a1 [ f ]) × (a2 [ f ])
+(a1 ⊔ a2) [ f ] = (a1 [ f ]) ⊔ (a2 [ f ])
+μ a [ f ] = μ (a [ liftADT f ])
 
-wk : ∀ {n} → Fin (succ n) → ADT (n) → ADT (succ n)
-wk {n} f (𝕍 x) = 𝕍 (skip f x )
-wk {n} f 𝟎 = 𝟎
-wk {n} f 𝟏 = 𝟏
-wk {n} f (e × e₁) = wk f e × wk f e₁
-wk {n} f (e ⊔ e₁) = wk f e ⊔ wk f e₁
-wk {n} f (μ e) = μ (wk (i f) e)
-
--- coskip : ∀ {n} {k} {A : Set k} → (Fin n → A) → Fin (succ n) → A → (Fin (succ n) → A)
--- coskip f o a o = a
--- coskip f o a (i y) = f y
--- coskip {succ n} f (i x) a (o) = f o
--- coskip {succ n} f (i x) a (i y) = coskip (λ x₁ → f (i x₁ ) ) x a y
-
-subst-level : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → Fin (succ n) → ADT n
-subst-level {n} (𝕍 x) e' f = (𝕍 ⅋ f := e') x
-subst-level 𝟎 e' f = 𝟎
-subst-level 𝟏 e' f = 𝟏
-subst-level (e × e₁) e' f = subst-level e e' f × subst-level e₁ e' f
-subst-level (e ⊔ e₁) e' f = subst-level e e' f ⊔ subst-level e₁ e' f
-subst-level {n} (μ e) e' f = μ (subst-level e (wk (o) e' ) (i f))
-
-subst : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
-subst e e' = subst-level e e' (o)
-
-_[_:=_] :  ∀ {n} (e : ADT (succ n)) → Fin (succ n) → (e' : ADT n) → ADT n
-e [ x := e' ] = subst-level e e' x
-
-_[_] : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
-e [ e' ] = subst e e'
+subst : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → ADT V
+subst (𝕍 (i x)) e' = 𝕍 x
+subst (𝕍 o) e' = e'
+subst 𝟎 e' = 𝟎
+subst 𝟏 e' = 𝟏
+subst (e1 × e2) e' = subst e1 e' × subst e2 e'
+subst (e1 ⊔ e2) e' = subst e1 e' ⊔ subst e2 e'
+subst (μ e) e' = μ (subst e (wk₀ e'))
 
 -- The following lemmas are used in the proofs of weakinglemma≃
 big~ : ∀ {l} {A : Set l} {a b : A} → a ≡ b → b ≡ a
@@ -274,7 +257,34 @@ rewriteRoot-+ refl a = refl
 rewriteRoot+- : ∀ {A B : Set} → (E : A ≡ B) → (b : B) → rewriteRoot E (rewriteRoot (big~ E) b) ≡ b
 rewriteRoot+-  refl b = refl
 
-weakeningLemma≃ : ∀ {n} (x : Fin (succ n)) (A : ADT n) {A' : Set} (ρ : SetEnv n) → ⟦ wk x A ⟧ (ρ ⅋ x := A') ≃ ⟦ A ⟧ ρ
+EnvConsLemma : ∀ {V : Set} (e : ADT (↑ V)) (ρ : SetEnv V) (X A' : Set) → (⟦ ADT→ (↑→ i) e ⟧ ((ρ ⅋o:= A') ⅋o:= X)) ≃ (⟦ ADT→ i e ⟧ ((ρ ⅋o:= X) ⅋o:= A'))
+EnvConsLemma {V} e ρ X A' = iso {!   !} {!   !} {!   !} {!   !} where
+  f+ : (A : ADT (↑ V)) → ⟦ ADT→ (↑→ i) A ⟧ ((ρ ⅋o:= A') ⅋o:= X) → ⟦ ADT→ i A ⟧ ((ρ ⅋o:= X) ⅋o:= A')
+  f+ (𝕍 (i v)) x = x
+  f+ (𝕍 o) x = x
+  f+ 𝟏 x = tt
+  f+ (A1 × A2) (x1 , x2) = (f+ A1 x1) , (f+ A2 x2)
+  f+ (A1 ⊔ A2) (in1 x) = in1 (f+ A1 x)
+  f+ (A1 ⊔ A2) (in2 x) = in2 (f+ A2 x)
+  f+ (μ A) (lfp x) with EnvConsLemma {!   !} {!   !} {!   !} {!   !}
+  ... | r = lfp (_≃_.f+ ({!  !} ) x )
+
+weakeningLemma≃ : ∀ {V} (A : ADT V) {A' : Set} (ρ : SetEnv V) → ⟦ wk₀ A ⟧ (ρ ⅋o:= A') ≃ ⟦ A ⟧ ρ
+weakeningLemma≃ {V} a {A'} ρ = iso (wkl+ a) (wkl- a) {!   !} {!   !} where
+  wkl+ : (e : ADT V) → ⟦ wk₀ e ⟧ (ρ ⅋o:= A') → ⟦ e ⟧ ρ
+  wkl+ (𝕍 v) x = x
+  wkl+ 𝟏 x = tt
+  wkl+ (e1 × e2) (x1 , x2) = (wkl+ e1 x1) , (wkl+ e2 x2)
+  wkl+ (e1 ⊔ e2) (in1 x) = in1 (wkl+ e1 x)
+  wkl+ (e1 ⊔ e2) (in2 x) = in2 (wkl+ e2 x)
+  wkl+ (μ e) x = _≃_.f+ (LFP≃ _ _ (λ X Y X≃Y → ({!   !} iso∘ weakeningLemma≃ e (ρ ⅋o:= X) ) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ) ) )) x
+  wkl- : (e : ADT V) → ⟦ e ⟧ ρ → ⟦ wk₀ e ⟧ (ρ ⅋o:= A')
+  wkl- e y = {!   !}
+  wkl-+ : (e : ADT V) → (x : ⟦ wk₀ e ⟧ (ρ ⅋o:= A')) → wkl- e (wkl+ e x) ≡ x
+  wkl-+ e x = {!   !}
+  wkl+- : (e : ADT V) → (y : ⟦ e ⟧ ρ) → wkl+ e (wkl- e y) ≡ y
+  wkl+- e y = {!   !}
+{-
 weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) where
   wkl+ : (e : ADT n) → ⟦ wk x e ⟧ (ρ ⅋ x := A') → ⟦ e ⟧ ρ
   wkl+ (𝕍 v) y = rewriteRoot (skipCons ρ x A' v) y
@@ -330,3 +340,4 @@ substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ e [ (i x) := (wk (o) e'
   isom : (A B : Set) → A ≃ B → (⟦ e [ (i x) := (wk (o) e') ] ⟧ (ρ ⅋o:= A)) ≃ ⟦ e ⟧ ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= B)
   isom A B AB with substlemmagen e (wk o e') (ρ ⅋o:= A) (i x)
   ... | r = r iso∘ (⟦ e ⟧≃ cosk A B AB)
+-}
