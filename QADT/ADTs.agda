@@ -257,97 +257,27 @@ rewriteRoot-+ refl a = refl
 rewriteRoot+- : ∀ {A B : Set} → (E : A ≡ B) → (b : B) → rewriteRoot E (rewriteRoot (big~ E) b) ≡ b
 rewriteRoot+-  refl b = refl
 
-EnvConsLemma : ∀ {V : Set} (e : ADT (↑ V)) (ρ : SetEnv V) (X A' : Set) → (⟦ ADT→ (↑→ i) e ⟧ ((ρ ⅋o:= A') ⅋o:= X)) ≃ (⟦ ADT→ i e ⟧ ((ρ ⅋o:= X) ⅋o:= A'))
-EnvConsLemma {V} e ρ X A' = iso {!   !} {!   !} {!   !} {!   !} where
-  f+ : (A : ADT (↑ V)) → ⟦ ADT→ (↑→ i) A ⟧ ((ρ ⅋o:= A') ⅋o:= X) → ⟦ ADT→ i A ⟧ ((ρ ⅋o:= X) ⅋o:= A')
-  f+ (𝕍 (i v)) x = x
-  f+ (𝕍 o) x = x
-  f+ 𝟏 x = tt
-  f+ (A1 × A2) (x1 , x2) = (f+ A1 x1) , (f+ A2 x2)
-  f+ (A1 ⊔ A2) (in1 x) = in1 (f+ A1 x)
-  f+ (A1 ⊔ A2) (in2 x) = in2 (f+ A2 x)
-  f+ (μ A) (lfp x) with EnvConsLemma {!   !} {!   !} {!   !} {!   !}
-  ... | r = lfp (_≃_.f+ ({!  !} ) x )
+mapLemma≃ : ∀ {V W} (e : ADT V) (f : V → W) (ρ : SetEnv W) → ⟦ ADT→ f e ⟧ ρ ≃ ⟦ e ⟧ (ρ ∘ f)
+mapLemma≃ (𝕍 v) f ρ = refl2iso refl
+mapLemma≃ 𝟎 f ρ = refl2iso refl
+mapLemma≃ 𝟏 f ρ = refl2iso refl
+mapLemma≃ (e1 × e2) f ρ = iso∧ (mapLemma≃ e1 f ρ) (mapLemma≃ e2 f ρ)
+mapLemma≃ (e1 ⊔ e2) f ρ = iso∨ (mapLemma≃ e1 f ρ) (mapLemma≃ e2 f ρ)
+mapLemma≃ (μ e) f ρ = LFP≃ _ _ h where
+  h = λ X Y XY → mapLemma≃ e (↑→ f) (ρ ⅋o:= X) iso∘ (⟦ e ⟧≃ io𝓟 _ (λ x → refl2iso refl ) XY  )
 
-weakeningLemma≃ : ∀ {V} (A : ADT V) {A' : Set} (ρ : SetEnv V) → ⟦ wk₀ A ⟧ (ρ ⅋o:= A') ≃ ⟦ A ⟧ ρ
-weakeningLemma≃ {V} a {A'} ρ = iso (wkl+ a) (wkl- a) {!   !} {!   !} where
-  wkl+ : (e : ADT V) → ⟦ wk₀ e ⟧ (ρ ⅋o:= A') → ⟦ e ⟧ ρ
-  wkl+ (𝕍 v) x = x
-  wkl+ 𝟏 x = tt
-  wkl+ (e1 × e2) (x1 , x2) = (wkl+ e1 x1) , (wkl+ e2 x2)
-  wkl+ (e1 ⊔ e2) (in1 x) = in1 (wkl+ e1 x)
-  wkl+ (e1 ⊔ e2) (in2 x) = in2 (wkl+ e2 x)
-  wkl+ (μ e) x = _≃_.f+ (LFP≃ _ _ (λ X Y X≃Y → ({!   !} iso∘ weakeningLemma≃ e (ρ ⅋o:= X) ) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ) ) )) x
-  wkl- : (e : ADT V) → ⟦ e ⟧ ρ → ⟦ wk₀ e ⟧ (ρ ⅋o:= A')
-  wkl- e y = {!   !}
-  wkl-+ : (e : ADT V) → (x : ⟦ wk₀ e ⟧ (ρ ⅋o:= A')) → wkl- e (wkl+ e x) ≡ x
-  wkl-+ e x = {!   !}
-  wkl+- : (e : ADT V) → (y : ⟦ e ⟧ ρ) → wkl+ e (wkl- e y) ≡ y
-  wkl+- e y = {!   !}
-{-
-weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) where
-  wkl+ : (e : ADT n) → ⟦ wk x e ⟧ (ρ ⅋ x := A') → ⟦ e ⟧ ρ
-  wkl+ (𝕍 v) y = rewriteRoot (skipCons ρ x A' v) y
-  wkl+ 𝟏 y = tt
-  wkl+ (e1 × e2) (y1 , y2) = (wkl+ e1 y1 , wkl+ e2 y2)
-  wkl+ (e1 ⊔ e2) (in1 y1) = in1 (wkl+ e1 y1)
-  wkl+ (e1 ⊔ e2) (in2 y2) = in2 (wkl+ e2 y2)
-  wkl+ (μ e) y = _≃_.f+ (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (i x) e ⟧≃ λ z → refl2iso (EnvConsLemma ρ x A' X z )) iso∘ (weakeningLemma≃ (i x) e ((ρ ⅋o:= X)))) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ)) )) y
-  wkl- : (e : ADT n) → ⟦ e ⟧ ρ → ⟦ wk x e ⟧ (ρ ⅋ x := A')
-  wkl- (𝕍 v) y = rewriteRoot (big~ (skipCons ρ x A' v) ) y
-  wkl- 𝟏 y = tt
-  wkl- (e × e₁) (y , z) = wkl- e y , wkl- e₁ z
-  wkl- (e ⊔ e₁) (in1 x) = in1 (wkl- e x )
-  wkl- (e ⊔ e₁) (in2 x) = in2 (wkl- e₁ x )
-  wkl- (μ e) y = _≃_.f- (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (i x) e ⟧≃ λ z → refl2iso (EnvConsLemma ρ x A' X z ) ) iso∘ (weakeningLemma≃ (i x) e ((ρ ⅋o:= X)))) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ)) )) y
-  wkl-+ : (e : ADT n) → ∀ z → wkl- e (wkl+ e z) ≡ z
-  wkl-+ (𝕍 v) z = rewriteRoot-+ (skipCons ρ x A' v ) z
-  wkl-+ 𝟏 tt = refl
-  wkl-+ (e × e₁) (x , x₁) = cong2 _,_ (wkl-+ e x ) (wkl-+ e₁ x₁)
-  wkl-+ (e ⊔ e₁) (in1 x) = cong in1 (wkl-+ e x )
-  wkl-+ (e ⊔ e₁) (in2 x) = cong in2 (wkl-+ e₁ x )
-  wkl-+ (μ e) y = _≃_.f-+ (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (i x) e ⟧≃ λ z → refl2iso (EnvConsLemma ρ x A' X z ) ) iso∘ (weakeningLemma≃ (i x) e ((ρ ⅋o:= X)))) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ)) )) y
-  wkl+- : (e : ADT n) → ∀ z → wkl+ e (wkl- e z) ≡ z
-  wkl+- (𝕍 v) z = rewriteRoot+- (skipCons ρ x A' v) z
-  wkl+- 𝟏 tt = refl
-  wkl+- (e × e₁) (x , x₁) = cong2 _,_ (wkl+- e x) (wkl+- e₁ x₁)
-  wkl+- (e ⊔ e₁) (in1 x) = cong in1 (wkl+- e x )
-  wkl+- (e ⊔ e₁) (in2 x) = cong in2 (wkl+- e₁ x )
-  wkl+- (μ e) y = _≃_.f+- (LFP≃ _ _
-      (λ X Y X≃Y → ((⟦ wk (i x) e ⟧≃ λ z → refl2iso (EnvConsLemma ρ x A' X z) ) iso∘ (weakeningLemma≃ (i x) e ((ρ ⅋o:= X)))) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ)) )) y
+weakLemma≃ : ∀ {V} (e : ADT V) (A : Set) (ρ : SetEnv V) → ⟦ ADT→ i e ⟧ (ρ ⅋o:= A) ≃ ⟦ e ⟧ ρ
+weakLemma≃ e A ρ = mapLemma≃ e i (ρ ⅋o:= A )
 
--}
-substlemmagen : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → (ρ : SetEnv V) → ⟦ subst e e' ⟧ ρ ≃ ⟦ e ⟧ (ρ ⅋o:= (⟦ e' ⟧ ρ))
-substlemmagen {V} (𝕍 (i x)) e' ρ = refl2iso refl
-substlemmagen {V} (𝕍 o) e' ρ = refl2iso refl
-substlemmagen {V} 𝟎 e' ρ = id≃ ⊥
-substlemmagen {V} 𝟏 e' ρ = id≃ ⊤
-substlemmagen {V} (e × e₁) e' ρ = iso∧ (substlemmagen e e' ρ ) (substlemmagen e₁ e' ρ )
-substlemmagen {V} (e ⊔ e₁) e' ρ = iso∨ (substlemmagen e e' ρ) (substlemmagen e₁ e' ρ)
-substlemmagen {V} (μ e) e' ρ = LFP≃ (λ X → ⟦ subst e (wk₀ e') ⟧ (ρ ⅋o:= X) ) (λ X → ⟦ e ⟧ ((ρ ⅋o:= (⟦ e' ⟧ ρ)) ⅋o:= X) ) λ X Y X=Y → {!   !} where
-  -- this is not true fix later
-  cosk : (A B : Set) → A ≃ B → SetEnv≃ ((ρ ⅋o:= A) ⅋o:= (⟦ wk₀ e' ⟧ (ρ ⅋o:= A)))
-                                       ((ρ ⅋o:= (⟦ e' ⟧ ρ)) ⅋o:= B)
-  cosk A B AB x =
-    let e1 = weakeningLemma≃ e' {A} ρ
-        e2 = coskipSet≃ (ρ ⅋o:= (⟦ e' ⟧ ρ)) AB
-    in {!   !} iso∘ e2 x
-{-
-LFP≃ ((λ X → ⟦ e [ (i x) := (wk (o) e') ] ⟧ (ρ ⅋o:= X))) ((λ X → ⟦ e ⟧ ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= X))) isom where
-  cosk : (A B : Set) → A ≃ B → SetEnv≃
-            ((ρ ⅋o:= A) ⅋ (i x) :=
-            (⟦ wk (o) e' ⟧ (ρ ⅋o:= A)))
-            ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= B)
-  cosk A B AB y =
-    let e1 = coskipSet≃ (ρ ⅋ x := (⟦ e' ⟧ ρ)) o AB y
-        e2 = EnvConsLemma ρ x (⟦ wk (o) e' ⟧ (ρ ⅋o:= A)) A y
-        e4 = weakeningLemma≃ o e' {A} ρ
-        e6 = coskipSetEnv≃ o A (coskipSet≃ ρ x e4) y
-    in big~ e2 ≡≃ (e6 iso∘ e1 )
-  isom : (A B : Set) → A ≃ B → (⟦ e [ (i x) := (wk (o) e') ] ⟧ (ρ ⅋o:= A)) ≃ ⟦ e ⟧ ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= B)
-  isom A B AB with substlemmagen e (wk o e') (ρ ⅋o:= A) (i x)
-  ... | r = r iso∘ (⟦ e ⟧≃ cosk A B AB)
--}
+substlemma : ∀ {V W} (e : ADT V) (f : V → ADT W) (ρ : SetEnv W) → ⟦ (e [ f ]) ⟧ ρ ≃ ⟦ e ⟧ (λ v → ⟦ f v ⟧ ρ)
+substlemma (𝕍 x) f ρ = id≃ (⟦ f x ⟧ ρ)
+substlemma 𝟎 f ρ = id≃ ⊥
+substlemma 𝟏 f ρ = id≃ ⊤
+substlemma (e1 × e2) f ρ = iso∧ (substlemma e1 f ρ) (substlemma e2 f ρ)
+substlemma (e1 ⊔ e2) f ρ = iso∨ (substlemma e1 f ρ) (substlemma e2 f ρ)
+substlemma (μ e) f ρ = LFP≃ g1 g2 g12 where
+  g1 = λ X → ⟦ e [ liftADT f ] ⟧ (ρ ⅋o:= X)
+  g2 = λ X → ⟦ e ⟧ ((λ v → ⟦ f v ⟧ ρ) ⅋o:= X)
+  g12 : _
+  g12 X Y X=Y with substlemma e (liftADT f) (ρ ⅋o:= X)
+  ... | c = c iso∘ (⟦ e ⟧≃ λ { (i x) → weakLemma≃ (f x) X ρ ; o → X=Y } )
