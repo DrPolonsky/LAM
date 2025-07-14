@@ -12,15 +12,15 @@ open import QADT.EnvIsomorphisms
 open import QADT.Functor
 
 -- A syntax of proof terms for isomorphisms between ADTs
-data Iso {n} : ADT n → ADT n → Set where
+data Iso {V} : ADT V → ADT V → Set where
   -- Equivalence relation
   refl≃ : ∀ e → Iso e e
   symm≃ : ∀ {a b} → Iso a b → Iso b a
   tran≃ : ∀ {a b c} → Iso a b → Iso b c → Iso a c
   -- Congruence rules
-  ∧≃ : ∀ {A1 A2 B1 B2 : ADT n} → Iso A1 A2 → Iso B1 B2 → Iso (A1 × B1) (A2 × B2)
-  ∨≃ : ∀ {A1 A2 B1 B2 : ADT n} → Iso A1 A2 → Iso B1 B2 → Iso (A1 ⊔ B1) (A2 ⊔ B2)
-  μ≃ : ∀ {A B : ADT (succ n)} → Iso A B → Iso (μ A) (μ B)
+  ∧≃ : ∀ {A1 A2 B1 B2 : ADT V} → Iso A1 A2 → Iso B1 B2 → Iso (A1 × B1) (A2 × B2)
+  ∨≃ : ∀ {A1 A2 B1 B2 : ADT V} → Iso A1 A2 → Iso B1 B2 → Iso (A1 ⊔ B1) (A2 ⊔ B2)
+  μ≃ : ∀ {A B : ADT (↑ V)} → Iso A B → Iso (μ A) (μ B)
   -- Semiring axioms
   assoc×≃ : ∀ a b c → Iso (a × (b × c)) ((a × b) × c)
   assoc⊔≃ : ∀ a b c → Iso (a ⊔ (b ⊔ c)) ((a ⊔ b) ⊔ c)
@@ -32,183 +32,183 @@ data Iso {n} : ADT n → ADT n → Set where
   distrR≃ : ∀ {A B C} → Iso ((A ⊔ B) × C) ((A × C) ⊔ (B × C))
   annih×≃ : ∀ a → Iso (a × 𝟎) 𝟎
   -- Mu reduction rules
-  fix≃ : ∀ (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
-  subst≃ : ∀ {e1 e2 : ADT (succ n)} {d1 d2 : ADT n} → Iso e1 e2 → Iso d1 d2 → Iso (e1 [ d1 ]) (e2 [ d2 ])
+  fix≃ : ∀ (e : ADT (↑ V)) → Iso (μ e) (subst e (μ e))
+  subst≃ : ∀ {e1 e2 : ADT (↑ V)} {d1 d2 : ADT V} → Iso e1 e2 → Iso d1 d2 → Iso (subst e1 d1) (subst e2 d2)
 
-  -- subst : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → ADT n
+  -- subst : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → ADT V
   -- subst e e' = subst-level e e' (o)
-substIso : ∀ {n} → (e : ADT (succ n)) → {a b : ADT n} → Iso a b → Iso (subst e a) (subst e b)
+substIso : ∀ {V} → (e : ADT (↑ V)) → {a b : ADT V} → Iso a b → Iso (subst e a) (subst e b)
 substIso e j = subst≃ (refl≃ e ) j
 
 -- Groupoid operations
-!! : ∀ {n} {a : ADT n}   → Iso a a
+!! : ∀ {V} {a : ADT V}   → Iso a a
 !! = refl≃ _
-~~ : ∀ {n} {a b : ADT n} → Iso a b → Iso b a
+~~ : ∀ {V} {a b : ADT V} → Iso a b → Iso b a
 ~~ = symm≃
-_=!=_ : ∀ {n} {a b c : ADT n} → Iso a b → Iso b c → Iso a c
+_=!=_ : ∀ {V} {a b c : ADT V} → Iso a b → Iso b c → Iso a c
 ab =!= bc = tran≃ ab bc
-_~!~_ : ∀ {n} {a b c : ADT n} → Iso b a → Iso c b → Iso a c
+_~!~_ : ∀ {V} {a b c : ADT V} → Iso b a → Iso c b → Iso a c
 ba ~!~ cb = (~~ ba) =!= (~~ cb)
-_~!=_ : ∀ {n} {a b c : ADT n} → Iso b a → Iso b c → Iso a c
+_~!=_ : ∀ {V} {a b c : ADT V} → Iso b a → Iso b c → Iso a c
 ba ~!= bc = ~~ ba =!= bc
 -- _~!=_ = _=!=_ ∘ ~~
-_=!~_ : ∀ {n} {a b c : ADT n} → Iso a b → Iso c b → Iso a c
+_=!~_ : ∀ {V} {a b c : ADT V} → Iso a b → Iso c b → Iso a c
 ab =!~ cb = ab =!= (~~ cb)
 -- _=!~_ = _~!~_ ∘ ~~
 
 --- Congruence laws
-cong+ :  ∀ {n} {a b c d : ADT n} → Iso a b → Iso c d → Iso (a ⊔ c) (b ⊔ d)
+cong+ :  ∀ {V} {a b c d : ADT V} → Iso a b → Iso c d → Iso (a ⊔ c) (b ⊔ d)
 cong+ ab cd = ∨≃ ab cd
-cong× :  ∀ {n} {a b c d : ADT n} → Iso a b → Iso c d → Iso (a × c) (b × d)
+cong× :  ∀ {V} {a b c d : ADT V} → Iso a b → Iso c d → Iso (a × c) (b × d)
 cong× ab cd = ∧≃ ab cd
 
-cong+= :  ∀ {n} {a b c d e : ADT n} → Iso a b → Iso c d → Iso (b ⊔ d) e → Iso (a ⊔ c) e
+cong+= :  ∀ {V} {a b c d e : ADT V} → Iso a b → Iso c d → Iso (b ⊔ d) e → Iso (a ⊔ c) e
 cong+= ab cd bde = cong+ ab cd =!= bde
-cong×= :  ∀ {n} {a b c d e : ADT n} → Iso a b → Iso c d → Iso (b × d) e → Iso (a × c) e
+cong×= :  ∀ {V} {a b c d e : ADT V} → Iso a b → Iso c d → Iso (b × d) e → Iso (a × c) e
 cong×= ab cd bde = cong× ab cd =!= bde
 
-!+ :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a ⊔ b) (a ⊔ c)
+!+ :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (a ⊔ b) (a ⊔ c)
 !+ j = cong+ !! j
-+! :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b ⊔ a) (c ⊔ a)
++! :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (b ⊔ a) (c ⊔ a)
 +! j = cong+ j !!
-!× :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a × b) (a × c)
+!× :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (a × b) (a × c)
 !× j = cong× !! j
-×! :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b × a) (c × a)
+×! :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (b × a) (c × a)
 ×! j = cong× j !!
 
-!+= :  ∀ {n} {a b c d : ADT n} → Iso b c → Iso (a ⊔ c) d → Iso (a ⊔ b) d
+!+= :  ∀ {V} {a b c d : ADT V} → Iso b c → Iso (a ⊔ c) d → Iso (a ⊔ b) d
 !+= bc acd = !+ bc =!= acd
-+!= :  ∀ {n} {a b c d : ADT n} → Iso b c → Iso (c ⊔ a) d → Iso (b ⊔ a) d
++!= :  ∀ {V} {a b c d : ADT V} → Iso b c → Iso (c ⊔ a) d → Iso (b ⊔ a) d
 +!= bc cad = +! bc =!= cad
-×!= :  ∀ {n} {a b c d : ADT n} → Iso b c → Iso (a × c) d → Iso (a × b) d
+×!= :  ∀ {V} {a b c d : ADT V} → Iso b c → Iso (a × c) d → Iso (a × b) d
 ×!= bc acd = !× bc =!= acd
-!×= :  ∀ {n} {a b c d : ADT n} → Iso b c → Iso (c × a) d → Iso (b × a) d
+!×= :  ∀ {V} {a b c d : ADT V} → Iso b c → Iso (c × a) d → Iso (b × a) d
 !×= bc cad = ×! bc =!= cad
 
 -- Semiring Axioms
 -- Associativity, commutativity, and identity
-a× : ∀ {n} {a b c : ADT n} → Iso ((a × b) × c) (a × (b × c))
-a× {n} {a} {b} {c} = ~~ (assoc×≃ a b c)
-a+ : ∀ {n} {a b c : ADT n} → Iso ((a ⊔ b) ⊔ c) (a ⊔ (b ⊔ c))
-a+ {n} {a} {b} {c} = ~~ (assoc⊔≃ a b c)
-c× : ∀ {n} {a b : ADT n} → Iso (a × b) (b × a)
-c× {n} {a} {b} = comm×≃ a b
-c+ : ∀ {n} {a b : ADT n} → Iso (a ⊔ b) (b ⊔ a)
-c+ {n} {a} {b} = comm⊔≃ a b
-i+l : ∀ {n} {a : ADT n} → Iso (𝟎 ⊔ a) a
+a× : ∀ {V} {a b c : ADT V} → Iso ((a × b) × c) (a × (b × c))
+a× {V} {a} {b} {c} = ~~ (assoc×≃ a b c)
+a+ : ∀ {V} {a b c : ADT V} → Iso ((a ⊔ b) ⊔ c) (a ⊔ (b ⊔ c))
+a+ {V} {a} {b} {c} = ~~ (assoc⊔≃ a b c)
+c× : ∀ {V} {a b : ADT V} → Iso (a × b) (b × a)
+c× {V} {a} {b} = comm×≃ a b
+c+ : ∀ {V} {a b : ADT V} → Iso (a ⊔ b) (b ⊔ a)
+c+ {V} {a} {b} = comm⊔≃ a b
+i+l : ∀ {V} {a : ADT V} → Iso (𝟎 ⊔ a) a
 i+l = ~~ (id⊔≃ _)
-i+r : ∀ {n} {a : ADT n} → Iso (a ⊔ 𝟎) a
+i+r : ∀ {V} {a : ADT V} → Iso (a ⊔ 𝟎) a
 i+r = c+ =!~ id⊔≃ _
-i×l : ∀ {n} {a : ADT n} → Iso (𝟏 × a) a
-i×l {n} {a} = ~~ (id×≃ a)
-i×r : ∀ {n} {a : ADT n} → Iso (a × 𝟏) a
-i×r {n} {a} = c× =!~ id×≃ a
+i×l : ∀ {V} {a : ADT V} → Iso (𝟏 × a) a
+i×l {V} {a} = ~~ (id×≃ a)
+i×r : ∀ {V} {a : ADT V} → Iso (a × 𝟏) a
+i×r {V} {a} = c× =!~ id×≃ a
 -- distributivity and annihilation
-dl : ∀ {n} {a b c : ADT n} → Iso (a × (b ⊔ c)) (a × b ⊔ a × c)
-dl {n} {a} {b} {c} = distrL≃
-dr : ∀ {n} {a b c : ADT n} → Iso((a ⊔ b) × c)  (a × c ⊔ b × c)
-dr {n} {a} {b} {c} = distrR≃
-ar : ∀ {n} {a : ADT n} → Iso (a × 𝟎) 𝟎
-ar {n} {a} = annih×≃ a
-al : ∀ {n} {a : ADT n} → Iso (𝟎 × a) 𝟎
-al {n} {a} = c× =!= (annih×≃ a)
+dl : ∀ {V} {a b c : ADT V} → Iso (a × (b ⊔ c)) (a × b ⊔ a × c)
+dl {V} {a} {b} {c} = distrL≃
+dr : ∀ {V} {a b c : ADT V} → Iso((a ⊔ b) × c)  (a × c ⊔ b × c)
+dr {V} {a} {b} {c} = distrR≃
+ar : ∀ {V} {a : ADT V} → Iso (a × 𝟎) 𝟎
+ar {V} {a} = annih×≃ a
+al : ∀ {V} {a : ADT V} → Iso (𝟎 × a) 𝟎
+al {V} {a} = c× =!= (annih×≃ a)
 
-a×= : ∀ {n} {a b c d : ADT n} → Iso (a × (b × c)) d → Iso ((a × b) × c) d
-a×= {n} {a} {b} {c} {d} j = assoc×≃ a b c ~!= j
-a+= : ∀ {n} {a b c d : ADT n} → Iso (a ⊔ (b ⊔ c)) d → Iso ((a ⊔ b) ⊔ c) d
-a+= {n} {a} {b} {c} {d} j = assoc⊔≃ a b c ~!= j
-c×= : ∀ {n} {a b c : ADT n} → Iso (b × a) c → Iso (a × b) c
-c×= {n} {a} {b} {c} j = comm×≃ b a ~!= j
-c+= : ∀ {n} {a b c : ADT n} → Iso (b ⊔ a) c → Iso (a ⊔ b) c
-c+= {n} {a} {b} {c} j = comm⊔≃ b a ~!= j
-i+l= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟎 ⊔ a) b
-i+l= {n} {a} {b} j = i+l =!= j
-i+r= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a ⊔ 𝟎) b
-i+r= {n} {a} {b} j = i+r =!= j
-i×l= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟏 × a) b
-i×l= {n} {a} {b} j = i×l =!= j
-i×r= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a × 𝟏) b
-i×r= {n} {a} {b} j = i×r =!= j
+a×= : ∀ {V} {a b c d : ADT V} → Iso (a × (b × c)) d → Iso ((a × b) × c) d
+a×= {V} {a} {b} {c} {d} j = assoc×≃ a b c ~!= j
+a+= : ∀ {V} {a b c d : ADT V} → Iso (a ⊔ (b ⊔ c)) d → Iso ((a ⊔ b) ⊔ c) d
+a+= {V} {a} {b} {c} {d} j = assoc⊔≃ a b c ~!= j
+c×= : ∀ {V} {a b c : ADT V} → Iso (b × a) c → Iso (a × b) c
+c×= {V} {a} {b} {c} j = comm×≃ b a ~!= j
+c+= : ∀ {V} {a b c : ADT V} → Iso (b ⊔ a) c → Iso (a ⊔ b) c
+c+= {V} {a} {b} {c} j = comm⊔≃ b a ~!= j
+i+l= : ∀ {V} {a b : ADT V} → Iso a b → Iso (𝟎 ⊔ a) b
+i+l= {V} {a} {b} j = i+l =!= j
+i+r= : ∀ {V} {a b : ADT V} → Iso a b → Iso (a ⊔ 𝟎) b
+i+r= {V} {a} {b} j = i+r =!= j
+i×l= : ∀ {V} {a b : ADT V} → Iso a b → Iso (𝟏 × a) b
+i×l= {V} {a} {b} j = i×l =!= j
+i×r= : ∀ {V} {a b : ADT V} → Iso a b → Iso (a × 𝟏) b
+i×r= {V} {a} {b} j = i×r =!= j
 
-dl= : ∀ {n} {a b c d : ADT n} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
-dl= {n} {a} {b} {c} {d} j = distrL≃ =!= j
-dr= : ∀ {n} {a b c d : ADT n} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
-dr= {n} {a} {b} {c} {d} j = distrR≃ =!= j
-ar= : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (a × 𝟎) b
-ar= {n} {a} {b} j = annih×≃ a =!= j
-al= : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (𝟎 × a) b
-al= {n} {a} {b} j = c×= (annih×≃ a =!= j)
+dl= : ∀ {V} {a b c d : ADT V} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
+dl= {V} {a} {b} {c} {d} j = distrL≃ =!= j
+dr= : ∀ {V} {a b c d : ADT V} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
+dr= {V} {a} {b} {c} {d} j = distrR≃ =!= j
+ar= : ∀ {V} {a b : ADT V} → Iso 𝟎 b → Iso (a × 𝟎) b
+ar= {V} {a} {b} j = annih×≃ a =!= j
+al= : ∀ {V} {a b : ADT V} → Iso 𝟎 b → Iso (𝟎 × a) b
+al= {V} {a} {b} j = c×= (annih×≃ a =!= j)
 
 -- END RULES LIST
 
-r= : ∀ {n} {e : ADT n} → Iso e e
-r= {n} {e} = refl≃ e
-s= : ∀ {n} {a b : ADT n} → Iso a b → Iso b a
-s= {n} {a} {b} j = symm≃ j
-t= : ∀ {n} {a b c : ADT n} → Iso a b → Iso b c → Iso a c
+r= : ∀ {V} {e : ADT V} → Iso e e
+r= {V} {e} = refl≃ e
+s= : ∀ {V} {a b : ADT V} → Iso a b → Iso b a
+s= {V} {a} {b} j = symm≃ j
+t= : ∀ {V} {a b c : ADT V} → Iso a b → Iso b c → Iso a c
 t= = tran≃
-_t~_ : ∀ {n} {a b c : ADT n} → Iso a b → Iso c b → Iso a c
-_t~_ {n} {a} {b} {c} i1 i2 = t= i1 (s= i2)
-_~t_ : ∀ {n} {a b c : ADT n} → Iso b a → Iso b c → Iso a c
-_~t_ {n} {a} {b} {c} i1 i2 = t= (s= i1) i2
+_t~_ : ∀ {V} {a b c : ADT V} → Iso a b → Iso c b → Iso a c
+_t~_ {V} {a} {b} {c} i1 i2 = t= i1 (s= i2)
+_~t_ : ∀ {V} {a b c : ADT V} → Iso b a → Iso b c → Iso a c
+_~t_ {V} {a} {b} {c} i1 i2 = t= (s= i1) i2
 
-+= :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a ⊔ b) (a ⊔ c)
++= :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (a ⊔ b) (a ⊔ c)
 += = !+
-=+ :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b ⊔ a) (c ⊔ a)
+=+ :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (b ⊔ a) (c ⊔ a)
 =+ = +!
-×= :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (a × b) (a × c)
+×= :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (a × b) (a × c)
 ×= = !×
-=× :  ∀ {n} {a b c : ADT n} → Iso b c → Iso (b × a) (c × a)
+=× :  ∀ {V} {a b c : ADT V} → Iso b c → Iso (b × a) (c × a)
 =× = ×!
 
--- a×= : ∀ {n} {a b c d : ADT n} → Iso (a × (b × c)) d → Iso ((a × b) × c) d
--- a+= : ∀ {n} {a b c d : ADT n} → Iso (a ⊔ (b ⊔ c)) d → Iso ((a ⊔ b) ⊔ c) d
--- c+= : ∀ {n} {a b c : ADT n} → Iso (b × a) c → Iso (a × b) c
--- c×= : ∀ {n} {a b c : ADT n} → Iso (b ⊔ a) c → Iso (a ⊔ b) c
--- 0L= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟎 ⊔ a) b
--- 0R= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a ⊔ 𝟎) b
--- 1×L= : ∀ {n} {a b : ADT n} → Iso a b → Iso (𝟏 × a) b
--- 1×R= : ∀ {n} {a b : ADT n} → Iso a b → Iso (a × 𝟏) b
--- dL= : ∀ {n} {a b c d : ADT n} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
--- dR= : ∀ {n} {a b c d : ADT n} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
--- dR= {n} {a} {b} {c} {d} j = tran≃ (symm≃ distrR≃ ) j
--- ah : ∀ {n} {a b : ADT n} → Iso 𝟎 b → Iso (a × 𝟎) b
--- ah {n} {a} {b} j = (annih×≃ a) ~t j
+-- a×= : ∀ {V} {a b c d : ADT V} → Iso (a × (b × c)) d → Iso ((a × b) × c) d
+-- a+= : ∀ {V} {a b c d : ADT V} → Iso (a ⊔ (b ⊔ c)) d → Iso ((a ⊔ b) ⊔ c) d
+-- c+= : ∀ {V} {a b c : ADT V} → Iso (b × a) c → Iso (a × b) c
+-- c×= : ∀ {V} {a b c : ADT V} → Iso (b ⊔ a) c → Iso (a ⊔ b) c
+-- 0L= : ∀ {V} {a b : ADT V} → Iso a b → Iso (𝟎 ⊔ a) b
+-- 0R= : ∀ {V} {a b : ADT V} → Iso a b → Iso (a ⊔ 𝟎) b
+-- 1×L= : ∀ {V} {a b : ADT V} → Iso a b → Iso (𝟏 × a) b
+-- 1×R= : ∀ {V} {a b : ADT V} → Iso a b → Iso (a × 𝟏) b
+-- dL= : ∀ {V} {a b c d : ADT V} → Iso (a × b ⊔ a × c) d → Iso (a × (b ⊔ c)) d
+-- dR= : ∀ {V} {a b c d : ADT V} → Iso (a × c ⊔ b × c) d → Iso ((a ⊔ b) × c) d
+-- dR= {V} {a} {b} {c} {d} j = tran≃ (symm≃ distrR≃ ) j
+-- ah : ∀ {V} {a b : ADT V} → Iso 𝟎 b → Iso (a × 𝟎) b
+-- ah {V} {a} {b} j = (annih×≃ a) ~t j
 
 
 -- Helpful lemmas
-+1× : ∀ {n} {A B : ADT n} (c : ℕ)  → Iso ((Num c × A) ⊔ A) B → Iso (Num (succ c) × A) B
-+1× {n} {A} {B} c toB = tran≃ e1 toB where
++1× : ∀ {V} {A B : ADT V} (c : ℕ)  → Iso ((Num c × A) ⊔ A) B → Iso (Num (succ c) × A) B
++1× {V} {A} {B} c toB = tran≃ e1 toB where
   e1 = tran≃ distrR≃ (tran≃ (comm⊔≃ _ _ ) (∨≃ (refl≃ _) (symm≃ (id×≃ _ ) ) ) )
 
-cycle+ : ∀ {n} {A B C : ADT n} → Iso (A ⊔ B ⊔ C) (B ⊔ C ⊔ A)
+cycle+ : ∀ {V} {A B C : ADT V} → Iso (A ⊔ B ⊔ C) (B ⊔ C ⊔ A)
 cycle+ = c+= (a+= !! )
 
-cycle×3 : ∀ {n} {A B C : ADT n} → Iso (A × B × C) (B × C × A)
+cycle×3 : ∀ {V} {A B C : ADT V} → Iso (A × B × C) (B × C × A)
 cycle×3 = c×= a×
 
-dist3 : ∀ {n} {A B C D : ADT n} → Iso (A × (B ⊔ C ⊔ D)) (A × B ⊔ A × C ⊔ A × D)
+dist3 : ∀ {V} {A B C D : ADT V} → Iso (A × (B ⊔ C ⊔ D)) (A × B ⊔ A × C ⊔ A × D)
 dist3 = dl= (!+ dl)
 
-foil : ∀ {n} {A B : ADT n} → Iso ((A ⊔ B) ²) (A ² ⊔ (Num 2 × A × B) ⊔ B ²)
-foil {n} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×l) =!~ (+1× 1 (=+ (=× i+r))) ) ) ) ) ))
+foil : ∀ {V} {A B : ADT V} → Iso ((A ⊔ B) ²) (A ² ⊔ (Num 2 × A × B) ⊔ B ²)
+foil {V} {A} {B} = dl= (cong+= dr dr (a+= (+= (a+ ~!= =+ (=+ c× =!= (=+ (~~ i×l) =!~ (+1× 1 (=+ (=× i+r))) ) ) ) ) ))
 
-X+X=2X : ∀ {n} (X : ADT n) → Iso (X ⊔ X) (Num 2 × X)
+X+X=2X : ∀ {V} (X : ADT V) → Iso (X ⊔ X) (Num 2 × X)
 X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 
-μ+ : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
+μ+ : ∀ {V} (e : ADT (↑ V)) → Iso (μ e) (subst e (μ e))
 μ+ = fix≃
 
-μ- : ∀ {n} (e : ADT (succ n)) → Iso (e [ (μ e) ]) (μ e)
+μ- : ∀ {V} (e : ADT (↑ V)) → Iso (subst e (μ e)) (μ e)
 μ- e = ~~ (fix≃ e)
 
--- μiso : ∀ {n} (e : ADT (succ n)) → Iso (μ e) (e [ (μ e) ])
-μiso : ∀ {n} (e : ADT (succ n)) (ρ : SetEnv n) → ⟦ μ e ⟧ ρ ≃ ⟦ e [ (μ e) ] ⟧ ρ
-μiso {n} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemmagen e (μ e) ρ o
+-- μiso : ∀ {V} (e : ADT (↑ V)) → Iso (μ e) (subst e (μ e))
+μiso : ∀ {V} (e : ADT (↑ V)) (ρ : SetEnv V) → ⟦ μ e ⟧ ρ ≃ ⟦ subst e (μ e) ⟧ ρ
+μiso {V} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemmagen e (μ e) ρ
 ... | li | sl = li iso∘ iso~ sl
 
-≃⟦_⟧ : ∀ {n} {A B : ADT n} → Iso A B → ( ρ : SetEnv n) → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ
-≃⟦_⟧≃ : ∀ {n} {A B : ADT n} → Iso A B → {ρ ρ' : SetEnv n} → SetEnv≃ ρ ρ' → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ'
+≃⟦_⟧ : ∀ {V} {A B : ADT V} → Iso A B → ( ρ : SetEnv V) → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ
+≃⟦_⟧≃ : ∀ {V} {A B : ADT V} → Iso A B → {ρ ρ' : SetEnv V} → SetEnv≃ ρ ρ' → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ'
 
 ≃⟦ refl≃ e ⟧ ρ = ⟦ e ⟧≃ reflSetEnv≃ ρ
 ≃⟦ symm≃ e ⟧ ρ with ≃⟦ e ⟧ ρ
@@ -224,8 +224,8 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 ≃⟦ distrL≃ ⟧ ρ = isodistrL
 ≃⟦ distrR≃ ⟧ ρ = isodistrR
 ≃⟦ fix≃ e ⟧ ρ = μiso e ρ
-≃⟦_⟧ {n} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ (o) | substlemmagen e2 d2 ρ (o)
-... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (o) (≃⟦ j2 ⟧ ρ)) ) )
+≃⟦_⟧ {V} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ | substlemmagen e2 d2 ρ
+... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (≃⟦ j2 ⟧ ρ)) ) )
 ≃⟦ assoc×≃ a b c ⟧ ρ = assoc∧
 ≃⟦ assoc⊔≃ a b c ⟧ ρ = assoc∨
 ≃⟦ comm⊔≃ a b ⟧ ρ = comm∨
@@ -236,11 +236,11 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 
 ≃⟦_⟧≃ {A = A} {B = B} e {ρ} {ρ'} ρρ' = ≃⟦ e ⟧ ρ iso∘ (⟦ B ⟧≃ ρρ')
 
-RigFold : ∀ (A : ADT 1) → (B : ADT 0) → Iso (A [ B ]) B → ⟦ μ A ⟧ Γ₀ → ⟦ B ⟧ Γ₀
-RigFold A B rigiso = foldADT {0} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (substlemmagen A B Γ₀ o ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
+RigFold : ∀ (A : ADT (↑ ⊥)) → (B : ADT ⊥) → Iso (subst A B) B → ⟦ μ A ⟧ Γ₀ → ⟦ B ⟧ Γ₀
+RigFold A B rigiso = foldADT {⊥} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (substlemmagen A B Γ₀ ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
 
 module IsoLemmas where
-  c×³ : ∀ {n} {X : ADT n} → List (Iso (X ³) (X ³))
+  c×³ : ∀ {V} {X : ADT V} → List (Iso (X ³) (X ³))
   c×³ {X = X} = !! ∷ cycle×3 ∷ (cycle×3 =!= cycle×3) ∷ ×= c× ∷ (cycle×3 =!= ×= c× ) ∷ (cycle×3 =!= (cycle×3 =!= ×= c× ) ) ∷ []
 
 

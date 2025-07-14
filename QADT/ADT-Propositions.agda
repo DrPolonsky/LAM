@@ -8,17 +8,17 @@ open import QADT.Isomorphisms
 open import QADT.ADTs
 open import QADT.ADT-Isomorphisms
 
-module X=nPX+X {n : ℕ} (a : ADT (succ n)) (ρ₀ : SetEnv n) where
+module X=nPX+X {V : Set} (a : ADT (↑ V)) (ρ₀ : SetEnv V) where
 
-  f : ADT (succ n)
+  f : ADT (↑ V)
   f = a ⊔ 𝕧₀
 
-  g : ℕ → ADT (succ n)
+  g : ℕ → ADT (↑ V)
   g k = (Num k × a) ⊔ 𝕧₀
 
-  F : ADT n
+  F : ADT V
   F = μ f
-  G : ℕ → ADT n
+  G : ℕ → ADT V
   G k = μ (g k)
 
   _≃!≃_ = _iso∘_

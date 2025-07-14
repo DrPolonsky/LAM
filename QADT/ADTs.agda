@@ -319,14 +319,24 @@ weakeningLemma≃ {n} x A {A'} ρ = iso (wkl+ A) (wkl- A) (wkl-+ A) (wkl+- A) wh
   wkl+- (μ e) y = _≃_.f+- (LFP≃ _ _
       (λ X Y X≃Y → ((⟦ wk (i x) e ⟧≃ λ z → refl2iso (EnvConsLemma ρ x A' X z) ) iso∘ (weakeningLemma≃ (i x) e ((ρ ⅋o:= X)))) iso∘ (⟦ e ⟧≃ coskipSetEnv≃Set≃ X≃Y (reflSetEnv≃ ρ)) )) y
 
-
-substlemmagen : ∀ {n} (e : ADT (succ n)) → (e' : ADT n) → (ρ : SetEnv n) → (x : Fin (succ n)) → ⟦ e [ x := e' ] ⟧ ρ ≃ ⟦ e ⟧ (ρ ⅋ x := (⟦ e' ⟧ ρ))
-substlemmagen {n} (𝕍 v) e' ρ x = refl2iso (EnvSubstLemma 𝕍 ((λ x₁ → ⟦ x₁ ⟧ ρ )) e' x v  )
-substlemmagen {n} 𝟎 e' ρ x = id≃ ⊥
-substlemmagen {n} 𝟏 e' ρ x = id≃ ⊤
-substlemmagen {n} (e × e₁) e' ρ x = iso∧ (substlemmagen e e' ρ x ) (substlemmagen e₁ e' ρ x )
-substlemmagen {n} (e ⊔ e₁) e' ρ x = iso∨ (substlemmagen e e' ρ x) (substlemmagen e₁ e' ρ x)
-substlemmagen {n} (μ e) e' ρ x = LFP≃ ((λ X → ⟦ e [ (i x) := (wk (o) e') ] ⟧ (ρ ⅋o:= X))) ((λ X → ⟦ e ⟧ ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= X))) isom where
+-}
+substlemmagen : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → (ρ : SetEnv V) → ⟦ subst e e' ⟧ ρ ≃ ⟦ e ⟧ (ρ ⅋o:= (⟦ e' ⟧ ρ))
+substlemmagen {V} (𝕍 (i x)) e' ρ = refl2iso refl
+substlemmagen {V} (𝕍 o) e' ρ = refl2iso refl
+substlemmagen {V} 𝟎 e' ρ = id≃ ⊥
+substlemmagen {V} 𝟏 e' ρ = id≃ ⊤
+substlemmagen {V} (e × e₁) e' ρ = iso∧ (substlemmagen e e' ρ ) (substlemmagen e₁ e' ρ )
+substlemmagen {V} (e ⊔ e₁) e' ρ = iso∨ (substlemmagen e e' ρ) (substlemmagen e₁ e' ρ)
+substlemmagen {V} (μ e) e' ρ = LFP≃ (λ X → ⟦ subst e (wk₀ e') ⟧ (ρ ⅋o:= X) ) (λ X → ⟦ e ⟧ ((ρ ⅋o:= (⟦ e' ⟧ ρ)) ⅋o:= X) ) λ X Y X=Y → {!   !} where
+  -- this is not true fix later
+  cosk : (A B : Set) → A ≃ B → SetEnv≃ ((ρ ⅋o:= A) ⅋o:= (⟦ wk₀ e' ⟧ (ρ ⅋o:= A)))
+                                       ((ρ ⅋o:= (⟦ e' ⟧ ρ)) ⅋o:= B)
+  cosk A B AB x =
+    let e1 = weakeningLemma≃ e' {A} ρ
+        e2 = coskipSet≃ (ρ ⅋o:= (⟦ e' ⟧ ρ)) AB
+    in {!   !} iso∘ e2 x
+{-
+LFP≃ ((λ X → ⟦ e [ (i x) := (wk (o) e') ] ⟧ (ρ ⅋o:= X))) ((λ X → ⟦ e ⟧ ((ρ ⅋ x := (⟦ e' ⟧ ρ)) ⅋o:= X))) isom where
   cosk : (A B : Set) → A ≃ B → SetEnv≃
             ((ρ ⅋o:= A) ⅋ (i x) :=
             (⟦ wk (o) e' ⟧ (ρ ⅋o:= A)))
