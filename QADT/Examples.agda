@@ -16,10 +16,10 @@ open import Environment
 
 module G=1+2G+G²+G³ where
 
-  g : ADT 1
+  g : ADT (↑ ⊥)
   g = 𝟏 ⊔ (Num 2 × (𝕍 (o))) ⊔ (𝕍 (o)) ² ⊔ (𝕍 (o)) ³
 
-  G : ADT 0
+  G : ADT ⊥
   G = μ g
 
   GG : Set
@@ -54,10 +54,10 @@ module G=1+2G+G²+G³ where
 
 module M=1+M+M² where
 
-  m : ADT 1
+  m : ADT (↑ ⊥)
   m = 𝟏 ⊔ (𝕍 (o)) ⊔ (𝕍 (o)) ²
 
-  M : ADT 0
+  M : ADT ⊥
   M = μ m
 
   MM : Set
@@ -86,8 +86,8 @@ module M=1+M+M² where
 
   open G=1+2G+G²+G³
 
-  gM : ADT 0
-  gM = g [ M ]
+  gM : ADT ⊥
+  gM = subst g (M)
 
   gM=M : Iso gM M
   -- gM=M = ~~ (fix≃ m =!= += (~~ (=+ (c×= (dist3 =!= cong+= i×r (cong+= i×r ar i+r ) !! )) =!= a+= (+= e ) ) ) )
@@ -139,13 +139,13 @@ module M=1+M+M² where
 -- The binary strings
 module S=1+2S where
 
-  s : ADT 1
+  s : ADT (↑ ⊥)
   s = Num 2 × 𝕍 o ⊔ 𝟏
 
-  S : ADT 0
+  S : ADT ⊥
   S = μ s
 
-  2+S : ADT 0
+  2+S : ADT ⊥
   2+S = 1+ (1+ S)
 
   S+3=2S+4 : Iso (1+ 2+S) (2+S ⊔ 2+S)
@@ -157,8 +157,8 @@ module S=1+2S where
 
   open M=1+M+M²
 
-  sM² : ADT 0
-  sM² = s [ M ² ]
+  sM² : ADT ⊥
+  sM² = subst s (M ²)
 
   sM²=M² : Iso sM² (M ²)
   sM²=M² = ~~ (t= e3 (s= (t= (=+ (t= (×= M²=M³+M²+M ) (s= (X+X=2X _ ) ) )  ) (t= (a+= (a+= (+= (c+= (a+= (a+= (+= (a+= (+= (c+= (a+= (c+= (a+= (a+= (+= r= ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) e) ) ))
@@ -307,16 +307,16 @@ module prettyPrint where
 
 
 module JX=1+2X+X² where
-  j : ADT 1
+  j : ADT (↑ ⊥)
   j = 𝟏 ⊔ (𝕍 o) ⊔ (𝕍 o) ⊔ (𝕍 o) ²
 
-  J : ADT 0
+  J : ADT ⊥
   J = μ j
 
   JJ : Set
   JJ = ⟦ J ⟧ Γ₀
 
-  j[c×J²] : Iso (j [ J ² ]) (j [ J ² ])
+  j[c×J²] : Iso (subst j (J ²)) (subst j (J ²))
   j[c×J²] = substIso j c×
 
   Jleaf : JJ
@@ -349,41 +349,41 @@ module JX=1+2X+X² where
   ==J² : ⟦ J ² ⟧ Γ₀ → ⟦ J ² ⟧ Γ₀ → 𝔹
   ==J² = ==ADT {J ²}
 
-  ==jJ² : ⟦ j [ J ² ] ⟧ Γ₀ → ⟦ j [ J ² ] ⟧ Γ₀ → 𝔹
-  ==jJ² = ==ADT { j [ J ² ] }
+  ==jJ² : ⟦ subst j (J ²) ⟧ Γ₀ → ⟦ subst j (J ²) ⟧ Γ₀ → 𝔹
+  ==jJ² = ==ADT { subst j (J ²) }
 
-  testRig : Iso (j [ J ² ]) (J ²) → ℕ → 𝔹
+  testRig : Iso (subst j (J ²)) (J ²) → ℕ → 𝔹
   testRig α n = all (λ { (x , y) → ==jJ² x y }) ((List→ f (allJ² n)))
     where i1 = c× =!~ α
           i2 = α ~!= j[c×J²]
           f =  λ x → _≃_.f+ (≃⟦ i1 ⟧ Γ₀ ) x , _≃_.f+ (≃⟦ i2  ⟧ Γ₀ ) x
 
-  jJ²=J² : Iso (j [ J ² ]) (J ²)
+  jJ²=J² : Iso (subst j (J ²)) (J ²)
   jJ²=J² = += (=+ (×= (fix≃ j ) =!= dl= (cong+= i×r (dl= (+= (dl) ) ) r=) ) =!= += (=+ (×= (fix≃ j) =!= dl= (cong+= i×r (dl= (+= (dl) ) ) r=) ) ) ) =!= (+= (a+= (+= (a+= (+= (a+= (+= (+= (a+= (+= (a+=  (+= (a+= (+= (+= (a× ) ) ) ) ) ) ) ) ) ) ) )  ) ) ) =!=  (+= (+= (+= (c+= (=+ (c+= (a+= (+= (a+= (+= (c+= (a+ ~!= (a+ ~!= (=+ (=+ c+ ) =!= a+= (a+= (cong+= (~~ i×r) (cong+= (~~ a×) (cong+ (~~ a×) (~~ a×) ) (+= (~~ dl) =!= ~~ dl )) (dl ~!= ×= (~~ (fix≃ j) ) )) ) ) )  ) ) ) ) ) ) ) ) ) ) ) =!= ( (a+ ~!= (a+ ~!= (a+ ~!= =+ (a+ ~!= =+ (a+= (a+= (+= (+= c+ ) =!= ~~ (fix≃ j) ) ) ) ) ) ) ) =!= a+= (+= (c+= (cong+= r= (+= a× =!= ~~ dl ) (~~ dl)) ) =!= (=+ (~~ i×r) =!= (dl ~!= ×= (~~ (fix≃ j) ) )  ) ) ) ) )
 
-  jJ²=J²v2 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v2 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v2 = jJ²=J² =!= c×
 
 
 
   -- 𝟏 ⊔ J × (unfold J) ⊔ J × (unfold J) ⊔ (J × J) × J × J
-  jJ²=J²v3 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v3 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v3 = += (a+ ~!= =+ (cong+= (×= (fix≃ j) =!= dl= (cong+= i×r (dl= (+= (dl= r= ) ) ) !!) ) (×= (fix≃ j) =!= dl= (cong+= i×r (dl= (+= (dl= r= ) ) ) !!)) (a+= (+= (a+= (+= (a+= (+= !! ) ) ) ) ) ) ) ) =!= ((a+ ~!= =+ (a+ ~!= (a+ ~!= (+= (c+= (a+= (c+= (a+= (a+= !! ) )  ) ) ) =!= (a+ ~!= =+ (a+= (+= c+ =!= a+= (~~ (fix≃ j) ) ) ) ) ) ) ) ) =!= (a+= (+= (a+= (a+= (+= (a+= (+= (a+ ~!= (=+ (c+= (a+= (cong+= (~~ i×r ) (cong+= (~~ a×) (~~ a×) (~~ dl) ) (~~ dl)) ) ) =!= ~~ dl) ) ) ) ) ) ) =!= (+= (+= (+= (×= (a+= (+= a+  =!= ~~ (fix≃ j) ) )  =!= a× ) ) ) =!= cong+= (~~ i×r) (cong+= !! (cong+= !! !! (~~ dl)) (~~ dl)) (~~ dl =!= ×= (~~ (fix≃ j) ) ) )) ) )
 
   -- j3 but commute the J×J terms before unfold
-  jJ²=J²v4 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v4 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v4 = += (a+ ~!= =+ (cong+= (c×= (×= (fix≃ j) )  =!= dl= (cong+= i×r (dl= (+= (dl= r= ) ) ) !!) ) ( c×= (×= (fix≃ j)) =!= dl= (cong+= i×r (dl= (+= (dl= r= ) ) ) !!)) (a+= (+= (a+= (+= (a+= (+= !! ) ) ) ) ) ) ) ) =!= ((a+ ~!= =+ (a+ ~!= (a+ ~!= (+= (c+= (a+= (c+= (a+= (a+= !! ) )  ) ) ) =!= (a+ ~!= =+ (a+= (+= c+ =!= a+= (~~ (fix≃ j) ) ) ) ) ) ) ) ) =!= (a+= (+= (a+= (a+= (+= (a+= (+= (a+ ~!= (=+ (c+= (a+= (cong+= (~~ i×r ) (cong+= (~~ a×) (~~ a×) (~~ dl) ) (~~ dl)) ) ) =!= ~~ dl) ) ) ) ) ) ) =!= (+= (+= (+= (×= (a+= (+= a+  =!= ~~ (fix≃ j) ) )  =!= a× ) ) ) =!= cong+= (~~ i×r) (cong+= !! (cong+= !! !! (~~ dl)) (~~ dl)) (~~ dl =!= ×= (~~ (fix≃ j) ) ) )) ) )
 
   -- 𝟏 ⊔ (unfold J) × J ⊔ (unfold J) × J ⊔ (J × J) × J × J
-  jJ²=J²v5 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v5 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v5 = += (a+ ~!= =+ (cong+= (=× (fix≃ j) =!= dr= (cong+ i×l (dr= (+= (dr= !! ) ) ) ) ) (=× (fix≃ j)  =!= dr= (cong+ i×l (dr= (+= (dr= !! ) ) ) )) (a+= (+= (a+= (+= (a+= (+= !! ) ) ) ) ) )) ) =!= (+= (a+=  (+= (=+ (a+ ~!= (a+ ~!= (a+ ~!= =+ c+ ) ) ) ) ) ) =!= (+= (+= (a+= (a+= (+= (a+= (a+= !! ) ) ) ) ) ) =!= (a+ ~!= (a+ ~!= (a+ ~!= (=+ (a+= (a+= (~~ (fix≃ j) ) ) ) =!= (+= (+= (a+ ~!= (=+ (a+ ~!= =+ c+ ) =!= a+= (a+= (+= (a+ ~!= (=+ (a+ ~!= =+ c+ ) =!= a+= (a+= (cong+= (~~ i×r) (cong+= !! (~~ dl ) (~~ dl)) (dl ~!= ×= (~~ (fix≃ j) ) )) ) ) ) ) ) ) ) ) =!= cong+= (~~ i×r) (+= (+= (a× ) =!= ~~ dl ) =!= ~~ dl ) (dl ~!= ×= (~~ (fix≃ j) ) ) ) ) ) ) ) ) )
 
   -- 𝟏 ⊔ (unfold J) × J ⊔ J × (unfold J) ⊔ (J × J) × J × J
-  jJ²=J²v6 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v6 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v6 = += (a+ ~!= =+ (cong+= (=× (fix≃ j) =!= dr= (cong+ i×l (dr= (+= (dr= !! ) ) ) )) (×= (fix≃ j) =!= dl= (cong+= i×r (dl= (+= (dl= r= ) ) ) !!)) a+) ) =!= (+= (a+= (+= (a+= (a+= (+= (a+ ~!= =+ (a+ ~!= =+ c+ ) ) =!= (a+ ~!= =+ (a+ ~!= =+ (a+ ~!= =+ c+ ) ) ) ) ) ) ) ) =!= (a+ ~!= (a+ ~!= (=+ (a+ ~!= =+ (a+ ~!= =+ (a+= (~~ (fix≃ j) ) )  ) ) =!= a+= (a+= (+= (a+= (+= (a+ ~!= (=+ (c+= (a+= (+= (a+= (+= c+ ) ) ) ) ) =!= a+= (+= (a+= (cong+= (~~ i×r) (a+= (cong+= !! (cong+= (~~ a×) !! (~~ dl)) (~~ dl)) ) (dl ~!= ×= (~~ (fix≃ j) ) )) ) ) ) ) ) ) =!= cong+= (~~ i×r) (+= (+= a× =!= ~~ dl ) =!= ~~ dl ) (dl ~!= ×= (~~ (fix≃ j)) ) ) ) ) ) ) )
 
   -- 𝟏 ⊔ J × (unfold J) ⊔ (unfold J) × J ⊔ (J × J) × J × J
-  jJ²=J²v7 : Iso (j [ J ² ]) (J ²)
+  jJ²=J²v7 : Iso (subst j (J ²)) (J ²)
   jJ²=J²v7 = += (a+ ~!= =+ (cong+= (×= (fix≃ j) =!= dl= (cong+ i×r (dl= (+= (dl= !! ) ) ) ) ) (=× (fix≃ j) =!= dr= (cong+ i×l (dr= (+= (dr= !! ) ) ) ) ) (a+= (+= (a+= (+= (a+= !! ) ) ) ) )) ) =!= (+= (a+= (+= (a+= (+= (a+= (+= (a+= (+= (a+= !! ) =!= c+= (a+= (+= (c+= (+= (a+= (+= (a+= (+= !! ) ) ) ) ) ) ) ) ) ) =!= (a+ ~!= =+ c+ ) ) ) =!= (a+ ~!= =+ (a+ ~!= =+ c+ ) ) ) ) ) ) =!= (a+ ~!= (a+ ~!= (=+ (a+ ~!= =+ (a+= (~~ (fix≃ j) ) )  ) =!= (+= (a+ ~!= (=+ c+ =!= a+= (+= (a+ ~!= (=+ c+ =!= a+= (cong+= (~~ i×r ) (cong+= (~~ a× ) (~~ dl ) (~~ dl )) (dl ~!= ×= (~~ (fix≃ j) ) )) ) ) ) ) ) =!= a+= (cong+= (~~ i×r ) (cong+= !! (+= a× =!= ~~ dl ) (~~ dl)) (dl ~!= ×= (~~ (fix≃ j)) )) ) ) ) ) )
 
   testRigs = {! testRig jJ²=J² 2   !}
@@ -469,25 +469,25 @@ module JX=1+2X+X² where
   check'' = {! List→ J²→𝕁² (List→ J→J²v7 (take 100 (allJ 6)))  !}
 
 module N=N+N where
-  f : ADT 1
+  f : ADT (↑ ⊥)
   f = 𝟏 ⊔ 𝕧₀
 
-  g : ADT 1
+  g : ADT (↑ ⊥)
   g = 𝟏 ⊔ 𝟏 ⊔ 𝕧₀
 
-  F : ADT 0
+  F : ADT ⊥
   F = μ f
 
-  G : ADT 0
+  G : ADT ⊥
   G = μ g
 
-  gF=F : Iso (g [ F ]) F
+  gF=F : Iso (subst g (F)) F
   gF=F = ~~ (fix≃ _ =!= += (fix≃ _) )
 
-  gF=Fv2 : Iso (g [ F ]) F
+  gF=Fv2 : Iso (subst g (F)) F
   gF=Fv2 = a+ ~!= (=+ c+ =!= a+= gF=F )
 
-  gF=Fv3 : Iso (g [ F ]) F
+  gF=Fv3 : Iso (subst g (F)) F
   gF=Fv3 = {!   !}
 
   G→F : ⟦ G ⟧ Γ₀ → ⟦ F ⟧ Γ₀
@@ -526,22 +526,22 @@ module N=N+N where
   check5 = {! List→ (F→ℕ ∘ G→F) ([1-n]G 30)  !}
 
 module P=X^2+1 where
-  p : ADT 1
+  p : ADT (↑ ⊥)
   p = 𝕧₀ ² ⊔ 𝟏
 
-  z : ADT 1
+  z : ADT (↑ ⊥)
   z = p ⊔ 𝕧₀
 
-  2z : ADT 1
+  2z : ADT (↑ ⊥)
   2z = Num 2 × p ⊔ 𝕧₀
 
-  Z : ADT 0
+  Z : ADT ⊥
   Z = μ z
 
-  2Z : ADT 0
+  2Z : ADT ⊥
   2Z = μ 2z
 
-  2zZ=Z : Iso (2z [ Z ]) Z
+  2zZ=Z : Iso (subst 2z (Z)) Z
   2zZ=Z = =+ (dr= (cong+= i×l (dr= (cong+= i×l al i+r) ) !!) ) =!= a+= (+= (~~ (fix≃ z) ) =!= ~~ (fix≃ z) )
 
   2Z→Z : ⟦ 2Z ⟧ Γ₀ → ⟦ Z ⟧ Γ₀
@@ -555,22 +555,22 @@ module P=X^2+1 where
 
 
 module PX=X^2+1 where
-  p : ADT 1
+  p : ADT (↑ ⊥)
   p = 𝕧₀ ² ⊔ 𝟏
 
-  Ψ : ADT 1
+  Ψ : ADT (↑ ⊥)
   Ψ = p ⊔ 𝕧₀
 
-  ϕ : ADT 1
+  ϕ : ADT (↑ ⊥)
   ϕ = Num 3 × p ⊔ 𝕧₀
 
-  μϕ : ADT 0
+  μϕ : ADT ⊥
   μϕ = μ ϕ
 
-  μΨ : ADT 0
+  μΨ : ADT ⊥
   μΨ = μ Ψ
 
-  ϕμΨ=μΨ : Iso (ϕ [ μΨ ]) (μΨ)
+  ϕμΨ=μΨ : Iso (subst ϕ (μΨ)) (μΨ)
   ϕμΨ=μΨ = =+ (dr= (cong+= i×l (dr= (cong+= i×l (dr= (cong+= i×l al i+r) ) !!) ) !!) ) =!= a+= (+= (a+= (+= (a+= (~~ (fix≃ Ψ =!= a+ ) ) ) =!= ~~ (fix≃ Ψ) ) ) =!= ~~ (fix≃ Ψ) )
 
   μϕ→μΨ : ⟦ μϕ ⟧ Γ₀ → ⟦ μΨ ⟧ Γ₀
@@ -626,22 +626,22 @@ module 1+X²=1+X+X³ where
 
   -- Using the calculus of isomorphisms
 
-  b : ADT 1
+  b : ADT (↑ ⊥)
   b = 1+ (𝕧₀ ²)
 
-  t : ADT 1
+  t : ADT (↑ ⊥)
   t = 1+ (𝕧₀ ⊔ (𝕧₀ ³))
 
   t-func : Set → Set
   t-func X = ⟦ t ⟧ (λ _ → X )
 
-  B : ADT 0
+  B : ADT ⊥
   B = μ b
 
-  T : ADT 0
+  T : ADT ⊥
   T = μ t
 
-  tB=B : Iso (t [ B ]) B
+  tB=B : Iso (subst t (B)) B
   tB=B = ~~ (fix≃ b =!= += (×= (fix≃ b) =!= dl= (=+ i×r ) ) )
 
   foldT : ∀ (X : Set) → (t-func X → X) → ⟦ T ⟧ Γ₀ → X
@@ -675,14 +675,14 @@ module X=X^4 where
 
   -- Q: Can we prove X = X² or is that not a rig iso?
 
-  ∛1 : ADT 0
+  ∛1 : ADT ⊥
   ∛1 = μ ((1+ (𝕍 (o))) ²)
 
-  X : ADT 0
+  X : ADT ⊥
   X = ∛1
 
-  skel : ADT 1
-  skel = (1+ ((wk (o) X) × (𝕍 (o)))) ²
+  skel : ADT (↑ ⊥)
+  skel = (1+ ((wk₀ X) × (𝕍 (o)))) ²
 
   -- 1+X^2=1+X[1+X^2] : Iso (1+ (X ²)) (1+ (X × (1+ (X ²))))
   -- 1+X^2=1+X[1+X^2] = subst≃ {0} {skel} {skel} {X} {1+ (X ²)} (refl≃ skel) (fix≃ ((1+ (𝕍 (o))) ²))
@@ -693,16 +693,16 @@ module X=X^4 where
   X=1+X+X^2 : Iso X (1+ (X ⊔ (X ²)))
   X=1+X+X^2 = fix≃ ((1+ (𝕍 (o))) ²) =!= {!   !}
 
-exsub : ADT 1
+exsub : ADT (↑ ⊥)
 exsub = μ (𝟏 ⊔ (𝕍 (o) × 𝕍 (i (o ) ) )) ⊔ (𝕍 (o))
 
-ex2sub : ADT 1
+ex2sub : ADT (↑ ⊥)
 ex2sub = (𝟏 ⊔ 𝕧₀)
 
-Nat' : ADT 0
+Nat' : ADT ⊥
 Nat' = μ (𝟏 ⊔ 𝕧₀ )
 
-List' : ADT 1
+List' : ADT (↑ ⊥)
 List' = μ (𝟏 ⊔ (𝕍 (i (o)) × 𝕍 (o) ) )
 
 Nat : Set

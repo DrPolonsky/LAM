@@ -11,10 +11,10 @@ open import Environment
 
 -- B = 1 + B²
 
-b : ADT 1
+b : ADT (↑ ⊥)
 b = 1+ (𝕧₀ ²)
 
-B : ADT 0
+B : ADT ⊥
 B = μ b
 
 BB : Set
@@ -52,10 +52,10 @@ ppB→BB (bb x y) = lfp (in2 ((ppB→BB x) , ppB→BB y ) )
 
 -- 2B
 
-2b : ADT 1
+2b : ADT (↑ ⊥)
 2b = 𝟏 ⊔ ((𝟏 ⊔ 𝕧₀ ²) ⊔ (𝕧₀ ²))
 
-2B : ADT 0
+2B : ADT ⊥
 2B = μ 2b
 
 2BB : Set
@@ -87,7 +87,7 @@ all2B (succ n) =
 
 -- B²
 
-B² : ADT 0
+B² : ADT ⊥
 B² = B ²
 
 BB² : Set
@@ -105,10 +105,10 @@ ppB→BB² (b1 , b2) = (ppB→BB b1)  , (ppB→BB b2)
 
 -- T = 1 + T + T³
 
-t : ADT 1
+t : ADT (↑ ⊥)
 t = 1+ (𝕧₀ ⊔ (𝕧₀ ³))
 
-T : ADT 0
+T : ADT ⊥
 T = μ t
 
 TT : Set
@@ -152,10 +152,10 @@ TT→𝕋 (lfp (in2 (in2 (x , (y , z))))) = tt (TT→𝕋 x) (TT→𝕋 y) (TT�
 
 -- J = 1 + 2J + J²
 
-j : ADT 1
+j : ADT (↑ ⊥)
 j = 𝟏 ⊔ (𝕍 o) ⊔ (𝕍 o) ⊔ (𝕍 o) ²
 
-J : ADT 0
+J : ADT ⊥
 J = μ j
 
 JJ : Set
@@ -206,13 +206,13 @@ J→𝕁 (lfp (in2 (in2 (in2 (pr3 , pr4))))) = jb (J→𝕁 pr3) (J→𝕁 pr4)
 
 -- M = 1 + M + M²
 
-m : ADT 1
+m : ADT (↑ ⊥)
 m = 𝟏 ⊔ (𝕍 (o)) ⊔ (𝕍 (o)) ²
 
-M : ADT 0
+M : ADT ⊥
 M = μ m
 
-M³ : ADT 0
+M³ : ADT ⊥
 M³ = M × M × M
 
 MM : Set
@@ -400,10 +400,10 @@ i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ i (sp (sq so)) ∷ o ∷ []
 -}
 
 -- 2M = 1 + (1 + 2M + 2M²) + 2M²
-2m : ADT 1
+2m : ADT (↑ ⊥)
 2m = 𝟏 ⊔ m ⊔ (𝕍 o) ²
 
-2M : ADT 0
+2M : ADT ⊥
 2M = μ 2m
 --
 -- allJ zero = []

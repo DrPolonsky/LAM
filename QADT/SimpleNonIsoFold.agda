@@ -11,10 +11,10 @@ open import QADT.ExampleADTs
 
 module QADT.SimpleNonIsoFold where
 
-M=2M : Iso M (2m [ M ])
+M=2M : Iso M (subst 2m M)
 M=2M = fix≃ m =!= += (=+ (fix≃ m) =!= a+= (~~ (a+= (+= (a+= (~~ (a+= (+= c+ ) ) ) ) ) ) ) )
 
-M=M : Iso M (m [ M ])
+M=M : Iso M (subst m M)
 M=M = fix≃ m =!= += (=+ (fix≃ m) =!= (a+= (+= (a+= (+= c+ ) ) =!= ((a+ ~!= (a+ ~!= (=+ (a+=  (~~ (fix≃ m) ) )) ) ) ) ) ) )
 
 2M→M : ⟦ 2M ⟧ Γ₀ → MM

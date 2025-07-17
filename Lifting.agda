@@ -63,4 +63,4 @@ io-nat : ∀ {A B C : Set} (f : B → C) (g : A → B) (c : C) → io (f ∘ g) 
 io-nat f g d (i x) = refl
 io-nat f g d o = refl
 
--- open import Datatypes public 
+-- open import Datatypes public

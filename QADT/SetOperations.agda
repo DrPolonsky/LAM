@@ -1,6 +1,6 @@
 module QADT.SetOperations where
 
-open import Logic
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
 
 -- The type of predicates on a given set A, AKA the powerset of A
 -- (Note that the output A → Set is a type in a bigger universe Set₁)
@@ -25,8 +25,8 @@ module LogicOps {U : Set} where
   -- The empty subset ∅ ⊆ U.
   -- Corresponds to the constantly-false predicate.
   -- ∅ is \emptyset
-  ∅ : Pred U
-  ∅ _ = ⊥
+  𝓟⊥ : Pred U
+  𝓟⊥ _ = ⊥
 
   -- The full subset U ⊆ U.
   -- Corresponds to the constantly-true predicate.
@@ -61,6 +61,6 @@ module LogicOps {U : Set} where
 
   infix 15 _⇔_
 
-  setEq : ∀ {A B : Pred U} →    A ⇔ B   ↔   A ⊆ B ∧ B ⊆ A
+  setEq : ∀ {A B : Pred U} →    (A ⇔ B)   ↔   ((A ⊆ B) ∧ (B ⊆ A))
   setEq = (λ AB → ( (λ x xa → pr1 (AB x) xa ) , λ x xb → pr2 (AB x) xb ))
                   , (λ A≃B → λ x → (λ ax → pr1 A≃B x ax ) , (λ bx → pr2 A≃B x bx ) )

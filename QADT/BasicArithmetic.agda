@@ -1,9 +1,9 @@
 -- Most of the stuff in this file is compiled from Lecture4,
 -- with some later additions and edits for consistency
 
-module BasicArithmetic where
+module QADT.BasicArithmetic where
 
-open import BasicLogic
+open import QADT.BasicLogic
 
 -- 𝔹 is \bB
 -- 𝑩 is \MIB, ℬ is \McB

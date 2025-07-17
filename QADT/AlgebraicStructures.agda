@@ -1,17 +1,18 @@
-open import BasicLogic
-open import SetOperations
-open import BasicDatatypes
-open import Functions
+open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
+-- open import QADT.SetOperations
+open import Datatypes renaming (add to _+_)
+open import QADT.Functions
+open import Predicates
 
-module AlgebraicStructures where
+module QADT.AlgebraicStructures where
 
-isAssociative : ∀ {A : Set} → Pred (A → A → A)
+isAssociative : ∀ {A : Set} → 𝓟 (A → A → A)
 isAssociative _⊙_ = ∀ x y z → (x ⊙ y) ⊙ z ≡ x ⊙ (y ⊙ z)
 
-isCommutative : ∀ {A : Set} → Pred (A → A → A)
+isCommutative : ∀ {A : Set} → 𝓟 (A → A → A)
 isCommutative _⊙_ = ∀ x y → x ⊙ y ≡ y ⊙ x
 
-isIdempotent : ∀ {A : Set} → Pred (A → A → A)
+isIdempotent : ∀ {A : Set} → 𝓟 (A → A → A)
 isIdempotent _⊙_ = ∀ x → x ⊙ x ≡ x
 
 record Semigroup {A : Set} (_⊙_ : A → A → A) : Set where
@@ -20,10 +21,10 @@ record Semigroup {A : Set} (_⊙_ : A → A → A) : Set where
     assoc : isAssociative _⊙_
 
   _⊙≡_ : ∀ x {y} {z} → y ≡ z → x ⊙ y ≡ x ⊙ z
-  x ⊙≡ refl y = refl (x ⊙ y)
+  x ⊙≡ refl = refl
 
   _≡⊙_ : ∀ {x} {y} → x ≡ y → ∀ z → x ⊙ z ≡ y ⊙ z
-  refl x ≡⊙ z = refl (x ⊙ z)
+  refl ≡⊙ z = refl
 
   isUnit : A → Set
   isUnit e = ∀ x → (e ⊙ x ≡ x) ∧ (x ⊙ e ≡ x)
