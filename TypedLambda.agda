@@ -79,11 +79,41 @@ So, "Γ : Cxt V" should mean:
   SubReduction⊢₁ (App d1 d2) (appR⟶β re) = App d1 (SubReduction⊢₁ d2 re)
   SubReduction⊢₁ (Abs d0) (abs⟶β re) = Abs (SubReduction⊢₁ d0 re)
 
-
   SubReduction⊢ : ∀ {V : Set} {Γ : Cxt V} {M N : Λ V} {A : 𝕋} → Γ ⊢ M ∶ A → M ⟶β⋆ N → Γ ⊢ N ∶ A
   -- SubReduction⊢ d (ax⋆ M→N) = SubReduction⊢₁ d M→N
   SubReduction⊢ d ε⋆ = d
   SubReduction⊢ d (M→y ,⋆ y→⋆N) = SubReduction⊢ (SubReduction⊢₁ d M→y) y→⋆N
+
+  CxtEqIrrel : ∀ {V} (Γ : Cxt V) (x : V) (A : 𝕋) (p1 p2 : Γ x ≡ A) → p1 ≡ p2
+  CxtEqIrrel Γ x .(Γ x) refl refl = refl
+
+  inv⇒L : ∀ {A1 A2 B1 B2 : 𝕋} → (A1 ⇒ A2) ≡ (B1 ⇒ B2) → A1 ≡ B1
+  inv⇒L refl = refl
+
+  inv⇒R : ∀ {A1 A2 B1 B2 : 𝕋} → (A1 ⇒ A2) ≡ (B1 ⇒ B2) → A2 ≡ B2
+  inv⇒R refl = refl
+
+  appNF⊢unique : ∀ {V} {Γ : Cxt V} (s t : Λ V) → app s t ∈ NF
+                   → ∀ {A B : 𝕋} → Γ ⊢ app s t ∶ A → Γ ⊢ app s t ∶ B → A ≡ B
+  appNF⊢unique (var x) t st∈NF (App (Var .x e1) T1) (App (Var .x e2) T2) = inv⇒R (e1 ~! e2)
+  appNF⊢unique (app s1 s2) t st∈NF (App S1 S2) (App T1 T2)
+    = inv⇒R (appNF⊢unique s1 s2 (appNFinvL st∈NF ) S1 T1)
+  appNF⊢unique (abs s0)    t st∈NF S T = ∅ (st∈NF (s0 [ t ]ₒ) (red⟶β (redex refl) ) )
+
+  unique⊢NF : ∀ {V} {Γ : Cxt V} {A : 𝕋} {M : Λ V} → M ∈ NF
+                → ∀ (d1 d2 : Γ ⊢ M ∶ A) → d1 ≡ d2
+  unique⊢NF {Γ = Γ} {A} {var x} M∈NF (Var .x g1) (Var .x g2) = cong (Var x) (CxtEqIrrel Γ x A g1 g2)
+  unique⊢NF {A = A1 ⇒ A2} {abs M0} M∈NF (Abs d1) (Abs d2) = cong Abs (unique⊢NF (absNFinv M∈NF) d1 d2)
+  unique⊢NF {V} {Γ} {A} {app (var x) M2} M∈NF (App (Var .x e1) d1) (App (Var .x e2) d2)
+    with inv⇒L (e1 ~! e2)
+  ... | e rewrite e = cong2 App (cong (Var x) (CxtEqIrrel Γ x _ e1 e2) )
+                                (unique⊢NF (appNFinvR M∈NF) d1 d2)
+  unique⊢NF {A = A} {app (app M1 M3) M2} M∈NF (App d1 d2) (App d3 d4)
+    with inv⇒L (appNF⊢unique M1 M3 (appNFinvL M∈NF) d1 d3)
+  ... | e rewrite e = cong2 App (unique⊢NF {M = app M1 M3} (appNFinvL M∈NF) d1 d3)
+                                (unique⊢NF {M = M2}        (appNFinvR M∈NF) d2 d4)
+  unique⊢NF {A = A} {app (abs M1) M2} M∈NF (App d1 d2) (App d3 d4)
+    = ∅ (M∈NF (M1 [ M2 ]ₒ) (red⟶β (redex refl) ) )
 
 open Curry
 
@@ -123,6 +153,13 @@ module DeBruijn where
   weak⊢dB f (AppdB d1 d2) = AppdB (weak⊢dB f d1) (weak⊢dB f d2)
   weak⊢dB f (AbsdB d0) = AbsdB (weak⊢dB (↑→ f) (io-nat _ f _ ≅⊢dB d0))
 
+  unique⊢dB : ∀ {V} {Γ : Cxt V} {A B : 𝕋} {M : ΛdB V} → Γ ⊢dB M ∶ A → Γ ⊢dB M ∶ B → A ≡ B
+  unique⊢dB {V} {Γ} {A} {B} {vardB x} (VardB e1) (VardB e2) = e1 ~! e2
+  unique⊢dB {V} {Γ} {A} {B} {appdB M1 M2} (AppdB d1 d2) (AppdB d3 d4) with unique⊢dB d1 d3
+  ... | refl = refl
+  unique⊢dB {V} {Γ} {(A1 ⇒ B1)} {(A2 ⇒ B2)} {absdB C M0} (AbsdB d1) (AbsdB d2)
+    = cong (_⇒_ A1) (unique⊢dB d1 d2)
+
 open DeBruijn
 
 module Church where
@@ -134,18 +171,15 @@ module Church where
   erase1 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → ΛdB V
   erase1         (varCh x Γx≡A) = vardB x
   erase1         (appCh M1 M2)  = appdB (erase1 M1) (erase1 M2)
-  erase1 {A = A} (absCh M0)     = absdB A (erase1 M0)
+  erase1 {A = A ⇒ B} (absCh M0) = absdB A (erase1 M0)
 
-  erase2 : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛdB V → Λ V
-  erase2 {V} {Γ} {A} (vardB x)     = var x
-  erase2 {V} {Γ} {A} (appdB M1 M2) = app (erase2 {V} {Γ} {A} M1) (erase2 {V} {Γ} {A} M2)
-  erase2 {V} {Γ} {A} (absdB x M0)  = abs (erase2 {↑ V} {λ Γ → x} {A} M0)
+  erase2 : ∀ {V : Set} → ΛdB V → Λ V
+  erase2 {V} (vardB x)     = var x
+  erase2 {V} (appdB M1 M2) = app (erase2 {V} M1) (erase2 {V} M2)
+  erase2 {V} (absdB x M0)  = abs (erase2 {↑ V} M0)
 
   erase : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} → ΛCh Γ A → Λ V
-  erase {V} {Γ} {A} = erase2 {V} {Γ} {A} ∘ erase1
-  -- erase (varCh x e)   = var x
-  -- erase (appCh M1 M2) = app (erase M1) (erase M2)
-  -- erase (absCh M0)    = abs (erase M0)
+  erase = erase2 ∘ erase1
 
   prop1B19i : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : ΛCh Γ A) → Γ ⊢ erase M ∶ A
   prop1B19i (varCh x Γx≡A) = Var x Γx≡A
@@ -170,9 +204,6 @@ module Church where
 
   embellish : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) → Γ ⊢ M ∶ A → ΛCh Γ A
   embellish M d = embellishdB→Ch (embellishCu→dB M d ) (embellishCu→dB⊢ M d)
-  -- embellish (var x)     (Var _ Γx≡A) = varCh x Γx≡A
-  -- embellish (app M1 M2) (App d1 d2)  = appCh (embellish M1 d1) (embellish M2 d2)
-  -- embellish (abs M0)    (Abs d)      = absCh (embellish M0 d)
 
   prop1B19ii : ∀ {V : Set} {Γ : Cxt V} {A : 𝕋} (M : Λ V) (d : Γ ⊢ M ∶ A)
                → erase (embellish M d) ≡ M
@@ -191,9 +222,6 @@ module Church where
 
   ΛCh≅ : ∀ {V : Set} {Γ Δ : Cxt V} {A : 𝕋} → Γ ≅ Δ → ΛCh Γ A → ΛCh Δ A
   ΛCh≅ {V} {Γ} {Δ} {A} g=d m = ΛCh→≅ {V} {V} {Δ} {A} I Γ (λ x → g=d x) m
-  -- ΛCh≃ g=d (varCh x e)   = varCh x (g=d x ~! e)
-  -- ΛCh≃ g=d (appCh t1 t2) = appCh (ΛCh≃ g=d  t1) (ΛCh≃ g=d t2)
-  -- ΛCh≃ g=d (absCh t0)    = absCh (ΛCh≃ (io≅ g=d refl) t0)
 
   erase→≅ : ∀ {V W : Set} {Γ : Cxt W} {A : 𝕋} (f : V → W) (Δ : Cxt V)
             → (gd : Δ ≅ Γ ∘ f) (M : ΛCh Δ A) → Λ→ f (erase M) ≡ erase (ΛCh→≅ {Γ = Γ} f Δ gd M)
@@ -218,36 +246,62 @@ module Church where
     N' : _ -- ∀ (x : ↑ V) → ΛCh (io Δ A) (io Γ A x)
     N' (i x) = ΛCh→ i (N x)
     N' o     = varCh o refl
-  -- absCh M0        [ N ]Ch = absCh (M0 [ io𝓟 (λ y → ΛCh (io Δ A) (io Γ A y)) (varCh o refl) (λ x → ΛCh→ i (N x)) ]Ch)
 
   NFCh : ∀ (V : Set) (Γ : Cxt V) (A : 𝕋) → 𝓟 (ΛCh Γ A)
   NFCh V Γ A M = ∀ N → ¬ (erase M ⟶β erase {V} {Γ} {A} N)
 
-  CxtEqIrrel : ∀ {V} (Γ : Cxt V) (x : V) (A : 𝕋) (p1 p2 : Γ x ≡ A) → p1 ≡ p2
-  CxtEqIrrel Γ x .(Γ x) refl refl = refl
-
   absChInv : ∀ {V} {Γ : Cxt V} {A B : 𝕋} (N1 N2 : ΛCh (io Γ A) B) → absCh N1 ≡ absCh N2 → N1 ≡ N2
   absChInv N1 .N1 refl = refl
 
-  absInv : ∀ {V} {N1 N2 : Λ (↑ V)} → abs N1 ≡ abs N2 → N1 ≡ N2
-  absInv refl = refl
+  erase1type : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : ΛCh Γ A) → Γ ⊢dB erase1 M ∶ A
+  erase1type A (varCh x x∶A) = VardB x∶A
+  erase1type A (appCh {A = B} M1 M2) = AppdB (erase1type (B ⇒ A) M1 ) (erase1type B M2)
+  erase1type (A1 ⇒ A2) (absCh M0) = AbsdB (erase1type A2 M0)
 
-  appInvL : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M1 ≡ N1
-  appInvL refl = refl
-  appInvR : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M2 ≡ N2
-  appInvR refl = refl
+  erase2type : ∀ {V : Set} {Γ : Cxt V} {M : ΛdB V} {A : 𝕋} → Γ ⊢dB M ∶ A → Γ ⊢ erase2 M ∶ A
+  erase2type (VardB x) = Var _ x
+  erase2type (AppdB d1 d2) = App (erase2type d1) (erase2type d2)
+  erase2type (AbsdB d0) = Abs (erase2type d0)
+
+  -- -- Outside NFs, this is simply false
+  -- erase2unique : ∀ {V : Set} {Γ : Cxt V} {M : ΛdB V} {A B : 𝕋} → Γ ⊢dB M ∶ A → Γ ⊢ erase2 M ∶ B → A ≡ B
+  -- erase2unique {M = vardB x} {A} {B} (VardB e1) (Var .x e2) = e1 ~! e2
+  -- erase2unique {M = absdB .A1 M} {A1 ⇒ B1} {A2 ⇒ B2} (AbsdB db) (Abs cu)
+  --   = {!   !}
+  -- erase2unique {M = appdB M1 M2} {A} {B} (AppdB db1 db2) (App cu1 cu2)
+  --   = inv⇒R (erase2unique {M = M1} db1 cu1)
+
+  Prop1B24-Lemma1 : ∀ {V : Set} {Γ : Cxt V} (M : ΛdB V)
+        → ∀ (A : 𝕋) (d : Γ ⊢dB M ∶ A) → ∀ (N : ΛCh Γ A) → erase1 {V} N ≡ M → N ≡ embellishdB→Ch {V} {Γ} M d
+  Prop1B24-Lemma1 {V} {Γ} (vardB x) A (VardB x∶A1) (varCh .x x∶A2) refl
+    rewrite CxtEqIrrel Γ x A x∶A1 x∶A2 = refl
+  Prop1B24-Lemma1 {V} {Γ} .(erase1 (absCh N)) (A1 ⇒ A2) (AbsdB d) (absCh N) refl
+    = cong absCh (Prop1B24-Lemma1 (erase1 {↑ V} {io Γ A1} {A2} N) A2 d N refl)
+  Prop1B24-Lemma1 {V} {Γ} .(erase1 (appCh N1 N2)) B (AppdB d1 d2) (appCh {A = A} N1 N2) refl
+    with unique⊢dB d2 (erase1type A N2)
+  ... | e rewrite e = cong2 appCh n1 n2 where
+    n1 = Prop1B24-Lemma1 (erase1 N1) (A ⇒ B) d1 N1 refl
+    n2 = Prop1B24-Lemma1 (erase1 N2)  A      d2 N2 refl
 
   Prop1B24 : ∀ {V : Set} {Γ : Cxt V} (A : 𝕋) (M : Λ V) → M ∈ NF
                 → (d : Γ ⊢ M ∶ A) → ∀ (N : ΛCh Γ A) → erase N ≡ M → N ≡ embellish M d
   Prop1B24 {V} {Γ} A (var x) M∈NF (Var .x Γx=A) (varCh .x Γy=A) refl
     = cong (varCh x) (CxtEqIrrel Γ x A Γy=A Γx=A )
-  Prop1B24 A (app M1 M2) M∈NF (App d1 d2) (appCh N1 N2) eN=M
-    rewrite appInvL (~ eN=M)
-    rewrite appInvR (~ eN=M)
-    = {! cong2 appCh    !}
   Prop1B24 (A ⇒ B) (abs M0) M∈NF (Abs d) (absCh N) eN=M = cong absCh c where
     b = λ M' M0→M' → M∈NF (abs M') (abs⟶β M0→M')
     c = Prop1B24 B M0 b d N (absInv eN=M)
+  Prop1B24 {V} {Γ} B (app .(erase N1) .(erase N2)) eN1N2∈NF (App {.Γ} {A1} {.B} d1 d2) (appCh {.Γ} {A2} {.B} N1 N2) refl
+    with N1 | d1
+  ... | appCh s1 s2 | d0 with inv⇒L (appNF⊢unique (erase s1) (erase s2) (appNFinvL eN1N2∈NF) d0
+                                      (erase2type (erase1type (A2 ⇒ B) (appCh s1 s2))) )
+  ... | e rewrite e = cong2 appCh ((Prop1B24 (A2 ⇒ B) (erase (appCh s1 s2)) (appNFinvL eN1N2∈NF)  d0 (appCh s1 s2) refl))
+                                  (Prop1B24 A2  (erase N2) (appNFinvR eN1N2∈NF) d2 N2 refl )
+  Prop1B24 {V} {Γ} B (app .(erase N1) .(erase N2)) eN1N2∈NF (App {.Γ} {A1} {.B} d1 d2) (appCh {.Γ} {A2} {.B} N1 N2) refl
+    | absCh s0    | d0 = ∅ (eN1N2∈NF (erase2 (erase1 s0) [ io var (erase2 (erase1 N2)) ]) (red⟶β (redex refl) ) )
+  Prop1B24 {V} {Γ} B (app .(erase N1) .(erase N2)) eN1N2∈NF (App {.Γ} {A1} {.B} d1 d2) (appCh {.Γ} {A2} {.B} N1 N2) refl
+    | varCh x g | Var .x g2 with inv⇒L (g2 ~! g)
+  ... | e rewrite e = cong2 appCh (cong (varCh x) (CxtEqIrrel Γ x (A2 ⇒ B) g g2) )
+            (Prop1B24 A2 (erase2 (erase1 N2)) (λ N z → eN1N2∈NF (app (var x) N) (appR⟶β z)) d2 N2 refl )
 
   emptyLemma : ∀ {X : Set} (Γ : ⊥ → X) → Γ ≅ ∅
   emptyLemma Γ = λ x → ∅ x

@@ -1,13 +1,105 @@
 \section{Well-foundedness}
 
-
-
 \newcommand{\then}{\Longrightarrow}
 \label{sec:Well-foundedness}
+
+\newcommand{\accCor}{\textbf{accCor}}
+\newcommand{\accDNE}{\textbf{accDNE}}
 
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
 In this section, we will compare several definitions of well-foundedness.
+
+\subsection{New version: Synopsis and Outline}
+
+Classically, well-foundedness can be defined in several equivalent but distinct ways:
+by induction, by absence of decreasing sequences, and by the fact that every
+subset has a minimal element.  Constructively, these are no longer equivalent.
+Moreover, even individual classical definitions can be given constructive
+interpretations in varying degrees of logical strength.
+
+For example, the implication from ``every non-empty subset has a minimal element'' to
+``every element is accessible"  is a classical proof by contradiction.
+(Assuming that there exists an inaccessible element, the hypothesis implies that
+there must be a minimal such element, which immediately yields a contradiction:
+every minimal element is accessible.)
+
+Constructively, this argument only goes so far as to show that, if every non-empty
+subset has a minimal element, then no element is inaccessible.
+That is, the universal statement being proved is that every $x \in A$
+is not-not-accessible. The final step needed to infer that $x$ is indeed accessible
+is not constructively provable in general, therefore it needs to be assumed as
+an additional hypothesis in order to recover the full implication.
+
+On the other hand, assuming accessibility is $\lnot\lnot$-closed, the other
+hypothesis can now be weakened, to only require existence of minimal elements
+for $\lnot\lnot$-closed subsets.  This is a significant restriction, which may
+be validated in many cases of interests.  In contrast, the original hypothesis
+is generally equivalent to every subset being decidable.
+(The file WFCounters.agda shows that assuming the full minimality hypothesis
+for the standard strict order on the natural numbers entails decidability
+of every subset of $\nat$, clearly incompatible with effective semantics.)
+
+One could also consider proving well-foundedness ``up to $\lnot\lnot$",
+asserting that every element is $\lnot\lnot$-accessible,
+every sequence $\lnot\lnot$-contains a non-decreasing index,
+for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
+This cuts down some, but not all, of the complexity.
+For example, the two minimality principles
+described above are equivalent with this formulation.
+On the other hand, the implication from the sequential to inductive definition
+still requires an additional hypothesis, which may be described as the
+constructive contrapositive of the definition of accessibility.
+Specifically, we call {\accCor} the statement that, if an element $x$
+is \emph{not} accessible, then there (strongly) exists a $y$ with $Ryx$
+and $y$ not accessible.  Assuming \accCor, all notions of well-foundedness
+are constructively equivalent up to $\lnot\lnot$.
+
+As this discussion illustrates, the network of relationships between the
+constructive notions of well-foundedness is quite rich.  The purpose of
+this section is to present the basic picture of these implications,
+and elaborate on some of them.  Our key observations are summarized
+in the following list.
+\begin{enumerate}
+  \item The implication from the inductive to the sequential definition
+  requires the underlying relation to be decidable. This assumption is no longer
+  necessary on the $\lnot\lnot$-translated side.
+  \item WFmin is a very strong assumption and implies WFseq unconditionally.
+  The more reasonable WFminDNE requires Markov's Principle
+  (and decidability of $R$) to yield the same consequence.
+  \item On the $\lnot\lnot$-side, WFmin- and WFminDNE- are equivalent,
+  and imply WFacc- via WFseq-, requiring {\accCor} assumption in the final inference.
+  \item At the same time, if the relation is finitely branching, then WFminDNE-
+  implies WFacc- directly.
+  \item Finite branchingness together with (weak) decidability of minimality
+  implies \accCor.
+  % \apcomment{The previous observation suggests the question of whether isWFseq- might
+  % imply isWFminDNE- via decidability of minimal elements.\\
+  % However, in trying to prove this implication, the hypothesis asserting non-existence of
+  %  a minimal element of some given non-empty $\lnot\lnot$-closed predicate
+  %  automatically entails that any particular element of interest is not normal.\\
+  %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
+  \item Assuming \accCor, isWFacc- can also be derived from a weaker condition, isWFminCor(-).
+  (Just like isWFminDNE is a natural weakening of isWFmin sufficient to recover isWFacc
+  when {\accDNE} is available.)
+  It is implied by isWFseq-, but does not appear to imply anything on its own.
+
+  \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
+  have decidable image, leading to a further weakening of isWFseq-.)}
+  \item Since isWFminDNE- implies isWFseq-, the former also implies isWFminCor-.
+  But the converse fails: If a subset/predicate $P$ is $\lnot\lnot$-closed,
+  we cannot conclude it is coreductive.
+
+  \item In general, the coreductive properties speak to the ability to choose
+  a successor (strong existence).  This ability is central to being able to
+  define sequences.  Therefore, sequential definitions generally require
+  some coreductive situation to be applicable.
+
+  \item Assuming normal forms are decidable,
+  isWFseq implies a very weak version of minimality, isWFminEM.
+  On its own this property is insufficient to imply anything else,
+  so we have nothing else to say about it.
+\end{enumerate}
 
 \subsection{The main definitions}
 
