@@ -85,7 +85,8 @@ and as such are not the focus of this paper.
 \begin{proof}[Discussion.]\hfill
   \begin{description}
     \item[($i$)] In $\mathtt{i^\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
-    \item[($ii$)] This proof is inherently classical. In $\mathtt{iiSeq}$, we show that these properties imply $\isWFseqm$; establishing the implication to $\gSN$ would require additional classical assumptions. The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
+    \item[($ii$)] This proof is inherently classical. For the closest constructive analogue to this proof we have written $\mathtt{iiSeq}$, where we replace $\gBP$ with the stronger properties $\gWN$ and $\gUN$ and we replace $\gInc$ with the weaker property $\gRP$. 
+    With the original property $\gBP$ and $gRP$ we can imply the related property $gSM$ ($\gSM$ is defined in Section~\ref{sec:Hierarchy} and its relation to $gSN$ is expanded upon). The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
     \item[($iii$)] In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
     \item[($iv$)] We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions. \qedhere
   \end{description}
