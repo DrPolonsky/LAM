@@ -6,6 +6,8 @@
 \newcommand{\accCor}{\textbf{accCor}}
 \newcommand{\accDNE}{\textbf{accDNE}}
 
+\apcomment{Well-foundedness or wellfoundedness?}
+
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
 In this section, we will compare several definitions of well-foundedness.
@@ -19,7 +21,7 @@ Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
 
 For example, the implication from ``every non-empty subset has a minimal element'' to
-``every element is accessible"  is a classical proof by contradiction.
+``every element is accessible''  is a classical proof by contradiction.
 (Assuming that there exists an inaccessible element, the hypothesis implies that
 there must be a minimal such element, which immediately yields a contradiction:
 every minimal element is accessible.)
@@ -40,19 +42,26 @@ is generally equivalent to every subset being decidable.
 for the standard strict order on the natural numbers entails decidability
 of every subset of $\nat$, clearly incompatible with effective semantics.)
 
-One could also consider proving well-foundedness ``up to $\lnot\lnot$",
+One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
 every sequence $\lnot\lnot$-contains a non-decreasing index,
 for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
 This cuts down some, but not all, of the complexity.
 For example, the two minimality principles
 described above are equivalent with this formulation.
-On the other hand, the implication from the sequential to inductive definition
+% The implication from the inductive to sequential definition no longer requires
+% decidability of $R$.
+% On the other hand, the reverse
+At the same time, the
+implication from sequential to inductive wellfoundedness
 still requires an additional hypothesis, which may be described as the
 constructive contrapositive of the definition of accessibility.
 Specifically, we call {\accCor} the statement that, if an element $x$
 is \emph{not} accessible, then there (strongly) exists a $y$ with $Ryx$
-and $y$ not accessible.  Assuming \accCor, all notions of well-foundedness
+and $y$ not accessible.  (In the context of rewriting systems,
+this condition asserts the existence of a function which maps any
+non-strongly normalizing element to a one-step reduct with the same property.)
+Assuming \accCor, all notions of well-foundedness
 are constructively equivalent up to $\lnot\lnot$.
 
 As this discussion illustrates, the network of relationships between the
@@ -80,8 +89,8 @@ in the following list.
   %  automatically entails that any particular element of interest is not normal.\\
   %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
   \item Assuming \accCor, isWFacc- can also be derived from a weaker condition, isWFminCor(-).
-  (Just like isWFminDNE is a natural weakening of isWFmin sufficient to recover isWFacc
-  when {\accDNE} is available.)
+  (Just like isWFminDNE is a natural weakening of isWFmin that is sufficient to recover isWFacc
+  in the presence of {\accDNE}.)
   It is implied by isWFseq-, but does not appear to imply anything on its own.
 
   \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
