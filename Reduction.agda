@@ -36,9 +36,21 @@ map⟶ₒ f (redex {_} {r} {t} refl) = redex (e1 ~! e2) where
   e1 = bind-nat₁ {f = ↑→ f} {io var (Λ→ f t)} e0 r
   e2 = bind-nat₂ {f = io var t} {f} !≅! r
 
+map⟶β : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶β t2 → Λ→ f t1 ⟶β Λ→ f t2
+map⟶β f (red⟶β x) = red⟶β (map⟶ₒ f x )
+map⟶β f (appL⟶β t12) = appL⟶β (map⟶β f t12)
+map⟶β f (appR⟶β t12) = appR⟶β (map⟶β f t12)
+map⟶β f (abs⟶β t12) = abs⟶β (map⟶β (↑→ f) t12)
+
 map⟶w : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶w t2 → Λ→ f t1 ⟶w Λ→ f t2
 map⟶w f {t1} {t2} (red⟶w Δ) = red⟶w (map⟶ₒ f Δ)
 map⟶w f (appL⟶w t12) = appL⟶w (map⟶w f t12)
+
+_⟶β[_] : ∀ {X Y : Set} {s t : Λ X} → s ⟶β t → ∀ (f : X → Λ Y) → s [ f ] ⟶β t [ f ]
+red⟶β {s = app (abs s) t} (redex refl) ⟶β[ f ] = red⟶β (redex (~ (subst-lemma s t f)) )
+appL⟶β st ⟶β[ f ] = appL⟶β (st ⟶β[ f ])
+appR⟶β st ⟶β[ f ] = appR⟶β (st ⟶β[ f ])
+abs⟶β st ⟶β[ f ] = abs⟶β (st ⟶β[ lift f ])
 
 -- Multistep reduction is the reflexive-transitive closure of one-step reduction
 _⟶β⋆_ : ∀ {X} → Λ X → Λ X → Set
@@ -306,6 +318,26 @@ appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
 ⇉⋆⊆⟶β⋆ : ∀ {X} {s t : Λ X} → s ⇉⋆ t  →  s ⟶β⋆ t
 ⇉⋆⊆⟶β⋆ ε⋆ = ε⋆
 ⇉⋆⊆⟶β⋆ (st ,⋆ tu) = ⇉⊆⟶β⋆ st ⋆!⋆ ⇉⋆⊆⟶β⋆ tu
+
+
+
+NF : ∀ {X} → 𝓟 (Λ X)
+NF M = ∀ N → ¬ (M ⟶β N)
+
+absInv : ∀ {V} {N1 N2 : Λ (↑ V)} → abs N1 ≡ abs N2 → N1 ≡ N2
+absInv refl = refl
+appInvL : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M1 ≡ N1
+appInvL refl = refl
+appInvR : ∀ {V} {M1 M2 N1 N2 : Λ V} → app M1 M2 ≡ app N1 N2 → M2 ≡ N2
+appInvR refl = refl
+
+absNFinv : ∀ {V} {s : Λ (↑ V)} → abs s ∈ NF → s ∈ NF
+absNFinv s∈NF t s→t = s∈NF (abs t) (abs⟶β s→t )
+appNFinvL : ∀ {V} {s t : Λ V} → app s t ∈ NF → s ∈ NF
+appNFinvL {t = t} st∈NF u s→u = st∈NF (app u t) (appL⟶β s→u )
+appNFinvR : ∀ {V} {s t : Λ V} → app s t ∈ NF → t ∈ NF
+appNFinvR {s = s} st∈NF u t→u = st∈NF (app s u) (appR⟶β t→u )
+
 
 {-
 

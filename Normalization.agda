@@ -9,7 +9,7 @@ open import Reduction
 open import TypedLambda
 
 WN : ∀ {X} → 𝓟 (Λ X)
-WN {X} t = Σ[ n ∈ Λ X ] (t ⟶β⋆ n × NF n)
+WN {X} t = Σ[ n ∈ Λ X ] ((t ⟶β⋆ n) × NF n)
 
 data WNind {X : Set} : 𝓟 (Λ X) where
   NF⊆WN : ∀ {t} → t ∈ NF → t ∈ WNind
@@ -31,6 +31,9 @@ data SN {X : Set} : 𝓟 (Λ X) where
   -- NF⊆SN : ∀ {t} → t ∈ NF → t ∈ SN
   redSN : ∀ {t} → (∀ s → (t ⟶β s) → s ∈ SN) → t ∈ SN
 
+SN← : ∀ {X Y : Set} (f : X → Y) (t : Λ X) → Λ→ f t ∈ SN → t ∈ SN
+SN← f s (redSN s[f]∈SN) = redSN λ t s→t → SN← f t (s[f]∈SN (Λ→ f t) (map⟶β f s→t) )
+
 NF⊆SN : ∀ {X} {t : Λ X} → t ∈ NF → t ∈ SN
 NF⊆SN {X} {t} t∈NF = redSN (λ s t⟶βs → ∅ (t∈NF s t⟶βs ) )
 
@@ -39,6 +42,20 @@ var⊆NF N (red⟶β ())
 
 abs⊆NF : ∀ {X} {t : Λ (↑ X)} → t ∈ NF → abs t ∈ NF
 abs⊆NF t∈NF .(abs _) (abs⟶β r) = t∈NF _ r
+
+-- -- this is simply not true without additional condition, that s is SN also?
+-- ⟶ₒSN⊆SN : ∀ {X} {s t : Λ X} → s ⟶ₒ t → t ∈ SN → s ∈ SN
+-- ⟶ₒSN⊆SN {X} {app (abs r) s} {.(r [ s ]ₒ)} (redex refl) T@(redSN r[s]∈SN)
+--   = redSN λ { .(r [ s ]ₒ) (red⟶β (redex refl)) → T
+--             ; (app (var x) .s) (appL⟶β (red⟶β ()))
+--             ; (app (app u1 u2) .s) (appL⟶β (red⟶β ()))
+--             ; (app (abs u1) .s) (appL⟶β (abs⟶β rs→u)) →
+--                 ⟶ₒSN⊆SN (redex refl) (r[s]∈SN (u1 [ s ]ₒ) (rs→u ⟶β[ io var s ]) )
+--             ; (app (abs .r) t) (appR⟶β rs→u) → redSN (λ u rt→u → f t u rs→u rt→u)
+--             } where f : ∀ (t u : Λ X) → s ⟶β t → app (abs r) t ⟶β u → u ∈ SN
+--                     f t u s→t rt→u = {!   !}
+--                     -- Counterexample: s = (λx.I)Ω , t = I
+
 
 appvar⊆NF : ∀ {X} {x : X} {s2 : Λ X} → (var x) ∈ NF → s2 ∈ NF → app (var x) s2 ∈ NF
 appvar⊆NF s1∈NF s2∈NF (var x)         (red⟶β ())
@@ -107,30 +124,51 @@ SN-is-β-closed X t (s ,, redSN x , s⟶βt) = x t s⟶βt
 SN-is-β⋆-closed : is SN β⋆-closed
 SN-is-β⋆-closed = ⋆-closure SN SN-is-β-closed
 
+SN-abs : ∀ {V} (r : Λ (↑ V)) → abs r ∈ SN → r ∈ SN
+SN-abs {V} r (redSN absr∈SN) = redSN (λ s r→s → SN-abs s (absr∈SN (abs s) (abs⟶β r→s)))
+
+SN+abs : ∀ {V} (r : Λ (↑ V)) → r ∈ SN → abs r ∈ SN
+SN+abs {V} r (redSN r∈SN) = redSN (λ { (abs s) (abs⟶β r→s) → SN+abs s (r∈SN s r→s)})
+
 subst-SN : ∀ {X} (t : Λ X) → ∀ {Y} (f : X → Λ Y) → t [ f ] ∈ SN → t ∈ SN
 subst-SN {X} t f (redSN t[f]∈SN) = redSN sSN where
   sSN : ∀ (s : Λ X) → t ⟶β s → SN s
-  sSN s t⟶βs = {!   !}
+  sSN s t⟶βs = subst-SN s f (t[f]∈SN (s [ f ]) (t⟶βs ⟶β[ f ]))
 
 appSN : ∀ {X} (s t : Λ X) → app s t ∈ SN → s ∈ SN
 appSN {X} s t (redSN st∈SN) = redSN s∈SN where
   s∈SN : ∀ (u : Λ X) → s ⟶β u → SN u
-  s∈SN u s⟶βu = {!   !}
+  s∈SN u s⟶βu = appSN u t (st∈SN (app u t) (appL⟶β s⟶βu))
 
 data whexp {X : Set} (P : 𝓟 (Λ X)) : 𝓟 (Λ X) where
   whe : ∀ {s t : Λ X} → s ⟶w t → t ∈ P → s ∈ whexp P
-
 
 -- Neutral terms, 𝓝 is \MCN
 data 𝓝Λ {X : Set} : 𝓟 (Λ X) where
   var𝓝Λ : ∀ (x : X) → var x ∈ 𝓝Λ
   app𝓝Λ : ∀ (s t : Λ X) → s ∈ 𝓝Λ → t ∈ SN → app s t ∈ 𝓝Λ
 
-app𝓝ΛSN : ∀ {X} (s t : Λ X) → s ∈ SN → s ∈ 𝓝Λ → t ∈ SN → app s t ∈ SN
-app𝓝ΛSN s t s∈SN s∈𝓝Λ t∈SN = {!   !}
+𝓝Λ↓β⊆𝓝Λ : ∀ {X} (s t : Λ X) → s ∈ 𝓝Λ → s ⟶β t → t ∈ 𝓝Λ
+𝓝Λ↓β⊆𝓝Λ .(var x)     t (var𝓝Λ x) (red⟶β ())
+𝓝Λ↓β⊆𝓝Λ .(app (abs _) s2) t (app𝓝Λ .(abs _) s2 () s2∈SN) (red⟶β (redex e))
+𝓝Λ↓β⊆𝓝Λ (app s1 t) (app s2 t) (app𝓝Λ s1 t s1∈N t∈SN) (appL⟶β s12)
+  = app𝓝Λ s2 t (𝓝Λ↓β⊆𝓝Λ s1 s2 s1∈N s12 ) t∈SN
+𝓝Λ↓β⊆𝓝Λ {X} (app s t1) (app s t2) (app𝓝Λ s t1 s∈N t1∈SN) (appR⟶β t12)
+  = app𝓝Λ s t2 s∈N (SN-is-β-closed X t2 (t1 ,, t1∈SN , t12))
 
-𝓝Λ⊆SN : 𝓝Λ ⊆Λ SN -- Prove this !!
-𝓝Λ⊆SN n = {!   !}
+app𝓝ΛSN : ∀ {X} (s t : Λ X) → s ∈ SN → s ∈ 𝓝Λ → t ∈ SN → app s t ∈ SN
+app𝓝ΛSN₀ : ∀ {X} (s t : Λ X) → s ∈ SN → s ∈ 𝓝Λ → t ∈ SN → ∀ u → app s t ⟶β u → u ∈ SN
+
+app𝓝ΛSN s t ssn snl tsn = redSN (app𝓝ΛSN₀ s t ssn snl tsn )
+app𝓝ΛSN₀ {X} .(abs _) t S () t∈SN u (red⟶β (redex e))
+app𝓝ΛSN₀ {X} s1 t S@(redSN s∈SN) s∈Neut t∈SN (app s2 .t) U@(appL⟶β s12)
+  = app𝓝ΛSN s2 t (s∈SN s2 s12) (𝓝Λ↓β⊆𝓝Λ s1 s2 s∈Neut s12) t∈SN
+app𝓝ΛSN₀ {X} s t1 S@(redSN s∈SN) s∈Neut (redSN t1∈SN) (app .s t2) (appR⟶β t12)
+  = app𝓝ΛSN s t2 S s∈Neut (t1∈SN t2 t12)
+
+𝓝Λ⊆SN : 𝓝Λ ⊆Λ SN
+𝓝Λ⊆SN X .(var x)   (var𝓝Λ x) = NF⊆SN var⊆NF
+𝓝Λ⊆SN X .(app s t) (app𝓝Λ s t s∈N t∈SN) = app𝓝ΛSN s t (𝓝Λ⊆SN X s s∈N) s∈N t∈SN
 
 module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
 
@@ -151,14 +189,36 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
   SNisSat : Saturated SN
   SNisSat = record { SatSN = λ X ΛX SNΛX → SNΛX ;
                      Sat𝓝 = 𝓝Λ⊆SN ;
-                     SatWE = λ X ΛX whexpSNx → NF⊆SN λ N x → {!   !}} -- SUPER HARD!!
+                     SatWE = λ X t t∈whexpSN → {!   !} } -- SUPER HARD!!
+                     -- (Because, it's not true.)
+  open Saturated
 
+  -- Natural : Λ𝓟 → Set₁
+  -- Natural P = ∀ {A B : Set} (f : A → B) → ∀ {t : Λ A} → t ∈ P {A} → Λ→ f t ∈ P {B}
+  --
+  -- ⇒𝓟isNatural : ∀ {P Q : Λ𝓟} → Natural P → Natural Q → Natural (⇒𝓟 P Q)
+  -- ⇒𝓟isNatural Pnat Qnat f {t} t∈P⇒Q u u∈P = {!   !}
+  
+  -- Liftable : Λ𝓟 → Set₁
+  -- Liftable P = ∀ {X} (t : Λ X) → t ∈ P → Λ→i t ∈ P
+  --
+  -- ⇒𝓟isLiftable : ∀ {P Q : Λ𝓟} → Liftable P → Liftable Q → Liftable (⇒𝓟 P Q)
+  -- ⇒𝓟isLiftable Plift Qlift t t∈X a = {!   !}
+
+  ⇒𝓟isSN- : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → ∀ X t → t ∈ ⇒𝓟 P Q {↑ X} → t ∈ SN
+  ⇒𝓟isSN- P Q Psat Qsat X t H =
+    let to∈Q : app t (var o) ∈ Q {↑ X}
+        to∈Q = H (var o) (Sat𝓝 Psat (↑ X) (var o) (var𝓝Λ o ) )
+        to∈SN : app t (var o) ∈ SN
+        to∈SN = SatSN Qsat (↑ X) (app t (var o)) to∈Q
+     in appSN t (var o) to∈SN
   ⇒𝓟isSN : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → ⇒𝓟 P Q ⊆Λ SN
-  ⇒𝓟isSN P Q Psat Qsat = {!   !}
+  ⇒𝓟isSN P Q Psat Qsat X t H = SN← i t {!   !} -- Need P⇒Q to be natural or liftable
   Λ𝓝⊆⇒𝓟 : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → 𝓝Λ ⊆Λ ⇒𝓟 P Q
-  Λ𝓝⊆⇒𝓟 P Q Psat Qsat = {!   !}
+  Λ𝓝⊆⇒𝓟 P Q Psat Qsat X t t∈N u u∈P = Sat𝓝 Qsat X (app t u) (app𝓝Λ t u t∈N (SatSN Psat X u u∈P) )
   ⇒𝓟WE : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → whexp (⇒𝓟 P Q) ⊆Λ ⇒𝓟 P Q
-  ⇒𝓟WE P Q Psat Qsat = {!   !}
+  ⇒𝓟WE P Q Psat Qsat X s (whe {t = t} s→t t∈P⇒Q) u u∈P =
+    SatWE Qsat X (app s u) (whe (appL⟶w s→t ) (t∈P⇒Q u u∈P ) )
 
   ⇒𝓟isSat : ∀ (P Q : Λ𝓟) → Saturated P → Saturated Q → Saturated (⇒𝓟 P Q)
   ⇒𝓟isSat P Q Psat Qsat = record { SatSN = ⇒𝓟isSN P Q Psat Qsat ;
@@ -166,9 +226,8 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
                                    SatWE = ⇒𝓟WE P Q Psat Qsat }
 
   𝓒isSat : (∀ (a : 𝔸) → Saturated (P₀ a)) → (∀ (A : 𝕋 𝔸) → Saturated (𝓒 A))
-  𝓒isSat atomSat A = {!   !}
-
-
+  𝓒isSat atomSat (atom α) = atomSat α
+  𝓒isSat atomSat (A ⇒ B) = ⇒𝓟isSat (𝓒 A) (𝓒 B) (𝓒isSat atomSat A) (𝓒isSat atomSat B)
 
 
 

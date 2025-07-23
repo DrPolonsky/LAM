@@ -166,10 +166,10 @@ open import Relations.FinitelyBranching
 -- Implications relying on finite branching of the relation.
 module FBImplications {A : Set} {R : 𝓡 A} (RisFB : R isFB) where
 
-  -- May 2nd note: This must exist somewhere in general form? 
+  -- May 2nd note: This must exist somewhere in general form?
   RisWF→¬¬RisWF : ∀ {a} → (R -accessible) a → ¬ (¬ (R -accessible) a)
-  RisWF→¬¬RisWF RisWF ¬RisWF = ∅ (¬RisWF RisWF) 
-  
+  RisWF→¬¬RisWF RisWF ¬RisWF = ∅ (¬RisWF RisWF)
+
   FB→isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
   FB→isWFminDNE-→isWFacc- RisWF x₀ x₀∉acc =
     RisWF (∁ (R -accessible)) (λ a nnnac ac → ∅ (nnnac (RisWF→¬¬RisWF ac))) x₀∉acc f
@@ -178,7 +178,7 @@ module FBImplications {A : Set} {R : 𝓡 A} (RisFB : R isFB) where
               FB→DNS R (R -accessible) z (RisFB z)
                      (λ y Ryx y∉acc → z∈min y y∉acc Ryx )
                      λ za → z∉acc (acc za)
-  
+
   -- When FB holds, ¬¬-accessibility is inductive
   FB→ind∁∁acc : R -inductive (∁ ∁ R -accessible)
   FB→ind∁∁acc x H x∉acc = FB→DNS R (R -accessible) x (RisFB x) H (λ f → x∉acc (acc f) )
@@ -287,6 +287,11 @@ module MinimalComplement {A : Set} (R : 𝓡 A) where
     with (CorSequence P CI (a ,, ¬pa)) | RisWFseq (fst ∘ CorSequence P CI (a ,, ¬pa)) (CorSequence-inc P CI (a ,, ¬pa))
   ... | c | H = ∅ H
 
+  accCorec→isWFminCor+→isWFacc- : _-coreductive_ (R -accessible) → isWFminCor+ → isWFacc- R
+  accCorec→isWFminCor+→isWFacc- acc∈Cor WFmc a a∉acc
+    with WFmc (R -accessible) acc∈Cor a∉acc
+  ... | (m ,, m∉acc , p) = m∉acc (acc p)
+
 module ClassicalImplications {A : Set} (R : 𝓡 A) where
 
   {- We will consider four decidability hypotheses here:
@@ -314,6 +319,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
   module WFseqImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) where
   {-  Very hard to imply isWFseq, almost nothing is provable.
       isWFminDNE→isWFseq requires: ¬¬Closed (Σa:ℕ. s n ≡ a)
+        (implied by: the image of s is decidable)
       isWFmin+→isWFseq requires: same as above
       isWFminEM→isWFseq requires: decidability of the above predicate
       isWFminCor→isWFseq cannot find the index in the sequence
@@ -331,7 +337,7 @@ module ClassicalImplications {A : Set} (R : 𝓡 A) where
           f : ¬¬ (x ∈ R -accessible)
           f x∉acc with wfDNE (∁ (R -accessible)) (λ y nnny ya → nnny (λ z → z ya)) x x∉acc
           ... | (y ,, y∉acc , yIH) = y∉acc (acc λ z Rzy → dne z (λ z∉acc → yIH z z∉acc Rzy ) )
-    
+
   -- Double negation shift for accessibility (global)
   isWFacc-→¬¬isWFacc : AccDNE → isWFacc- R → ¬¬ (R isWFacc)
   isWFacc-→¬¬isWFacc AccDNE RisWFacc- ¬RisWFacc  = ¬RisWFacc λ x → AccDNE x (RisWFacc- x)
