@@ -6,19 +6,29 @@
 \newcommand{\accCor}{\textbf{accCor}}
 \newcommand{\accDNE}{\textbf{accDNE}}
 
-\apcomment{Well-foundedness or wellfoundedness?}\\
-\sacomment{Well-foundedness is my vote.}
+% We use Well-founded not Wellfounded
 
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
-In this section, we will compare several definitions of well-foundedness.
+In this section, we will compare several definitions of well-foundedness, which depend on the following properties.
+\begin{definition}
+  Let $R \subseteq A \times A$.  We write $Rxy$ when $(x,y) \in R$.
+  \begin{enumerate}
+    \item $P \subseteq A$ is \emph{inductive}
+    if, for each $x \in A$, $(\forall y. Ryx \to y \in P)$ implies $x \in P$.
 
+    \item $x \in A$ is \emph{accessible} if $x \in P$ for each inductive $P$.
+
+    \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
+    $Ryx$ implies $y \notin P$.
+
+    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$.
+  \end{enumerate}
+\end{definition}
+\apcomment{Add the definitions of well-foundedness here and then continue with the text as below.}
 \subsection{New version: Synopsis and Outline}
 
-Classically, well-foundedness can be defined in several equivalent but distinct ways:
-by induction, by absence of decreasing sequences, and by the fact that every
-subset has a minimal element.  Constructively, these are no longer equivalent.
-Moreover, even individual classical definitions can be given constructive
+Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent; the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
 
 For example, the implication from ``every non-empty subset has a minimal element'' to
@@ -111,23 +121,7 @@ in the following list.
   so we have nothing else to say about it.
 \end{enumerate}
 
-\subsection{The main definitions}
 
-The various formulations of well-foundedness are based on the following notions.
-\begin{definition}
-  Let $R \subseteq A \times A$.  We write $Rxy$ when $(x,y) \in R$.
-  \begin{enumerate}
-    \item $P \subseteq A$ is \emph{inductive}
-    if, for each $x \in A$, $(\forall y. Ryx \to y \in P)$ implies $x \in P$.
-
-    \item $x \in A$ is \emph{accessible} if $x \in P$ for each inductive $P$.
-
-    \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
-    $Ryx$ implies $y \notin P$.
-
-    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$.
-  \end{enumerate}
-\end{definition}
 
 In \cite{Terese}, well-foundedness is defined as in the classical mathematics textbooks,
 as the absence of an infinite $R$-decreasing sequence.
