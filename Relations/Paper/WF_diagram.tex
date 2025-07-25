@@ -20,15 +20,15 @@
 \draw[arrow, bend right] (WFaccM) to node[above, text=red] {accDNE} (WFacc);
 
 % Row 2: WFind
-\node[box, below=of WFacc] (WFind) {WFind};
-\node[box, right=of WFind] (NNWFind) {$\lnot\lnot$WFind};
-\node[box, right=of NNWFind] (WFindM) {WFind-};
+% \node[box, below=of WFacc] (WFind) {WFind};
+% \node[box, right=of WFind] (NNWFind) {$\lnot\lnot$WFind};
+% \node[box, right=of NNWFind] (WFindM) {WFind-};
 
-\draw[arrow] (WFind) -- (NNWFind);
-\draw[arrow] (NNWFind) -- (WFindM);
+% \draw[arrow] (WFind) -- (NNWFind);
+% \draw[arrow] (NNWFind) -- (WFindM);
 
 % Row 3: WFseq
-\node[box, below=of WFind] (WFseq) {WFseq};
+\node[box, below=of WFacc] (WFseq) {WFseq};
 \node[box, right=of WFseq] (NNWFseq) {$\lnot\lnot$WFseq};
 \node[box, right=of NNWFseq] (WFseqM) {WFseq-};
 
@@ -48,14 +48,14 @@
 \draw[arrow] (WFminDNE) -- (WFminDNEM);
 
 % Arrows between rows
-\draw[arrow, <->] (WFacc) -- (WFind);
-\draw[arrow, <->] (NNWFacc) -- (NNWFind);
-\draw[arrow, <->] (WFaccM) -- (WFindM);
+% \draw[arrow, <->] (WFacc) -- (WFind);
+% \draw[arrow, <->] (NNWFacc) -- (NNWFind);
+% \draw[arrow, <->] (WFaccM) -- (WFindM);
 
-\draw[arrow] (WFind) to node[right, text = red] {Rdec} (WFseq);
-\draw[arrow, bend left] (WFindM) to (WFseqM);
-\draw[arrow, bend left] (WFseqM) to node[left, text=red] {accCor} (WFindM);  
-\draw[arrow, bend left = 45] (WFindM) to (WFminM);  
+\draw[arrow] (WFacc) to node[right, text = red] {Rdec} (WFseq);
+\draw[arrow, bend left] (WFaccM) to (WFseqM);
+\draw[arrow, bend left] (WFseqM) to node[left, text=red] {accCor} (WFaccM);  
+\draw[arrow, bend left = 45] (WFaccM) to (WFminM);  
 
 
 \draw[arrow] (WFmin) -- (WFseq);
@@ -63,7 +63,7 @@
 \draw[arrow] (WFmin) -- (WFminDNE);
 \draw[arrow, <->] (WFminM) -- (WFminDNEM);
 
-\draw[arrow, bend left=60] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
+\draw[arrow, bend left=90] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
 \draw[arrow, bend left=45] (WFminDNE) to node[pos=0.9, left, text=red] {Rdec$+$MP} (WFseq);
 \draw[arrow, bend right=45] (WFminDNEM) to node[right, text=red] {FB} (WFaccM);
 
