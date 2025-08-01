@@ -33,6 +33,7 @@ TypeEnv V = V → Set
 _⅋o:=_ : ∀ {l} {V : Set} {A} (Γ : Env {l} A V) (a : A) → Env A (↑ V)
 (Γ ⅋o:= a) (i x) = Γ x
 (Γ ⅋o:= a) o = a
+-- Γ ⅋o:= a = io Γ a needs io to be universe-polymorphic
 
 
 Env≡ : ∀ {l} {A : Set l} {V} → Env A V → Env A V → Set l
