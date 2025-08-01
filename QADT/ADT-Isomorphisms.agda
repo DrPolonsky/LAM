@@ -204,8 +204,9 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 
 -- μiso : ∀ {V} (e : ADT (↑ V)) → Iso (μ e) (subst e (μ e))
 μiso : ∀ {V} (e : ADT (↑ V)) (ρ : SetEnv V) → ⟦ μ e ⟧ ρ ≃ ⟦ subst e (μ e) ⟧ ρ
-μiso {V} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemmagen e (μ e) ρ
-... | li | sl = li iso∘ iso~ sl
+μiso {V} e ρ with iso~ (Lambek (λ x → ⟦ e ⟧ (ρ ⅋o:= x)  )) | substlemma e (io 𝕍 (μ e)) ρ
+... | li | sl = li iso∘ iso~ (sl iso∘ (⟦ e ⟧≃ f ) ) where
+  f = io𝓟 _ (λ x → refl2iso refl ) (refl2iso refl )
 
 ≃⟦_⟧ : ∀ {V} {A B : ADT V} → Iso A B → ( ρ : SetEnv V) → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ
 ≃⟦_⟧≃ : ∀ {V} {A B : ADT V} → Iso A B → {ρ ρ' : SetEnv V} → SetEnv≃ ρ ρ' → ⟦ A ⟧ ρ ≃ ⟦ B ⟧ ρ'
@@ -224,8 +225,11 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 ≃⟦ distrL≃ ⟧ ρ = isodistrL
 ≃⟦ distrR≃ ⟧ ρ = isodistrR
 ≃⟦ fix≃ e ⟧ ρ = μiso e ρ
-≃⟦_⟧ {V} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemmagen e1 d1 ρ | substlemmagen e2 d2 ρ
-... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (≃⟦ j2 ⟧ ρ)) ) )
+-- ≃⟦_⟧ {V} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ with substlemma e1 (io 𝕍 d1) ρ | substlemma e2 (io 𝕍 d2) ρ
+-- ... | sl1 | sl2 = sl1 iso∘ iso~ (sl2 iso∘ iso~ (≃⟦ j1 ⟧≃ (coskipSet≃ ρ (≃⟦ j2 ⟧ ρ)) ) )
+≃⟦_⟧ {V} (subst≃ {e1} {e2} {d1} {d2} j1 j2) ρ
+  with substlemma e1 (io 𝕍 d1) ρ | substlemma e2 (io 𝕍 d2) ρ
+... | sl1 | sl2 = sl1 iso∘ (≃⟦ j1 ⟧≃ (io𝓟 _ (λ x → refl2iso refl) (≃⟦ j2 ⟧ ρ) ) iso∘ iso~ sl2 )
 ≃⟦ assoc×≃ a b c ⟧ ρ = assoc∧
 ≃⟦ assoc⊔≃ a b c ⟧ ρ = assoc∨
 ≃⟦ comm⊔≃ a b ⟧ ρ = comm∨
@@ -237,7 +241,8 @@ X+X=2X A = ~~ (dr= (cong+ i×l (dr= (+! i×l =!= (!+ al =!= i+r) ) ) ) )
 ≃⟦_⟧≃ {A = A} {B = B} e {ρ} {ρ'} ρρ' = ≃⟦ e ⟧ ρ iso∘ (⟦ B ⟧≃ ρρ')
 
 RigFold : ∀ (A : ADT (↑ ⊥)) → (B : ADT ⊥) → Iso (subst A B) B → ⟦ μ A ⟧ Γ₀ → ⟦ B ⟧ Γ₀
-RigFold A B rigiso = foldADT {⊥} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (substlemmagen A B Γ₀ ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
+RigFold A B rigiso with substlemma A (io 𝕍 B) Γ₀
+... | sl = foldADT {⊥} A Γ₀ (⟦ B ⟧ Γ₀) (_≃_.f+ (iso~ (sl iso∘ (⟦ A ⟧≃ io𝓟 _ (λ x → refl2iso refl) (refl2iso refl) ) ) iso∘ (≃⟦ rigiso ⟧ Γ₀) ) )
 
 module IsoLemmas where
   c×³ : ∀ {V} {X : ADT V} → List (Iso (X ³) (X ³))

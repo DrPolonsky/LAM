@@ -229,13 +229,14 @@ _[_] : ∀ {V W} → ADT V → (V → ADT W) → ADT W
 μ a [ f ] = μ (a [ liftADT f ])
 
 subst : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → ADT V
-subst (𝕍 (i x)) e' = 𝕍 x
-subst (𝕍 o) e' = e'
-subst 𝟎 e' = 𝟎
-subst 𝟏 e' = 𝟏
-subst (e1 × e2) e' = subst e1 e' × subst e2 e'
-subst (e1 ⊔ e2) e' = subst e1 e' ⊔ subst e2 e'
-subst (μ e) e' = μ (subst e (wk₀ e'))
+subst e e' = e [ io 𝕍 e' ]
+-- subst (𝕍 (i x)) e' = 𝕍 x
+-- subst (𝕍 o) e' = e'
+-- subst 𝟎 e' = 𝟎
+-- subst 𝟏 e' = 𝟏
+-- subst (e1 × e2) e' = subst e1 e' × subst e2 e'
+-- subst (e1 ⊔ e2) e' = subst e1 e' ⊔ subst e2 e'
+-- subst (μ e) e' = μ (subst e (wk₀ e'))
 
 -- The following lemmas are used in the proofs of weakinglemma≃
 big~ : ∀ {l} {A : Set l} {a b : A} → a ≡ b → b ≡ a
