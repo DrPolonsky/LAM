@@ -1,4 +1,4 @@
-module QADT.Examples2 where
+module QADT.Examples.T=B where
 
 open import Logic renaming (_×_ to _∧_; _⊔_ to _∨_)
 open import Lifting
@@ -8,41 +8,41 @@ open import QADT.Isomorphisms
 open import QADT.ADTs
 open import QADT.ADT-Isomorphisms
 open import Environment
-open import QADT.ExampleADTs
+open import QADT.Examples.ExampleADTs
 
-tB=B : Iso (t [ B ]) B
+tB=B : Iso (subst t B) B
 tB=B = ~~ (fix≃ b =!= += (×= (fix≃ b) =!= dl= (=+ i×r ) ) )
 
 T→B : ⟦ T ⟧ Γ₀  → ⟦ B ⟧ Γ₀
 T→B = foldADT t (λ ()) (⟦ B ⟧ Γ₀) ((_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ )))
 -- foldT (⟦ B ⟧ Γ₀) (_≃_.f+ (≃⟦ tB=B ⟧ Γ₀ ) )
 
-tB=Bv2 : Iso (t [ B ]) B
+tB=Bv2 : Iso (subst t B) B
 tB=Bv2 = ~~ (fix≃ b =!= += (=× (fix≃ b) =!= dr= (cong+ i×l a× ) ) )
 
 T→Bv2 : TT → BB
 T→Bv2 = RigFold t B tB=Bv2
 
 -- Sanity Check
-tB=Bv3 : Iso (t [ B ]) B
+tB=Bv3 : Iso (subst t B) B
 tB=Bv3 = += (=+ i×r ~!~ dl ) =!= (+= (×= ( fix≃ b ) ) ~!= ~~ (fix≃ b) )
 
 T→Bv3 : TT → BB
 T→Bv3 = RigFold t B tB=Bv3
 
-tB=Bv4 : Iso (t [ B ]) B
+tB=Bv4 : Iso (subst t B) B
 tB=Bv4 = ~~ (fix≃ b =!= += (=× (fix≃ b) =!= dr= (cong+ i×l c× ) ) )
 
 T→Bv4 : TT → BB
 T→Bv4 = RigFold t B tB=Bv4
 
-tB=Bv5 : Iso (t [ B ]) B
+tB=Bv5 : Iso (subst t B) B
 tB=Bv5 = ~~ (fix≃ b =!= += (c×= (=× (fix≃ b) =!= dr= (cong+ i×l a× ) ) ) )
 
 T→Bv5 : TT → BB
 T→Bv5 = RigFold t B tB=Bv5
 
-tB=Bv6 : Iso (t [ B ]) B
+tB=Bv6 : Iso (subst t B) B
 tB=Bv6 = ~~ (fix≃ b =!= += (c×= (=× (fix≃ b) =!= dr= (cong+ i×l c× ) ) ) )
 
 T→Bv6 : TT → BB

@@ -10,18 +10,18 @@ open import QADT.ExampleADTs
 
 module QADT.M=M^3 where
 
-==M³iso : ℕ → Iso (m [ M³ ]) (M³) → Iso (m [ M³ ]) (M³) → 𝔹
-==M³iso n im im2 = all I (List→ (λ x → ==ADT {m [ M³ ]} (_≃_.f- (≃⟦ im ⟧ Γ₀) x) (_≃_.f- (≃⟦ im2 ⟧ Γ₀ ) x) )  (allM³ n))
+==M³iso : ℕ → Iso (subst m M³) (M³) → Iso (subst m M³) (M³) → 𝔹
+==M³iso n im im2 = all I (List→ (λ x → ==ADT {subst m M³} (_≃_.f- (≃⟦ im ⟧ Γ₀) x) (_≃_.f- (≃⟦ im2 ⟧ Γ₀ ) x) )  (allM³ n))
 
-m[c×M³] : List (Iso (m [ M³ ]) (m [ M³ ]))
+m[c×M³] : List (Iso (subst m M³) (subst m M³))
 m[c×M³] = List→ (λ x → substIso m x ) c×³
 
 
 
-mM³=M³ : Iso (m [ M³ ]) (M³)
+mM³=M³ : Iso (subst m M³) (M³)
 mM³=M³ = ~~ (=× (fix≃ m) =!= dr= (cong+= i×l (dr= (cong+= (=× (fix≃ m) =!= dr= (cong+= i×l (dr= (+= (a×) ) ) !!) ) a× (+= (=× (fix≃ m) =!= dr= (cong+= i×l  (dr= (+= (a×= (=× (fix≃ m) =!= dr= (cong+= i×l (dr= (+= (a× ~!= =× a× ) ) ) !!) ) ) ) ) (a+ ~!= (cong+= c+ !! (a+ ~!= (a+ ~!= =+ (a+= (a+= (+= (cong+= (~~ i×l) (+= (~~ a×) =!= (dr ~!= !! ) ) (dr ~!= =× (~~ (fix≃ m) )  )) ) ) ) ) ) ) )   ) ) =!= !! )) ) (a+ ~!= (a+ ~!= (=+ (=+ (+= (cong+= (~~ i×l) (+= (~~ a×) =!= (~~ dr ) ) (dr ~!= =× (~~ (fix≃ m) ) )) ) =!= (=+ (=+ (=× (fix≃ m) =!= dr= (cong+= (i×l= (fix≃ m) ) (dr= (+= a× ) ) (a+= (+= (a+)  ) ) ) ) ) =!= a+= (a+= (+= (=+ (+= (+= c+ ) =!= (a+ ~!= (a+ ~!= =+ (a+= (cong+= (~~ i×l) (cong+= !! (~~ a×) (dr ~!= !! )) (dr ~!= =× (~~ (fix≃ m) ) )) ) ) )     ) =!= a+= (+= (a+ ~!= (a+ ~!= =+ (a+= (cong+= (~~ i×l) (cong+= !! (~~ a×) (~~ dr)) (dr ~!= =× (~~ (fix≃ m) ) )) ) ) ) =!= cong+= (~~ i×l) (cong+= !! (~~ a×) (~~ dr)) (dr ~!= =× (~~ (fix≃ m)) )) ) ) ) ) ) =!= ~~ (a+ ~!= += (!! )  )  ) ) ) ) )
 
-c×m[c×M³] : List (Iso (m [ M³ ]) (M³))
+c×m[c×M³] : List (Iso (subst m M³) (M³))
 c×m[c×M³] = flatten (List→ (λ x → List→ (λ y → x =!= (mM³=M³ =!= y ) ) (c×³ {X = M}) ) m[c×M³] )
 
 isoCheck : List (List 𝔹)
