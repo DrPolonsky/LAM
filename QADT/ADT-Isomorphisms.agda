@@ -11,6 +11,10 @@ open import Environment
 open import QADT.EnvIsomorphisms
 open import QADT.Functor
 
+-- TODO
+-- implement convenient syntax for substitution inside isomorphisms
+-- automate search for ring isomorphisms proofs
+
 -- A syntax of proof terms for isomorphisms between ADTs
 data Iso {V} : ADT V → ADT V → Set where
   -- Equivalence relation

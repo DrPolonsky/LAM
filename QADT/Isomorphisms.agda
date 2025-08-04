@@ -308,3 +308,6 @@ cycle∨ = c∨= (a∨= [!!] )
 
 [foil] : ∀ {A B : Set} → ((A ∨ B) ∧ (A ∨ B)) ≃ ((A ∧ A) ∨ ((A ∧ B ∨ A ∧ B) ∨ (B ∧ B)))
 [foil]  {A} {B} = [dr=] (cong∨= [dl] [dl] (a∨= [!!] ) ) [=!=] ∨= ([~~] (a∨= (∨= (=∨ c∧ ) ) ) )
+
+iso≠lemma : ∀ {A B : Set} (i1 i2 : A ≃ B) → ∀ (a : A) → ¬ (_≃_.f+ i1 a ≡ _≃_.f+ i2 a) → ¬ (i1 ≡ i2)
+iso≠lemma i1 .i1 a neq (refl) = neq (refl )

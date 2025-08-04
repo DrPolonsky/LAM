@@ -6,9 +6,9 @@ open import QADT.Isomorphisms
 open import QADT.ADTs
 open import QADT.ADT-Isomorphisms
 open import Environment
-open import QADT.ExampleADTs
+open import QADT.Examples.ExampleADTs
 
-module QADT.B^2=J where
+module QADT.Examples.B^2=J where
 
 j[c×B²] : Iso (subst j B²) (subst j B²)
 j[c×B²] = substIso j c×
