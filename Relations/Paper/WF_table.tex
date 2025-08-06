@@ -16,15 +16,15 @@
 \resizebox{\textwidth}{!}{ % <--- This line scales the table
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
 \hline
- & WFacc & WFseq & WFmin & WFminDN & WFacc- & WFseq- & WFmin- & WFminDNE & WFmincor \\
+ & WFacc & WFseq & WFmin & WFminDNE& WFacc- & WFseq- & WFmin- & WFminDNE & WFminCor \\
 \hline
 WFacc     & - & Rdec & ? & ? & - & - & - & - & - \\
 \hline
-WFseq     & ? & - & ? & ? & accCor & - & accCor & accCor & - \\
+WFseq     & accCor + accDNE & - & ? & ? & accCor & - & accCor & accCor & - \\
 \hline
-WFmin     & {accDNE} & - & - & ? & FB or accCor & - & accCor & accCor & - \\
+WFmin     & {accDNE} & - & - & - & FB or accCor & - & accCor & accCor & - \\
 \hline
-WFminDN   & {accDNE} & Rdec + MP & ? & - & accDNE or & - & - & - & - \\
+WFminDNE  & {accDNE} & Rdec + MP & ? & - & accDNE or & - & - & - & - \\
 \hline
 WFacc-    & {accDNE} & accDNE + Rdec & ? & - & - & - & - & - & - \\
 \hline
@@ -32,7 +32,7 @@ WFseq-    & accCor + {accDNE} & accCor + accDNE + Rdec & ? & ? & accCor & - & ac
 \hline
 WFmin-    & (accCor or FB) + {accDNE} & (accCor or FB) + accDNE + Rdec & ? & ? & accCor or & - & - & - & - \\
 \hline
-WFminDN   & (accCor or FB) + {accDNE} & (accCor or FB) + accDNE + Rdec & ? & ? & accCor or & - & - & - & - \\
+WFminDNE-  & (accCor or FB) + {accDNE} & (accCor or FB) + accDNE + Rdec & ? & ? & accCor or & - & - & - & - \\
 \hline
 WFminCor  & ? & ? & ? & ? & ? & ? & ? & ? & - \\
 \hline
