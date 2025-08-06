@@ -12,11 +12,11 @@
 
 % Row 1: WFacc
 \node[box] (WFacc) {WFacc};
-\node[box, right=of WFacc] (NNWFacc) {$\lnot\lnot$WFacc};
-\node[box, right=of NNWFacc] (WFaccM) {WFacc-};
+% \node[box, right=of WFacc] (NNWFacc) {$\lnot\lnot$WFacc};
+\node[box, right=2.9cm of WFacc] (WFaccM) {WFacc-};
 
-\draw[arrow] (WFacc) -- (NNWFacc);
-\draw[arrow] (NNWFacc) -- (WFaccM);
+\draw[arrow] (WFacc) -- (WFaccM);
+% \draw[arrow] (NNWFacc) -- (WFaccM);
 \draw[arrow, bend right] (WFaccM) to node[above, text=red] {accDNE} (WFacc);
 
 % Row 2: WFind
@@ -27,28 +27,32 @@
 % \draw[arrow] (WFind) -- (NNWFind);
 % \draw[arrow] (NNWFind) -- (WFindM);
 
-% Row 3: WFseq
-\node[box, below=of WFacc] (WFseq) {WFseq};
-\node[box, right=of WFseq] (NNWFseq) {$\lnot\lnot$WFseq};
-\node[box, right=of NNWFseq] (WFseqM) {WFseq-};
 
-\draw[arrow] (WFseq) -- (NNWFseq);
-\draw[arrow] (NNWFseq) -- (WFseqM);
+% \draw[arrow] (NNWFseq) -- (WFseqM);
+
+% Row 5: WFminDNE -> WFminDNE-
+\node[box, below=of WFacc] (WFminDNE) {WFminDNE};
+\node[box, right=2.0cm of WFminDNE] (WFminDNEM) {WFminDNE-};
+
+\draw[arrow] (WFminDNE) -- (WFminDNEM);
 
 % Row 4: WFmin -> WFmin-
-\node[box, below=of WFseq] (WFmin) {WFmin};
+\node[box, below=of WFminDNE] (WFmin) {WFmin};
 \node[box, right=2.8cm of WFmin] (WFminM) {WFmin-};
 
 \draw[arrow] (WFmin) -- (WFminM);
 
-% Row 5: WFminDNE -> WFminDNE-
-\node[box, below=of WFmin] (WFminDNE) {WFminDNE};
-\node[box, right=2.1cm of WFminDNE] (WFminDNEM) {WFminDNE-};
 
-\draw[arrow] (WFminDNE) -- (WFminDNEM);
+
+% Row 3: WFseq
+\node[box, below=of WFmin] (WFseq) {WFseq};
+% \node[box, right=of WFseq] (NNWFseq) {$\lnot\lnot$WFseq};
+\node[box, right=2.9cm of WFseq] (WFseqM) {WFseq-};
+
+\draw[arrow] (WFseq) -- (WFseqM);
 
 % Row 6: WFcor 
-\node[box, below=of WFminDNE] (WFminCor) {WFminCor};
+\node[box, below=of WFseqM] (WFminCor) {WFminCor};
 
 
 % Arrows between rows
@@ -56,10 +60,10 @@
 % \draw[arrow, <->] (NNWFacc) -- (NNWFind);
 % \draw[arrow, <->] (WFaccM) -- (WFindM);
 
-\draw[arrow] (WFacc) to node[right, text = red] {Rdec} (WFseq);
-\draw[arrow, bend left] (WFaccM) to (WFseqM);
-\draw[arrow, bend left] (WFseqM) to node[left, text=red] {accCor} (WFaccM);  
-\draw[arrow, bend left = 45] (WFaccM) to (WFminM);  
+\draw[arrow, bend right = 90] (WFacc) to node[left, text = red] {Rdec} (WFseq);
+\draw[arrow, bend right] (WFaccM) to (WFminDNEM);
+\draw[arrow, bend right = 90] (WFseqM) to node[right, text=red] {accCor} (WFaccM);  
+% \draw[arrow, bend left = 55] (WFaccM) to (WFminM);  
 
 
 \draw[arrow] (WFmin) -- (WFseq);
@@ -67,9 +71,11 @@
 \draw[arrow] (WFmin) -- (WFminDNE);
 \draw[arrow, <->] (WFminM) -- (WFminDNEM);
 
-\draw[arrow, bend left=90] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
-\draw[arrow, bend left=45] (WFminDNE) to node[pos=0.9, left, text=red] {Rdec$+$MP} (WFseq);
-\draw[arrow, bend right=45] (WFminDNEM) to node[right, text=red] {FB} (WFaccM);
+\draw[arrow] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
+\draw[arrow, bend right=45] (WFminDNE) to node[pos=0.5, left, text=red] {MP$\equiv$} (WFseq);
+\draw[arrow, bend right] (WFminDNEM) to node[right, text=red] {FB} (WFaccM);
+\draw[arrow, bend right] (WFseqM) to (WFminCor);
+\draw[arrow, bend right] (WFminCor) to node [right, text=red] {MP$\equiv$} (WFseqM);
 
 
 \end{tikzpicture}
