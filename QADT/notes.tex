@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
 
 \title{Isomorphisms between algebraic datatypes}
 \author{Andrew Polonsky, Ben Lenox}
@@ -15,7 +16,29 @@
 \newcommand{\ints}{\mathbb{Z}}
 \newcommand{\nat}{\mathbb{N}}
 
+\newcommand{\hired}[1]{\textcolor{Red}{#1}}
 \begin{document}
+
+\section*{2025.08.14}
+
+Looked at the equation $1 + X = X + X^2$.
+Ben presented a method for deriving an ADT solution to this equation.
+The following points came up during the discussion.
+\begin{itemize}
+  \item The answer matches up with the polynomial obtained by the trick
+  $X := Z + 2$; this should be explained.
+  \item Similarly, for any adt with roots $p$ and $-q$, we can
+  write $F(x) = x + (x+1)(x+(q+p+1))$, then $\mu F + (p+1)$ gives those roots.
+  \item Adding two \emph{linear} ADTs corresponds to adding their roots.
+  \item How does the sum/product of two \emph{general} ADTs influence their
+  roots?
+  \item What is the general method for treating a ``difference'' of two
+  ADTs $P(x) - Q(x)$, as an ADT in its own right?
+  \item \hired{AP:} The trick of adding \emph{positive integers} to ADT
+  seems to work for specific roots, specifically it should work for all real roots.
+
+  How do we treat roots that have a complex component to them?
+\end{itemize}
 
 \section*{2025.07.22}
 \begin{itemize}
