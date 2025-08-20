@@ -10,8 +10,10 @@
 
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
-In this section, we will compare several definitions of well-foundedness, which depend on the following properties. \apcomment{Want to say something like: "Relating properties of a relation R"}
-\begin{definition}
+In this section, we will compare several definitions of well-foundedness, which depend on the properties in Defintion~\ref{def:WFproperties} below. 
+
+For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the complement of $P$.
+\begin{definition}\label{def:WFproperties}
   Let $R \subseteq A \times A$.  We write $Rxy$ when $(x,y) \in R$.
   \begin{enumerate}
     \item $P \subseteq A$ is \emph{inductive}
@@ -22,15 +24,13 @@ In this section, we will compare several definitions of well-foundedness, which 
     \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
     $Ryx$ implies $y \notin P$.
 
-    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$. 
+    \item $P \subseteq A$ is \emph{coreductive} if, for each $x \in \ol{P}$, there is a $y \in A$ such that $Ryx$ and $y \in \ol{P}$. 
     
-    \item $P \subseteq A$ is \emph{coreductive} if, for each $x \in A$, $x \notin P$ implies $\exists y \in A$ such that $Ryx$ and $y \notin P$. 
+    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$. 
   \end{enumerate}
 \end{definition}
 The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:Definitions}, as it is used extensively in this section. 
 
-\apcomment{Add the definitions of well-foundedness here and then continue with the text as below.}
-\sacomment{Do we want local or global definitions here?}
 \begin{definition}
   Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
   \begin{enumerate}
@@ -38,9 +38,9 @@ The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:De
       \[
         \forall x \in A.\; x \text{ is accessible}.
       \]
-    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive $P \subseteq A$ is universal:
+    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive $P \subseteq A$ is universally true:
       \[
-        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; x \in P.
+        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P.
       \]
     \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
       \[
@@ -51,13 +51,12 @@ The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:De
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
         \exists x \in P.\; \text{$x$ is $P$-minimal}.
       \]
-    \item  $R$ is \emph{minimally well-founded under double negation elimination} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
+    \item  $R$ is \emph{minimally well-founded for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
       \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow (\lnot \lnot P \Rightarrow P) \Rightarrow
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow
         \exists x \in P.\; \text{$x$ is $P$-minimal}.
       \]
-    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive $P \subseteq A$ is universal:
-      
+    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive $P \subseteq A$ is universally true:
       \[
         \forall P \subseteq A.\;(\text{$P$ is coreductive}) \Rightarrow \forall x \in A.\; x \in P.
       \]
@@ -65,40 +64,6 @@ The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:De
   \end{enumerate}
 \end{definition}
 We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}. 
-
-To explore how these definitions interrelate it helps to consider the following corresponding weaker definitions (which are formalized in \texttt{WFWeakDefinitions}). 
-
-\begin{definition}
-  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
-  \begin{enumerate}
-    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds up to double negation:
-      \[
-        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible}).
-      \]
-    \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
-      \[
-        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P).
-      \]
-    \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
-      \[
-        \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}.
-      \]
-    \item  $R$ is \emph{weakly minimally well-founded} ($\WFmin$) if every nonempty subset contains a $\lnot \lnot P$-minimal element:
-      \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
-        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
-      \]
-    \item  $R$ is \emph{weakly minimally well-founded under double negation elimination} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$ contains a $P$-minimal element:
-      \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow (\lnot \lnot P \Rightarrow P) \Rightarrow \lnot \lnot \;
-        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
-      \]      
-  \end{enumerate}
-\end{definition}
-
-
-In \cite{Terese}, the $WFseqm$ definition is used, as in the classical mathematics textbooks. 
-\subsection{New version: Synopsis and Outline} 
 
 Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent; the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
@@ -128,7 +93,128 @@ of every subset of $\nat$, clearly incompatible with effective semantics.)
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
 every sequence $\lnot\lnot$-contains a non-decreasing index,
-for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
+for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. These are formalized in the definition below (and in \texttt{WFWeakDefinitions.agda}). 
+
+\begin{definition}
+  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
+  \begin{enumerate}
+    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds up to double negation:
+      \[
+        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible}).
+      \]
+    \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
+      \[
+        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P).
+      \]
+    \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
+      \[
+        \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}.
+      \]
+    \item  $R$ is \emph{weakly minimally well-founded} ($\WFminm$) if every nonempty subset contains a $\lnot \lnot P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
+        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+      \]
+    \item  $R$ is \emph{weakly minimally well-founded under double negation elimination} ($\WFminDNEm$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$ contains a $P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
+        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+      \]      
+  \end{enumerate}
+\end{definition}
+
+
+
+
+\begin{figure}[ht]
+\centering  
+\begin{tikzpicture}[
+  node distance=1cm and .5cm,
+  box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
+  arrow/.style={-{Latex}, thick}
+]
+
+% Row 1: WFacc
+\node[box] (WFacc) {WFacc};
+% \node[box, right=of WFacc] (NNWFacc) {$\lnot\lnot$WFacc};
+\node[box, right=2.9cm of WFacc] (WFaccM) {WFacc-};
+
+\draw[arrow] (WFacc) -- (WFaccM);
+% \draw[arrow] (NNWFacc) -- (WFaccM);
+\draw[arrow, bend right] (WFaccM) to node[above, text=red] {accDNE} (WFacc);
+
+% Row 2: WFind
+% \node[box, below=of WFacc] (WFind) {WFind};
+% \node[box, right=of WFind] (NNWFind) {$\lnot\lnot$WFind};
+% \node[box, right=of NNWFind] (WFindM) {WFind-};
+
+% \draw[arrow] (WFind) -- (NNWFind);
+% \draw[arrow] (NNWFind) -- (WFindM);
+
+
+% \draw[arrow] (NNWFseq) -- (WFseqM);
+
+% Row 5: WFminDNE -> WFminDNE-
+\node[box, below=of WFacc] (WFminDNE) {WFminDNE};
+\node[box, right=2.0cm of WFminDNE] (WFminDNEM) {WFminDNE-};
+
+\draw[arrow] (WFminDNE) -- (WFminDNEM);
+
+% Row 4: WFmin -> WFmin-
+\node[box, below=of WFminDNE] (WFmin) {WFmin};
+\node[box, right=2.8cm of WFmin] (WFminM) {WFmin-};
+
+\draw[arrow] (WFmin) -- (WFminM);
+
+
+
+% Row 3: WFseq
+\node[box, below=of WFmin] (WFseq) {WFseq};
+% \node[box, right=of WFseq] (NNWFseq) {$\lnot\lnot$WFseq};
+\node[box, right=2.9cm of WFseq] (WFseqM) {WFseq-};
+
+\draw[arrow] (WFseq) -- (WFseqM);
+
+% Row 6: WFcor 
+\node[box, below=of WFseqM] (WFminCor) {WFminCor};
+
+
+% Arrows between rows
+% \draw[arrow, <->] (WFacc) -- (WFind);
+% \draw[arrow, <->] (NNWFacc) -- (NNWFind);
+% \draw[arrow, <->] (WFaccM) -- (WFindM);
+
+\draw[arrow, bend right = 90] (WFacc) to node[left, text = red] {Rdec} (WFseq);
+\draw[arrow, bend right] (WFaccM) to (WFminDNEM);
+\draw[arrow, bend right = 90] (WFseqM) to node[right, text=red] {accCor} (WFaccM);  
+% \draw[arrow, bend left = 55] (WFaccM) to (WFminM);  
+
+
+\draw[arrow] (WFmin) -- (WFseq);
+\draw[arrow] (WFminM) -- (WFseqM);
+\draw[arrow] (WFmin) -- (WFminDNE);
+\draw[arrow, <->] (WFminM) -- (WFminDNEM);
+
+\draw[arrow] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
+\draw[arrow, bend right=45] (WFminDNE) to node[pos=0.5, left, text=red] {MP$\equiv$} (WFseq);
+\draw[arrow, bend right] (WFminDNEM) to node[right, text=red] {FB} (WFaccM);
+\draw[arrow, bend right] (WFseqM) to (WFminCor);
+\draw[arrow, bend right] (WFminCor) to node [right, text=red] {MP$\equiv$} (WFseqM);
+
+
+\end{tikzpicture}
+\caption{The logical relationships between notions of well-foundedness}
+ \label{fig:WF} 
+\end{figure}
+\clearpage
+
+In \cite{Terese}, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. 
+
+
+To explore how these definitions interrelate it helps to consider the following corresponding weaker definitions (which are formalized in \texttt{WFWeakDefinitions.agda}). 
+The weaker definitions help us to explore how the standard well-founded definitions interrelate. This is made clear in the following diagram.
+
+\subsection{New version: Synopsis and Outline} 
 This cuts down some, but not all, of the complexity.
 For example, the two minimality principles
 described above are equivalent with this formulation.
