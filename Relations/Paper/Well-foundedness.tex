@@ -23,12 +23,82 @@ In this section, we will compare several definitions of well-foundedness, which 
     $Ryx$ implies $y \notin P$.
 
     \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$. 
+    
+    \item $P \subseteq A$ is \emph{coreductive} if, for each $x \in A$, $x \notin P$ implies $\exists y \in A$ such that $Ryx$ and $y \notin P$. 
   \end{enumerate}
 \end{definition}
 The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:Definitions}, as it is used extensively in this section. 
 
 \apcomment{Add the definitions of well-foundedness here and then continue with the text as below.}
-\subsection{New version: Synopsis and Outline}
+\sacomment{Do we want local or global definitions here?}
+\begin{definition}
+  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
+  \begin{enumerate}
+    \item $R$ is \emph{accessibly well-founded} ($\WFacc$) if every element is accessible:
+      \[
+        \forall x \in A.\; x \text{ is accessible}.
+      \]
+    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive $P \subseteq A$ is universal:
+      \[
+        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; x \in P.
+      \]
+    \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
+      \[
+        \forall s : \nat \to A \exists k : \nat.\, \lnot \, R \,(s\,k)\,(s\,(k+1)).
+      \]
+    \item  $R$ is \emph{minimally well-founded} ($\WFmin$) if every nonempty subset has a $P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
+        \exists x \in P.\; \text{$x$ is $P$-minimal}.
+      \]
+    \item  $R$ is \emph{minimally well-founded under double negation elimination} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow (\lnot \lnot P \Rightarrow P) \Rightarrow
+        \exists x \in P.\; \text{$x$ is $P$-minimal}.
+      \]
+    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive $P \subseteq A$ is universal:
+      
+      \[
+        \forall P \subseteq A.\;(\text{$P$ is coreductive}) \Rightarrow \forall x \in A.\; x \in P.
+      \]
+      
+  \end{enumerate}
+\end{definition}
+We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}. 
+
+To explore how these definitions interrelate it helps to consider the following corresponding weaker definitions (which are formalized in \texttt{WFWeakDefinitions}). 
+
+\begin{definition}
+  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
+  \begin{enumerate}
+    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds up to double negation:
+      \[
+        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible}).
+      \]
+    \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
+      \[
+        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P).
+      \]
+    \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
+      \[
+        \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}.
+      \]
+    \item  $R$ is \emph{weakly minimally well-founded} ($\WFmin$) if every nonempty subset contains a $\lnot \lnot P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
+        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+      \]
+    \item  $R$ is \emph{weakly minimally well-founded under double negation elimination} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$ contains a $P$-minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow (\lnot \lnot P \Rightarrow P) \Rightarrow \lnot \lnot \;
+        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+      \]      
+  \end{enumerate}
+\end{definition}
+
+
+In \cite{Terese}, the $WFseqm$ definition is used, as in the classical mathematics textbooks. 
+\subsection{New version: Synopsis and Outline} 
 
 Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent; the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
