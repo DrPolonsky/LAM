@@ -16,15 +16,33 @@
 \newcommand{\ints}{\mathbb{Z}}
 \newcommand{\nat}{\mathbb{N}}
 
+\newcommand{\mcS}{\mathcal{S}}
+
 \newcommand{\hired}[1]{\textcolor{Red}{#1}}
 \begin{document}
+
+\section*{2025.08.22}
+\begin{enumerate}
+  \item The substitution trick seems to prove the lemma Ben wants.
+  (Item 2 from 8.14)
+  \item Use $\mcS_n$ for the type of $n$-ary strings.
+
+  Notice that $1 + \mcS_2 \models X = 2X$.
+
+  \item Looked at $B \times M$, where $B = \mu X. 1 + X^2$ and $M = \mu X. 1 + X + X^2$.
+
+  Decided that their product should be $\mu X. 1 + X + X^6$, but realized it's more likely
+  that this is the product of $M$ and $T = \mu X. 1 + X + X^3$.
+
+  Ben is going to try to prove this.
+\end{enumerate}
 
 \section*{2025.08.14}
 
 Looked at the equation $1 + X = X + X^2$.
 Ben presented a method for deriving an ADT solution to this equation.
 The following points came up during the discussion.
-\begin{itemize}
+\begin{enumerate}
   \item The answer matches up with the polynomial obtained by the trick
   $X := Z + 2$; this should be explained.
   \item Similarly, for any adt with roots $p$ and $-q$, we can
@@ -38,7 +56,7 @@ The following points came up during the discussion.
   seems to work for specific roots, specifically it should work for all real roots.
 
   How do we treat roots that have a complex component to them?
-\end{itemize}
+\end{enumerate}
 
 \section*{2025.07.22}
 \begin{itemize}
