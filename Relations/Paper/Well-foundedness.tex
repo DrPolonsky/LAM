@@ -46,12 +46,12 @@ The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:De
       \[
         \forall s : \nat \to A \exists k : \nat.\, \lnot \, R \,(s\,k)\,(s\,(k+1)).
       \]
-    \item  $R$ is \emph{minimally well-founded} ($\WFmin$) if every nonempty subset has a $P$-minimal element:
+    \item  $R$ is \emph{well-founded with regard to minimality} ($\WFmin$) if every nonempty subset has a $P$-minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
         \exists x \in P.\; \text{$x$ is $P$-minimal}.
       \]
-    \item  $R$ is \emph{minimally well-founded for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
+    \item  $R$ is \emph{well-founded with regard to minimality for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow
         \exists x \in P.\; \text{$x$ is $P$-minimal}.
@@ -110,17 +110,18 @@ for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. The
       \[
         \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}.
       \]
-    \item  $R$ is \emph{weakly minimally well-founded} ($\WFminm$) if every nonempty subset contains a $\lnot \lnot P$-minimal element:
+    \item  $R$ is \emph{weakly well-founded with regard to a minimal element} ($\WFminm$) if for every nonempty subset there $\lnot \lnot$-exists a $P$-minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
         (\exists x \in P.\; \text{$x$ is $P$-minimal}).
       \]
-    \item  $R$ is \emph{weakly minimally well-founded under double negation elimination} ($\WFminDNEm$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$ contains a $P$-minimal element:
+    \item  $R$ is \emph{weakly well-founded with regard to a minimal element under double negation elimination} ($\WFminDNEm$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$-contains a $P$-minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
         (\exists x \in P.\; \text{$x$ is $P$-minimal}).
       \]      
-  \end{enumerate}
+    \item [need to define wfmincor]
+  \end{enumerate} 
 \end{definition}
 
 
@@ -187,7 +188,7 @@ for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. The
 
 \draw[arrow, bend right = 90] (WFacc) to node[pos = 0.75,left, text = red] {Rdec} (WFseq);
 \draw[arrow, bend right] (WFaccM) to (WFminDNEM);
-\draw[arrow, bend right = 90] (WFseqM) to node[right, text=red] {accCor} (WFaccM);  
+\draw[arrow, bend right = 90] (WFminCor) to node[right, text=red] {accCor} (WFaccM);  
 % \draw[arrow, bend left = 55] (WFaccM) to (WFminM);  
 
 
@@ -260,13 +261,12 @@ in the following list.
   %  a minimal element of some given non-empty $\lnot\lnot$-closed predicate
   %  automatically entails that any particular element of interest is not normal.\\
   %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
-  \item Assuming \accCor, isWFacc- can also be derived from a weaker condition, isWFminCor(-).
-  (Just like isWFminDNE is a natural weakening of isWFmin that is sufficient to recover isWFacc
-  in the presence of {\accDNE}.)
-  It is implied by isWFseq-, but does not appear to imply anything on its own.
+  \item Assuming \accCor, $\isWFacc$ ($\isWFaccm$) can also be derived from a weaker condition, $\isWFmin$ ($\isWFminm$).
+  (Just like $\isWFminDNE$ is a natural weakening of $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {\accDNE}.)
+  It is implied by $\isWFseqm$, but does not appear to imply anything on its own.
 
-  \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
-  have decidable image, leading to a further weakening of isWFseq-.)}
+  % \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
+  % have decidable image, leading to a further weakening of isWFseq-.)}
   \item Since isWFminDNE- implies isWFseq-, the former also implies isWFminCor-.
   But the converse fails: If a subset/predicate $P$ is $\lnot\lnot$-closed,
   we cannot conclude it is coreductive.

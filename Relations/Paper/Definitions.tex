@@ -57,10 +57,10 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
         \item[\ule{$a \in \CRs_R$}] \emph{$a$ is subcommutative} if for all $b, c \in A$,
         \[c \bmstep a \mstep b \implies \exists d. \, c \rrstep d \brstep b\]
         \item[\ule{$a \in \NPe_R$}] \emph{$a$ has the conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
-        \item[\ule{$a \in \NP_R$}] \emph{$a$ has the normal form property} if for all $b \in \NF_R$,
+        \item[\ule{$a \in \NP_R$}] \emph{$a$ has the reduction normal form property} if for all $b \in \NF_R$,
         \[c \bmstep a \mstep b \implies c \mstep b\]
-        \item[\ule{$a \in \UN_R$}] \emph{$a$ has the unique normal form property} if for all $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
-        \item[\ule{$a \in \UNto_R$}] \emph{$a$ has the unique normal form property with respect to reduction} if for all $b, c \in \NF_R$,
+        \item[\ule{$a \in \UN_R$}] \emph{$a$ has the conversion unique normal form property} if for all $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
+        \item[\ule{$a \in \UNto_R$}] \emph{$a$ has the reduction unique normal form property} if for all $b, c \in \NF_R$,
         \[c \bmstep a \mstep b  \implies b \equiv c\]
     \end{description}
 \end{definition}
