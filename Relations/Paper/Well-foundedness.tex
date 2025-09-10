@@ -3,8 +3,8 @@
 \newcommand{\then}{\Longrightarrow}
 \label{sec:Well-foundedness}
 
-\newcommand{\accCor}{\textbf{accCor}}
-\newcommand{\accDNE}{\textbf{accDNE}}
+% \newcommand{\accCor}{\textbf{accCor}}
+% \newcommand{\accDNE}{\textbf{accDNE}}
 
 % We use Well-founded not Wellfounded
 
@@ -136,13 +136,13 @@ for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. The
 ]
 
 % Row 1: WFacc
-\node[box] (WFacc) {$WFacc$};
+\node[box] (WFacc) {$\WFacc$};
 % \node[box, right=of WFacc] (NNWFacc) {$\lnot\lnot$WFacc};
-\node[box, right=2.9cm of WFacc] (WFaccM) {$WFacc\lnot\lnot$};
+\node[box, right=2.9cm of WFacc] (WFaccM) {$\WFaccm$};
 
 \draw[arrow] (WFacc) -- (WFaccM);
 % \draw[arrow] (NNWFacc) -- (WFaccM);
-\draw[arrow, bend right] (WFaccM) to node[above, text=red] {accDNE} (WFacc);
+\draw[arrow, bend right] (WFaccM) to node[above, text=red] {$\accDNE$} (WFacc);
 
 % Row 2: WFind
 % \node[box, below=of WFacc] (WFind) {WFind};
@@ -156,29 +156,29 @@ for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. The
 % \draw[arrow] (NNWFseq) -- (WFseqM);
 
 % Row 5: WFminDNE -> WFminDNE-
-\node[box, below=of WFacc] (WFminDNE) {$WFminDNE$};
-\node[box, right=2.0cm of WFminDNE] (WFminDNEM) {$WFminDNE\lnot\lnot$};
+\node[box, below=of WFacc] (WFminDNE) {$\WFminDNE$};
+\node[box, below=of WFaccM] (WFminDNEM) {$\WFminDNEm$};
 
 \draw[arrow] (WFminDNE) -- (WFminDNEM);
 
 % Row 4: WFmin -> WFmin-
-\node[box, below=of WFminDNE] (WFmin) {$WFmin$};
-\node[box, right=2.8cm of WFmin] (WFminM) {$WFmin\lnot\lnot$};
+\node[box, below=of WFminDNE] (WFmin) {$\WFmin$};
+\node[box, below = of WFminDNEM] (WFminM) {$\WFminm$};
 
 \draw[arrow] (WFmin) -- (WFminM);
 
 
 
 % Row 3: WFseq
-\node[box, below=of WFmin] (WFseq) {$WFseq$};
+\node[box, below=of WFmin] (WFseq) {$\WFseq$};
 % \node[box, right=of WFseq] (NNWFseq) {$\lnot\lnot$WFseq};
-\node[box, right=2.9cm of WFseq] (WFseqM) {$WFseq-$};
+\node[box, below= of WFminM] (WFseqM) {$\WFseqm$};
 
 \draw[arrow] (WFseq) -- (WFseqM);
 
 % Row 6: WFcor 
-\node[box, below=of WFseq] (WFCor) {$WFCor$};
-\node[box, below=of WFseqM] (WFminCor) {$WFminCor$};
+\node[box, below=of WFseq] (WFCor) {$\WFcor$};
+\node[box, below=of WFseqM] (WFminCor) {$\WFcorm$};
 
 
 % Arrows between rows
@@ -186,24 +186,26 @@ for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. The
 % \draw[arrow, <->] (NNWFacc) -- (NNWFind);
 % \draw[arrow, <->] (WFaccM) -- (WFindM);
 
-\draw[arrow, bend right = 90] (WFacc) to node[pos = 0.75,left, text = red] {Rdec} (WFseq);
+\draw[arrow, bend right = 90] (WFacc) to node[pos = 0.75,left, text = red] {$\rdec$} (WFseq);
 \draw[arrow, bend right] (WFaccM) to (WFminDNEM);
-\draw[arrow, bend right = 90] (WFminCor) to node[right, text=red] {accCor} (WFaccM);  
+\draw[arrow, bend right = 90] (WFminCor) to node[right, text=red] {$\accCor$} (WFaccM);  
 % \draw[arrow, bend left = 55] (WFaccM) to (WFminM);  
 
 
 \draw[arrow] (WFmin) -- (WFseq);
 \draw[arrow] (WFminM) -- (WFseqM);
 \draw[arrow] (WFmin) -- (WFminDNE);
-\draw[arrow, <->] (WFminM) -- (WFminDNEM);
+\draw[arrow, bend right] (WFminM) to (WFminDNEM);
+\draw[arrow, bend right] (WFminDNEM) to (WFminM);
 
-\draw[arrow] (WFminDNE) to node[left, text = red] {accDNE} (WFacc);
-\draw[arrow, bend right=45] (WFminDNE) to node[pos=0.5, left, text=red] {MP$\equiv$} (WFseq);
-\draw[arrow, bend right] (WFminDNEM) to node[right, text=red] {FB} (WFaccM);
+\draw[arrow] (WFminDNE) to node[left, text = red] {$\accDNE$} (WFacc);
+\draw[arrow, bend right=45] (WFminDNE) to node[pos=0.5, left, text=red] {$\mpe$} (WFseq);
+\draw[arrow, bend right] (WFminDNEM) to node[right, text=red] {$\FB$} (WFaccM);
 \draw[arrow, bend right] (WFseqM) to (WFminCor);
-\draw[arrow, bend right] (WFminCor) to node [right, text=red] {MP$\equiv$} (WFseqM);
+\draw[arrow, bend right] (WFminCor) to node [right, text=red] {$\mpe$} (WFseqM);
 \draw[arrow] (WFCor) -- (WFminCor);
-\draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {AccCor} (WFacc);
+\draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {$\accCor$} (WFacc);
+\draw[arrow, bend left] (WFminCor) to node[below, text=red] {$\corDNE$} (WFCor);
 
 
 \end{tikzpicture}
@@ -229,12 +231,12 @@ At the same time, the
 implication from sequential to inductive wellfoundedness
 still requires an additional hypothesis, which may be described as the
 constructive contrapositive of the definition of accessibility.
-Specifically, we call {\accCor} the statement that, if an element $x$
+Specifically, we call {$\accCor$} the statement that, if an element $x$
 is \emph{not} accessible, then there (strongly) exists a $y$ with $Ryx$
 and $y$ not accessible.  (In the context of rewriting systems,
 this condition asserts the existence of a function which maps any
 non-strongly normalizing element to a one-step reduct with the same property.)
-Assuming \accCor, all notions of well-foundedness
+Assuming $\accCor$, all notions of well-foundedness
 are constructively equivalent up to $\lnot\lnot$.
 
 As this discussion illustrates, the network of relationships between the
@@ -250,19 +252,19 @@ in the following list.
   The more reasonable WFminDNE requires Markov's Principle
   (and decidability of $R$) to yield the same consequence.
   \item On the $\lnot\lnot$-side, WFmin- and WFminDNE- are equivalent,
-  and imply WFacc- via WFseq-, requiring {\accCor} assumption in the final inference.
+  and imply WFacc- via WFseq-, requiring {$\accCor$} assumption in the final inference.
   \item At the same time, if the relation is finitely branching, then WFminDNE-
   implies WFacc- directly.
   \item Finite branchingness together with (weak) decidability of minimality
-  implies \accCor.
+  implies $\accCor$.
   % \apcomment{The previous observation suggests the question of whether isWFseq- might
   % imply isWFminDNE- via decidability of minimal elements.\\
   % However, in trying to prove this implication, the hypothesis asserting non-existence of
   %  a minimal element of some given non-empty $\lnot\lnot$-closed predicate
   %  automatically entails that any particular element of interest is not normal.\\
   %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
-  \item Assuming \accCor, $\isWFacc$ ($\isWFaccm$) can also be derived from a weaker condition, $\isWFmin$ ($\isWFminm$).
-  (Just like $\isWFminDNE$ is a natural weakening of $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {\accDNE}.)
+  \item Assuming $\accCor$, $\isWFacc$ ($\isWFaccm$) can also be derived from a weaker condition, $\isWFmin$ ($\isWFminm$).
+  (Just like $\isWFminDNE$ is a natural weakening of $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
   It is implied by $\isWFseqm$, but does not appear to imply anything on its own.
 
   % \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
