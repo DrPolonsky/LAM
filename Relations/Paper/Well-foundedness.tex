@@ -10,57 +10,65 @@
 
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
-In this section, we will compare several definitions of well-foundedness, which depend on the properties in Defintion~\ref{def:WFproperties} below. 
+In this section, we will compare several definitions of well-foundedness,
+which depend on the basic notions given in Definition~\ref{def:WFnotions} below. 
+
+For the rest of this section, fix $R \subseteq A \times A$.  We write $Rxy$ for $(x,y) \in R$.
+
+In the context of ARS, the reader should think of the converse relation, 
+interpreting $Rxy$ as denoting a reduction step $y \to_R x$.
 
 For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the complement of $P$.
-\begin{definition}\label{def:WFproperties}
-  Let $R \subseteq A \times A$.  We write $Rxy$ when $(x,y) \in R$.
-  \begin{enumerate}
+\begin{definition}\label{def:WFnotions} \hfill 
+   \begin{enumerate}
+    \item $x \in A$ is \emph{accessible} if for all $y \in A$, $Ryx$ implies $y$ is accessible. 
+      This is an inductive definition, with the base case obtained at 
+     those $x$ satisfying $\lnot Ryx$ for all $y$.
     \item $P \subseteq A$ is \emph{inductive}
     if, for each $x \in A$, $(\forall y. Ryx \to y \in P)$ implies $x \in P$.
 
-    \item $x \in A$ is \emph{accessible} if $x \in P$ for each inductive $P$.
 
     \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
     $Ryx$ implies $y \notin P$.
 
     \item $P \subseteq A$ is \emph{coreductive} if, for each $x \in \ol{P}$, there is a $y \in A$ such that $Ryx$ and $y \in \ol{P}$. 
     
-    \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$. 
+    % \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$. 
   \end{enumerate}
 \end{definition}
-The definition of a $R$-decreasing sequence is repeated from Section~\ref{sec:Definitions}, as it is used extensively in this section. 
 
-\begin{definition}
-  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
+The above notions give rise to several distinct definitions of well-foundedness, given below. 
+Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Definitions}:
+this is a function $s : \nat \to A$ satisfying $(s(k+1),s(k)) \in R$ for all $k \in \nat$.
+
+\begin{definition} \label{def:WFproperties} \hfill 
   \begin{enumerate}
     \item $R$ is \emph{accessibly well-founded} ($\WFacc$) if every element is accessible:
       \[
-        \forall x \in A.\; x \text{ is accessible}.
+        \forall x \in A.\; x \text{ is accessible}
       \]
-    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive $P \subseteq A$ is universally true:
+    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
       \[
-        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P.
+        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P
       \]
-    \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
+    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive predicate is universally true:
       \[
-        \forall s : \nat \to A \exists k : \nat.\, \lnot \, R \,(s\,k)\,(s\,(k+1)).
+        \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; x \in P
       \]
-    \item  $R$ is \emph{well-founded with regard to minimality} ($\WFmin$) if every nonempty subset has a $P$-minimal element:
+    \item  $R$ is \emph{well-founded minimality-wise} ($\WFmin$) if every nonempty subset contains a minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
-        \exists x \in P.\; \text{$x$ is $P$-minimal}.
+        \exists x \in A.\; \text{$x$ is $P$-minimal}
       \]
-    \item  $R$ is \emph{well-founded with regard to minimality for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a $P$-minimal element:
+    \item  $R$ is \emph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a minimal element:
       \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow
-        \exists x \in P.\; \text{$x$ is $P$-minimal}.
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P \Rightarrow
+        \exists x \in A.\; \text{$x$ is $P$-minimal}
       \]
-    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive $P \subseteq A$ is universally true:
+   \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
       \[
-        \forall P \subseteq A.\;(\text{$P$ is coreductive}) \Rightarrow \forall x \in A.\; x \in P.
+        \forall s : \nat \to A\ \exists k : \nat.\, \lnot \, R \,(s\,k)\,(s\,(k+1))
       \]
-      
   \end{enumerate}
 \end{definition}
 We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}. 
@@ -85,43 +93,54 @@ On the other hand, assuming accessibility is $\lnot\lnot$-closed, the other
 hypothesis can now be weakened, to only require existence of minimal elements
 for $\lnot\lnot$-closed subsets.  This is a significant restriction, which may
 be validated in many cases of interests.  In contrast, the original hypothesis
+(postulating minimal elements for ALL predicates)
 is generally equivalent to every subset being decidable.
-(The file WFCounters.agda shows that assuming the full minimality hypothesis
+For example, the file \texttt{WFCounters.agda} shows that assuming the full minimality hypothesis
 for the standard strict order on the natural numbers entails decidability
-of every subset of $\nat$, clearly incompatible with effective semantics.)
+of every subset of $\nat$ --- which is clearly incompatible with effective semantics.
+\apcomment{Make sure the file exists, recover it if necessary!}
 
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
 every sequence $\lnot\lnot$-contains a non-decreasing index,
-for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc. These are formalized in the definition below (and in \texttt{WFWeakDefinitions.agda}). 
+for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
+These are formalized in the definition below, and in the corresponding file
+\texttt{WFWeakDefinitions.agda}. 
 
-\begin{definition}
-  Let $R \subseteq A \times A$. We write $Rxy$ when $(x,y) \in R$.
+\begin{definition} \label{def:WFweakproperties} \hfill 
   \begin{enumerate}
-    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds up to double negation:
+    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds for all elements up to double negation:
       \[
-        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible}).
+        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible})
       \]
     \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
       \[
-        \forall P \subseteq A.\;(\text{$P$ is inductive}) \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P).
+        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P)
       \]
-    \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
+    \item $R$ is \emph{weakly coreductively well-founded} ($\WFcorm$) if every coreductive predicate holds for all elements up to double negation:
       \[
-        \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}.
+        \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; \lnot\lnot(x \in P)
       \]
-    \item  $R$ is \emph{weakly well-founded with regard to a minimal element} ($\WFminm$) if for every nonempty subset there $\lnot \lnot$-exists a $P$-minimal element:
+    \item  $R$ is \emph{weakly well-founded minimality-wise} ($\WFminm$)
+      if for every nonempty subset $P$ there $\lnot \lnot$-exists a minimal element in $P$:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
-        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+        (\exists x \in A.\; \text{$x$ is $P$-minimal})
       \]
-    \item  $R$ is \emph{weakly well-founded with regard to a minimal element under double negation elimination} ($\WFminDNEm$) if every nonempty $\lnot \lnot$-closed subset $\lnot \lnot$-contains a $P$-minimal element:
+    \item  $R$ is \emph{weakly well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNEm$)
+      if for every nonempty $\lnot \lnot$-closed subset $P$ there $\lnot \lnot$-exists a minimal element in $P$:
+      % \[
+      %   \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
+      % (\exists x \in P.\; \text{$x$ is $P$-minimal}) \]
       \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
-        (\exists x \in P.\; \text{$x$ is $P$-minimal}).
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P\Rightarrow \lnot \lnot \;
+        (\exists x \in A.\; \text{$x$ is $P$-minimal})
       \]      
-    \item [need to define wfmincor]
-  \end{enumerate} 
+  \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
+    \[
+      \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}
+    \]
+\end{enumerate} 
 \end{definition}
 
 
