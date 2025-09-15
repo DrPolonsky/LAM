@@ -7,13 +7,11 @@ open import Relations.Decidable
 open import Relations.ClosureOperators
 open import Relations.Seq
 
-
 module Relations.WellfoundedMisc where
 
 open import Relations.WFDefinitions public
 open import Relations.WeakWFDefinitions public
 open import Relations.Wellfounded public
-
 
 module ToExplore {A : Set} {R : 𝓡 A} where
   isWFminDNE-→isWFacc- : isWFminDNE- R → isWFacc- R
@@ -21,6 +19,29 @@ module ToExplore {A : Set} {R : 𝓡 A} where
     where p = λ a b c → b (λ d → d c)
           f : ¬ Σ[ m ∈ A ] (m ∈ R - (∁ (R -accessible)) -minimal)
           f (m ,, m∉acc , mmin) = {!   !}
+
+  isWFseq' : Set
+  isWFseq' = ∀ (s : ℕ → A) → ¬¬ Σ[ k ∈ ℕ ] (¬ R (s (succ k)) (s k) )
+
+  isWFseq'→isWFseq- : isWFseq' → isWFseq- R
+  isWFseq'→isWFseq- seq' s sdec = seq' s (λ { (k ,, p) → p (sdec k) })
+
+  isWFseq-→isWFseq' : isWFseq- R → isWFseq'
+  isWFseq-→isWFseq' seq s ¬ex with seq s
+  ... | c = {!   !} -- seq s (λ n → {!   !} )
+
+  -- WFseqStrengthening : (R isWFseq → isWFminDNE- R) → (isWFseq' → isWFminDNE- R)
+  -- WFseqStrengthening H RisWFseq' P nnP {a} a∈P ¬Ex = {! H   !}
+
+  {- Informal comments:
+  The assumption that there does *not* exist a P-minimal element
+  implies that,
+  -}
+
+  isWFseq'→isWFminDNE- : isWFseq' → isWFminDNE- R
+  isWFseq'→isWFminDNE- RisWFseq' P CCP⊆P {a} a∈P ¬∃minP = {! Hmin   !} where
+    Hmin : ∀ (x : A) → P x → ¬¬ (Σ[ y ∈ A ] (R y x × P y))
+    Hmin x x∈P notEx = ¬∃minP (x ,, x∈P , (λ y y∈P Ryx → notEx ((y ,, Ryx , y∈P)) ) )
 
   -- Probably unprovable, this seems like a hard one that still deserves to be looked at.
   isWFseq-→isWFminDNE- : isWFseq- R → isWFminDNE- R
@@ -175,6 +196,7 @@ module ToExploreMinDecImplications {A : Set} (R : 𝓡 A) (dM : R isMinDec) wher
           f : ¬ R isWFseq
           f RisWFseq = FB→DNS R (∁ P) a (RisFB a)
                           {!   !}
+                          -- (λ y Rya nnnpy → nnnpy (λ py → ¬∃minP ((a ,, a∈P , {!   !} )) ) )
                           λ H → ¬∃minP (a ,, a∈P , λ y y∈P Rya → H y Rya y∈P )
 
 
