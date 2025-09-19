@@ -98,14 +98,14 @@ is generally equivalent to every subset being decidable.
 For example, the file \texttt{WFCounters.agda} shows that assuming the full minimality hypothesis
 for the standard strict order on the natural numbers entails decidability
 of every subset of $\nat$ --- which is clearly incompatible with effective semantics.
-\apcomment{Make sure the file exists, recover it if necessary!}
+\apcomment{Make sure the file exists (Done), check it wrt other new stuff in the FPLA repo.}
 
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
 every sequence $\lnot\lnot$-contains a non-decreasing index,
 for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
 These are formalized in the definition below, and in the corresponding file
-\texttt{WFWeakDefinitions.agda}. 
+\texttt{WFWeakDefinitions.agda}.
 
 \begin{definition} \label{def:WFweakproperties} \hfill 
   \begin{enumerate}
@@ -144,11 +144,11 @@ These are formalized in the definition below, and in the corresponding file
 \end{definition}
 
 
-
-
-\begin{figure}[ht]
+\begin{figure}[hb]
 \centering  
 \begin{tikzpicture}[
+  scale=0.7,
+  every node/.style={transform shape},
   node distance=1cm and .5cm,
   box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
   arrow/.style={-{Latex}, thick}
@@ -185,8 +185,6 @@ These are formalized in the definition below, and in the corresponding file
 \node[box, below = of WFminDNEM] (WFminM) {$\WFminm$};
 
 \draw[arrow] (WFmin) -- (WFminM);
-
-
 
 % Row 3: WFseq
 \node[box, below=of WFmin] (WFseq) {$\WFseq$};
@@ -226,19 +224,47 @@ These are formalized in the definition below, and in the corresponding file
 \draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {$\accCor$} (WFacc);
 \draw[arrow, bend left] (WFminCor) to node[below, text=red] {$\corDNE$} (WFCor);
 
-
 \end{tikzpicture}
 \caption{The logical relationships between notions of well-foundedness}
  \label{fig:WF} 
 \end{figure}
 \clearpage
 
-In \cite{Terese}, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. 
+In \cite{Terese}, the $\WFseqm$ definition is used, as in the classical mathematics textbooks.
+\apcomment{Move this comment elsewhere? Perhaps we should have a separate discussion between isWFseq- and isWFseq-not-not?} 
+
+The logical relationships between the various definitions of well-foundedness are summarized in 
+Figure \ref{fig:WF}.
+Again, all of the definitions appearing in this figure are classically equivalent.
+But constructively, some implications are not provable in general.
+Formalizing these implications enabled us to identify where exactly classical logic 
+is used, and how much of it is truly needed.
+An arrow from one node to another with no label indicates direct logical implication,
+provable constructively with no additional assumptions. An arrow with a label indicates an additional 
+(semi-)classical hypothesis needed to establish the implication. All of these facts have been 
+formalized within the WellFounded subdirectory of the Agda repository.
+
+\apcomment{Things to do:}
+\begin{itemize}
+  \item Reiterate/articulate the role of classical principles in establishing relationships between definitions of 
+    well-foundedness constructively 
+  \item List/discuss? classical principles appearing in the figure 
+  \item Discuss the figure overall -- refer to the enumerated list below 
+  \item Create ``narrative bridges'' between these items 
+  \item Final thing: Instantiate some of the classical principles on simple examples of term rewrite systems.
+\end{itemize}
 
 
-To explore how these definitions interrelate it helps to consider the following corresponding weaker definitions (which are formalized in \texttt{WFWeakDefinitions.agda}). 
-The weaker definitions help us to explore how the standard well-founded definitions interrelate. This is made clear in the following diagram.
-
+% As the figure illustrates, the concept of well-foundness is very rich from the vantage point of constructive logic.
+% Our analysis resulted in the following principles, 
+%
+% The additional classical hypotheses needed to recover some of the implications on the diagram 
+%
+% The principles appearing in the labels of Figure \ref{fig:WF} are valid for many rewriting systems,
+% and are classically true.  
+%
+% The weaker definitions help us to explore how the standard well-founded definitions interrelate. This is made clear in the following diagram.
+%
 \subsection{New version: Synopsis and Outline} 
 This cuts down some, but not all, of the complexity.
 For example, the two minimality principles
