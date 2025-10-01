@@ -98,14 +98,13 @@ is generally equivalent to every subset being decidable.
 For example, the file \texttt{WFCounters.agda} shows that assuming the full minimality hypothesis
 for the standard strict order on the natural numbers entails decidability
 of every subset of $\nat$ --- which is clearly incompatible with effective semantics.
-\apcomment{Make sure the file exists (Done), check it wrt other new stuff in the FPLA repo.}
 
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
 every sequence $\lnot\lnot$-contains a non-decreasing index,
 for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
 These are formalized in the definition below, and in the corresponding file
-\texttt{WFWeakDefinitions.agda}.
+\texttt{WFWeakDefinitions.agda}. The logical relationships between all notions of well-foundedness are presented in Figure~\ref{fig:WF}.
 
 \begin{definition} \label{def:WFweakproperties} \hfill 
   \begin{enumerate}
@@ -243,6 +242,27 @@ An arrow from one node to another with no label indicates direct logical implica
 provable constructively with no additional assumptions. An arrow with a label indicates an additional 
 (semi-)classical hypothesis needed to establish the implication. All of these facts have been 
 formalized within the WellFounded subdirectory of the Agda repository.
+
+
+
+% \begin{table}[h!]
+% \centering
+% \caption{Classical Properties Used in the Well-Foundedness Diagram}
+% \label{tab:classical_properties}
+% \begin{tabular}{@{}l p{10cm}@{}}
+% \toprule
+% \textbf{Property} & \textbf{Definition} \\
+% \midrule
+% $\accDNE$ & [Fill in: Definition of accDNE] \\
+% $\rdec$ & [Fill in: Definition of rdec] \\
+% $\accCor$ & [Fill in: Definition of accCor] \\
+% $\mpe$ & [Fill in: Definition of mpe] \\
+% $\FB$ & [Fill in: Definition of FB] \\
+% $\corDNE$ & [Fill in: Definition of corDNE] \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
 
 \apcomment{Things to do:}
 \begin{itemize}
