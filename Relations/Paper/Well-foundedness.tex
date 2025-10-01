@@ -243,25 +243,63 @@ provable constructively with no additional assumptions. An arrow with a label in
 (semi-)classical hypothesis needed to establish the implication. All of these facts have been 
 formalized within the WellFounded subdirectory of the Agda repository.
 
+{
+\def\arraystretch{1.3}
+\begin{figure}[h!]
+\small 
+\begin{tabular}{@{}l l l @{}}
+\toprule
+\textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
+\midrule
+$\rdec$   & $R$ is decidable 
+          & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
+$\FB$     & $R$ is finitely branching 
+          & $\mathtt{\forall (a : A) \to \Sigma [ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
+$\accCor$ & Accessibility is coreductive 
+          & \verb|R -coreductive (R -accessible)| \\
+$\accDNE$ & Accessibility is $\lnot\lnot$-closed
+          & $\lnot\lnot$\verb|Closed (R -accessible)| \\
+$\corDNE$ & Coreductives are $\lnot\lnot$-closed 
+          & $\mathtt{\forall (P : \mathcal{P} A) \to R}$-$\mathtt{coreductive\ P \to \lnot\lnot Closed\ P}$\\ 
+$\mpe$    & Sequences are $\lnot\lnot$-closed
+          & $\forall\ \mathtt{(f : \nat \to A) \to \lnot\lnot Closed 
+          (\lambda x \to \Sigma [ k \in \nat ] (f\, k \equiv x))}$ \\
+\bottomrule
+\end{tabular}
+\centering
+\caption{Classical Properties Used in the Well-Foundedness Diagram}
+\label{tab:cprop}
+\end{figure}
+}
 
-
-% \begin{table}[h!]
-% \centering
-% \caption{Classical Properties Used in the Well-Foundedness Diagram}
-% \label{tab:classical_properties}
-% \begin{tabular}{@{}l p{10cm}@{}}
-% \toprule
-% \textbf{Property} & \textbf{Definition} \\
-% \midrule
-% $\accDNE$ & [Fill in: Definition of accDNE] \\
-% $\rdec$ & [Fill in: Definition of rdec] \\
-% $\accCor$ & [Fill in: Definition of accCor] \\
-% $\mpe$ & [Fill in: Definition of mpe] \\
-% $\FB$ & [Fill in: Definition of FB] \\
-% $\corDNE$ & [Fill in: Definition of corDNE] \\
-% \bottomrule
-% \end{tabular}
-% \end{table}
+{
+\def\arraystretch{1.3}
+\begin{figure}[h!]
+\small 
+\begin{tabular}{@{}l l l @{}}
+\toprule
+\textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
+\midrule
+$\rdec$   & $R$ is decidable 
+          & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
+$\FB$     & $R$ is finitely branching 
+          & $\mathtt{\forall (a : A) \to \Sigma [ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
+$\mpe$    & Sequences are $\lnot\lnot$-closed
+          & $\forall\ \mathtt{(f : \nat \to A) \to \lnot\lnot Closed 
+          (\lambda x \to \Sigma [ k \in \nat ] (f\, k \equiv x))}$ \\
+$\corDNE$ & Coreductives are $\lnot\lnot$-closed 
+          & $\mathtt{\forall (P : \mathcal{P} A) \to R}$-$\mathtt{coreductive\ P \to \lnot\lnot Closed\ P}$\\ 
+$\accDNE$ & Accessibility is $\lnot\lnot$-closed
+          & $\lnot\lnot$\verb|Closed (R -accessible)| \\
+$\accCor$ & Accessibility is coreductive 
+          & \verb|R -coreductive (R -accessible)| \\
+\bottomrule
+\end{tabular}
+\centering
+\caption{Classical Properties Used in the Well-Foundedness Diagram}
+\label{tab:cprop}
+\end{figure}
+}
 
 
 \apcomment{Things to do:}
