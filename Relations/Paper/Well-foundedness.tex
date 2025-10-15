@@ -49,7 +49,7 @@ this is a function $s : \nat \to A$ satisfying $(s(k+1),s(k)) \in R$ for all $k 
       \[
         \forall x \in A.\; x \text{ is accessible}
       \]
-    \item $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
+    \item \label{def:WFind} $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
       \[
         \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P
       \]
@@ -286,68 +286,68 @@ $\accCor$ & Accessibility is coreductive
 \end{figure}
 }
 
-% As the figure illustrates, the concept of well-foundness is very rich from the vantage point of constructive logic.
-% Our analysis resulted in the following principles, 
-%
-% The additional classical hypotheses needed to recover some of the implications on the diagram 
-%
+\apcomment{Make another version of the diagram, swapping WFmin and WFacc rows.}
+
 % The principles appearing in the labels of Figure \ref{fig:WF} are valid for many rewriting systems,
 % and are classically true.  
-%
-% The weaker definitions help us to explore how the standard well-founded definitions interrelate. This is made clear in the following diagram.
-%
-As can be seen from the figure, taking the $\lnot\lnot$-closures of 
+Figure \ref{tab:cprop} illustrates that the network of logical relationships between
+constructive notions of well-foundedness is quite rich indeed. 
+Taking the $\lnot\lnot$-closures of 
 well-foundedness properties cuts down some, but not all, of the complexity.
-For example, the two minimality principles
-described above are equivalent with this formulation.
+For example, the two minimality principles become equivalent.
 % The implication from the inductive to sequential definition no longer requires
 % decidability of $R$.
 % On the other hand, the reverse
 At the same time, the weak version of the sequential definition is unable to imply 
-the (weak version of) accessible one without an additional hypothesis $\accCor$, 
+the (weak) accessible one without an additional hypothesis $\accCor$, 
 which may be described as the constructive contrapositive of the definition of accessibility.
 In the context of rewriting systems,
 this condition asserts the existence of a function which maps any
-non-strongly normalizing element to a one-step reduct with the same property.
+element that is \emph{not} strongly normalizing to a one-step reduct of it having the same property.
 Assuming $\accCor$, all notions of well-foundedness
 are constructively equivalent up to $\lnot\lnot$.
 
-As the Figure \ref{tab:cprop} illustrates, the network of relationships between the
-constructive notions of well-foundedness is quite rich. 
-The main observations can now be read off from the figure.
+Other observations that can be gleaned from the figure include the following.
+\apcomment{The macros have to fixed throughout.}
 \begin{enumerate}
   \item The implication from $\isWFacc$ to $\isWFseq$ requires the underlying relation to be decidable. 
     This assumption is no longer necessary on the $\lnot\lnot$-translated side.
   \item WFmin is a very strong assumption and implies WFseq unconditionally.
   The more reasonable WFminDNE requires the image of every sequence to be $\lnot\lnot$-closed 
   to complete the implication.  This condition can be considered as a special case of Markov's Principle
-  (assuming decidability of equality on $A$).
-  \item On the $\lnot\lnot$-side, WFmin- and WFminDNE- are equivalent,
-  and imply WFacc- via WFseq-, requiring {$\accCor$} assumption in the final inference.
+  (if one assumes that equality on $A$ is decidable).
+  \item On the $\lnot\lnot$-side, WFmin- and WFminDNE- are equivalent, are directly implied by $\isWFaccm$, 
+    and directly imply $\isWFseqm$  \apcomment{Fix macros}.
+  \item All definitions imply $\WFcorm$.  This weakest definition implies $\isWFaccm$ assuming the 
+    ``constructive contrapositive of accessibility'', $\accCor$.
+    %While this condition is implied by $\isWFseqm$, it does not appear to imply anything on its own.
+  \item Assuming $\accCor$, $\isWFacc$ can also be derived from $\WFcor$. % , the stronger version of $\WFcorm$.
+    \apcomment{Add the ``is''!}
+
+    (This is analogous to how $\isWFminDNE$ is a natural weakening of 
+    $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
+
   \item At the same time, if the relation is finitely branching ($\FB$), then WFminDNE-
-  implies WFacc- directly.  It should be noted that, $\FB$ together with (weak) decidability of minimality
-  implies $\accCor$.  \apcomment{Fix this: This is proved in \texttt{FinitelyBranching.agda}.}.
+    implies WFacc- directly.
+
+    (It may be noted that $\FB$ implies $\accCor$ whenever the relation $R$ is decidable
+    and $R$-accessibility is \emph{weakly} decidable;  this is proved in \texttt{Coreductive.agda}.)
   % \apcomment{The previous observation suggests the question of whether isWFseq- might
   % imply isWFminDNE- via decidability of minimal elements.\\
   % However, in trying to prove this implication, the hypothesis asserting non-existence of
   %  a minimal element of some given non-empty $\lnot\lnot$-closed predicate
   %  automatically entails that any particular element of interest is not normal.\\
   %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
-  \item Assuming $\accCor$, $\isWFacc$ ($\isWFaccm$) can also be derived from a weaker condition, $\WFcor$ ($\WFcorm$).
-    \apcomment{Add the ``is''!}
-    (Just like $\isWFminDNE$ is a natural weakening of $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
-  \apcomment{True?  It is implied by $\isWFseqm$, but does not appear to imply anything on its own.}
-
   % \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
   % have decidable image, leading to a further weakening of isWFseq-.)}
-\item \apcomment{Fix with macros}. Since isWFminDNE- implies isWFseq-, the former also implies isWFminCor-.
-  But the converse fails: If a subset/predicate $P$ is $\lnot\lnot$-closed,
-  we cannot conclude it is coreductive.
 
-  \item In general, the coreductive properties speak to the ability to choose
+% \item \apcomment{Fix with macros}. Since isWFminDNE- implies isWFseq-, the former also implies isWFminCor-.
+%   But the converse fails: If a subset/predicate $P$ is $\lnot\lnot$-closed,
+%   we cannot, in general, conclude it is coreductive.
+  \item \apcomment{Delete? In general, the coreductive properties speak to the ability to choose
   a successor (strong existence).  This ability is central to being able to
   define sequences.  Therefore, sequential definitions generally require
-  some coreductive situation to be applicable.
+some coreductive situation to be applicable.}
 
   % \item Assuming normal forms are decidable,
   % isWFseq implies a very weak version of minimality, isWFminEM.
@@ -355,11 +355,28 @@ The main observations can now be read off from the figure.
   % so we have nothing else to say about it.
 \end{enumerate}
 
+We have also considered the statement that the complement of every coreductive predicate
+  has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
+  (see \texttt{CoreductiveImplications.agda}), so we have not included them in the figure.  
 
+We also did not include the inductive definition, Definition \ref{def:WFproperties}.\ref{def:WFind}.
+  Logically, it is trivially equivalent to the accessible one, but its Agda formulation has a defect: 
+  the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to 
+  quantification over all predicates on $A$.  (This defect is also present in $\isWFmin$, $\isWFminDNE$, and \texttt{isWFcor}.)
 
 In \cite{Terese}, well-foundedness is defined as in the classical mathematics textbooks,
 as the absence of an infinite $R$-decreasing sequence.
 (Again, well-foundedness of $R$ corresponds to strong normalization of its converse.)
+\apcomment{Add a discussion about isWFseq- vs. isWFseq$\lnot\lnot$.}
+
+We consider $\isWFacc$ the canonical constructive definition of a well-founded relation.
+
+\apcomment{Todo: 1. Filter through the rest, and see if there's anything we may still want to keep.\\
+  2. Include a subsection, or a section, with examples.  Provide examples where some decidability 
+properties are provable, and others are not.}
+
+\subsection{Old. Delete?}
+
 Translating this statement directly into type theory yields the formula
 
 \[\tag{$\isWFseqm$} \lnot \big(\exists s : \nat \to A \forall k : \nat. \  R \,(s\,(k+1)) \, (s\, k) \big) \]
