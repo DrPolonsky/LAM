@@ -198,7 +198,7 @@ module CompPred {𝔸 : Set} (P₀ : 𝔸 → Λ𝓟) where
   --
   -- ⇒𝓟isNatural : ∀ {P Q : Λ𝓟} → Natural P → Natural Q → Natural (⇒𝓟 P Q)
   -- ⇒𝓟isNatural Pnat Qnat f {t} t∈P⇒Q u u∈P = {!   !}
-  
+
   -- Liftable : Λ𝓟 → Set₁
   -- Liftable P = ∀ {X} (t : Λ X) → t ∈ P → Λ→i t ∈ P
   --

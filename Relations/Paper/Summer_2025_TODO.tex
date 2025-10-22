@@ -187,8 +187,8 @@ Some of the work we have explored is formalized in the Agda standard library.
 \begin{todolist}
   \item [\done] (Secondary) Find consistency with NP and UN with respect to reduction and conversion. Should the default be by reduction for both. Should we be explicit with $\to$ and = in each case.  \sacomment{Main issue here is that we'll either introduce an inconsistency with our code or we'll have a hard to read symbol. We can do $\to$ as super or sub-script in Agda. If we're happy with $NP\to$ in agda but using a different script in the paper then I think we should go ahead and be explicit for both UN and NP as to whether it is WRT conversion or reduction. We already have this inconsistency in the code with $UN\to$} \apcomment{In the agda code let's not use arrow and have arrow implied as default but be explicit with '=' sign.}
   \item Carry on modifying the names of wfXXX- to wfXXXnotnot with prefix underscore in agda and in latex. \sacomment{Done with the exception of WFseq-. This needs a bit more thought. Similarly for the relation between WFcor and WFminCor.}
-  \item Make a decision regarding WFcor. We use it to imply WFacc using AccCor. But otherwise it is sort of orphaned off. Does it help contribute to the overall story? \sacomment{We've now related it to WFmin by requiring that correductive predicates have double negation elimination. Is this too strong a requirement? Similarly we have linked WFacc to WFcor but this proof requires the same property as well as limiting ourselves to accessible predicates. Again, is this too much?}
-  \item Get the classical hypothesis and relations organized and see how they're used in the implications (organize implications by classical requirement. In the implications file we can import the classical implications. Basically, refactor the code.) \sacomment{Done but could be further refactored.}
+  \item [\done] Make a decision regarding WFcor. We use it to imply WFacc using AccCor. But otherwise it is sort of orphaned off. Does it help contribute to the overall story? \sacomment{We've now related it to WFmin by requiring that correductive predicates have double negation elimination. Is this too strong a requirement? Similarly we have linked WFacc to WFcor but this proof requires the same property as well as limiting ourselves to accessible predicates. Again, is this too much?}
+  \item [\done] Get the classical hypothesis and relations organized and see how they're used in the implications (organize implications by classical requirement. In the implications file we can import the classical implications. Basically, refactor the code.) \sacomment{Done but could be further refactored.}
   \item Make a cheat sheet for the next meeting regarding to talk about coreductive. How it relates on the weak side and on the strong side. SEQ seq+- , how to present these. Try and clarify what the issues are here and what exactly are the differences between them in terms of definition and implication. Could one be removed and the overall story stay the same? \sacomment{Regarding seq+ (and seq+-) we currently only show that seq+ implies seq and seq+- implies seq- so could be removed without changing any of our other implictions.} 
 \end{todolist}
 
@@ -196,6 +196,31 @@ Some of the work we have explored is formalized in the Agda standard library.
 \begin{todolist}
   \item (Minor) We want to have a sentence in our WF section making clear that we can consider local properties as well and maybe make an example from accessible to sequential. 
   \item Sentence explaining that wfacc is equivalent to wfind and therefore isn't included in the diagram (wfind).
+\end{todolist}
+
+\section*{September 26th TODO}
+\begin{todolist}     
+  \item Focus for next meeting on writing. 
+  \item [\done] Are not not closed predicates over natural numbers dedcidable: If not is this a counterexample for WFminDNE.
+\end{todolist}
+
+\section*{October 10th TODO}
+\begin{todolist}     
+  \item Want to show that FB and weak decidability gives us accCor (think we may have shown this previously)
+  \item Add 'is' to wfcor macros.
+  \item make a decision on wfseq not not name. 
+  \item Keep on cleaning the WF section in paper. 
+  \item 
+\end{todolist}
+
+\section*{October 15th TODO}
+\begin{todolist}     
+  \item It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
+  \item Do a final read through of the information below the figure. Have we captured all the most important information / Are we repeating ourselves?
+  \item Do we want to keep anything in the old/delete section of WF?
+  \item Do we want to add anything about counter examples or positive examples? 
+  \item We may want to use words rather than macros in certain locations
+  \item Check through the comments in general in the section. 
   \item 
 \end{todolist}
 
