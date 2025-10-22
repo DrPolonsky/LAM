@@ -1,9 +1,11 @@
+{-# OPTIONS --type-in-type #-}
 module DimensionAlgebra where
 
 open import Logic
 open import Lifting
 open import Predicates
-open import RelationsCore
+open import Datatypes
+-- open import RelationsCore
 
 {-
 The following encodes the sequence
@@ -11,16 +13,11 @@ The following encodes the sequence
 evenRel : Set₁ → ℕ → Set₁
 evenRel A zero = Set
 evenRel A (succ n) = A → A → evenRel A n
-
--- Inductive definition of an n-relation
-Rel* : ℕ → Set₁ → Set₁
-Rel* zero A = A
-Rel* (succ n) A = A → A → Rel* n A
 -}
 
 data Rel* (D : Set) : ℕ → Set where
   Dom : D → Rel* D zero
-  Hom : ∀ n → (D → D → Rel* D n) → Rel* D (succ n)
+  Hom : ∀ n (x y : D) → Rel* D n
 
 Indℕ : ∀ {P : 𝓟 ℕ} → P zero → (∀ n → P n → P (succ n)) → ∀ n → P n
 Indℕ p0 pS zero = p0
