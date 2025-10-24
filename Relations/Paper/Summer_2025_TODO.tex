@@ -14,6 +14,42 @@
 \title{Summer 2025 ToDo}
 \maketitle
 
+\section*{September 2025}
+\subsection*{Notes from 7th September}
+Thoughts on the current state of the paper.
+\begin{description}
+\item[The status of wfCor]
+  \begin{itemize}
+    \item 
+      On the ``missing'' implication isWFCor$\lnot\lnot$ to isWFminDNE$\lnot\lnot$.
+
+      The wfCor hypothesis needs a ``choice function'' that will pick a successor $y$ of a given element $x$
+      (while still refuting the given predicate). 
+
+      The property wfMinDNE$\lnot\lnot$ is equivalent to the statement that, if a $\lnot\lnot$-closed 
+      predicate $P$ has no minimal element, then its complement is universally true.
+
+      The ``no minimal element'' for not-not-closed $P$ is close to saying that its complement is coreductive; 
+      the difference is precisely that between the ``strong'' existential in the coreductive statement ---
+      and the weak one (with $\lnot\lnot$ applied to it) in the minimality one.
+
+      Assuming finite branchingness and weak decidability of $P$, we could get the strong existential 
+      from the weak one.  However, weak decidability and DNE are already equivalent with EM, so that 
+      will only apply to decidable predicates.  There may be a relationship to isWFminEM, but that 
+      would be a question for another paper.
+
+    \item 
+      On the ``strong side'' of the WF diagram, the situation is even worse.
+      Neither implication between isWFCor and isWFminDNE is provable, and similarly for isWFCor and isWFSeq. 
+
+    \item 
+      At this point, there does not appear to be much more to say isWFCor, so we should consider removing it.
+
+      On Monday, we should quickly discuss the different versions of sequentially,
+      and move on to writing the text of the paper.
+    \end{itemize}
+\end{description} 
+
 \section*{Week starting 21st April}
 \begin{itemize}
   \item Items from review
@@ -145,6 +181,62 @@ Some of the work we have explored is formalized in the Agda standard library.
   \item Write about the standard library formalization in our paper and talk about how ours differs. 
   \item Create an equivalences file showing that our formalization agrees with the ASL (specifically definitions such as confluet, wcr, nf, leading up to showing our formalizations of Newman's lemma agree).
   \item Investigate contributing work to the ASL. This may mean refactoring the work already done to conform with the ASL. Specific contributions would likely be: Generalized NL. Theorem's 122 and 123. Alternative definitions of Wellfounded, the implications for the hierarchy.
+\end{todolist}
+
+\section*{20th August todos}
+\begin{todolist}
+  \item [\done] (Secondary) Find consistency with NP and UN with respect to reduction and conversion. Should the default be by reduction for both. Should we be explicit with $\to$ and = in each case.  \sacomment{Main issue here is that we'll either introduce an inconsistency with our code or we'll have a hard to read symbol. We can do $\to$ as super or sub-script in Agda. If we're happy with $NP\to$ in agda but using a different script in the paper then I think we should go ahead and be explicit for both UN and NP as to whether it is WRT conversion or reduction. We already have this inconsistency in the code with $UN\to$} \apcomment{In the agda code let's not use arrow and have arrow implied as default but be explicit with '=' sign.}
+  \item Carry on modifying the names of wfXXX- to wfXXXnotnot with prefix underscore in agda and in latex. \sacomment{Done with the exception of WFseq-. This needs a bit more thought. Similarly for the relation between WFcor and WFminCor.}
+  \item [\done] Make a decision regarding WFcor. We use it to imply WFacc using AccCor. But otherwise it is sort of orphaned off. Does it help contribute to the overall story? \sacomment{We've now related it to WFmin by requiring that correductive predicates have double negation elimination. Is this too strong a requirement? Similarly we have linked WFacc to WFcor but this proof requires the same property as well as limiting ourselves to accessible predicates. Again, is this too much?}
+  \item [\done] Get the classical hypothesis and relations organized and see how they're used in the implications (organize implications by classical requirement. In the implications file we can import the classical implications. Basically, refactor the code.) \sacomment{Done but could be further refactored.}
+  \item Make a cheat sheet for the next meeting regarding to talk about coreductive. How it relates on the weak side and on the strong side. SEQ seq+- , how to present these. Try and clarify what the issues are here and what exactly are the differences between them in terms of definition and implication. Could one be removed and the overall story stay the same? \sacomment{Regarding seq+ (and seq+-) we currently only show that seq+ implies seq and seq+- implies seq- so could be removed without changing any of our other implictions.} 
+\end{todolist}
+
+\section*{September 15th todo}
+\begin{todolist}
+  \item (Minor) We want to have a sentence in our WF section making clear that we can consider local properties as well and maybe make an example from accessible to sequential. 
+  \item Sentence explaining that wfacc is equivalent to wfind and therefore isn't included in the diagram (wfind).
+\end{todolist}
+
+\section*{September 26th TODO}
+\begin{todolist}     
+  \item Focus for next meeting on writing. 
+  \item [\done] Are not not closed predicates over natural numbers dedcidable: If not is this a counterexample for WFminDNE.
+\end{todolist}
+
+\section*{October 10th TODO}
+\begin{todolist}     
+  \item Want to show that FB and weak decidability gives us accCor (think we may have shown this previously)
+  \item Add 'is' to wfcor macros.
+  \item make a decision on wfseq not not name. 
+  \item Keep on cleaning the WF section in paper. 
+  \item 
+\end{todolist}
+
+\section*{October 15th TODO / Oct 22nd}
+\begin{todolist}     
+  \item It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
+  \item Do a final read through of the information below the figure. Have we captured all the most important information / Are we repeating ourselves?
+  \item Do we want to keep anything in the old/delete section of WF?
+  \item Do we want to add anything about counter examples or positive examples? 
+  \item We may want to use words rather than macros in certain locations
+  \item Check through the comments in general in the section. 
+  \item (Long term) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files). The sentence: ''The restriction to $\lnot\lnot$-closed subsets implies (and is equivalent to) 
+every subset $P$ being merely \emph{weakly} decidable (satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ 
+for all $x$)'' needs further exploration. We could not say it/say it differently. 
+\item CHange WFseq not not to WFseq- in the macro. We are sticking with this for now. If we have time we can investigate the relation between the two.
+\item Make the diagram horizontal rather than vertical. Spoof it up and we can compare next week.
+\item Use of macros ni WF section. Double check the right one is being used. Don't use the "is'' macro at all in this section. Be consistent on whether we are using macros. 
+\item 
+\end{todolist}
+
+
+\section*{Plan for PLDI submission}
+\begin{todolist}
+  \item Aim for first draft finished by the end of the 29th.
+  \item Make a new branch at this point to conform to this conference's style?
+  \item Submission deadline is Thursday 13th 
+  \item Once we've got a current draft finished. Look in Teresa for first order term rewrite systems and see how many we can represent using our code.
 \end{todolist}
 
 \end{document}

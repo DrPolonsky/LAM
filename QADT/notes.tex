@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
 
 \title{Isomorphisms between algebraic datatypes}
 \author{Andrew Polonsky, Ben Lenox}
@@ -15,7 +16,92 @@
 \newcommand{\ints}{\mathbb{Z}}
 \newcommand{\nat}{\mathbb{N}}
 
+\newcommand{\mcS}{\mathcal{S}}
+
+\newcommand{\hired}[1]{\textcolor{Red}{#1}}
 \begin{document}
+
+\section{2025.09.15}
+\begin{enumerate}
+  \item Generalization of Fiore--Leinster result.
+
+  \textsc{Conjecture 1.}
+  If $X_1=P_1(X_1),\dots,X_n=P_n(X_n) \then Q_1(\vec X) = Q_2(\vec X)$
+  in the complex numbers, then this is true in all rigs (incl. all ``rig categories'').
+
+  Conditions: the polynomials $P_i$ must have a non-zero constant term and degree at least 2,
+  and each $Q_i$ must have a monomial involving a non-zero degree of each indeterminate $X_j$.
+
+  \textsc{Conjecture 2.}
+  If $X_1=P_1(\vec X),\dots,X_n=P_n(\vec X) \then Q_1(\vec X) = Q_2(\vec X)$
+  in the complex numbers, then this is true in all rigs (incl. all ``rig categories'').
+
+  Conditions: the polynomials $P_i$ must have a non-zero constant term and a monomial where $X_i$ has degree at least 2,
+  and each $Q_i$ must have a monomial involving a non-zero degree of each indeterminate $X_j$.
+  
+
+\end{enumerate}
+
+\section*{2025.08.27}
+
+Ben will focus on completing the following proofs.
+\begin{enumerate}
+  \item Complete the substitution principle.
+
+  The theorem we want to prove is the following.
+
+  \emph{Let $P$ be a polynomial functor with integer coefficients. Then}
+  \[n + (\mu X. P(X + n) + X) \simeq \mu X. PX + X\]
+  \item Triangle/colimit lemma, toward proving $\mu X. \mu Y. F(X,Y) = \mu X. F(X,X)$
+  \item $A \cdot (\mu X. m X + n) \simeq \mu X. (m X + n A)$
+  \item At some point, write up the proof that if an $F$-algebra morphism is
+  mono, then the so is the initial algebra morphism.
+  \item A rigorous proof of the following sufficient condition for a fixed
+  point of the functor to be (isomorphic to) the least fixed point.
+
+  \emph{If the image of the morphism from a fixed point of $F$ to the final $F$-coalgebra
+  is a subset of the image of its composition with the morphism from the initial algebra,
+  then the initial algebra morphism IS epi (and hence iso).}
+
+  \item Characterizing all linear datatypes.
+\end{enumerate}
+
+\section*{2025.08.22}
+\begin{enumerate}
+  \item The substitution trick seems to prove the lemma Ben wants.
+  (Item 2 from 8.14)
+  \item Use $\mcS_n$ for the type of $n$-ary strings.
+
+  Notice that $1 + \mcS_2 \models X = 2X$.
+
+  \item Looked at $B \times M$, where $B = \mu X. 1 + X^2$ and $M = \mu X. 1 + X + X^2$.
+
+  Decided that their product should be $\mu X. 1 + X + X^6$, but realized it's more likely
+  that this is the product of $M$ and $T = \mu X. 1 + X + X^3$.
+
+  Ben is going to try to prove this.
+\end{enumerate}
+
+\section*{2025.08.14}
+
+Looked at the equation $1 + X = X + X^2$.
+Ben presented a method for deriving an ADT solution to this equation.
+The following points came up during the discussion.
+\begin{enumerate}
+  \item The answer matches up with the polynomial obtained by the trick
+  $X := Z + 2$; this should be explained.
+  \item Similarly, for any adt with roots $p$ and $-q$, we can
+  write $F(x) = x + (x+1)(x+(q+p+1))$, then $\mu F + (p+1)$ gives those roots.
+  \item Adding two \emph{linear} ADTs corresponds to adding their roots.
+  \item How does the sum/product of two \emph{general} ADTs influence their
+  roots?
+  \item What is the general method for treating a ``difference'' of two
+  ADTs $P(x) - Q(x)$, as an ADT in its own right?
+  \item \hired{AP:} The trick of adding \emph{positive integers} to ADT
+  seems to work for specific roots, specifically it should work for all real roots.
+
+  How do we treat roots that have a complex component to them?
+\end{enumerate}
 
 \section*{2025.07.22}
 \begin{itemize}

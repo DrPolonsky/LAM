@@ -30,6 +30,8 @@ TypeEnv V = V → Set
 -- _⅋_:=_ : ∀ {l} {V} {A} (Γ : Env {l} A V) (x : (↑ V)) (a : A) → Env A (↑ V)
 -- _⅋_:=_ Γ x a y = {!   !}
 
+infixl 19 _⅋o:=_
+
 _⅋o:=_ : ∀ {l} {V : Set} {A} (Γ : Env {l} A V) (a : A) → Env A (↑ V)
 (Γ ⅋o:= a) (i x) = Γ x
 (Γ ⅋o:= a) o = a

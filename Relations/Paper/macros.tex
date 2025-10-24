@@ -32,8 +32,8 @@
 \newcommand{\gRPm}{\mathbf{RP^{-}}}
 \newcommand{\NF}{\mathrm{NF}}
 \newcommand{\MF}{\mathrm{MF}}
-\newcommand{\UN}{\mathrm{UN}}
-\newcommand{\gUN}{\mathbf{UN}}
+\newcommand{\UN}{\mathrm{UN}^{=}}
+\newcommand{\gUN}{\mathbf{UN}^{=}}
 \newcommand{\UNto}{\mathrm{UN}^{\to}}
 \newcommand{\gUNto}{\mathbf{UN}^{\to}}
 \newcommand{\SN}{\mathrm{SN}}
@@ -50,10 +50,10 @@
 \newcommand{\WM}{\mathrm{WM}}
 \newcommand{\gWM}{\mathbf{WM}}
 \newcommand{\WNFP}{\mathrm{WNFP}}
-\newcommand{\NP}{\mathrm{NP}}
-\newcommand{\gNP}{\mathbf{NP}}
-\newcommand{\NPe}{\mathrm{NP_=}}
-\newcommand{\gNPe}{\mathbf{NP_=}}
+\newcommand{\NP}{\mathrm{NP}^{\to}}
+\newcommand{\gNP}{\mathbf{NP}^{\to}}
+\newcommand{\NPe}{\mathrm{NP}^{=}}
+\newcommand{\gNPe}{\mathbf{NP}^{=}}
 \newcommand{\WMFP}{\mathrm{WMFP}}
 \newcommand{\MP}{\mathrm{MP}}
 \newcommand{\gMP}{\mathbf{MP}}
@@ -118,11 +118,41 @@
 
 % Taken from well founded section
 
-\newcommand{\isWFacc}{\mathtt{isWFacc}}
-\newcommand{\isWFseq}{\mathtt{isWFseq}}
-\newcommand{\isWFmin}{\mathtt{isWFmin}}
-\newcommand{\isWFaccm}{\mathtt{isWFacc-}}
-\newcommand{\isWFseqm}{\mathtt{isWFseq-}}
-\newcommand{\isWFminm}{\mathtt{isWFmin-}}
+\newcommand{\isWFacc}{\mathrm{isWFacc}}
+\newcommand{\isWFseq}{\mathrm{isWFseq}}
+\newcommand{\isWFmin}{\mathrm{isWFmin}}
+\newcommand{\isWFaccm}{\mathrm{isWFacc}{\lnot\lnot}}
+% \newcommand{\isWFseqm}{\mathrm{isWFseq}{\lnot\lnot}}
+\newcommand{\isWFseqm}{\mathrm{isWFseq}{-}}
+\newcommand{\isWFminm}{\mathrm{isWFmin}{\lnot\lnot}}
+\newcommand{\isWFminDNEm}{\mathrm{isWFminDNE}{\lnot\lnot}}
+\newcommand{\isWFcor}{\mathrm{isWFcor}}
+\newcommand{\isWFcorm}{\mathrm{isWFcor}{\lnot\lnot}}
 
-\newcommand{\isMinDec}{\mathtt{isMinDec}}
+\newcommand{\WFind}{\mathrm{WFind}}
+\newcommand{\WFacc}{\mathrm{WFacc}}
+\newcommand{\WFseq}{\mathrm{WFseq}}
+\newcommand{\WFmin}{\mathrm{WFmin}}
+\newcommand{\WFminDNE}{\mathrm{WFminDNE}}
+\newcommand{\isWFminDNE}{\mathrm{isWFminDNE}}
+\newcommand{\WFcor}{\mathrm{WFcor}}
+\newcommand{\WFcorm}{\mathrm{WFcor}{\lnot\lnot}}
+\newcommand{\WFaccm}{\mathrm{WFacc}{\lnot\lnot}}
+\newcommand{\WFindm}{\mathrm{WFind}{\lnot\lnot}}
+\newcommand{\WFseqnn}{\mathrm{WFseq}{\lnot\lnot}}
+\newcommand{\WFseqm}{\mathrm{WFseq}{-}}
+\newcommand{\WFminm}{\mathrm{WFmin}{\lnot\lnot}}
+\newcommand{\WFminDNEm}{\mathrm{WFminDNE}{\lnot\lnot}}
+
+% Classical proeprties
+\newcommand{\accCor}{\mathrm{accCor}}
+\newcommand{\accDNE}{\mathrm{accDNE}}
+\newcommand{\mpe}{\mathrm{MP}{\equiv}}
+\newcommand{\rdec}{\mathrm{Rdec}}
+\newcommand{\corDNE}{\mathrm{corDNE}}
+
+
+\newcommand{\isMinDec}{\mathrm{isMinDec}}
+
+\newcommand{\ol}[1]{\overline{#1}}
+

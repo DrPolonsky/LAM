@@ -133,7 +133,6 @@ bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f
         sr u (red⟶s u→s u→λr1) = red⟶s (appL⟶w u→s ) (sr _ u→λr1)
         sr (abs w) (abs⟶s u→λr1) = red⟶s (red⟶w (redex refl))
           (⟶s[⟶s] (io var t1 ) (io var t2)  (io𝓟 _ (λ x → var⟶s) t12 ) u→λr1)
-
 ⟶s!⟶w (red⟶s W t12) (appL⟶w t23) = red⟶s W (⟶s!⟶w t12 (appL⟶w t23))
 ⟶s!⟶w (app⟶s t12 t13) (appL⟶w t23) = app⟶s (⟶s!⟶w t12 t23) t13
 
