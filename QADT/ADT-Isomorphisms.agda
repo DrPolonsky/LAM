@@ -252,5 +252,9 @@ module IsoLemmas where
   c×³ : ∀ {V} {X : ADT V} → List (Iso (X ³) (X ³))
   c×³ {X = X} = !! ∷ cycle×3 ∷ (cycle×3 =!= cycle×3) ∷ ×= c× ∷ (cycle×3 =!= ×= c× ) ∷ (cycle×3 =!= (cycle×3 =!= ×= c× ) ) ∷ []
 
+  Pow=Pow' : ∀ {V} → (a : ADT V) → (n : ℕ) → Iso (Pow a n) (Pow' a n)
+  Pow=Pow' a zero = !!
+  Pow=Pow' a (succ zero) = i×r
+  Pow=Pow' a (succ (succ n)) = ×= (Pow=Pow' a (succ n))
 
 open IsoLemmas public

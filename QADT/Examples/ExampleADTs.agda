@@ -395,6 +395,9 @@ S = μ s
 SS : Set
 SS = ⟦ S ⟧ Γ₀
 
+SS³ : Set
+SS³ = ⟦ S ³ ⟧ Γ₀
+
 Sλ : SS
 Sλ = lfp (in2 tt)
 S0 : SS → SS
@@ -408,6 +411,10 @@ allS (succ n) = let
   un1 = List→ S0 (allS n)
   un2 = List→ S1 (allS n)
   in Sλ ∷ merge un1 un2
+
+allS³ : ℕ → List SS³
+allS³ n = lazyProd (allS n) (lazyProd (allS n) (allS n))
+
 
 ==S : SS → SS → 𝔹
 ==S = ==ADT {S}
@@ -424,6 +431,11 @@ data 𝕊 : Set where
   so : 𝕊
   sp : 𝕊 → 𝕊
   sq : 𝕊 → 𝕊
+
+S→𝕊 : SS → 𝕊
+S→𝕊 (lfp (in1 (in1 tt , s1))) = sp (S→𝕊 s1)
+S→𝕊 (lfp (in1 (in2 (in1 tt) , s1))) = sq (S→𝕊 s1)
+S→𝕊 (lfp (in2 tt)) = so
 
 all𝕊 : ℕ → List 𝕊
 all𝕊 0 = []

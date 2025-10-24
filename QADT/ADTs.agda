@@ -44,6 +44,11 @@ Pow : ∀ {V} → ADT V → (n : ℕ) → ADT V
 Pow a zero = 𝟏
 Pow a (succ n) = a × Pow a n
 
+Pow' : ∀ {V} → ADT V → (n : ℕ) → ADT V
+Pow' a zero = 𝟏
+Pow' a (succ zero) = a
+Pow' a (succ n) = a × Pow' a n
+
 Num : ∀ {V} → ℕ → ADT V
 Num zero = 𝟎
 Num (succ n) = 1+ (Num n)
