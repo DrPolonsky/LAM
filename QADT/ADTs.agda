@@ -40,6 +40,10 @@ _⁴ a = a × a ³
 _⁵ : ∀ {V} → ADT V → ADT V
 _⁵ a = a × a ⁴
 
+Pow : ∀ {V} → ADT V → (n : ℕ) → ADT V
+Pow a zero = 𝟏
+Pow a (succ n) = a × Pow a n
+
 Num : ∀ {V} → ℕ → ADT V
 Num zero = 𝟎
 Num (succ n) = 1+ (Num n)

@@ -6,9 +6,9 @@ open import QADT.Isomorphisms
 open import QADT.ADTs
 open import QADT.ADT-Isomorphisms
 open import Environment
-open import QADT.ExampleADTs
+open import QADT.Examples.ExampleADTs
 
-module QADT.M=M^3 where
+module QADT.Examples.M=M^3 where
 
 ==M³iso : ℕ → Iso (subst m M³) (M³) → Iso (subst m M³) (M³) → 𝔹
 ==M³iso n im im2 = all I (List→ (λ x → ==ADT {subst m M³} (_≃_.f- (≃⟦ im ⟧ Γ₀) x) (_≃_.f- (≃⟦ im2 ⟧ Γ₀ ) x) )  (allM³ n))
@@ -47,4 +47,4 @@ test1 : Set
 test1 = {! pass 5  !}
 
 test : Set
-test = {! List→ M³→𝕄 (List→ M→M³ (take 100 (allM 5)))  !}
+test = {! List→ M³→𝕄³ (List→ M→M³ (take 100 (allM 5)))  !}
