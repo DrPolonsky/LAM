@@ -213,7 +213,7 @@ Some of the work we have explored is formalized in the Agda standard library.
   \item 
 \end{todolist}
 
-\section*{October 15th TODO}
+\section*{October 15th TODO / Oct 22nd}
 \begin{todolist}     
   \item It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
   \item Do a final read through of the information below the figure. Have we captured all the most important information / Are we repeating ourselves?
@@ -221,7 +221,22 @@ Some of the work we have explored is formalized in the Agda standard library.
   \item Do we want to add anything about counter examples or positive examples? 
   \item We may want to use words rather than macros in certain locations
   \item Check through the comments in general in the section. 
-  \item 
+  \item (Long term) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files). The sentence: ''The restriction to $\lnot\lnot$-closed subsets implies (and is equivalent to) 
+every subset $P$ being merely \emph{weakly} decidable (satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ 
+for all $x$)'' needs further exploration. We could not say it/say it differently. 
+\item CHange WFseq not not to WFseq- in the macro. We are sticking with this for now. If we have time we can investigate the relation between the two.
+\item Make the diagram horizontal rather than vertical. Spoof it up and we can compare next week.
+\item Use of macros ni WF section. Double check the right one is being used. Don't use the "is'' macro at all in this section. Be consistent on whether we are using macros. 
+\item 
+\end{todolist}
+
+
+\section*{Plan for PLDI submission}
+\begin{todolist}
+  \item Aim for first draft finished by the end of the 29th.
+  \item Make a new branch at this point to conform to this conference's style?
+  \item Submission deadline is Thursday 13th 
+  \item Once we've got a current draft finished. Look in Teresa for first order term rewrite systems and see how many we can represent using our code.
 \end{todolist}
 
 \end{document}
