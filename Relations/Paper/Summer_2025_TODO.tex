@@ -217,17 +217,23 @@ Some of the work we have explored is formalized in the Agda standard library.
 \begin{todolist}     
   \item It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
   \item Do a final read through of the information below the figure. Have we captured all the most important information / Are we repeating ourselves?
-  \item Do we want to keep anything in the old/delete section of WF?
+  \item [\done] Do we want to keep anything in the old/delete section of WF?
   \item Do we want to add anything about counter examples or positive examples? 
   \item We may want to use words rather than macros in certain locations
-  \item Check through the comments in general in the section. 
+  \item [\done] Check through the comments in general in the section. 
   \item (Long term) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files). The sentence: ''The restriction to $\lnot\lnot$-closed subsets implies (and is equivalent to) 
 every subset $P$ being merely \emph{weakly} decidable (satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ 
 for all $x$)'' needs further exploration. We could not say it/say it differently. 
-\item CHange WFseq not not to WFseq- in the macro. We are sticking with this for now. If we have time we can investigate the relation between the two.
-\item Make the diagram horizontal rather than vertical. Spoof it up and we can compare next week.
-\item Use of macros ni WF section. Double check the right one is being used. Don't use the "is'' macro at all in this section. Be consistent on whether we are using macros. 
-\item 
+\item [\done]  CHange WFseq not not to WFseq- in the macro. We are sticking with this for now. If we have time we can investigate the relation between the two.
+\item [\done]  Make the diagram horizontal rather than vertical. Spoof it up and we can compare next week.
+\item [\done]  Use of macros in WF section. Double check the right one is being used. Don't use the "is'' macro at all in this section. Be consistent on whether we are using macros. 
+\item Does WFseq- with MP== imply WFseq? (W're thinking it will need rdec as well to give us the implication).
+\item make the WF macro bold font?
+\item add wfseq not not to the definitions?
+\item [\done] Go through the bibliography links. Not all of them are currently working!
+\item We want to start looking at examples. What we want to know is whether a first order rewrite system with some minimal properties implies some of our classical properties. E.g. lambda calculus satisfies some of our classical properties. As does first order term rewrite system. Follow up question: how big of an issue is it that accCor is not provable? Can we prove is isn't satisfied? 
+\item Make a connection in the final WF section talking about how SN doesn't imply WN constructively. (we've started writing this sentence). 
+\item We may need to add to the WFCounters file, if we have SN implies WN then every subset of the natural numbers is decidable.  
 \end{todolist}
 
 
