@@ -29,9 +29,9 @@
 
 \ccsdesc[300]{Theory of computation~Type theory} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
 
-\keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma} %TODO mandatory; please add comma-separated list of keywords
+\keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma, Well-foundedness} %TODO mandatory; please add comma-separated list of keywords
 
-\supplement{https://github.com/DrPolonsky/LAM//tree/main/ARS}% TODO: set a repo just for this submissionoptional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
+\supplement{https://github.com/DrPolonsky/FPLA/tree/main}
 
 \renewcommand\eminnershape{\bfseries}
 \begin{document}
@@ -45,7 +45,9 @@
      classical counterparts. We identify, and eliminate where possible, the use of classical
      logic in the proofs of standard ARS results. Our analysis leads to refinements and mild
       generalizations of classical termination and confluence criteria.
-\end{abstract}
+      Finally, we investigate logical relationships between several notions of termination, 
+      arising from different formulations of the concept of a well-founded relation.
+    \end{abstract}
 
 \input{Introduction.tex}
 \input{Definitions.tex}
