@@ -1,9 +1,13 @@
-\documentclass[letterpaper,USenglish,cleveref, autoref, thm-restate]{lipics-v2021}
+% \documentclass[letterpaper,USenglish,cleveref, autoref, thm-restate]{lipics-v2021}
+\documentclass[acmsmall,screen,review,anonymous,nonacm]{acmart}
 
 \input{macros}
 
 % \usepackage[dvipsnames]{xcolor}
+\AtEndPreamble{%
+\theoremstyle{acmdefinition}
 \newtheorem{notation}[theorem]{Notation}
+\newtheorem{remark}[theorem]{Remark}
 
 \newcommand{\hired}[1]{{\color{red}{#1}}}
 
@@ -32,6 +36,7 @@
 \keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma, Well-foundedness} %TODO mandatory; please add comma-separated list of keywords
 
 \supplement{https://github.com/DrPolonsky/FPLA/tree/main}
+}
 
 \renewcommand\eminnershape{\bfseries}
 \begin{document}
