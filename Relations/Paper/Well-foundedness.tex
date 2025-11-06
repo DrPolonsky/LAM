@@ -155,7 +155,7 @@ non-decreasing index.
 
 \subsection{Implications between the definitions}
 
-The logical relationships between all of the above definitions are summarized in Figure \ref{fig:WF}.
+The logical relationships between all of the above definitions are summarized in Figure~\ref{fig:WF}.
 All of the implications in the figure have been
 formalized within the WellFounded subdirectory of the Agda repository.
 An arrow from one node to another with no label indicates direct logical implication,
@@ -173,77 +173,77 @@ strongly classical conditions are in place.
 These are $\accDNE$ (not-not-closure of strong normalization)
 and $\accCor$ (which is related to the existence of an effective perpetual reduction strategy).
 
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}[
-  scale=0.7,
-  every node/.style={transform shape},
-  node distance=1cm and .5cm,
-  box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
-  arrow/.style={-{Latex}, thick}
-]
+% \begin{figure}[h]
+% \centering
+% \begin{tikzpicture}[
+%   scale=0.7,
+%   every node/.style={transform shape},
+%   node distance=1cm and .5cm,
+%   box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
+%   arrow/.style={-{Latex}, thick}
+% ]
 
-% Row 1: WFmin -> WFmin-
-\node[box] (WFmin) {$\WFmin$};
-\node[box, right=2.9cm of WFmin] (WFminM) {$\WFminm$};
+% % Row 1: WFmin -> WFmin-
+% \node[box] (WFmin) {$\WFmin$};
+% \node[box, right=2.9cm of WFmin] (WFminM) {$\WFminm$};
 
-\draw[arrow] (WFmin) -- (WFminM);
+% \draw[arrow] (WFmin) -- (WFminM);
 
-% Row 2: WFminDNE -> WFminDNE-
-\node[box, below=of WFmin] (WFminDNE) {$\WFminDNE$};
-\node[box, below=of WFminM] (WFminDNEM) {$\WFminDNEm$};
+% % Row 2: WFminDNE -> WFminDNE-
+% \node[box, below=of WFmin] (WFminDNE) {$\WFminDNE$};
+% \node[box, below=of WFminM] (WFminDNEM) {$\WFminDNEm$};
 
-\draw[arrow] (WFminDNE) -- (WFminDNEM);
+% \draw[arrow] (WFminDNE) -- (WFminDNEM);
 
-% Row 3: WFacc
+% % Row 3: WFacc
 
-\node[box, line width = 0.5mm, below=of WFminDNE] (WFacc) {$\WFacc$};
+% \node[box, line width = 0.5mm, below=of WFminDNE] (WFacc) {$\WFacc$};
 
-\node[box, below = of WFminDNEM] (WFaccM) {$\WFaccm$};
-\draw[arrow] (WFacc) to (WFaccM);
-\draw[arrow, bend left] (WFaccM) to node[below, text=red] {$\accDNE$} (WFacc);
+% \node[box, below = of WFminDNEM] (WFaccM) {$\WFaccm$};
+% \draw[arrow] (WFacc) to (WFaccM);
+% \draw[arrow, bend left] (WFaccM) to node[below, text=red] {$\accDNE$} (WFacc);
 
 
-% Row 4: WFseq
-\node[box, below=of WFacc] (WFseq) {$\WFseq$};
-\node[box, below= of WFaccM] (WFseqM) {$\WFseqm$};
+% % Row 4: WFseq
+% \node[box, below=of WFacc] (WFseq) {$\WFseq$};
+% \node[box, below= of WFaccM] (WFseqM) {$\WFseqm$};
 
-\draw[arrow] (WFseq) -- (WFseqM);
+% \draw[arrow] (WFseq) -- (WFseqM);
 
-% Row 5: WFcor
-\node[box, below=of WFseq] (WFCor) {$\WFcor$};
-\node[box, below=of WFseqM] (WFminCor) {$\WFcorm$};
+% % Row 5: WFcor
+% \node[box, below=of WFseq] (WFCor) {$\WFcor$};
+% \node[box, below=of WFseqM] (WFminCor) {$\WFcorm$};
 
-% \draw[arrow, bend left = 55] (WFaccM) to (WFminM);
+% % \draw[arrow, bend left = 55] (WFaccM) to (WFminM);
 
-% Inter-row arrows
-\draw[arrow] (WFacc) to node[right, text = red] {$\rdec$} (WFseq);
-\draw[arrow, bend right] (WFaccM) to (WFminDNEM);
-\draw[arrow, bend right = 90] (WFminCor) to node[pos = 0.4, right, text=red] {$\accCor$} (WFaccM);
+% % Inter-row arrows
+% \draw[arrow] (WFacc) to node[right, text = red] {$\rdec$} (WFseq);
+% \draw[arrow, bend right] (WFaccM) to (WFminDNEM);
+% \draw[arrow, bend right = 90] (WFminCor) to node[pos = 0.4, right, text=red] {$\accCor$} (WFaccM);
 
-\draw[arrow, bend right = 75] (WFmin) to (WFseq);
-\draw[arrow, bend left = 75] (WFminM) to (WFseqM);
-\draw[arrow] (WFaccM) -- (WFseqM);
-\draw[arrow] (WFmin) -- (WFminDNE);
-\draw[arrow, bend right] (WFminM) to (WFminDNEM);
-\draw[arrow, bend right] (WFminDNEM) to (WFminM);
+% \draw[arrow, bend right = 75] (WFmin) to (WFseq);
+% \draw[arrow, bend left = 75] (WFminM) to (WFseqM);
+% \draw[arrow] (WFaccM) -- (WFseqM);
+% \draw[arrow] (WFmin) -- (WFminDNE);
+% \draw[arrow, bend right] (WFminM) to (WFminDNEM);
+% \draw[arrow, bend right] (WFminDNEM) to (WFminM);
 
-\draw[arrow] (WFminDNE) to node[right, text = red] {$\accDNE$} (WFacc);
-\draw[arrow, bend right=45] (WFminDNE) to node[pos=0.3, left, text=red] {$\mpe$} (WFseq);
-\draw[arrow, bend right] (WFminDNEM) to node[left, text=red] {$\FB$} (WFaccM);
-\draw[arrow, bend right] (WFseqM) to (WFminCor);
-\draw[arrow, bend right] (WFminCor) to node [right, text=red] {$\mpe$} (WFseqM);
-\draw[arrow] (WFCor) -- (WFminCor);
-% \draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {$\accCor$} (WFacc);
-\draw[arrow, bend left] (WFminCor) to node[below, text=red] {$\corDNE$} (WFCor);
+% \draw[arrow] (WFminDNE) to node[right, text = red] {$\accDNE$} (WFacc);
+% \draw[arrow, bend right=45] (WFminDNE) to node[pos=0.3, left, text=red] {$\mpe$} (WFseq);
+% \draw[arrow, bend right] (WFminDNEM) to node[left, text=red] {$\FB$} (WFaccM);
+% \draw[arrow, bend right] (WFseqM) to (WFminCor);
+% \draw[arrow, bend right] (WFminCor) to node [right, text=red] {$\mpe$} (WFseqM);
+% \draw[arrow] (WFCor) -- (WFminCor);
+% % \draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {$\accCor$} (WFacc);
+% \draw[arrow, bend left] (WFminCor) to node[below, text=red] {$\corDNE$} (WFCor);
 
-\draw[arrow, bend left=80] (WFCor) to node[pos = 0.4, left, text=red] {$\accCor$} (WFacc);
+% \draw[arrow, bend left=80] (WFCor) to node[pos = 0.4, left, text=red] {$\accCor$} (WFacc);
 
-\end{tikzpicture}
-\caption{The logical relationships between notions of well-foundedness}
- \label{fig:WF}
-\end{figure}
-% \clearpage
+% \end{tikzpicture}
+% \caption{The logical relationships between notions of well-foundedness}
+%  \label{fig:WF}
+% \end{figure}
+% % \clearpage
 
 \begin{figure}[h]
 \centering
@@ -300,7 +300,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 
 \end{tikzpicture}
 \caption{The logical relationships between notions of well-foundedness}
-\label{fig:WF2}
+\label{fig:WF}
 \end{figure}
  
 
@@ -338,7 +338,7 @@ $\accCor$ & Accessibility is coreductive
 \label{tab:cprop}
 \end{figure}
 }
-\clearpage
+% \clearpage
 % The principles appearing in the labels of Figure \ref{fig:WF} are valid for many rewriting systems,
 % and are classically true.
 Figure \ref{fig:WF} illustrates that the network of logical relationships between
@@ -415,9 +415,9 @@ We also did not include the inductive definition, Definition \ref{def:WFproperti
   quantification over all predicates on $A$.  This defect is also present in $\WFmin$, $\WFminDNE$,
   and $\WFcor$.
 
-\apcomment{Todo: 1. Filter through the rest, and see if there's anything we may still want to keep.\\
-  2. Include a subsection, or a section, with examples.  Provide examples where some decidability
-properties are provable, and others are not.}
+% \apcomment{Todo: 1. Filter through the rest, and see if there's anything we may still want to keep.\\
+%   2. Include a subsection, or a section, with examples.  Provide examples where some decidability
+% properties are provable, and others are not.}
 
 \subsection{Well-foundedness and rewriting}
 
