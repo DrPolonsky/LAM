@@ -302,7 +302,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \caption{The logical relationships between notions of well-foundedness}
 \label{fig:WF}
 \end{figure}
- 
+
 
 % All of the above definitions of well-foundedness are classically equivalent.
 % But constructively, the only provable equivalence is between the inductive and accessible
@@ -371,7 +371,7 @@ Other observations that can be gleaned from the figure include the following.
   \item All definitions imply $\WFcorm$.  This weakest definition implies $\WFaccm$ assuming the
     ``constructive contrapositive of accessibility'', $\accCor$.
     %While this condition is implied by $\isWFseqm$, it does not appear to imply anything on its own.
- 
+
     With this assumption, $\WFacc$ can also be derived from $\WFcor$. % , the stronger version of $\WFcorm$.
 
     % \apcomment{Remove?} (This is analogous to how $\isWFminDNE$ is a natural weakening of
@@ -421,16 +421,16 @@ We also did not include the inductive definition, Definition \ref{def:WFproperti
 
 \subsection{Well-foundedness and rewriting}
 
-One may wonder whether the difference between the various definitions above matters for 
-rewriting theory.  In particular, how often are the properties listed in 
-Figure \ref{tab:cprop} actually valid for a given rewrite system, so that its termination 
+One may wonder whether the differences between the various definitions above matter for
+rewriting theory.  In particular, how often are the properties listed in
+Figure \ref{tab:cprop} actually valid for a given rewrite system, so that its termination
 ($\WFacc$) could be inferred from a weaker statement, such as $\WFminDNEm$?
 
 On the one hand, \cite{Berardi} proves a general result to the effect that
 $\accDNE$ is valid \emph{metatheoretically} for a large class of definable relations.
 Specifically, if $R$ is a primitive recursive predicate on the natural numbers and
-$\WFaccm(R)$ can be proved in higher-order arithmetic, then an intuitionistic proof 
-of $\WFacc(R)$ is also possible.
+$\WFaccm(R)$ can be proved in higher-order arithmetic, then an intuitionistic proof
+of $\WFacc(R)$ in higher arithmetic must also exist.
 % situation of separating these notions is complicated by the fact that, for all
 % \emph{definable} predicates, the classical and constructive notions do coincide.
 % (We have not proved this, but see \cite{Berardi} for a related result.)
@@ -447,16 +447,18 @@ Since this is clearly not provable in Agda without classical axioms,
 this argument shows that the implication from $\WFacc$ to $\WFmin$ is not provable either.
 
 Such distinctions have consequences for rewriting theory.
-For example, recall that $x\in \SN_R$ iff $x$ is $\bar{R}$-accessible, where $\bar{R}$ 
+For example, recall that $x\in \SN_R$ iff $x$ is $\bar{R}$-accessible, where $\bar{R}$
 is the converse of $R$.  Thus, if $\bar{R}$ is well-founded, $R \models \gSN$.
 Yet actually computing the normal form of a given $x$ seems to require a
 strong form of decidability of being $R$-minimal, namely:
 \[
 \tag{$\isMinDec$} \forall x. \left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)
 \]
-This is weaker than deciding whether $x$ is a normal form:
+This is stronger than deciding whether $x$ is a normal form:
 % Note that deciding whether $x$ is a normal form constitutes the weaker disjunction
 $\lnot\lnot\left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)$.
+Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ 
+is equivalent to the principle of excluded middle.
 
 On the other hand, $\WFmin$ trivially implies that each $x \in A$ is weakly normalizing.
 Indeed, given $x \in A$, consider the predicate $P_x(y) = x \mstep y$.
@@ -465,8 +467,8 @@ Let $n$ be a $P_x$-minimal element.  Then $x \mstep n$.  Moreover, for any $y$,
 If $n \rstep y$, then $\lnot(P_x(y))$.  But since reductions from $x$ are closed downward,
 no such $y$ can exist, and hence $n$ is a normal form of $x$.
 
-Combined with the natural numbers example in \texttt{WFCounters.agda}, this shows
-that the intuitive implication $\SN_R \to \WN_R$ is not actually intuitionistically valid.
+It follows that there can be no constructive proof of $\WFmin$ from $\WFacc$,
+as the axiom of excluded middle would be a consequence of such a proof.
 
 % \greyout{From the perspective of rewriting theory, it would seem wild indeed if
 % $\SN$ did not imply $\WN$.

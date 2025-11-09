@@ -146,7 +146,7 @@ The definitions in this subsections are key to formalizing Theorem 1.2.3 in \ter
     \end{description}
 \end{definition}
 
-The property $\gBP$ is equivalent to the property called $\mathrm{\,Ind}$ in \terese. (Specifically, $\mathrm{\,Ind}$ asserts the exists of a bound for finite sequences as well, but that is automatic, since the last term of a finite reduction sequence is a bound for that sequence.) 
+The property $\gBP$ is equivalent to the property called $\mathrm{\,Ind}$ in \terese. (Specifically, $\mathrm{\,Ind}$ asserts the exists of a bound for finite sequences as well, but that is automatic, since the last term of a finite reduction sequence is a bound for that sequence.)
 
 \terese $\,$ also defines the following property, which is not included in our formalization.
 
@@ -183,12 +183,9 @@ Furthermore, it takes us outside of a purely relational theory. The weaker prope
     \end{description}
 \end{definition}
 
-Our Agda formulation of the above definition makes use of the List type constructor, which we import from the Agda Standard Library \cite{AgdaLibraryList}. 
+Our Agda formulation of the above definition makes use of the List type constructor, which we import from the Agda Standard Library \cite{AgdaLibraryList}.
 
 
 \verb|FB a = Σ[ xs ∈ List A ] (∀ b → R b a → b ∈List xs)|
 
-$\FB$ is a property that plays an important role in our discussion of well-foundedness (see Section \ref{sec:Well-foundedness}).
-
-
-
+$\FB$ plays an important role in our discussion of well-foundedness, see Section \ref{sec:Well-foundedness}.

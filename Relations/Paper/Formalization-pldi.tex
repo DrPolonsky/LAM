@@ -1,6 +1,6 @@
 \section{Formalization of \terese}
 \label{sec:Formalization}
-This sections is a guide to our formalization of \terese $\,$ and explains the deviations we take from the text. 
+This sections is a guide to our formalization of \terese $\,$ and explains the deviations we take from the text.
 
 \subsection{Formalization of Definitions (\texttt{Base.agda})}\label{subsec:def}
 
@@ -25,7 +25,7 @@ which we explore in detail in Section \ref{sec:Hierarchy}.
 \subsection{\texttt{Propositions.agda}}
 There are three sets of propositions given in \terese: \texttt{1.1.9}, \texttt{1.1.10}, \texttt{1.1.11}.
 The formalization of the proofs are in \texttt{Propositions.agda}. These formalizations are straightforward
-and as such are not the focus of this paper.
+and do not merit further discussion.
 
 \subsection{\texttt{Theorems.agda}} \label{subsec:theorems}
 
@@ -44,7 +44,7 @@ and as such are not the focus of this paper.
   We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using a condition distilled from $\gRP$.
   The formalizations of the remaining theorems are all found in \texttt{Theorems.agda}.
 
-\begin{theorem}[Thm 1.2.2 in \terese] 
+\begin{theorem}[Thm 1.2.2 in \terese]
 \begin{enumerate}[label=\roman*.]
   \item[]
   \item $\gCR \implies \gNPe \implies \gUN$
@@ -59,11 +59,11 @@ and as such are not the focus of this paper.
     \verb|NP→UN : R isNP₌ → R isUN|\\
     \verb|ii     : R isWN × R isUN → R isCR|\\
     \verb|ii+    : R isWN × R |\texttt{isUN}$^{\to}$ \verb|→ R isCR|\\
-    \verb|iii    : subcommutative R → R isCR|\\
+    \verb|iii    : subcommutative R → R isCR|
 \end{proof}
-\begin{proof}[Discussion.]
+\begin{remark}
     In $\mathtt{UN^{→}∧WN→CR}$ a more general proof of ($ii$) is given using $\UNto$.
-\end{proof}
+\end{remark}
 
 
 \begin{theorem}[Thm. 1.2.3 in \terese]
@@ -84,13 +84,11 @@ and as such are not the focus of this paper.
     \verb|iii   : R isWN → R isWCR → R isRP- → dec SN → R isSN|\\
     \verb|iv    : R isCP → R isCR|
 \end{proof}
-\begin{proof}[Discussion.]\hfill
+\begin{remark} \hfill
   \begin{description}
     \item[($i$)] In $\mathtt{i^\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
-    \item[($ii$)] This proof is inherently classical. For the closest constructive analogue to this proof we have written $\mathtt{iiSeq}$, where we replace $\gBP$ with the stronger properties $\gWN$ and $\gUN$ and we replace $\gInc$ with the weaker property $\gRP$. 
+    \item[($ii$)] This proof is inherently classical. For the closest constructive analogue to this proof we have written $\mathtt{iiSeq}$, where we replace $\gBP$ with the stronger properties $\gWN$ and $\gUN$ and we replace $\gInc$ with the weaker property $\gRP$.
     With the original property $\gBP$ and $gRP$ we can imply the related property $gSM$ ($\gSM$ is defined in Section~\ref{sec:Hierarchy} and its relation to $gSN$ is expanded upon). The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
     \item[($iii$)] In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
-    \item[($iv$)] We did not formalize $\gCR \to \gCP$ as it requires cardinality assumptions. \qedhere
   \end{description}
-\end{proof}
-
+\end{remark}

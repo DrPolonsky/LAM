@@ -118,18 +118,15 @@ The same property is similarly required in order to show that $\SM$ implies $\WM
     \verb|MF∧SN↔NF : ∀ {x} → MF x × SN x ↔ NF x| \qedhere
 \end{proof}
 
-In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a seperate column for the combination of $\SM$ and $\WN$.   
+In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a seperate column for the combination of $\SM$ and $\WN$.
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the
 first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
 
-\clearpage
+% \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
-
-
-
 \begin{table}[h!]
     \centering
     \renewcommand\arraystretch{1.2}
@@ -190,7 +187,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         $\gCR$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:7} & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$ & $\gSN$ \\
         \Xhline{1.5pt}
     \end{tabular}
-    \caption{Global implications. \\$^*$~This implication also requires $\gWCR$. \\ $^\dagger$~This implication also requires either $\gWCR$ or the classical property required to go from $\SN \to \WN$ or $\SM \to \WM$.}
+    \caption{Global implications. \\$^*$~This implication also requires $\gWCR$. \\ $^\dagger$~This requires either $\gWCR$ or the classical implication $\SN \to \WN$ or $\SM \to \WM$.}
 \end{table}
 % \footnotetext[1]{This implication also requires $\gWCR$.}
 % \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
@@ -389,3 +386,18 @@ then our proof no longer requires the property $\NP$. This progression of proofs
 \verb|isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x|
 
 \verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN|
+
+\subsection{A sufficient condition for $\gSN \to \gWN$}
+\label{sec:SNtoWN}
+It is perhaps surprising that the intuitively obvious implication from strong
+normalization to weak normalization is actually not provable.
+A counterexample is furnished in the file \texttt{WFCounters.agda}.
+% This fact is related to the subtleties arising in constructive formulation of
+% well-foundedness, as we discuss at the end of Section \ref{sec:Well-foundedness}.
+At the same time, this implication is valid for all relations which are
+1) decidable, and 2) finitely branching.
+This is formalized in file \apcomment{Need to fill this in.}
+
+Since these conditions are in fact satisfied by all of the standard
+term rewrite systems and lambda calculi, we see that for such ARSs the implication
+is automatically valid.
