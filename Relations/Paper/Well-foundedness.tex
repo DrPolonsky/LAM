@@ -8,9 +8,16 @@
 
 % We use Well-founded not Wellfounded
 
+\newcommand{\gWF}{\mathbf{WF}}
+\newcommand{\WF}{\mathrm{WF}}
+
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
 In this section, we will compare several definitions of well-foundedness.
+For ease of exposition, we will only consider local versions of these notions.
+(There is no loss of generality in this; any global well-foundedness property $\gWF(A;R)$ 
+restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y : A. R^* x y;R')$, 
+where $R'((y,\rho),(z,\sigma)) = R(y,z)$.)
 %which depend on the basic notions given in Definition~\ref{def:WFnotions} below.
 
 \subsection{Definitions of well-foundedness}
@@ -449,16 +456,16 @@ this argument shows that the implication from $\WFacc$ to $\WFmin$ is not provab
 Such distinctions have consequences for rewriting theory.
 For example, recall that $x\in \SN_R$ iff $x$ is $\bar{R}$-accessible, where $\bar{R}$
 is the converse of $R$.  Thus, if $\bar{R}$ is well-founded, $R \models \gSN$.
-Yet actually computing the normal form of a given $x$ seems to require a
-strong form of decidability of being $R$-minimal, namely:
+Yet actually computing the normal form of a given $x$ requires a
+strong form of decidability of being $R$-minimal:
 \[
 \tag{$\isMinDec$} \forall x. \left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)
 \]
-This is stronger than deciding whether $x$ is a normal form:
+Note that merely deciding whether $x$ is a normal form is the weaker statement
 % Note that deciding whether $x$ is a normal form constitutes the weaker disjunction
 $\lnot\lnot\left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)$.
-Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ 
-is equivalent to the principle of excluded middle.
+Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
+is shown to be equivalent to the principle of excluded middle.
 
 On the other hand, $\WFmin$ trivially implies that each $x \in A$ is weakly normalizing.
 Indeed, given $x \in A$, consider the predicate $P_x(y) = x \mstep y$.

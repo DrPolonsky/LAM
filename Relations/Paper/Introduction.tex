@@ -27,8 +27,8 @@ the most natural vehicle for formalizing it is type theory based on the
 Curry--Howard isomorphism, which Agda implements.  Proofs in this language
 are automatically effective, and implicitly carry the code that implements
 a transformation from the hypotheses to the conclusion of the claim.  For example,
-a type-checked proof that a given TRS is confluent automatically renders a function that
-computes a common reduct between any two reducts of a given term.
+a type-checked proof that a given TRS is Church--Rosser automatically renders a function that
+computes a common reduct between any two convertible terms.
 
 Staying within this paradigm requires the proofs to be constructive.
 Moreover, it requires us to avoid any axioms or postulates, such as function
