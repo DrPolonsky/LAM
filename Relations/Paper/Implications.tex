@@ -17,13 +17,13 @@ we came to the `minimal' family of properties below. These properties help to au
 
 \begin{definition}\label{def:mf} Let $a \in A$. \hfill
     \begin{description}
-        \item[\ule{$a \in \MF_R$}] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
-        \item[\ule{$a \in \WM_R$}] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
-        \item[\ule{$a \in \SM_R$}]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This
+        \item[\bq \ule{$a \in \MF_R$}] \emph{$a$ is a minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
+        \item[\bq \ule{$a \in \WM_R$}] \emph{$a$ is weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
+        \item[\bq \ule{$a \in \SM_R$}]  \emph{$a$ is strongly minimalizing} if either $a \in MF_R$, or every element one $R$ step from $a$ is strongly minimalizing. (This
         definition is to be understood inductively).
-        \item[\ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
+        \item[\bq \ule{$a \in \SMseq_R$}] \emph{$a$ is sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
         an $i \in \nat$ such that $s (i) \in \MF$.
-        \item[\ule{$a \in \MP_R$}] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
+        \item[\bq \ule{$a \in \MP_R$}] \emph{$a$ has the minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
     \end{description}
 \end{definition}
 
@@ -118,7 +118,7 @@ The same property is similarly required in order to show that $\SM$ implies $\WM
     \verb|MF∧SN↔NF : ∀ {x} → MF x × SN x ↔ NF x| \qedhere
 \end{proof}
 
-In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a seperate column for the combination of $\SM$ and $\WN$.
+In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a separate column for the combination of $\SM$ and $\WN$.
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions.
 

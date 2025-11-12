@@ -42,9 +42,9 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
 % \subsection{Normalization (\texttt{Properties.agda})}
 \begin{definition} Let $a \in A$.
   \begin{description}
-    \item[\ule{${a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
-    \item[\ule{$a \in \WN_R$}] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
-    \item[\ule{$a \in \SN_R$}] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$.
+    \item[\bq \ule{${a \in \NF_R}$}] \emph{$a$ is a normal form} if $(a,b) \notin R$ for any $b \in A$.
+    \item[\bq \ule{$a \in \WN_R$}] \emph{$a$ is weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
+    \item[\bq \ule{$a \in \SN_R$}] \emph{$a$ is strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$.
     See Section \ref{sec:Well-foundedness} for the notion of accessibility.
   \end{description}
 \end{definition}
@@ -52,15 +52,15 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
 % \subsection{Confluence (\texttt{Properties.agda})}
 \begin{definition} Let $a \in A$.
     \begin{description}
-        \item[\ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d.\, c \mstep d \bmstep b\]
-        \item[\ule{$a \in \CR_R$}] \emph{$a$ is Church-Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d.\, c \mstep d \bmstep b\]
-        \item[\ule{$a \in \CRs_R$}] \emph{$a$ is subcommutative} if for all $b, c \in A$,
+        \item[\bq \ule{$a \in \WCR_R$}] \emph{$a$ is weakly Church-Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d.\, c \mstep d \bmstep b\]
+        \item[\bq \ule{$a \in \CR_R$}] \emph{$a$ is Church-Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d.\, c \mstep d \bmstep b\]
+        \item[\bq \ule{$a \in \CRs_R$}] \emph{$a$ is subcommutative} if for all $b, c \in A$,
         \[c \bmstep a \mstep b \implies \exists d. \, c \rrstep d \brstep b\]
-        \item[\ule{$a \in \NPe_R$}] \emph{$a$ has the conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
-        \item[\ule{$a \in \NP_R$}] \emph{$a$ has the reduction normal form property} if for all $b \in \NF_R$,
+        \item[\bq \ule{$a \in \NPe_R$}] \emph{$a$ has the conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
+        \item[\bq \ule{$a \in \NP_R$}] \emph{$a$ has the reduction normal form property} if for all $b \in \NF_R$,
         \[c \bmstep a \mstep b \implies c \mstep b\]
-        \item[\ule{$a \in \UN_R$}] \emph{$a$ has the conversion unique normal form property} if for all $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
-        \item[\ule{$a \in \UNto_R$}] \emph{$a$ has the reduction unique normal form property} if for all $b, c \in \NF_R$,
+        \item[\bq \ule{$a \in \UN_R$}] \emph{$a$ has the conversion unique normal form property} if for all $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
+        \item[\bq \ule{$a \in \UNto_R$}] \emph{$a$ has the reduction unique normal form property} if for all $b, c \in \NF_R$,
         \[c \bmstep a \mstep b  \implies b \equiv c\]
     \end{description}
 \end{definition}
@@ -110,16 +110,16 @@ In \terese $\,\NF$ is used to denote the normal form property $\NPe$, whereas we
 The definitions in this subsections are key to formalizing Theorem 1.2.3 in \terese.
 
 \begin{definition} \label{def:seq} \hfill
-  \begin{itemize}
-    \item A \emph{sequence} is a function $s$ from the natural numbers to $A$.
-    \item A sequence $s : \nat \to A$ is \emph{$R$-decreasing} if every element of the sequence is $R$-related to its preceding term.
-    \item A sequence $s : \nat \to A$ is \emph{$R$-increasing} if every element of the sequence is $R$-related to its succeeding term.
-  \end{itemize}
+  \begin{description}
+    \item \bq \ule{A {sequence}} is a function $s$ from the natural numbers to $A$.
+    \item \bq \ule{A sequence $s : \nat \to A$ is {$R$-decreasing}} if every element of the sequence is $R$-related to its preceding term.
+    \item \bq \ule{A sequence $s : \nat \to A$ is {$R$-increasing}} if every element of the sequence is $R$-related to its succeeding term.
+  \end{description}
 \end{definition}
 
 \begin{definition}\hfill
     \begin{description}
-        \item[\ule{$x \in CP_R$}] \emph{$x$ has the cofinality property} if there exists an $R^r$-increasing sequence
+        \item[\bq \ule{$x \in CP_R$}] \emph{$x$ has the cofinality property} if there exists an $R^r$-increasing sequence
         \mbox{$s : \nat {\to} A$} starting from $x$ such that every
         reduct of $x$ reduces to some element of the sequence.
         \[ x \mstep y \implies \exists i. y \mstep s(i) \]
@@ -131,18 +131,18 @@ The definitions in this subsections are key to formalizing Theorem 1.2.3 in \ter
 
 \begin{definition} \label{def:bound} \hfill
   \begin{description}
-    \item[\ule{$a \in A$ is an $s$-bound}] if for all $i \in \nat$, $s (i) \mstep a$.
-    \item[\ule{$s : \nat \to A$ is bounded}] if there exists $a \in A$ that is an $s$-bound.
+    \item[\bq \ule{$a \in A$ is an $s$-bound}] if for all $i \in \nat$, $s (i) \mstep a$.
+    \item[\bq \ule{$s : \nat \to A$ is bounded}] if there exists $a \in A$ that is an $s$-bound.
   \end{description}
 \end{definition}
 
 \begin{definition} \label{def:rp}
   The following are global properties of the given relation $R$.  \hfill
     \begin{description}
-        \item[\ule{$\gBP(R)$}] \emph{$R$ has the boundedness property} if every $R$-increasing sequence is bounded.
-        \item[\ule{$\gRP(R)$}] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that
+        \item[\bq \ule{$\gBP(R)$}] \emph{$R$ has the boundedness property} if every $R$-increasing sequence is bounded.
+        \item[\bq \ule{$\gRP(R)$}] \emph{$R$ has the recurrence property} if for every bounded, increasing sequence $s$ with an $s$-bound, there exists an $i \in \nat$ such that
         $s (i) \mstep x \implies x \mstep s (i)$ for all $x\in A$.
-        \item[\ule{$\gRPm(R)$}] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
+        \item[\bq \ule{$\gRPm(R)$}] \emph{$R$ has the weak recurrence property} if for every increasing sequence $s$ with bound $b$ there exists an $i \in \nat$ such that $b \mstep s (i)$.
     \end{description}
 \end{definition}
 
@@ -152,7 +152,7 @@ The property $\gBP$ is equivalent to the property called $\mathrm{\,Ind}$ in \te
 
 \begin{definition} \hfill
     \begin{description}
-        \item[$\gInc(R)$] \emph{$R$ is increasing} if there exists a ``size function'' $|{-}| : A \to \nat$ satisfying, for all $a, b \in A$,
+        \item[\bq  \ule{$\gInc(R)$}] \emph{$R$ is increasing} if there exists a ``size function'' $|{-}| : A \to \nat$ satisfying, for all $a, b \in A$,
         $(a \rstep b) \implies |a| < |b|$
     \end{description}
 \end{definition}
@@ -179,7 +179,7 @@ Furthermore, it takes us outside of a purely relational theory. The weaker prope
 
 \begin{definition} \hfill
     \begin{description}
-        \item[\ule{$a \in \FB$}] \emph{$a$ is finitely branching} if there are finitely many $b \in A$ such that $a \rstep b$.
+        \item[\bq \ule{$a \in \FB$}] \emph{$a$ is finitely branching} if there are finitely many $b \in A$ such that $a \rstep b$.
     \end{description}
 \end{definition}
 
