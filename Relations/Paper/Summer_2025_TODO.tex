@@ -235,6 +235,7 @@ Some of the work we have explored is formalized in the Agda standard library.
 \item [\done] Change the macro for FB so that it is also boldface
 \item [\done, did SN to WN instead] update wfcounters to show that asserting wfmin implies the excluded middle (and wfmindne the weak excluded middle).
 \item [\done] In wfcounters we should have a system that is SN but not WN (WN implies excluded middle). 
+
 \end{todolist}
 
 
@@ -245,12 +246,13 @@ Some of the work we have explored is formalized in the Agda standard library.
   \item [\done] discussion env has qed boxes which shouldn't be there.
   \item[\done] from wellfounded extra move the implication of fb -> isdec -> isMinDec. move to implications. 
   Use this to take this SNdec→WN to have a full proof from fb, isdec, sn -> wn. (issue in moving to fb file due to reversal of relation direction!) 
-  \item Make consistent how we display definitions. \sacomment{I've made a change which I think looks better (bullet point style.) If we're happy with this change we can apply it to the wellfoundedness section too unless we rely on the numbering/reference the numbers}
+  \item [\done] Make consistent how we display definitions. 
   \item [\done] Work on the conclusion
   \item [\done] Need to fix how we put urls in for bibliography. Currently not quite working. \sacomment{Now all urls, if happy with how it looks we can tick it off. }
-  \item Check the PLDI page for submission rules/requirements. In particular the bibliography style 
+  \item [\done] Check the PLDI page for submission rules/requirements. In particular the bibliography style 
   \item [\done] Run through and compile everything, make sure we didn't introduce any bugs
-  \item Check the layout of figures through the paper. Counterexamples for example is currently `off'. 
+  \item [\done] Check the layout of figures through the paper. Counterexamples for example is currently `off'.
+  \item talk about why we use agda in 1.2 Agda is the perfect system for formalizing programming language theory.  
   \item Submit 
   \item Add a paragraph or two giving a short overview/summary of Agda.
   \item Go through the code, make naming consistent and self-documenting
@@ -262,5 +264,21 @@ Some of the work we have explored is formalized in the Agda standard library.
 \item Submission deadline is Thursday 13th 
 \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
 \end{todolist}
+
+\section*{Post pldi todos}
+\begin{todolist}
+  \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized?
+  \item Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). Chat makes the following suggestion (see commented out line in tex file):
+  % \newcommand{\dneg}[1]{\overline{\smash{\overline{#1}}\vphantom{#1}}} % tight double overline
+  \item The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
+  \item We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec)
+  \item run through the table again and check the counterexamples line up. 
+
+
+\end{todolist}
+
+notes to self:
+- Tell Dr. P to check out the trs pvs paper. 
+
 
 \end{document}
