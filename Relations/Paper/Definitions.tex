@@ -45,7 +45,7 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
   \begin{description}
     \item[\bq \ule{${a \in \NF_R}$}] $a$ is a \bemph{normal form} if $(a,b) \notin R$ for any $b \in A$ .
     \item[\bq \ule{$a \in \WN_R$}] $a$ is \bemph{weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
-    \item[\bq \ule{$a \in \SN_R$}] $a$ is \bemph{strongly normalizing} if $a$ is accessible with respect to the converse relation $\bar{R} = \setof{(y,x) | (x,y) \in R}$.
+    \item[\bq \ule{$a \in \SN_R$}] $a$ is \bemph{strongly normalizing} if $a$ is accessible with respect to the converse relation $\tilde{R} = \setof{(y,x) | (x,y) \in R}$.
     See Section \ref{sec:Well-foundedness} for the notion of accessibility.
   \end{description}
 \end{definition}

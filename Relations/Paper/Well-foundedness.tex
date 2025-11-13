@@ -14,10 +14,10 @@
 An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
 In this section, we will compare several definitions of well-foundedness.
-For ease of exposition, we will only consider local versions of these notions.
+For ease of exposition, we will only consider global versions of these notions.
 (There is no loss of generality in this; any global well-foundedness property $\gWF(A;R)$ 
-restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y : A. R^* x y;R')$, 
-where $R'((y,\rho),(z,\sigma)) = R(y,z)$.)
+restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y {:} A. R^* x y;R')$, 
+where $R'((y,\rho),(z,\sigma)) = R(y,z)$; now $\gWF(A;R) \leftrightarrow \forall x. WF_R(x)$.)
 %which depend on the basic notions given in Definition~\ref{def:WFnotions} below.
 
 \subsection{Definitions of well-foundedness}
@@ -51,12 +51,13 @@ Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Defini
 this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k \in \nat$.
 
 \begin{definition} \label{def:WFproperties} \hfill
-  \begin{enumerate}
+  \begin{itemize}
     \item $R$ is \emph{accessibly well-founded} ($\WFacc$) if every element is accessible:
       \[
         \forall x \in A.\; x \text{ is accessible}
       \]
-    \item \label{def:WFind} $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
+    \item %\label{def:WFind}
+      $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
       \[
         \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P
       \]
@@ -78,7 +79,7 @@ this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k 
       \[
         \forall s : \nat \to A\ \exists k : \nat.\, \lnot \, R \,(s\,(k+1))\,(s\,k)
       \]
-  \end{enumerate}
+  \end{itemize}
 \end{definition}
 We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}.
 
@@ -119,7 +120,7 @@ These weaker notions are formalized in the definition below, and in the correspo
 \texttt{WFWeakDefinitions.agda}.
 
 \begin{definition} \label{def:WFweakproperties} \hfill
-  \begin{enumerate}
+  \begin{itemize}
     \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds for all elements up to double negation:
       \[
         \forall x \in A.\; \lnot \lnot  (x \text{ is accessible})
@@ -151,7 +152,7 @@ These weaker notions are formalized in the definition below, and in the correspo
     \[
       \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}
     \]
-\end{enumerate}
+\end{itemize}
 \end{definition}
 
 In \terese, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
@@ -164,7 +165,7 @@ non-decreasing index.
 
 The logical relationships between all of the above definitions are summarized in Figure~\ref{fig:WF}.
 All of the implications in the figure have been
-formalized within the WellFounded subdirectory of the Agda repository.
+formalized within the \texttt{WellFounded} subdirectory of the Agda repository.
 An arrow from one node to another with no label indicates direct logical implication,
 provable constructively with no additional assumptions. An arrow with a label indicates an additional
 (semi-)classical hypothesis needed to establish the implication.
@@ -175,7 +176,7 @@ a well-founded relation (hence the emphasis in the figure).
 In the ARS setting, this corresponds to defining
 strong normalization inductively in terms of reductions to normal forms.
 As can be seen from the figure, it is implied by
-Terese's definition $\WFseqm$ only when \emph{two}
+$\WFseqm$ (the definition used by \terese) only when \emph{two}
 strongly classical conditions are in place.
 These are $\accDNE$ (not-not-closure of strong normalization)
 and $\accCor$ (which is related to the existence of an effective perpetual reduction strategy).
@@ -321,6 +322,8 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \def\arraystretch{1.3}
 \begin{figure}[h!]
 \small
+% \renewcommand{\Sigma}{{\scriptstyle{\sum}}}
+% \renewcommand{\Sigma}{{\sum}}
 \begin{tabular}{@{}l l l @{}}
 \toprule
 \textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
@@ -328,10 +331,10 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 $\rdec$   & $R$ is decidable
           & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
 $\FB$     & $R$ is finitely branching
-          & $\mathtt{\forall (a : A) \to \Sigma [ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
+          & $\mathtt{\forall (a : A) \to}\Sigma\mathtt{[ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
 $\mpe$    & Sequences are $\lnot\lnot$-closed
           & $\forall\ \mathtt{(f : \nat \to A) \to \lnot\lnot Closed
-          (\lambda x \to \Sigma [ k \in \nat ] (f\, k \equiv x))}$ \\
+        (\lambda x \to} \Sigma \mathtt{[ k \in \nat ] (f\, k \equiv x))}$ \\
 $\corDNE$ & Coreductives are $\lnot\lnot$-closed
           & $\mathtt{\forall (P : \mathcal{P} A) \to R}$-$\mathtt{coreductive\ P \to \lnot\lnot Closed\ P}$\\
 $\accDNE$ & Accessibility is $\lnot\lnot$-closed
@@ -356,8 +359,8 @@ For example, the two minimality principles become equivalent.
 % The implication from the inductive to sequential definition no longer requires
 % decidability of $R$.
 % On the other hand, the reverse
-At the same time, the weak version of the sequential definition is unable to imply
-the (weak) accessible one without an additional hypothesis $\accCor$,
+At the same time, the implication from the weak version of the sequential definition 
+to the (weak) accessible one still requires the hypothesis $\accCor$,
 which may be described as the constructive contrapositive of the definition of accessibility.
 In the context of rewriting systems,
 this condition asserts the existence of a function which maps any
@@ -414,10 +417,10 @@ Other observations that can be gleaned from the figure include the following.
 
 We have also considered the statement that the complement of every coreductive predicate
   has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
-  (see \texttt{CoreductiveImplications.agda}), so we have not included them in the figure.
+  (see \texttt{WFCoreductiveImplications.agda}), so we have not included them in the figure.
 
-We also did not include the inductive definition, Definition \ref{def:WFproperties}.\ref{def:WFind}.
-  Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect:
+We also did not include $\WFind$ from Definition \ref{def:WFproperties}.
+Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect:
   the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to
   quantification over all predicates on $A$.  This defect is also present in $\WFmin$, $\WFminDNE$,
   and $\WFcor$.
@@ -454,16 +457,16 @@ Since this is clearly not provable in Agda without classical axioms,
 this argument shows that the implication from $\WFacc$ to $\WFmin$ is not provable either.
 
 Such distinctions have consequences for rewriting theory.
-For example, recall that $x\in \SN_R$ iff $x$ is $\bar{R}$-accessible, where $\bar{R}$
-is the converse of $R$.  Thus, if $\bar{R}$ is well-founded, $R \models \gSN$.
+For example, recall that $x\in \SN_R$ iff $x$ is $\tilde{R}$-accessible, where $\tilde{R}$
+is the converse of $R$.  Thus, if $\tilde{R}$ is well-founded, $R \models \gSN$.
 Yet actually computing the normal form of a given $x$ requires a
 strong form of decidability of being $R$-minimal:
 \[
-\tag{$\isMinDec$} \forall x. \left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)
+  \tag{$\isMinDec$} \forall x. \left(\exists y. x \rstep y \right) \lor \left(\forall y. x \,\,\not \!\!\!\!\rstep y\right)
 \]
 Note that merely deciding whether $x$ is a normal form is the weaker statement
 % Note that deciding whether $x$ is a normal form constitutes the weaker disjunction
-$\lnot\lnot\left(\exists y. Ryx\right) \lor \left(\forall y. \lnot Ryx\right)$.
+$\lnot\lnot\left(\exists y. x \rstep y\right) \lor \left(\forall y. x \,\,\not \!\!\!\! \rstep y\right)$.
 Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
 is shown to be equivalent to the principle of excluded middle.
 
