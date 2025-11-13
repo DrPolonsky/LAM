@@ -235,31 +235,32 @@ Some of the work we have explored is formalized in the Agda standard library.
 \item [\done] Change the macro for FB so that it is also boldface
 \item [\done, did SN to WN instead] update wfcounters to show that asserting wfmin implies the excluded middle (and wfmindne the weak excluded middle).
 \item [\done] In wfcounters we should have a system that is SN but not WN (WN implies excluded middle). 
-\item make an external bibliography file rather than inlining in main file.
 \end{todolist}
 
 
 \section*{Plan for PLDI submission}
 \begin{todolist}
-\item[X] Aim for first draft finished by the end of the 29th.
-\item[\done] Make a main file at this point to conform to this conference's style. Possibly a sub-folder for each conference.
-\item [\done] discussion env has qed boxes which shouldn't be there.
-\item[\done] from wellfounded extra move the implication of fb -> isdec -> isMinDec. move to implications. 
+  \item[X] Aim for first draft finished by the end of the 29th.
+  \item[\done] Make a main file at this point to conform to this conference's style. Possibly a sub-folder for each conference.
+  \item [\done] discussion env has qed boxes which shouldn't be there.
+  \item[\done] from wellfounded extra move the implication of fb -> isdec -> isMinDec. move to implications. 
   Use this to take this SNdec→WN to have a full proof from fb, isdec, sn -> wn. (issue in moving to fb file due to reversal of relation direction!) 
-\item Make consistent how we display definitions. \sacomment{I've made a change which I think looks better (bullet point style.) If we're happy with this change we can apply it to the wellfoundedness section too unless we rely on the numbering/reference the numbers}
-\item [\done] Work on the conclusion
-\item Need to fix how we put urls in for bibliography. Currently not quite working. \sacomment{Now all urls, if happy with how it looks we can tick it off. }
-\item Check the PLDI page for submission rules/requirements. In particular the bibliography style 
-\item [\done] Run through and compile everything, make sure we didn't introduce any bugs
-\item Check the layout of figures through the paper. Counterexamples for example is currently `off'. 
-\item Submit 
-\item Add a paragraph or two giving a short overview/summary of Agda.
-\item Go through the code, make naming consistent and self-documenting
-\item Once we've got a current draft finished. Look in Teresa for first order term rewrite systems and see how many we can represent using our code.
-\item Consider adding some more motivations 
-\item Look at the seq-minus vs. seq-not-not issue 
-\item Final read through (wed?)
+  \item Make consistent how we display definitions. \sacomment{I've made a change which I think looks better (bullet point style.) If we're happy with this change we can apply it to the wellfoundedness section too unless we rely on the numbering/reference the numbers}
+  \item [\done] Work on the conclusion
+  \item [\done] Need to fix how we put urls in for bibliography. Currently not quite working. \sacomment{Now all urls, if happy with how it looks we can tick it off. }
+  \item Check the PLDI page for submission rules/requirements. In particular the bibliography style 
+  \item [\done] Run through and compile everything, make sure we didn't introduce any bugs
+  \item Check the layout of figures through the paper. Counterexamples for example is currently `off'. 
+  \item Submit 
+  \item Add a paragraph or two giving a short overview/summary of Agda.
+  \item Go through the code, make naming consistent and self-documenting
+  \item Once we've got a current draft finished. Look in Teresa for first order term rewrite systems and see how many we can represent using our code.
+  \item Consider adding some more motivations 
+  \item Look at the seq-minus vs. seq-not-not issue 
+  \item Final read through (wed?)
+  \item make an external bibliography file rather than inlining in main file. Make sure bibliography is up to standard (e.g. emph on book title).
 \item Submission deadline is Thursday 13th 
+\item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
 \end{todolist}
 
 \end{document}
