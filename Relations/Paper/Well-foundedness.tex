@@ -108,7 +108,7 @@ be validated in certain cases.  In contrast, the original hypothesis
 is generally equivalent to every subset being decidable.
 The file \texttt{WFCounters.agda} shows that assuming the full minimality hypothesis $\WFmin$ for the standard strict order on the natural numbers entails decidability of every subset of $\nat$ (which is clearly incompatible with effective semantics), while its restriction $\WFminDNE$ implies
 %(and is equivalent to)
-that each subset $P$ it \emph{weakly} decidable,
+that each subset $P$ is \emph{weakly} decidable,
 satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ for all $x$.
 
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
@@ -154,7 +154,7 @@ These weaker notions are formalized in the definition below, and in the correspo
 \end{enumerate}
 \end{definition}
 
-In \cite{Terese}, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
+In \terese, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
 $\WFseqnn$, asserting that every sequence not-not contains a
 non-decreasing index.
 
