@@ -4,13 +4,13 @@ This sections is a guide to our formalization of \terese $\,$ and explains the d
 
 \subsection{Formalization of Definitions (\texttt{Base.agda})}\label{subsec:def}
 
-As outlined in the previous section, \texttt{Properties.agda}, \texttt{Seq.agda}, and \texttt{ClosureOperators.agda} define most standard termination and confluence properties. The file \texttt{Base.agda} introduces additional definitions which are required for the formalization of the propositions found in Chapter 1 of \terese.
+As presented in the previous section, the file \texttt{Properties.agda} defines most standard termination and confluence properties. The file \texttt{Base.agda} introduces additional definitions which are required for the formalization of the propositions found in Chapter 1 of \terese.
 
 
 The following is a summary of the differences in definitions we have used as mentioned in Section \ref{sec:Definitions}.
 \begin{itemize}
     \item $\SN$ : We define this via the notion of accessibility rather than the non-existence of infinite reduction sequences. Both definitions articulate normalization as well-foundedness of the converse relation. However, different notions of well-foundedness are used in the two definitions. The differences are highlighted in Section~\ref{sec:Well-foundedness}.
-     See Section \ref{sec:Well-foundedness} for further discussion.
+%     See Section \ref{sec:Well-foundedness} for further discussion.
     \item $\NPe$ : We use the equivalent $\NP$ definition.
     \item $\Inc$ : We use the more general property $\RP$.
 \end{itemize}
@@ -44,9 +44,9 @@ and do not merit further discussion.
   We show in Subsection \ref{subsec:newnewman} a generalization of Newman's Lemma using a condition distilled from $\gRP$.
   The formalizations of the remaining theorems are all found in \texttt{Theorems.agda}.
 
-\begin{theorem}[Thm 1.2.2 in \terese]
+\begin{theorem}[Thm 1.2.2 in \terese] \hfill 
 \begin{enumerate}[label=\roman*.]
-  \item[]
+  % \item[]
   \item $\gCR \implies \gNPe \implies \gUN$
   \item $\gWN \land \gUN \implies \gCR$
   \item $\gCRs \implies \gCR$
@@ -66,9 +66,9 @@ and do not merit further discussion.
 \end{remark}
 
 
-\begin{theorem}[Thm. 1.2.3 in \terese]
+\begin{theorem}[Thm. 1.2.3 in \terese] \hfill
   \begin{enumerate}[label=\roman*.]
-    \item[]
+    % \item[]
     \item $\gWN \land \gUN \implies \gBP$
     \item $\gBP \land \gInc \implies \gSN$
     \item $\gWCR \land \gWN \land \gInc \implies \gSN$
@@ -88,7 +88,7 @@ and do not merit further discussion.
   \begin{description}
     \item[($i$)] In $\mathtt{i^\to}$ we again provide a slight improvement by using $\gUNto$ rather than $\gUN$.
     \item[($ii$)] This proof is inherently classical. For the closest constructive analogue to this proof we have written $\mathtt{iiSeq}$, where we replace $\gBP$ with the stronger properties $\gWN$ and $\gUN$ and we replace $\gInc$ with the weaker property $\gRP$.
-    With the original property $\gBP$ and $gRP$ we can imply the related property $gSM$ ($\gSM$ is defined in Section~\ref{sec:Hierarchy} and its relation to $gSN$ is expanded upon). The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
-    \item[($iii$)] In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for our proof.
+    With the original property $\gBP$ and $\gRP$ we can imply the related property $\gSM$ ($\gSM$ is defined in Section~\ref{sec:Hierarchy} and its relation to $\gSN$ is expanded upon). The definition and further discussion of $\isWFseqm$ are provided in Section~\ref{sec:Well-foundedness}.
+    \item[($iii$)] In $\mathtt{iii}$, we replace $\gInc$ with the more general property $\gRPm$. We also assume that $\gSN$ is decidable, as this allows the construction of a witness for whether an element possesses the property $\SN$, which is essential for this proof.
   \end{description}
 \end{remark}
