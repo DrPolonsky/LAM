@@ -1,0 +1,178 @@
+\makeatletter
+\def\input@path{{./tex/acmart/}}
+\makeatother
+ 
+
+\documentclass[
+  acmsmall,
+  screen,
+  review,      % remove this for camera-ready
+  anonymous,   % remove for camera-ready
+  nonacm       % PACMPL papers use PACMPL style but are technically non-ACM proceedings submissions
+]{acmart} 
+
+% --- metadata ---
+\title{A Formalization of Abstract Rewriting in Agda}
+
+\author{Samuel Arkle}
+\affiliation{
+  \institution{Appalachian State University}
+  \country{USA}
+}
+\email{arklesd@appstate.edu}
+
+\author{Andrew Polonsky}
+\affiliation{
+  \institution{Appalachian State University}
+  \country{USA}
+}
+\email{polonskya@appstate.edu}
+
+% --- Keywords, CCS ---
+\keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma, Well-foundedness}
+
+% \begin{CCSXML}
+% <ccs2012>
+%    <concept>
+%       <concept_id>10003752.10003790.10011741</concept_id>
+%       <concept_desc>Theory of computation~Type theory</concept_desc>
+%       <concept_significance>300</concept_significance>
+%    </concept>
+% </ccs2012>
+% \end{CCSXML}
+
+\ccsdesc[300]{Theory of computation~Type theory}
+
+% --- packages & macros ---
+\input{macros} 
+% \newtheorem{definition}{Definition}
+% \newtheorem{notation}{Notation}
+\newtheorem{remark}{Remark}
+\theoremstyle{acmdefinition}
+\newtheorem{notation}{Notation} 
+% \newtheorem{notation}[theorem]{Notation} % Can't get this to work
+% \usepackage{ulem}
+% \supplement{https://github.com/DrPolonsky/FPLA/tree/main} %TODO: Can't get this reference to the code to work.
+\usepackage{enumitem}
+% --- begin document ---
+\begin{document}
+
+\begin{abstract}
+    We present a constructive formalization of Abstract Reduction Systems (ARS)
+    in the Agda proof assistant, focusing on the results given in the standard
+reference on Term Rewriting Systems \cite{Terese}. We define a taxonomy of
+concepts related to termination and confluence and investigate their
+relationships between each other and their classical counterparts. We identify,
+and eliminate where possible, the use of classical logic in the proofs of
+standard ARS results. Our analysis leads to refinements and mild
+generalizations of classical termination and confluence criteria. Finally, we
+investigate logical relationships between several notions of termination,
+arising from different formulations of the concept of a well-founded relation.
+\end{abstract}
+
+\maketitle
+
+\input{Introduction.tex}
+\input{Definitions.tex}
+\input{Formalization-pldi.tex}
+\input{Implications.tex}
+\input{Well-foundedness.tex}
+\input{Conclusion.tex}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references} % create references.bib instead of inline bib
+
+
+
+% \begin{thebibliography}{10}
+%     \bibitem{Terese}
+%     Marc Bezem, Jan Willem Klop, and Roel de Vrijer.
+%     \newblock {Term Rewriting Systems}.
+%     \newblock {Cambridge University Press, 2003}
+
+%     \bibitem{HoTT}
+%     Peter Aczel, Benedikt Ahrens, Thorsten Altenkirch, Steve Awodey,
+%     Bruno Barras, Andrej Bauer, Yves Bertot, Marc Bezem, Thierry Coquand,
+%     Eric Finster, et al.
+%     \newblock{Homotopy Type Theory: Univalent Foundations of Mathematics}.
+%     \newblock{The Univalent Foundations Program, Institute for Advanced Study, 2013}
+    
+%     \bibitem{QIIT}
+%     Thorsten Altenkirch, Paolo Capriotti, Gabe Dijkstra, Nicolai Kraus,
+%     and Fredrik Nordvall Forsberg.
+%     \newblock{Quotient inductive-inductive types}.
+%     \newblock{Proceedings of the International Conference on Foundations of Software Science and Computation Structures},
+%     \newblock{pages 293--310. Springer International Publishing, Cham, 2018}
+    
+%     \bibitem{CTT}
+%     Thierry Coquand, Simon Huber, and Anders Mörtberg.
+%     \newblock{On higher inductive types in cubical type theory}.
+%     \newblock{Proceedings of the 33rd Annual ACM/IEEE Symposium on Logic in Computer Science},
+%     \newblock{pages 255--264, 2018}
+    
+%     \bibitem{mimram}
+%     Mimram, Samuel
+%     \newblock{Program= Proof}.
+%     \newblock{2020}.
+%     \newblock{isbn = 9798615591839}.
+%     \newblock{Independently Published}
+    
+%     \bibitem{Bezem}
+%     Marc Bezem, Thierry Coquand, Keiko Nakata, and Erik Parmann.
+%     \newblock{Realizability at Work: Separating Two Constructive Notions of Finiteness}.
+%     \newblock {In 22nd International Conference on Types for Proofs and Programs (TYPES 2016)}.
+%     \newblock{Leibniz International Proceedings in Informatics (LIPIcs), Volume 97, pp. 6:1-6:23, Schloss Dagstuhl – Leibniz-Zentrum für Informatik (2018)}.
+%     \url{https://doi.org/10.4230/LIPIcs.TYPES.2016.6}
+    
+%     \bibitem{Berardi}
+%     Stefano Berardi
+%     \newblock{Classical and Intuitionistic Arithmetic with Higher Order Comprehension Coincide on Inductive Well-Foundedness}.
+%     \newblock{In 24th EACSL Annual Conference on Computer Science Logic (CSL 2015) }.
+%     \newblock{Leibniz International Proceedings in Informatics (LIPIcs), Volume 41, pp. 343-358}.
+%     \newblock{Schloss Dagstuhl – Leibniz-Zentrum für Informatik (2015)}.
+%     \url{https://doi.org/10.4230/LIPIcs.CSL.2015.343}
+    
+%     \bibitem{AgdaLibraryList}
+%     Agda Standard Library: List
+%     \url{https://agda.github.io/agda-stdlib/v2.2/Agda.Builtin.List.html}
+%     \newblock{Accessed: 8th July 2025}
+    
+%     \bibitem{AgdaLibraryRewriting}
+%     Agda Standard Library: Rewriting
+%     \url{https://agda.github.io/agda-stdlib/v1.7.3/Relation.Binary.Rewriting.html}
+%     \newblock{Accessed: 5th November 2025}
+    
+%     \bibitem{isabelleFormalization}
+%     Christian Sternagel and René Thiemann
+%     \url{https://www.isa-afp.org/entries/Abstract-Rewriting.html}
+%     \newblock{Accessed: 5th November 2025}
+    
+%     \bibitem{trs}
+%     André Galdino, Mauricio Ayala-Rincón
+%     \url{http://trs.cic.unb.br/}
+%     \newblock{Accessed: 5th November 2025}
+    
+%     \bibitem{coqARS}
+    
+%     Blanqui, Frédéric, and Adam Koprowski.
+%     \newblock{“CoLoR: A Coq Library on Well-Founded Rewrite Relations and Its Application to the Automated Verification of Termination Certificates.”}
+%     \newblock{Mathematical Structures in Computer Science 21, no. 4 (2011): 827–59.}\\
+%     \url{https://doi.org/10.1017/S0960129511000120}
+    
+%     \bibitem{AITC}
+%     \newblock{Annual International Termination Competition}
+%     \url{https://termination-portal.org/wiki/Termination_Competition}
+
+%   \end{thebibliography}
+  
+\end{document}
+% Plan of the paper:
+
+% 1. Introduction: 2 pages.
+% 2. Definitions/setup: 2 pages. [WIP]
+% 3. Formalization of Chapter 1 Terese, including Newman's Lemma: 2 pages [Still needs to be done]
+% - Statements (not proofs!) of key propositions and theorems in Agda code
+% 4. Implications, hierachies, figures, and counterexamples: 4-5 [draft in report]
+% 5. Classical principles and well-foundedness: 3 pages
+% 6. Miscellaneous facts: 1 page
+% 7. Related and future work: 1 page

@@ -1,0 +1,413 @@
+\section{Hierarchy}
+\label{sec:Hierarchy}
+
+\newenvironment{counterexample}[1][]{%
+    \refstepcounter{CEcounter} % Increment the counter
+    \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
+}
+
+The developments of this section are formalized in the files 
+\texttt{Properties.agda} and
+\texttt{Implications.agda} inside the \texttt{ARS} folder.
+
+This section examines the hierarchy of ARS properties.
+In programming language theory, $\gSN$ and $\gCR$ constitute the essential properties that
+jointly establish completeness.
+Consequently, our analysis centers on two primary categories of properties: those associated
+with termination and those associated with confluence.
+
+As discussed in Subsection \ref{subsec:def} we put forward $\RP$ as an alternative for $\Inc$. It is through examining $\RP$ that
+we came to the `minimal' family of properties below. These properties help to augment our ARS hierarchy.
+
+\begin{definition}\label{def:mf} Let $a \in A$. \hfill
+    \begin{description}
+        \item[\bq \ule{$a \in \MF_R$}] $a$ is a \bemph{minimal form} if $a \mstep b \implies b \mstep a$ for any $b \in A$.
+        \item[\bq \ule{$a \in \WM_R$}] $a$ is \bemph{weakly minimalizing} if $a \mstep b$ for some $b \in \MF_R$.
+        \item[\bq \ule{$a \in \SM_R$}]  $a$ is \bemph{strongly minimalizing} if either $a \in MF_R$, or every element one $R$-step from $a$ is strongly minimalizing. (This
+        definition is to be understood inductively.)
+        \item[\bq \ule{$a \in \SMseq_R$}] $a$ is \bemph{sequentially strongly minimalizing} if for every $R$-increasing sequence $s$ starting at $a$, there exists
+        an $i \in \nat$ such that $s (i) \in \MF$.
+        \item[\bq \ule{$a \in \MP_R$}] $a$ has the \bemph{minimal form property} if $c \bmstep a \mstep b \implies c \mstep b$ for any $b \in \MF$.
+    \end{description}
+\end{definition}
+
+Trivially, the following holds.
+\begin{proposition}\label{prop:nftomf}
+    $\forall x.\, x\in \NF \implies x \in \MF$
+\end{proposition}
+\begin{proof}
+    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
+\end{proof}
+
+$\SMseq$ is only classically equivalent to $\SM$. The
+following proposition relates these new definitions with our previous $\RP$ definitions.
+\begin{proposition}\label{prop:SMRP}
+    $\gSMseq \iff \gRP \land \gBP$
+\end{proposition}
+\begin{proof}
+    See \texttt{Implications.agda},\\
+    \verb|RP∧BP→SMseq    : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\
+    \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\
+    \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
+\end{proof}
+
+% BP and RP imply SM. So BP and RP and WN classically implies SN.
+Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination property in its own right. This leads us to
+explore the following broader taxonomy of concepts relating to termination and confluence.
+
+\begin{center}
+    \begin{tikzpicture}[auto,
+      arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
+      % A box style
+      \tikzstyle{boxnode} = [draw, rectangle, text centered, minimum width=1.2cm, inner sep=3pt]
+
+      % Title nodes
+      \node[text width=4cm, align=center, font=\bfseries] at (-1.5,1) {Confluence Hierarchy};
+      \node[text width=4cm, align=center, font=\bfseries] at (5,1) {Termination Hierarchy};
+
+      % Place the nodes vertically (top to bottom)
+      \node (Confluent) [boxnode] at (-4,0) {$\CR$};
+      \node (RP)        [boxnode, right=.5cm of Confluent] {$\MP$};
+      \node (WN)        [boxnode, right=.5cm of RP] {$\NP$};
+      \node (UN)        [boxnode, right=.5cm of WN] {$\UNto$};
+
+      % Draw arrows downwards
+      \draw[arrowstyle] (Confluent) -- (RP);
+      \draw[arrowstyle] (RP) -- (WN);
+      \draw[arrowstyle] (WN) -- (UN);
+
+
+      % Define the nodes
+      \node (NF) [boxnode] at (3,0) {$\NF$};
+      \node (MF) [boxnode] at (3,-1) {$\MF$};
+      \node (SN) [boxnode] at (5,0) {$\SN$};
+      \node (SR) [boxnode] at (5,-1) {$\SM$};
+      \node (WN) [boxnode] at (7,0) {$\WN$};
+      \node (WR) [boxnode] at (7,-1) {$\WM$};
+
+      % Draw the arrows to form a diamond
+      \draw [arrowstyle] (NF) -- (SN);
+      \draw [arrowstyle] (NF) -- (MF);
+      \draw [arrowstyle] (MF) -- (SR);
+      \draw [arrowstyle] (SN) -- (WN);
+      \draw [arrowstyle] (SN) -- (SR);
+      \draw [arrowstyle] (WN) -- (WR);
+      \draw [arrowstyle] (SR) -- (WR);
+
+      % Optional: Add a separation line
+      \draw[dashed] (2.0,-1.5) -- (2.0,1.5);
+    \end{tikzpicture}
+\end{center}
+
+
+The implications in this diagram are formalized in \texttt{Implications.agda}.
+The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
+The implication from $\SN$ to $\WN$ relies on the classical decidability of the property
+of being $R$-minimal, hence its formalization takes the form
+
+\verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN|
+
+The necessity of assuming a classical axiom for this implication is discussed 
+in Subsection \ref{sec:SNtoWN} and
+Section \ref{sec:Well-foundedness}.
+The same property is similarly required in order to show that $\SM$ implies $\WM$.
+
+\begin{proposition}\label{prop:MFtoNF} \hfill
+    \begin{enumerate}
+        \item $\forall x.\, x\in \MF \land x \in \WN \iff x \in \NF$
+        \item $\forall x.\, x\in \MF \land x \in \SN \iff x \in \NF$
+    \end{enumerate}
+
+\end{proposition}
+\begin{proof}
+    See module \texttt{Normalizing-Implications} in \texttt{Implications.agda},\\
+    \verb|MF∧WN↔NF : ∀ {x} → MF x × WN x ↔ NF x|\\
+    \verb|MF∧SN↔NF : ∀ {x} → MF x × SN x ↔ NF x| \qedhere
+\end{proof}
+
+In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a separate column for the combination of $\SM$ and $\WN$.
+
+Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
+
+The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the
+first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
+
+% \clearpage
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\begin{table}[h!]
+    \centering
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\WN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\SN$} \\
+        \Xhline{1.5pt}
+        $\UNto$ & CE-\ref{CE:4} & CE-\ref{CE:11} & CE-\ref{CE:4} & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$\footnotemark[1] & CE-\ref{CE:4} & $\CR$\footnotemark[1] & $\SN$ \\
+        \hline
+        $\NP$ & CE-\ref{CE:3} & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[1] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
+        \hline
+        $\MP$ & $\CR$ & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$\footnotemark[2] & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$\footnotemark[2] & $\SN$ \\
+        \hline
+        $\CR$ & $\CR$ & CE-\ref{CE:8} & $\CR$ & CE-\ref{CE:6} & $\CR$ & CE-\ref{CE:8} & $\CR$ & $\SN$ & $\CR$ & $\SN$ \\
+        \hline
+        \Xhline{1.5pt}
+    \end{tabular}
+    \caption{Local implications}
+\end{table}
+
+\vspace{-1cm}
+% \\[-0.5cm]
+\begin{table}[h!]
+    \centering
+    \renewcommand\arraystretch{1.2}
+    \begin{tabular}{!{\vrule width 1.5pt}
+        >{\columncolor{gray!30}}l
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c
+        !{\vrule width 1.5pt}c|c!{\vrule width 1.5pt}}
+        \Xhline{1.5pt}
+        \rowcolor{gray!30}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSM$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSMandWN$}
+        & \multicolumn{2}{c!{\vrule width 1.5pt}}{$\gSN$} \\
+        \Xhline{1.5pt}
+        $\gUNto$ & CE-\ref{CE:2} & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[1] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
+        \hline
+        $\gNP$ & CE-\ref{CE:3} & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[1] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
+        \hline
+        $\gMP$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:6} & $\gCR$\footnotemark[2] & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$\footnotemark[2] & $\gSN$ \\
+        \hline
+        $\gCR$ & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & CE-\ref{CE:7} & $\gCR$ & CE-\ref{CE:8} & $\gCR$ & $\gSN$ & $\gCR$ & $\gSN$ \\
+        \Xhline{1.5pt}
+    \end{tabular}
+    \caption{Global implications. \\$^*$~This implication also requires $\gWCR$. \\ $^\dagger$~This requires either $\gWCR$ or the classical implication $\SN \to \WN$ or $\SM \to \WM$.}
+\end{table}
+% \footnotetext[1]{This implication also requires $\gWCR$.}
+% \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
+% $\SN \to \WN$ or $\SM \to \WM$.}
+\renewcommand*{\thefootnote}{\arabic{footnote}}
+
+The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
+
+\subsection{Counterexamples}\label{subsec:counterexamples}
+% Setting up the ce counter
+\newcounter{CEcounter}
+\begin{figure}[htbp]
+    \centering
+    % \begin{center}
+    \renewcommand{\theCEcounter}{\arabic{CEcounter}}
+        \begin{tabular}{ccc}  % Three columns per row
+            % First Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:1}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Second Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:2}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d \arrow[loop right]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Third Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:3}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        a \arrow[loop left] & b \arrow[l] \arrow[r, bend left] & c \arrow[l, bend left] \arrow[r] & d \arrow[loop right]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            \\  % New row
+            \\
+
+            % Fourth Counterexample
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:4}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        & a \arrow[d] \arrow[dl] \\ e & b \arrow[l] \arrow[r] & c \arrow[r, bend left] & d \arrow[l, bend left]
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+            &
+            % Fifth Counterexample
+            % \begin{minipage}{0.3\textwidth}
+            %     \centering
+            %     \begin{counterexample}\label{CE:5}
+            %         \begin{tikzcd}[row sep=small, column sep=small]
+            %             d & a \arrow[l, two heads] \arrow[r, two heads] & b \arrow[r, bend left] & c \arrow[l, bend left]
+            %         \end{tikzcd} \\
+            %     \end{counterexample}
+            % \end{minipage}
+
+            % Sixth Counterexample - This one shows why UN -> doesn't imply UN
+            \begin{minipage}{0.3\textwidth}
+                \centering
+                \begin{counterexample}\label{CE:5}
+                    \begin{tikzcd}[row sep=small, column sep=small]
+                        n & c \arrow[l] \arrow[r] & a \arrow[r, bend left] & b \arrow[l, bend left]
+                        & d \arrow[l] \arrow[r] & m
+                    \end{tikzcd} \\
+                \end{counterexample}
+            \end{minipage}
+        % \\ % New row
+        % \\
+        &
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:6}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                f_0 \arrow[r] \arrow[dr] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[dl] \arrow[r] & \dots \arrow[dll] \\
+                & n
+            \end{tikzcd} \\
+            \end{counterexample}
+        \end{minipage}
+        \\ % new row
+        \\
+
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:7}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                f_0 \arrow[r] \arrow[d] & f_1 \arrow[r] \arrow[d] & f_2 \arrow[r] \arrow[d] & \dots \arrow[d] \\
+                n_0  & n_1  & n_2 & \dots
+            \end{tikzcd} \\
+            \end{counterexample}
+        \end{minipage}
+
+        &
+        \begin{minipage}{0.3\textwidth}
+            \centering
+            \begin{counterexample}\label{CE:8}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                a \arrow[r, bend left] & b \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    % \\ % New row
+    % \\
+    % &
+    % \begin{minipage}{0.3\textwidth}
+    %     \centering
+    %     \begin{counterexample}\label{CE:9}  \\ We think CE:9 is covered by CE:3
+    %         \begin{tikzcd}[row sep=small, column sep=small]
+    %             d  \arrow[d] \arrow[rr, bend left] & a \arrow[r] \arrow[l]  &
+    %             b \arrow[r, bend left] & c \arrow[l, bend left] \\
+    %             f_0 \arrow[r] & f_1 \arrow[r] & f_2 \arrow[r] & \dots
+    %         \end{tikzcd} \\
+    %     \end{counterexample}
+    % \end{minipage}
+    % New row
+    % \\
+    % \\
+    &
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{counterexample}\label{CE:10}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r]
+                & d \arrow[r, bend left] & e \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+    % &
+    % &
+      % New row
+    \\
+    \\
+    &
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \begin{counterexample}\label{CE:11}
+            \begin{tikzcd}[row sep=small, column sep=small]
+                c & a \arrow[r, bend left] \arrow[l] & b \arrow[l, bend left]
+            \end{tikzcd} \\
+        \end{counterexample}
+    \end{minipage}
+
+
+\end{tabular}
+\caption{Counterexamples}
+\label{fig:counterexamples}
+\end{figure}
+
+\begin{remark} The following are the key takeaways from the implication tables. \hfill
+    \begin{enumerate}
+        \item The property $\gWCR$ can sometimes be a substitute for the classical
+        property required for $\SN \implies \WN$ (and similarly $\SM \implies \WM$).
+        \item $\gWN \land \gUNto \implies \gCR$ does not require any classical assumptions
+         or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$.
+        \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. Counterexample~\ref{CE:4} shows that $\WCR \land \WN \land \UNto \nRightarrow \CR$.
+        \item Both $\SM$ and $\WN$ are required for $\SN$, see Subsection \ref{subsec:SMWNSN}.
+        \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$.
+    \end{enumerate}
+\end{remark}
+
+\subsection{Generalized Newman's Lemma}\label{subsec:newnewman}
+One interesting outcome from investigating the normalization taxonomy was a generalization of Newman's Lemma.
+
+\begin{proposition}
+    $\gWCR \land \SM \implies \CR$
+\end{proposition}
+\begin{proof}
+    See, \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|
+\end{proof}
+
+This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but
+uses the weaker assumption $\SM$ in place of $\SN$.
+
+% The tables show a number of changes when moving from properties holding locally to globally.
+% Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds
+% globally but not locally.
+\subsection{Relation between $\SM$, $\WN$, and $\SN$} \label{subsec:SMWNSN}
+One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\NP$. We also
+obtain completeness when we have $\gWN$ and $\gSM$.
+To show that $\gSM \land \gWN \implies \gSN$ we build on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds
+then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
+
+\verb|WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x|
+
+\verb|isWN∧SM→SN : R isWN → ∀ {x} → SM x → SN x|
+
+\verb|isWN∧isSM→isSN : R isWN → R isSM → R isSN|
+
+\subsection{A sufficient condition for $\gSN \to \gWN$}
+\label{sec:SNtoWN}
+It is perhaps surprising that the intuitively obvious implication from strong
+normalization to weak normalization is actually not provable.
+Indeed, the file \texttt{ARS/Examples.agda} shows that assuming this implication 
+for all relations on the natural numbers derives excluded middle.
+% This fact is related to the subtleties arising in constructive formulation of
+% well-foundedness, as we discuss at the end of Section \ref{sec:Well-foundedness}.
+At the same time, this implication is valid for all relations which are
+1) decidable, and 2) finitely branching.
+This is formalized in the file \texttt{ARS/Implications.agda} as 
+
+\verb|dec∧FB→SN⊆WN : R isDec → R isFB → SN ⊆ WN| 
+
+Since these conditions are in fact satisfied by all of the standard
+term rewrite systems and lambda calculi, we see that for the ARSs they induce, the implication
+is valid.

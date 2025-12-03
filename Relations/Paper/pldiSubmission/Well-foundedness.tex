@@ -1,0 +1,502 @@
+\section{Well-foundedness}
+
+\newcommand{\then}{\Longrightarrow}
+\label{sec:Well-foundedness}
+
+% \newcommand{\accCor}{\textbf{accCor}}
+% \newcommand{\accDNE}{\textbf{accDNE}}
+
+% We use Well-founded not Wellfounded
+
+\newcommand{\gWF}{\mathbf{WF}}
+\newcommand{\WF}{\mathrm{WF}}
+
+An abstract reduction $\to_R$ is strongly normalizing
+if and only if the converse relation is well-founded.
+In this section, we will compare several definitions of well-foundedness.
+For ease of exposition, we will only consider global versions of these notions.
+(There is no loss of generality in this; any global well-foundedness property $\gWF(A;R)$ 
+restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y {:} A. R^* x y;R')$, 
+where $R'((y,\rho),(z,\sigma)) = R(y,z)$; now $\gWF(A;R) \leftrightarrow \forall x. WF_R(x)$.)
+%which depend on the basic notions given in Definition~\ref{def:WFnotions} below.
+
+\subsection{Definitions of well-foundedness}
+
+For the rest of this section, fix $R \subseteq A \times A$.  We write $Rxy$ for $(x,y) \in R$.
+
+In the context of ARS, the reader should think of the converse relation,
+interpreting $Rxy$ as denoting a reduction step $y \to_R x$.
+
+For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the complement of $P$.
+\begin{definition}\label{def:WFnotions} \hfill
+   \begin{enumerate}
+    \item $x \in A$ is \emph{accessible} if for all $y \in A$, $Ryx$ implies $y$ is accessible.
+      This is an inductive definition, with the base case obtained at
+     those $x$ satisfying $\lnot Ryx$ for all $y$.
+    \item $P \subseteq A$ is \emph{inductive}
+    if, for each $x \in A$, $(\forall y. Ryx \to y \in P)$ implies $x \in P$.
+
+
+    \item $x \in A$ is \emph{$P$-minimal} if $x \in P$ and for all $y$,
+    $Ryx$ implies $y \notin P$.
+
+    \item $P \subseteq A$ is \emph{coreductive} if, for each $x \in \ol{P}$, there is a $y \in A$ such that $Ryx$ and $y \in \ol{P}$.
+
+    % \item $s : \nat \to A$ is \emph{$R$-decreasing} if for all $k$, $(s(k+1),s(k)) \in R$.
+  \end{enumerate}
+\end{definition}
+
+The above notions give rise to several distinct definitions of well-foundedness, given below.
+Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Definitions}:
+this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k \in \nat$.
+
+\begin{definition} \label{def:WFproperties} \hfill
+  \begin{itemize}
+    \item $R$ is \emph{accessibly well-founded} ($\WFacc$) if every element is accessible:
+      \[
+        \forall x \in A.\; x \text{ is accessible}
+      \]
+    \item %\label{def:WFind}
+      $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
+      \[
+        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P
+      \]
+    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive predicate is universally true:
+      \[
+        \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; x \in P
+      \]
+    \item  $R$ is \emph{well-founded minimality-wise} ($\WFmin$) if every nonempty subset contains a minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
+        \exists x \in A.\; \text{$x$ is $P$-minimal}
+      \]
+    \item  $R$ is \emph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a minimal element:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P \Rightarrow
+        \exists x \in A.\; \text{$x$ is $P$-minimal}
+      \]
+   \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
+      \[
+        \forall s : \nat \to A\ \exists k : \nat.\, \lnot \, R \,(s\,(k+1))\,(s\,k)
+      \]
+  \end{itemize}
+\end{definition}
+We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}.
+
+Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent; the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
+interpretations in varying degrees of logical strength.
+Formalizing the remaining implications enabled us to identify where exactly classical logic
+is used, and how much of it is truly needed.
+
+For example, the implication from ``every non-empty subset has a minimal element'' to
+``every element is accessible''  is a classical proof by contradiction.
+(Assuming that there exists an inaccessible element, the hypothesis implies that
+there must be a minimal such element, which immediately yields a contradiction:
+every minimal element is accessible.)
+
+Constructively, this argument only goes so far as to show that, if every non-empty
+subset has a minimal element, then no element is inaccessible.
+That is, the universal statement being proved is that every $x \in A$
+is not-not-accessible. The final step needed to infer that $x$ is indeed accessible
+is not constructively provable in general, therefore it needs to be assumed as
+an additional hypothesis in order to recover the full implication.
+
+On the other hand, assuming accessibility is $\lnot\lnot$-closed, the other
+hypothesis can now be weakened, to only require existence of minimal elements
+for $\lnot\lnot$-closed subsets.  This is a significant restriction, which may
+be validated in certain cases.  In contrast, the original hypothesis
+(postulating minimal elements for ALL predicates)
+is generally equivalent to every subset being decidable.
+The file \texttt{WFCounters.agda} shows that assuming the full minimality hypothesis $\WFmin$ for the standard strict order on the natural numbers entails decidability of every subset of $\nat$ (which is clearly incompatible with effective semantics), while its restriction $\WFminDNE$ implies
+%(and is equivalent to)
+that each subset $P$ is \emph{weakly} decidable,
+satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ for all $x$.
+
+One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
+asserting that every element is $\lnot\lnot$-accessible,
+every sequence $\lnot\lnot$-contains a non-decreasing index,
+for every non-empty subset there $\lnot\lnot$-exists a minimal element, etc.
+These weaker notions are formalized in the definition below, and in the corresponding file
+\texttt{WFWeakDefinitions.agda}.
+
+\begin{definition} \label{def:WFweakproperties} \hfill
+  \begin{itemize}
+    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds for all elements up to double negation:
+      \[
+        \forall x \in A.\; \lnot \lnot  (x \text{ is accessible})
+      \]
+    \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
+      \[
+        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P)
+      \]
+    \item $R$ is \emph{weakly coreductively well-founded} ($\WFcorm$) if every coreductive predicate holds for all elements up to double negation:
+      \[
+        \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; \lnot\lnot(x \in P)
+      \]
+    \item  $R$ is \emph{weakly well-founded minimality-wise} ($\WFminm$)
+      if for every nonempty subset $P$ there $\lnot \lnot$-exists a minimal element in $P$:
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \lnot \lnot \;
+        (\exists x \in A.\; \text{$x$ is $P$-minimal})
+      \]
+    \item  $R$ is \emph{weakly well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNEm$)
+      if for every nonempty $\lnot \lnot$-closed subset $P$ there $\lnot \lnot$-exists a minimal element in $P$:
+      % \[
+      %   \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
+      % (\exists x \in P.\; \text{$x$ is $P$-minimal}) \]
+      \[
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P\Rightarrow \lnot \lnot \;
+        (\exists x \in A.\; \text{$x$ is $P$-minimal})
+      \]
+  \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
+    \[
+      \forall s:\nat \to A.\; \lnot \text{($s$ is $R$-decreasing)}
+    \]
+\end{itemize}
+\end{definition}
+
+In \terese, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
+$\WFseqnn$, asserting that every sequence not-not contains a
+non-decreasing index.
+
+% \apcomment{Perhaps we should have a separate discussion between isWFseq- and isWFseq-not-not?}
+
+\subsection{Implications between the definitions}
+
+The logical relationships between all of the above definitions are summarized in Figure~\ref{fig:WF}.
+All of the implications in the figure have been
+formalized within the \texttt{WellFounded} subdirectory of the Agda repository.
+An arrow from one node to another with no label indicates direct logical implication,
+provable constructively with no additional assumptions. An arrow with a label indicates an additional
+(semi-)classical hypothesis needed to establish the implication.
+The definitions of these hypotheses are given in Figure \ref{tab:cprop}.
+
+We consider $\WFacc$ to be the canonical constructive definition of
+a well-founded relation (hence the emphasis in the figure).
+In the ARS setting, this corresponds to defining
+strong normalization inductively in terms of reductions to normal forms.
+As can be seen from the figure, it is implied by
+$\WFseqm$ (the definition used by \terese) only when \emph{two}
+strongly classical conditions are in place.
+These are $\accDNE$ (not-not-closure of strong normalization)
+and $\accCor$ (which is related to the existence of an effective perpetual reduction strategy).
+
+% \begin{figure}[h]
+% \centering
+% \begin{tikzpicture}[
+%   scale=0.7,
+%   every node/.style={transform shape},
+%   node distance=1cm and .5cm,
+%   box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
+%   arrow/.style={-{Latex}, thick}
+% ]
+
+% % Row 1: WFmin -> WFmin-
+% \node[box] (WFmin) {$\WFmin$};
+% \node[box, right=2.9cm of WFmin] (WFminM) {$\WFminm$};
+
+% \draw[arrow] (WFmin) -- (WFminM);
+
+% % Row 2: WFminDNE -> WFminDNE-
+% \node[box, below=of WFmin] (WFminDNE) {$\WFminDNE$};
+% \node[box, below=of WFminM] (WFminDNEM) {$\WFminDNEm$};
+
+% \draw[arrow] (WFminDNE) -- (WFminDNEM);
+
+% % Row 3: WFacc
+
+% \node[box, line width = 0.5mm, below=of WFminDNE] (WFacc) {$\WFacc$};
+
+% \node[box, below = of WFminDNEM] (WFaccM) {$\WFaccm$};
+% \draw[arrow] (WFacc) to (WFaccM);
+% \draw[arrow, bend left] (WFaccM) to node[below, text=red] {$\accDNE$} (WFacc);
+
+
+% % Row 4: WFseq
+% \node[box, below=of WFacc] (WFseq) {$\WFseq$};
+% \node[box, below= of WFaccM] (WFseqM) {$\WFseqm$};
+
+% \draw[arrow] (WFseq) -- (WFseqM);
+
+% % Row 5: WFcor
+% \node[box, below=of WFseq] (WFCor) {$\WFcor$};
+% \node[box, below=of WFseqM] (WFminCor) {$\WFcorm$};
+
+% % \draw[arrow, bend left = 55] (WFaccM) to (WFminM);
+
+% % Inter-row arrows
+% \draw[arrow] (WFacc) to node[right, text = red] {$\rdec$} (WFseq);
+% \draw[arrow, bend right] (WFaccM) to (WFminDNEM);
+% \draw[arrow, bend right = 90] (WFminCor) to node[pos = 0.4, right, text=red] {$\accCor$} (WFaccM);
+
+% \draw[arrow, bend right = 75] (WFmin) to (WFseq);
+% \draw[arrow, bend left = 75] (WFminM) to (WFseqM);
+% \draw[arrow] (WFaccM) -- (WFseqM);
+% \draw[arrow] (WFmin) -- (WFminDNE);
+% \draw[arrow, bend right] (WFminM) to (WFminDNEM);
+% \draw[arrow, bend right] (WFminDNEM) to (WFminM);
+
+% \draw[arrow] (WFminDNE) to node[right, text = red] {$\accDNE$} (WFacc);
+% \draw[arrow, bend right=45] (WFminDNE) to node[pos=0.3, left, text=red] {$\mpe$} (WFseq);
+% \draw[arrow, bend right] (WFminDNEM) to node[left, text=red] {$\FB$} (WFaccM);
+% \draw[arrow, bend right] (WFseqM) to (WFminCor);
+% \draw[arrow, bend right] (WFminCor) to node [right, text=red] {$\mpe$} (WFseqM);
+% \draw[arrow] (WFCor) -- (WFminCor);
+% % \draw[arrow, bend left = 110] (WFCor) to node[left, text=red] {$\accCor$} (WFacc);
+% \draw[arrow, bend left] (WFminCor) to node[below, text=red] {$\corDNE$} (WFCor);
+
+% \draw[arrow, bend left=80] (WFCor) to node[pos = 0.4, left, text=red] {$\accCor$} (WFacc);
+
+% \end{tikzpicture}
+% \caption{The logical relationships between notions of well-foundedness}
+%  \label{fig:WF}
+% \end{figure}
+% % \clearpage
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  scale=0.6,
+  every node/.style={transform shape},
+  node distance=1cm and .5cm,
+  box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
+  arrow/.style={-{Latex}, thick}
+]
+
+% Row 1: Basic definitions
+\node[box] (WFmin) {$\WFmin$};
+\node[box, right=2.9cm of WFmin] (WFminDNE) {$\WFminDNE$};
+\node[box, right=2.9cm of WFminDNE, line width = 0.5mm] (WFacc) {$\WFacc$};
+\node[box, right=2.9cm of WFacc] (WFseq) {$\WFseq$};
+\node[box, right=2.9cm of WFseq] (WFCor) {$\WFcor$};
+
+% Row 2: Weak definitions
+\node[box, below=2cm of WFmin] (WFminM) {$\WFminm$};
+\node[box, below=2cm of WFminDNE] (WFminDNEM) {$\WFminDNEm$};
+\node[box, below=2cm of WFacc] (WFaccM) {$\WFaccm$};
+\node[box, below=2cm of WFseq] (WFseqM) {$\WFseqm$};
+\node[box, below=2cm of WFCor] (WFminCor) {$\WFcorm$};
+
+% Arrows within rows
+\draw[arrow] (WFmin) -- (WFminDNE);
+\draw[arrow, bend left=25] (WFmin) to (WFseq);
+
+\draw[arrow] (WFminM) -- (WFminDNEM);
+\draw[arrow] (WFaccM) -- (WFseqM);
+\draw[arrow, bend right=35] (WFaccM) to (WFminDNEM);
+\draw[arrow, bend right=35] (WFminDNEM) to (WFminM);
+\draw[arrow, bend right=25] (WFminDNEM) to (WFseqM);
+\draw[arrow] (WFseqM) -- (WFminCor);
+
+% Inter-row arrows
+\draw[arrow] (WFmin) -- (WFminM);
+\draw[arrow] (WFminDNE) -- (WFminDNEM);
+\draw[arrow] (WFacc) -- (WFaccM);
+\draw[arrow] (WFseq) -- (WFseqM);
+\draw[arrow] (WFCor) -- (WFminCor);
+
+% Additional labeled arrows
+\draw[arrow] (WFminDNEM) to node[above, text=red] {$\FB$} (WFaccM);
+\draw[arrow, bend right=35] (WFminCor) to node[above, text=red] {$\mpe$} (WFseqM);
+\draw[arrow, bend right=25] (WFCor) to node[above, text=red] {$\accCor$} (WFacc);
+\draw[arrow] (WFminDNE) to node[below, text=red]{$\accDNE$} (WFacc);
+\draw[arrow, bend left = 25] (WFminDNE) to node[below, text=red]{$\mpe$} (WFseq);
+\draw[arrow, bend right = 45] (WFminCor) to node[right, text=red]{$\corDNE$} (WFCor);
+\draw[arrow, bend right = 45] (WFaccM) to node[right, text=red]{$\accDNE$} (WFacc);
+\draw[arrow] (WFacc) to node[below, text=red]{$\rdec$} (WFseq);
+\draw[arrow, bend left=25] (WFminCor) to node[below, text=red]{$\accCor$} (WFaccM);
+
+\end{tikzpicture}
+\caption{The logical relationships between notions of well-foundedness}
+\label{fig:WF}
+\end{figure}
+
+
+% All of the above definitions of well-foundedness are classically equivalent.
+% But constructively, the only provable equivalence is between the inductive and accessible
+% formluations, reflecting the fact that accessibility is defined as the least inductive predicate.
+% Formalizing the remaining implications enabled us to identify where exactly classical logic
+% is used, and how much of it is truly needed.
+
+{
+\def\arraystretch{1.3}
+\begin{figure}[h!]
+\small
+% \renewcommand{\Sigma}{{\scriptstyle{\sum}}}
+% \renewcommand{\Sigma}{{\sum}}
+\begin{tabular}{@{}l l l @{}}
+\toprule
+\textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
+\midrule
+$\rdec$   & $R$ is decidable
+          & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
+$\FB$     & $R$ is finitely branching
+          & $\mathtt{\forall (a : A) \to}\Sigma\mathtt{[ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
+$\mpe$    & Sequences are $\lnot\lnot$-closed
+          & $\forall\ \mathtt{(f : \nat \to A) \to \lnot\lnot Closed
+        (\lambda x \to} \Sigma \mathtt{[ k \in \nat ] (f\, k \equiv x))}$ \\
+$\corDNE$ & Coreductives are $\lnot\lnot$-closed
+          & $\mathtt{\forall (P : \mathcal{P} A) \to R}$-$\mathtt{coreductive\ P \to \lnot\lnot Closed\ P}$\\
+$\accDNE$ & Accessibility is $\lnot\lnot$-closed
+          & $\lnot\lnot$\verb|Closed (R -accessible)| \\
+$\accCor$ & Accessibility is coreductive
+          & \verb|R -coreductive (R -accessible)| \\
+\bottomrule
+\end{tabular}
+\centering
+\caption{Classical Properties Used in the Well-Foundedness Diagram}
+\label{tab:cprop}
+\end{figure}
+}
+% \clearpage
+% The principles appearing in the labels of Figure \ref{fig:WF} are valid for many rewriting systems,
+% and are classically true.
+Figure \ref{fig:WF} illustrates that the network of logical relationships between
+constructive notions of well-foundedness is quite rich indeed.
+Taking the $\lnot\lnot$-closures of
+these notions cuts down some, but not all, of the complexity.
+For example, the two minimality principles become equivalent.
+% The implication from the inductive to sequential definition no longer requires
+% decidability of $R$.
+% On the other hand, the reverse
+At the same time, the implication from the weak version of the sequential definition 
+to the (weak) accessible one still requires the hypothesis $\accCor$,
+which may be described as the constructive contrapositive of the definition of accessibility.
+In the context of rewriting systems,
+this condition asserts the existence of a function which maps any
+element that is \emph{not} strongly normalizing to a one-step reduct of it having the same property.
+Assuming $\accCor$, all notions of well-foundedness
+are constructively equivalent up to $\lnot\lnot$.
+
+Other observations that can be gleaned from the figure include the following.
+\begin{enumerate}
+  \item The implication from $\WFacc$ to $\WFseq$ requires the underlying relation to be decidable.
+    This assumption is no longer necessary on the $\lnot\lnot$-translated side.
+  \item $\WFmin$ is a very strong assumption and implies $\WFseq$ unconditionally.
+  The more reasonable $\WFminDNE$ requires the image of every sequence to be $\lnot\lnot$-closed
+  to complete the implication.  This condition can be considered as a special case of Markov's Principle
+  (if one assumes that equality on $A$ is decidable).
+  \item On the $\lnot\lnot$-side, $\WFminm$ and $\WFminDNEm$ are equivalent. Both are directly implied by $\WFaccm$,
+    and all three directly imply $\WFseqm$.
+  \item All definitions imply $\WFcorm$.  This weakest definition implies $\WFaccm$ assuming the
+    ``constructive contrapositive of accessibility'', $\accCor$.
+    %While this condition is implied by $\isWFseqm$, it does not appear to imply anything on its own.
+
+    With this assumption, $\WFacc$ can also be derived from $\WFcor$. % , the stronger version of $\WFcorm$.
+
+    % \apcomment{Remove?} (This is analogous to how $\isWFminDNE$ is a natural weakening of
+    % $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
+
+  \item If the relation is finitely branching ($\FB$), then $\WFminDNEm$
+    implies $\WFaccm$ directly.
+
+    (It may be noted that $\FB$ implies $\accCor$ whenever the relation $R$ is decidable
+    and $R$-accessibility is \emph{weakly} decidable;  this is proved in \texttt{Coreductive.agda}.)
+  % \apcomment{The previous observation suggests the question of whether isWFseq- might
+  % imply isWFminDNE- via decidability of minimal elements.\\
+  % However, in trying to prove this implication, the hypothesis asserting non-existence of
+  %  a minimal element of some given non-empty $\lnot\lnot$-closed predicate
+  %  automatically entails that any particular element of interest is not normal.\\
+  %  Unless it's not satisfying $P$? \emph{We need to decide whether it is P-minimal as well.}}
+  % \apcomment{(This seems easy: The converse implication isWFminCor to isWFseq- requires the sequence in question to
+  % have decidable image, leading to a further weakening of isWFseq-.)}
+
+% \item \apcomment{Fix with macros}. Since isWFminDNE- implies isWFseq-, the former also implies isWFminCor-.
+%   But the converse fails: If a subset/predicate $P$ is $\lnot\lnot$-closed,
+%   we cannot, in general, conclude it is coreductive.
+%   \item \apcomment{Delete? In general, the coreductive properties speak to the ability to choose
+%   a successor (strong existence).  This ability is central to being able to
+%   define sequences.  Therefore, sequential definitions generally require
+% some coreductive situation to be applicable.}
+
+  % \item Assuming normal forms are decidable,
+  % isWFseq implies a very weak version of minimality, isWFminEM.
+  % On its own this property is insufficient to imply anything else,
+  % so we have nothing else to say about it.
+\end{enumerate}
+
+We have also considered the statement that the complement of every coreductive predicate
+  has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
+  (see \texttt{WFCoreductiveImplications.agda}), so we have not included them in the figure.
+
+We also did not include $\WFind$ from Definition \ref{def:WFproperties}.
+Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect:
+  the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to
+  quantification over all predicates on $A$.  This defect is also present in $\WFmin$, $\WFminDNE$,
+  and $\WFcor$.
+
+% \apcomment{Todo: 1. Filter through the rest, and see if there's anything we may still want to keep.\\
+%   2. Include a subsection, or a section, with examples.  Provide examples where some decidability
+% properties are provable, and others are not.}
+
+\subsection{Well-foundedness and rewriting}
+
+One may wonder whether the differences between the various definitions above matter for
+rewriting theory.  In particular, how often are the properties listed in
+Figure \ref{tab:cprop} actually valid for a given rewrite system, so that its termination
+($\WFacc$) could be inferred from a weaker statement, such as $\WFminDNEm$?
+
+On the one hand, \cite{Berardi} proves a general result to the effect that
+$\accDNE$ is valid \emph{metatheoretically} for a large class of definable relations.
+Specifically, if $R$ is a primitive recursive predicate on the natural numbers and
+$\WFaccm(R)$ can be proved in higher-order arithmetic, then an intuitionistic proof
+of $\WFacc(R)$ in higher arithmetic must also exist.
+% situation of separating these notions is complicated by the fact that, for all
+% \emph{definable} predicates, the classical and constructive notions do coincide.
+% (We have not proved this, but see \cite{Berardi} for a related result.)
+So there is little hope of distinguishing between these notions via an explicit counterexample.
+
+On the other hand, some of these properties could be discriminated
+by showing that an implication between them yields a ``constructive taboo'':
+a proposition known to be unprovable without additional classical assumptions.
+For example, the archetype of a well-founded relation is the strict order \verb|<|
+on the natural numbers.  The usual induction readily validates $\WFacc$ for \verb|<|.
+  At the same time, the file \texttt{WFCounters.agda} shows that
+asserting $\WFmin$ for \verb|<| implies that every subset of the natural numbers is decidable.
+Since this is clearly not provable in Agda without classical axioms,
+this argument shows that the implication from $\WFacc$ to $\WFmin$ is not provable either.
+
+Such distinctions have consequences for rewriting theory.
+For example, recall that $x\in \SN_R$ iff $x$ is $\tilde{R}$-accessible, where $\tilde{R}$
+is the converse of $R$.  Thus, if $\tilde{R}$ is well-founded, $R \models \gSN$.
+Yet actually computing the normal form of a given $x$ requires a
+strong form of decidability of being $R$-minimal:
+\[
+  \tag{$\isMinDec$} \forall x. \left(\exists y. x \rstep y \right) \lor \left(\forall y. x \,\,\not \!\!\!\!\rstep y\right)
+\]
+Note that merely deciding whether $x$ is a normal form is the weaker statement
+% Note that deciding whether $x$ is a normal form constitutes the weaker disjunction
+$\lnot\lnot\left(\exists y. x \rstep y\right) \lor \left(\forall y. x \,\,\not \!\!\!\! \rstep y\right)$.
+Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
+is shown to be equivalent to the principle of excluded middle.
+
+On the other hand, $\WFmin$ trivially implies that each $x \in A$ is weakly normalizing.
+Indeed, given $x \in A$, consider the predicate $P_x(y) = x \mstep y$.
+This predicate is non-empty, since the empty reduction yields a proof of $P_x(x)$.
+Let $n$ be a $P_x$-minimal element.  Then $x \mstep n$.  Moreover, for any $y$,
+If $n \rstep y$, then $\lnot(P_x(y))$.  But since reductions from $x$ are closed downward,
+no such $y$ can exist, and hence $n$ is a normal form of $x$.
+
+It follows that there can be no constructive proof of $\WFmin$ from $\WFacc$,
+as the axiom of excluded middle would be a consequence of such a proof.
+
+% \greyout{From the perspective of rewriting theory, it would seem wild indeed if
+% $\SN$ did not imply $\WN$.
+%
+% These questions motivated us to take a closer look at the issue of well-foundedness.
+% Our analysis revealed a number of additional related hypotheses, having a complex
+% network of relations.  %These are displayed in Figure \ref{f:wf}.
+% These are recorded in the file \verb|Wellfounded.agda| /sacomment{Which file do we now want to refer to here. Or just refer to the entire subfolder?}
+%
+
+% \apcomment{Things to do:}
+% \begin{itemize}
+%   \item Reiterate/articulate the role of classical principles in establishing relationships between definitions of
+%     well-foundedness constructively
+%   \item List/discuss? classical principles appearing in the figure
+%   \item Discuss the figure overall -- refer to the enumerated list below
+%   \item Create ``narrative bridges'' between these items
+%   \item Final thing: Instantiate some of the classical principles on simple examples of term rewrite systems.
+% \end{itemize}
+%
+%
