@@ -1,0 +1,48 @@
+\documentclass{article}
+\input{macros}
+\usepackage{enumitem,amssymb}
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}%
+\hspace{-2.5pt}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
+
+\begin{document}
+\title{Winter 2025 ToDo}
+\maketitle
+
+\section*{December 2025}
+\subsection*{Carry over from previous TODO}
+\begin{todolist}
+    \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
+    \item  Create an equivalences file showing that our formalization agrees with the ASL (specifically definitions such as confluent, wcr, nf, leading up to showing our formalizations of Newman's lemma agree).
+  \item Investigate contributing work to the ASL. This may mean refactoring the work already done to conform with the ASL. Specific contributions would likely be: Generalized NL. Theorem's 122 and 123. Alternative definitions of Well-founded, the implications for the hierarchy.
+  \item  It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
+  \item Is there a path from WFseq- with MP== to WFseq? (W're thinking it will need rdec as well to give us the implication
+  ).
+ \item incorporate wfseq not not to the paper?
+ \item We want to start looking at examples. What we want to know is whether a first order rewrite system with some minimal properties implies some of our classical properties. E.g. lambda calculus satisfies some of our classical properties. As does first order term rewrite system. Follow up question: how big of an issue is it that accCor is not provable? Can we prove is isn't satisfied? 
+ \item check TERESE and see first order term rewrite systems example which could be valid for showing classical and constructive formalization coincide. First order term rewrite systems are (always?) fb and R is dec. 
+  \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized?
+  \item Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). Chat makes the following suggestion (see commented out line in tex file):
+  % \newcommand{\dneg}[1]{\overline{\smash{\overline{#1}}\vphantom{#1}}} % tight double overline
+  \item The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
+  \item We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec)
+  \item Go through the code, make naming consistent and self-documenting
+  \item run through the table again and check the counterexamples line up. 
+  \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
+
+
+\end{todolist}
+\section*{Research items}
+\begin{todolist}
+  \item (Research item) Find a concrete application of generalized Newman's Lemma. * Finding a term rewrite system where it's easier to see that it is weakly cr and that every term is SM (as opposed to being CR).  
+  \item (Research item) Formalize a first order term rewriting system. Use TeReSe to create a list of rewrite systems.
+  \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counterexamples been shown before?
+  \item (Research item) Work on the missing implications from the paper. So far we believe this is just CR $\to$ CP in the ARS section. - Will probably be quite a bit of work (low priority)
+  \item (Research item) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files), but for weak minimality and weak excluded middle. 
+  \end{todolist}
+\end{document}
