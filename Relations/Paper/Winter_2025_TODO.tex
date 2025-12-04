@@ -25,16 +25,17 @@
   ).
  \item incorporate wfseq not not to the paper?
  \item We want to start looking at examples. What we want to know is whether a first order rewrite system with some minimal properties implies some of our classical properties. E.g. lambda calculus satisfies some of our classical properties. As does first order term rewrite system. Follow up question: how big of an issue is it that accCor is not provable? Can we prove is isn't satisfied? 
- \item check TERESE and see first order term rewrite systems example which could be valid for showing classical and constructive formalization coincide. First order term rewrite systems are (always?) fb and R is dec. 
-  \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized?
-  \item Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). Chat makes the following suggestion (see commented out line in tex file):
-  % \newcommand{\dneg}[1]{\overline{\smash{\overline{#1}}\vphantom{#1}}} % tight double overline
-  (Have tried a number of solutions, none seem to quite get what we want. Putting this off for now as low priority.)
-  \item The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
+ \item Formalize perpetual strategy for untyped lambda calculus and conclude that the weak WF statements define the same subset of (untyped) lambda terms.  
+ \item check TERESE and see which first order term rewrite system examples which could be valid for showing classical and constructive formalization coincide. First order term rewrite systems are (always?) fb and R is dec.
+ \item If we formalize a first order rewrite system, this would allow other avenues of investigation. E.g. conjecture that in general first order rewrite system is FB and dec, and therefore SN implies WN. Because of the rewrite rule: "every variable occuring in the right hand side r occurs in l as well" we should be able to achieve this. And it will not be true in the absrtact context. 
+ \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized? (low priority, and probably not itemized).
+  \item [\done] Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). there is probably a way to adjust the height of a character which may solve this problem.
+  \item [\done] The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
   \item [\done] We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec) (new macro nrstep fixes it). 
   \item Go through the code, make naming consistent and self-documenting
   \item run through the table again and check the counterexamples line up. 
   \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
+  \item Check if there is a first order term rewrite system formalization in ASL. If so, do they have a proof of SN $\to$ WN. If not, this is an interesting avenue to explore (see earlier TODO point). 
 
 
 \end{todolist}
@@ -44,6 +45,6 @@
   \item (Research item) Formalize a first order term rewriting system. Use TeReSe to create a list of rewrite systems.
   \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counterexamples been shown before?
   \item (Research item) Work on the missing implications from the paper. So far we believe this is just CR $\to$ CP in the ARS section. - Will probably be quite a bit of work (low priority)
-  \item (Research item) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files), but for weak minimality and weak excluded middle. 
+  \item (Research item) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files), but for weak minimality and weak excluded middle.   (This is what we were working on end of day 4th December).
   \end{todolist}
 \end{document}

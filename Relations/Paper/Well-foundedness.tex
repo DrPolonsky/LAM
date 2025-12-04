@@ -72,7 +72,7 @@ this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k 
       \]
     \item  $R$ is \emph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a minimal element:
       \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P \Rightarrow
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \nnP \subseteq P \Rightarrow
         \exists x \in A.\; \text{$x$ is $P$-minimal}
       \]
    \item $R$ is \emph{sequentially well-founded} ($\WFseq$) if every sequence contains an index at which it is not decreasing:
@@ -145,7 +145,7 @@ These weaker notions are formalized in the definition below, and in the correspo
       %   \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \left(\ol{\ol P} \subseteq P\right) \Rightarrow \lnot \lnot \;
       % (\exists x \in P.\; \text{$x$ is $P$-minimal}) \]
       \[
-        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P\Rightarrow \lnot \lnot \;
+        \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \nnP \subseteq P\Rightarrow \lnot \lnot \;
         (\exists x \in A.\; \text{$x$ is $P$-minimal})
       \]
   \item $R$ is \emph{weakly sequentially well-founded} ($\WFseqm$) if no sequence is $R$-decreasing:
