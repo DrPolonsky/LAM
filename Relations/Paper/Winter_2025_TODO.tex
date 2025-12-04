@@ -29,8 +29,9 @@
   \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized?
   \item Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). Chat makes the following suggestion (see commented out line in tex file):
   % \newcommand{\dneg}[1]{\overline{\smash{\overline{#1}}\vphantom{#1}}} % tight double overline
+  (Have tried a number of solutions, none seem to quite get what we want. Putting this off for now as low priority.)
   \item The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
-  \item We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec)
+  \item [\done] We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec) (new macro nrstep fixes it). 
   \item Go through the code, make naming consistent and self-documenting
   \item run through the table again and check the counterexamples line up. 
   \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
