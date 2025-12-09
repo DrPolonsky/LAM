@@ -52,7 +52,11 @@
 \begin{todolist}
   \item Is the new definition of wdec in Predicates correct? It corresponds to the definition in FBranching. (Do we want to go through and update all uses of Wdec with the new definition if it is correct?)
   \item Go through the locations where we could use the wdec definition and replace it with our new wdec definition (search for wdec, previously we've manually defined it in each location)
-  \item $\lnot \lnot $closed C definition sometimes is a lambda term with three variables we can refactor this in those locations.  
+  \item $\lnot \lnot $closed C definition sometimes is a lambda term with three variables we can refactor this in those locations. 
+  \item can we show that  wfminDNE implies RisDec. We've shown that RisWFmin implies RisDec (in WFcounters). We've started the DNE proof in Wfimplications (commented out). 
+  \item [\done] We successfully proved that RisWFmin implies RisDec and RisMinDec!
+  \item We're trying to show that wfminDNE implies WEM (in WFcounters) (this is where we ended the session 9th December). Try using the commented out code to solve the goal on line 130. 
+  \item Ideal goal for next meeting is to formalize trs.
 \end{todolist}  
 
 
