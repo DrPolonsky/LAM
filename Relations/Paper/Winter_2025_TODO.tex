@@ -55,16 +55,16 @@
   \item $\lnot \lnot $closed C definition sometimes is a lambda term with three variables we can refactor this in those locations. (low priority) 
   \item can we show that  wfminDNE implies RisDec. We've shown that WFmin implies RisDec (in WFcounters). We've started the DNE proof in Wfimplications (commented out). 
   \item [\done] We successfully proved that RisWFmin implies RisDec and RisMinDec!
-  \item We're trying to show that wfminDNE implies WEM (in WFcounters) (this is where we ended the session 9th December). We currently think it is not possible.
+  \item [\done] We're trying to show that wfminDNE implies WEM (in WFcounters) (this is where we ended the session 9th December). We currently think it is not possible.
   
   \item [\done] We have made new discoveries as to what WFmin can imply. Can we use these developments to go from WFmin to WFacc? For example, with the addition of EM. Reminder that WFmin implies EM when R is non empty.
   \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  Update the table too with R not empty? 
   \item [\done] Show that we can go from our weakest WF definition to our strongest
   \item Do we want to make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  
-  \item We have moved the proof of wfmin implies EM to WFbasic implications. Can delete the old proof in WFcounters. 
+  \item [\done] We have moved the proof of wfmin implies EM to WFbasic implications. Can delete the old proof in WFcounters. 
   \item can we show that wfminnotnot implies wfaccnotnot? That would give a nice equivalence between three definitions in the weak row of the diagram. One approach could be to see what predicates we can prove with just wfminnotnot (in the same way that we first explored what predicates could be proved with wfmin before finding out a path to wfacc). Perhaps wfminnotnot implies WEM?
-  \item Work out what if any WF definition implies WEM (other than WFmin)?
-  \item Get rid of wfcor+ in our main development, substitute in the not not definition for consistency. 
+  \item [\done] Work out what if any WF definition implies WEM (other than WFmin)?
+  \item [\done] Get rid of wfcor+ in our main development, substitute in the not not definition for consistency. 
    
   \item We've started formalizing TRS in a new folder. This is our likely starting point for our next meeting. Before we meet it might be worth looking at the WF implications and see if we can add to it.
 
@@ -74,7 +74,7 @@
   \item [\done] We've shown that wfminDNE along with decidability of equality and not not closure of R gives us R is MinDec.
   \item [\done] We show that R is weakly decidable with the assumption of wfminDNE and equality decidability.
   \item Can we show that the not not closure of R emerges from WFminDNE?
-  \item Shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this.
+  \item We have shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this.
   
   \item [\done] We finished Friday's session by thinking we should be able to use our proofs from today to show wfmindne implies WEM (see wfcounters). If we have this, then we can show that wfacc implying wfminDNE would be absurd. This is probably a good launch for our next meeting. (We finished this quickly at the end of the session! We did require decidability of equality).
   \item Tidy up wfcounters and consider whether any of the proofs want moving to wfbasic implications. 
