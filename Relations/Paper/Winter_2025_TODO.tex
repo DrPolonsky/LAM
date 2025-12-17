@@ -13,72 +13,81 @@
 \begin{document}
 \title{Winter 2025 ToDo}
 \maketitle
-
 \section*{December 2025}
-\subsection*{Carry over from previous TODO}
+
+\section*{Week starting 15th December}
 \begin{todolist}
-    \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
-    \item  Create an equivalences file showing that our formalization agrees with the ASL (specifically definitions such as confluent, wcr, nf, leading up to showing our formalizations of Newman's lemma agree).
-  \item Investigate contributing work to the ASL. This may mean refactoring the work already done to conform with the ASL. Specific contributions would likely be: Generalized NL. Theorem's 122 and 123. Alternative definitions of Well-founded, the implications for the hierarchy.
-  \item  It's possible to have a term rewrite system with good properties like FB and the relation being decidable. But not satisfying accCor. That is something that can be added in a final touch of the paper. Either a remark or example, where a term rewrite system does not validate accCor. (In the lambda calculus, there are computable perpetual strategies. We think they're concerned with weak normalization. Not sure if it can be done with strong normalization.)
-  \item Is there a path from WFseq- with MP== to WFseq? (W're thinking it will need rdec as well to give us the implication
-  ).
- \item incorporate wfseq not not to the paper?
- \item We want to start looking at examples. What we want to know is whether a first order rewrite system with some minimal properties implies some of our classical properties. E.g. lambda calculus satisfies some of our classical properties. As does first order term rewrite system. Follow up question: how big of an issue is it that accCor is not provable? Can we prove is isn't satisfied? 
- \item Formalize perpetual strategy for untyped lambda calculus and conclude that the weak WF statements define the same subset of (untyped) lambda terms.  
- \item check TERESE and see which first order term rewrite system examples which could be valid for showing classical and constructive formalization coincide. First order term rewrite systems are (always?) fb and R is dec.
- \item If we formalize a first order rewrite system, this would allow other avenues of investigation. E.g. conjecture that in general first order rewrite system is FB and dec, and therefore SN implies WN. Because of the rewrite rule: "every variable occuring in the right hand side r occurs in l as well" we should be able to achieve this. And it will not be true in the absrtact context. 
- \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized? (low priority, and probably not itemized).
-  \item [\done] Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). there is probably a way to adjust the height of a character which may solve this problem.
-  \item [\done] The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
-  \item [\done] We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec) (new macro nrstep fixes it). 
-  \item Go through the code, make naming consistent and self-documenting
-  \item run through the table again and check the counterexamples line up. 
-  \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
-  \item Check if there is a first order term rewrite system formalization in ASL. If so, do they have a proof of SN $\to$ WN. If not, this is an interesting avenue to explore (see earlier TODO point). 
-
-
+  \item [\done]Split the todo list into logical sections. Well foundedness. Paper updates. TRS. Research items. 
+  \item TRS: We've furthered the formalization and encoded a simple example. Would be worth encoding more examples and thinking about quality of life improvements we can make to the process. 
 \end{todolist}
-\section*{Research items}
+
+\subsection*{Well founded investigations}
 \begin{todolist}
-  \item (Research item) Find a concrete application of generalized Newman's Lemma. * Finding a term rewrite system where it's easier to see that it is weakly cr and that every term is SM (as opposed to being CR).  
-  \item (Research item) Formalize a first order term rewriting system. Use TeReSe to create a list of rewrite systems.
-  \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counterexamples been shown before?
-  \item (Research item) Work on the missing implications from the paper. So far we believe this is just CR $\to$ CP in the ARS section. - Will probably be quite a bit of work (low priority)
-  \item (Research item) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files), but for weak minimality and weak excluded middle.   (This is what we were working on end of day 4th December).
-  \end{todolist}
+  \item Is there a path from WFseq- with MP== to WFseq? (W're thinking it will need rdec as well to give us the implication).
+  \item incorporate wfseq not not to the paper.
+  \item Can we show that the not not closure of R emerges from WFminDNE?
+  \item We know for wfminDNE every predicate that is not not closed with weak decidability of equality implies wem. What can we do from here. 
+  \item can we show that wfminnotnot implies wfaccnotnot? That would give a nice equivalence between three definitions in the weak row of the diagram. One approach could be to see what predicates we can prove with just wfminnotnot (in the same way that we first explored what predicates could be proved with wfmin before finding out a path to wfacc). Perhaps wfminnotnot implies WEM?
   
-\section*{Week starting 8th December}
+\end{todolist}
+
+\subsection*{Paper updates and improvements}
 \begin{todolist}
-  \item [\done] Is the new definition of wdec in Predicates correct? It corresponds to the definition in FBranching. (Do we want to go through and update all uses of Wdec with the new definition if it is correct?)
-  \item [\done] Go through the locations where we could use the wdec definition and replace it with our new wdec definition (search for wdec, previously we've manually defined it in each location)
-  \item $\lnot \lnot $closed C definition sometimes is a lambda term with three variables we can refactor this in those locations. (low priority) 
-  \item can we show that  wfminDNE implies RisDec. We've shown that WFmin implies RisDec (in WFcounters). We've started the DNE proof in Wfimplications (commented out). 
+  \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  Update the table too with R not empty? 
+  \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
+     \item Make the well founded definitions conform to the style of the definitions in other sections. Namely, bring the symbols to the start of the sentence. Use bemph where appropriate. Do we want all definitions to be itemized? (low priority, and probably not itemized).
+     \item run through the table again and check the counterexamples line up. 
+     \item MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes. 
+     \item Make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  Also make explicit the implication from wfmin to wfacc.
+     \item We have shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this.
+
+
+    \end{todolist}
+    \subsection*{Formalizing TRS}
+    \begin{todolist}
+      \item  Create a TRS example that has FB and Rdec but not accCor. Follow up question: how big of an issue is it that accCor is not provable? Can we prove is isn't satisfied? 
+      \item In general first order rewrite system is FB and dec, and therefore SN implies WN. Because of the rewrite rule: "every variable occuring in the right hand side r occurs in l as well" we should be able to achieve this. And it will not be true in the absrtact context.
+      \item TRS: Formalize orthogonality and show it is equivalent to our notion of confluence. 
+     
+    \end{todolist}
+    
+    \subsection*{Other research areas/work}
+    \begin{todolist}
+      \item Tidy up wfcounters and consider whether any of the proofs want moving to wfbasic implications. 
+      \item Investigate contributing work to the ASL. This means refactoring the work already done to conform with the ASL. Specific contributions would likely be: Generalized NL. Theorem's 122 and 123. Alternative definitions of Well-founded, the implications for the hierarchy.
+      \item Formalize perpetual strategy for untyped lambda calculus and conclude that the weak WF statements define the same subset of (untyped) lambda terms.  
+      \item Go through the code, make naming consistent and self-documenting
+      \item Check if there is a proof of SN $\to$ WN in first order term rewrite systems. If not, this is an interesting avenue to explore.
+      \item (Research item) Find a concrete application of generalized Newman's Lemma. * Finding a term rewrite system where it's easier to see that it is weakly cr and that every term is SM (as opposed to being CR).  
+      \item (Research item) Carry out research on rewriting counterexamples like our own so we can try and put them into some sort of context. Have our counterexamples been shown before?
+      \item (Research item) Work on the missing implications from the paper. So far we believe this is just CR $\to$ CP in the ARS section. - Will probably be quite a bit of work (low priority)
+      \item $\lnot \lnot $closed C definition sometimes is a lambda term with three variables we can refactor this in those locations. (low priority) 
+      
+    \end{todolist}
+    
+\subsection*{Complete}
+  \begin{todolist}
+      \item [\done] Improve how we write P bar bar for the definitions in wellfounded (well founded minimality wise). there is probably a way to adjust the height of a character which may solve this problem.
+      \item [\done] The sigma symbol was being rendered as a degree symbol. Why? Also, our solution is slightly too big, try and make it smaller (see well founded classical definitions).
+      \item [\done] We made a bodge fix for not right arrow in use in well founded. It is good enough for now but there should be a better way to express it in latex. (when defining isMinDec) (new macro nrstep fixes it). 
+      \item [\done] (Research item) Formalize a first order term rewriting system. Use TeReSe to create a list of rewrite systems.
+      \item [\done](Research item) Investigate: what we've done for natural numbers could be done for an arbitrary ARS (in the counter examples files), but for weak minimality and weak excluded middle.   (This is what we were working on end of day 4th December).
+      \item [\done] Is the new definition of wdec in Predicates correct? It corresponds to the definition in FBranching. (Do we want to go through and update all uses of Wdec with the new definition if it is correct?)
+      \item [\done] Go through the locations where we could use the wdec definition and replace it with our new wdec definition (search for wdec, previously we've manually defined it in each location)
+  \item [\done] can we show that  wfminDNE implies RisDec (no but we've shown it implies RisminDec). We've shown that WFmin implies RisDec (in WFcounters). We've started the DNE proof in Wfimplications (commented out). 
   \item [\done] We successfully proved that RisWFmin implies RisDec and RisMinDec!
   \item [\done] We're trying to show that wfminDNE implies WEM (in WFcounters) (this is where we ended the session 9th December). We currently think it is not possible.
   
   \item [\done] We have made new discoveries as to what WFmin can imply. Can we use these developments to go from WFmin to WFacc? For example, with the addition of EM. Reminder that WFmin implies EM when R is non empty.
-  \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  Update the table too with R not empty? 
   \item [\done] Show that we can go from our weakest WF definition to our strongest
-  \item Do we want to make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  
   \item [\done] We have moved the proof of wfmin implies EM to WFbasic implications. Can delete the old proof in WFcounters. 
-  \item can we show that wfminnotnot implies wfaccnotnot? That would give a nice equivalence between three definitions in the weak row of the diagram. One approach could be to see what predicates we can prove with just wfminnotnot (in the same way that we first explored what predicates could be proved with wfmin before finding out a path to wfacc). Perhaps wfminnotnot implies WEM?
   \item [\done] Work out what if any WF definition implies WEM (other than WFmin)?
   \item [\done] Get rid of wfcor+ in our main development, substitute in the not not definition for consistency. 
-   
-  \item We've started formalizing TRS in a new folder. This is our likely starting point for our next meeting. Before we meet it might be worth looking at the WF implications and see if we can add to it.
-
-  \item TRS: Complete our formalization. formalize some simple TRS to check our implementation works. 
-  \item TRS: Formalize orthogonality and show it is equivalent to our notion of confluence. 
   \item [\done] We've shown that wfminDNE gives us decRmin is we have decidability of equality. 
   \item [\done] We've shown that wfminDNE along with decidability of equality and not not closure of R gives us R is MinDec.
   \item [\done] We show that R is weakly decidable with the assumption of wfminDNE and equality decidability.
-  \item Can we show that the not not closure of R emerges from WFminDNE?
-  \item We have shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this.
   
   \item [\done] We finished Friday's session by thinking we should be able to use our proofs from today to show wfmindne implies WEM (see wfcounters). If we have this, then we can show that wfacc implying wfminDNE would be absurd. This is probably a good launch for our next meeting. (We finished this quickly at the end of the session! We did require decidability of equality).
-  \item Tidy up wfcounters and consider whether any of the proofs want moving to wfbasic implications. 
-  \item What can we do with wfminDNE now that we have WEM? 
 \end{todolist}  
 
 
