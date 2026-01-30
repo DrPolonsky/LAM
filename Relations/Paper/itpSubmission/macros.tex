@@ -1,0 +1,161 @@
+\input{packages}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+\newcommand{\tto}{\twoheadrightarrow}
+\newcommand{\sse}{\subseteq}
+\newcommand{\bset}{\mathbf{Set}}
+\newcommand{\nat}{\mathbb{N}}
+
+% Comments
+\newcommand{\sacomment}[1]{\textcolor{green}{#1}}
+\newcommand{\apcomment}[1]{\textcolor{blue}{#1}}
+\newcommand{\greyout}[1]{\textcolor{gray}{#1}}
+\newcommand{\err}[1]{\textcolor{red}{#1}}
+
+% Theorem style
+% \newtheorem{thm}{Theorem}
+% \newtheorem{dfn}[thm]{Definition}
+% \newtheorem{prop}[thm]{Proposition}
+% \newtheorem{cor}[thm]{Corollary}
+% % \newtheorem{lemma}[thm]{Lemma}
+% % \newtheorem{rmk}[thm]{Remark}
+% % \newtheorem{expl}[thm]{Example}
+% \newtheorem{notn}[thm]{Notation}
+% %\theoremstyle{nonumberplain}
+% %\theoremsymbol{\Box}
+% % \newtheorem{proof}{Proof}
+
+\newcommand{\RP}{\mathrm{RP}}
+\newcommand{\gRP}{\mathbf{RP}}
+\newcommand{\RPm}{\mathrm{RP^{-}}}
+\newcommand{\gRPm}{\mathbf{RP^{-}}}
+\newcommand{\NF}{\mathrm{NF}}
+\newcommand{\MF}{\mathrm{MF}}
+\newcommand{\UN}{\mathrm{UN}^{=}}
+\newcommand{\gUN}{\mathbf{UN}^{=}}
+\newcommand{\UNto}{\mathrm{UN}^{\to}}
+\newcommand{\gUNto}{\mathbf{UN}^{\to}}
+\newcommand{\SN}{\mathrm{SN}}
+\newcommand{\gSN}{\mathbf{SN}}
+\newcommand{\decSN}{\mathrm{dec(SN)}}
+\newcommand{\SM}{\mathrm{SM}}
+\newcommand{\SMseq}{\mathrm{SMseq}}
+\newcommand{\gSMseq}{\mathbf{SMseq}}
+\newcommand{\gSM}{\mathbf{SM}}
+\newcommand{\WN}{\mathrm{WN}}
+\newcommand{\gWN}{\mathbf{WN}}
+\newcommand{\SMandWN}{\mathrm{SM\land WN}}
+\newcommand{\gSMandWN}{\mathbf{SM\land WN}}
+\newcommand{\WM}{\mathrm{WM}}
+\newcommand{\gWM}{\mathbf{WM}}
+\newcommand{\WNFP}{\mathrm{WNFP}}
+\newcommand{\NP}{\mathrm{NP}^{\to}}
+\newcommand{\gNP}{\mathbf{NP}^{\to}}
+\newcommand{\NPe}{\mathrm{NP}^{=}}
+\newcommand{\gNPe}{\mathbf{NP}^{=}}
+\newcommand{\WMFP}{\mathrm{WMFP}}
+\newcommand{\MP}{\mathrm{MP}}
+\newcommand{\gMP}{\mathbf{MP}}
+\newcommand{\CR}{\mathrm{CR}}
+\newcommand{\CRs}{\mathrm{CR^{\le 1}}}
+\newcommand{\gCRs}{\mathbf{CR^{\le 1}}}
+\newcommand{\gCR}{\mathbf{CR}}
+\newcommand{\WCR}{\mathrm{WCR}}
+\newcommand{\gWCR}{\mathbf{WCR}}
+\newcommand{\Inc}{\mathrm{Inc}}
+\newcommand{\gInc}{\mathbf{Inc}}
+% \newcommand{\BP}{\mathrm{BP}}
+\newcommand{\gBP}{\mathbf{BP}}
+\newcommand{\FB}{\mathbf{FB}}
+\newcommand{\CP}{\mathrm{CP}}
+\newcommand{\gCP}{\mathbf{CP}}
+
+
+
+\newcommand{\from}{\leftarrow}
+
+ 
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+
+% Reduction relation macros
+\newcommand{\rstep}{\mathbin{\longrightarrow_R}}
+\newcommand{\mstep}{\mathbin{\longrightarrow_R^*}}
+\newcommand{\estep}{\mathbin{\longrightarrow_R^=}}
+\newcommand{\rrstep}{\mathbin{\longrightarrow_R^r}}
+\newcommand{\brstep}{\mathbin{\longleftarrow_R^r}}
+\newcommand{\bstep}{\mathbin{\longleftarrow_R}}
+\newcommand{\bmstep}{\mathbin{\longleftarrow_R^*}}
+
+% Unicode characters
+
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{ℕ}{\ensuremath{\mathbb{N}}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⊆}{\ensuremath{\sse}}
+\newunicodechar{∧}{\ensuremath{\land}}
+\newunicodechar{₌}{\ensuremath{_=}}
+\newunicodechar{𝓟}{\ensuremath{\mathcal{P}}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{₁}{\ensuremath{{}_1}}
+
+
+% Misc Macros
+\newcommand{\terese}{Terese \cite{Terese}}
+% \newcommand{\ul}[1]{\underline{#1}}
+\newcommand{\ule}[1]{\underline{#1:}}
+% \newcommand{\setof}[1]{\{#1\}}
+\newcommand{\setof}[1]{\left\{#1\right\}}
+
+\newcommand{\bemph}[1]{\textbf{\emph{#1}}}
+
+\newcommand{\tclos}[1]{{#1}^{\scriptscriptstyle{+}}}
+
+
+% Taken from well founded section
+
+\newcommand{\isWFacc}{\mathrm{isWFacc}}
+\newcommand{\isWFseq}{\mathrm{isWFseq}}
+\newcommand{\isWFmin}{\mathrm{isWFmin}}
+\newcommand{\isWFaccm}{\mathrm{isWFacc}{\lnot\lnot}}
+% \newcommand{\isWFseqm}{\mathrm{isWFseq}{\lnot\lnot}}
+\newcommand{\isWFseqm}{\mathrm{isWFseq}{-}}
+\newcommand{\isWFminm}{\mathrm{isWFmin}{\lnot\lnot}}
+\newcommand{\isWFminDNEm}{\mathrm{isWFminDNE}{\lnot\lnot}}
+\newcommand{\isWFcor}{\mathrm{isWFcor}}
+\newcommand{\isWFcorm}{\mathrm{isWFcor}{\lnot\lnot}}
+
+\newcommand{\WFind}{\mathbf{WFind}}
+\newcommand{\WFacc}{\mathbf{WFacc}}
+\newcommand{\WFseq}{\mathbf{WFseq}}
+\newcommand{\WFmin}{\mathbf{WFmin}}
+\newcommand{\WFminDNE}{\mathbf{WFminDNE}}
+\newcommand{\isWFminDNE}{\mathbf{isWFminDNE}}
+\newcommand{\WFcor}{\mathbf{WFcor}}
+\newcommand{\WFcorm}{\mathbf{WFcor}\boldsymbol{\lnot\lnot}}
+\newcommand{\WFaccm}{\mathbf{WFacc}\boldsymbol{\lnot\lnot}}
+\newcommand{\WFindm}{\mathbf{WFind}\boldsymbol{\lnot\lnot}}
+\newcommand{\WFseqnn}{\mathbf{WFseq}\boldsymbol{\lnot\lnot}}
+\mathchardef\mhyphen="2D
+\newcommand{\WFseqm}{\mathbf{WFseq}{\boldsymbol{\mhyphen}\!\boldsymbol{\mhyphen}}}
+\newcommand{\WFminm}{\mathbf{WFmin}\boldsymbol{\lnot\lnot}}
+\newcommand{\WFminDNEm}{\mathbf{WFminDNE}\boldsymbol{\lnot\lnot}}
+
+% Classical proeprties
+\newcommand{\accCor}{\mathbf{accCor}}
+\newcommand{\accDNE}{\mathbf{accDNE}}
+\newcommand{\mpe}{\mathbf{MP}{\boldsymbol{\equiv}}}
+\newcommand{\rdec}{\mathbf{Rdec}}
+\newcommand{\corDNE}{\mathbf{corDNE}}
+
+
+\newcommand{\isMinDec}{\mathbf{isMinDec}}
+
+\newcommand{\ol}[1]{\overline{#1}}
+
+\newcommand{\bq}{\ensuremath{\bullet}\quad}        % bullet + quad

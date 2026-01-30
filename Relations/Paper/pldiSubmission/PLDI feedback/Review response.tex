@@ -1,0 +1,324 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{PLDI Review Responses}
+\date{January 30, 2026}
+
+\newcommand{\res}[1]{\par\noindent\textbf{Response:} #1\par}
+
+\begin{document}
+\maketitle
+
+\section*{Review \#349A}
+
+Review \#349A
+===========================================================================
+
+
+\textbf{Overall merit}
+\\
+D. Serious problems. I will argue to reject this paper.
+
+\textbf{Reviewer expertise}
+\\
+X. I am an expert in the subject area of this paper.
+
+\subsection*{Paper summary}
+
+The paper describes a constructive formalization of various definitions
+and results in Abstract Rewriting Systems (ARS) in the proof assistant
+Agda. The results are mainly taken from the standard reference TeReSe
+(Camb. Univ. Press). The main novelty lies in the fact that all proofs
+are constructive, giving rise to a proliferation of notions and
+revision of proofs. For example, there are various ways to formalize
+the concept "Strong Normalization" and constructively these are not
+equivalent, and so various standard proofs do not go through anymore
+or have to be revised.
+The paper presents this work as a basis for a larger repository on
+programming language theory
+
+\subsection*{Strengths}
+\begin{itemize}
+	\item  The paper presents formally verified constructive proofs of results in ARS theory
+	\item The paper refines various notions from ARS from a constructive view point and compares their strength
+	\item The paper is well presented and easy to read
+
+\end{itemize}
+
+\subsection*{Weaknesses}
+
+\begin{itemize}
+	\item The development is rather limited in depth and breadth. There are more extensive formalizations of rewriting, e.g. the 3 ones mentioned in the references [7,10,11], and while they are not all constructive, they cover much more ground. In particular the CoLoR Coq (now Rocq) library (reference [7]) is constructive and much more extensive. The article [7] clearly describes where classical logic (an the Axiom of Dependent Choice) is needed for formalizing results for ARSs nd TRSs.
+	\item ARSs are abstract and there are quite a few nice basic results in there, but the real applications (in programming or math) lie in term rewriting systems (TRS), which is harder and also much more interesting to formalize.
+	\item The impact of the work will be limited. As a basis to "develop a  library of formalized programming language theory (PL)" (as the authors state on page 1) this is really very basic: programming language theory would (at least) require higher order term rewriting and evaluation strategies, which is still a far stretch starting from the present formalization. Similarly, "developing a tool for importing termination certificates from external provers into Agda", as stated in Section 6 requires the formalization of a lot of additional work, like formalizing a variety of techniques for proving termination of TRSs.
+	\item The paper starts from very weak assumptions on the ARS that are imo not so natural, in particular when applying this work further to PL. In particular, it is not assumed that R x y is decidable or that it is decidable if an element is in normal form (forall x (not exists y, R x y) \/ exists y, R x y).  This results in the fact that in their formal development, SN does not imply WN. This is very unnatural, and not a consequence of the constructive nature of the formalization but of the specific choice of definitions. If one defines SN WN inductively and it is decidable if a term is in normal form (as would be the case in any computational system), then SN => WN follows immediately.
+
+\end{itemize}
+ 
+\subsection*{Detailed comments for authors}
+\begin{itemize}
+	\item I would suggest developing the library much further, to include TRSs. There are two ways to proceed: (1) add a variety of techniques for proving termination to the extent that the library has all the formalised results so that it can check formal proofs that come out of the termination competition. (2) add evaluation strategies so you can formalize the operational semantics of a mini-PL using your library.
+	\item Make a more in depth comparison with related work, especially [7], which covers much more ground, also in a constructive way, with better motivated choices.
+	\item Present SN and WN as inductive definitions, which is much more natural constructively and easy to work with in Agda. Assume decidability of the relation R and of the property being in normal form.
+	\item I didn't find the 2 "motivating examples" in the introduction
+  all that convincing: Example 1.1: Church-Rosser is (almost always) much easier to prove then Strong Normalization for typed lambda calculi, so Newman's Lemma is never needed. Example 1.2: indeed this works, but the applications of HITs involve quotienting an equation which is undecidable, or for which one doesn't have a confluent terminating rewriting presentation yet.
+
+ 
+\end{itemize}
+\subsection*{Questions for author response}
+\begin{itemize}
+	\item What would remain of Figure 2 if we assume R to be decidable and we assume the predicate "normal form" to be decidable?
+	\item You formalize your work constructively. Does it allow the extraction of executable algorithms form proofs?
+	\item You mention you want to "avoid any axioms or postulates, such as function extensionality, uniqueness of identity proofs, univalence, etc." But where would they come in? I don't see any place in ARSs where they would be needed (and [7] doesn't need them, also not for TRSs)
+\end{itemize}
+
+
+\section*{Review \#349B}
+===========================================================================
+
+Overall merit
+\\
+D. Serious problems. I will argue to reject this paper.
+
+Reviewer expertise
+\\
+Y. I am knowledgeable in the area, though not an expert.
+
+Paper summary
+\\
+This paper provides a constructive formalization of definitions and theorems
+presented in the standard reference book on Term Rewriting Systems of Bezem et al.
+The paper advocates that having such a formalized library is important for doing
+the metatheory of numerous programming languages, and the focus on the
+constructive presentation is justified by the fact that then algorithms can be
+derived for the proven properties.
+
+Detailed comments for authors
+\\
+The properties formalized in the library are well known and, for the most part, technically straightforward. As a result, I would have expected the paper to provide more concrete illustrations of the practical usefulness of the authors’ contributions, beyond the mere formalization of standard results.
+
+For instance, the introduction states:
+“The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi. For more exotic rewrite systems—such as $\lambda \bot$ (underpinning sensible lambda theories) or coinductive rewriting—these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.”
+
+While this claim may well be valid, neither the paper nor the accompanying Agda development provides concrete examples or case studies that substantiate it. In particular, it would greatly strengthen the contribution to include explicit illustrations showing how the framework applies effectively to representative first-order TRSs or lambda-calculus examples, and why it becomes less applicable in the more exotic settings mentioned.
+
+Similarly, the rather long Section 5 on accessibility largely revisits well-known results and appears somewhat orthogonal to the core topic of term rewriting. The section focuses primarily on different formulations of well-foundedness, whereas the notion of strong normalization in rewriting is typically phrased in terms of accessibility. The connection to the main rewriting framework is therefore not always clear, and the section could likely be shortened or more tightly integrated with the rest of the paper.
+
+Finally, the exposition is somewhat repetitive for a paper of this length (16 pages). For example, the implication SN → WN is discussed in Section 4 (around line 502) and then revisited again in Section 5 (around line 710), without a clear added value in the second occurrence. Streamlining such repetitions would improve readability and help sharpen the paper’s overall message.
+
+
+The related work is shortly mentioned in the introduction but nothing is said about what has already been formalized or not.
+In particular, the CoLoR seems to provide most of the result presented in the current submission.
+
+Questions for author response
+\\
+Can you provide a more detailed analysis of which results presented in your paper have already been formalized
+in previous work, even if in other proof assistant ?
+
+Do you have concrete PL examples that benefit from your Agda library ?
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\section*{Review \# 349C}
+===========================================================================
+
+Overall merit
+\\
+C. Weak paper, though I will not fight strongly against it.
+
+Reviewer expertise
+\\
+Z. I am not an expert. My evaluation is that of an informed outsider.
+
+Paper summary
+\\
+Theorems from rewriting theory are typically used to establish foundational
+properties of programming language semantics. The present paper formalizes a
+number of these theorems in Agda, with an eye towards purely constructive (and
+hence executable) proofs. To this end, (variants of) properties that could
+be satisfied by rewriting systems are studied, and related using (variants of)
+classical theorems surrounding confluence and termination. There is also a
+thorough study of how these (variants of) well-known properties interrelate.
+Along the way, the rigorous development methodology embraced by the authors
+leads to a number of refinements of classical statements that make them
+strictly stronger, and furthermore help provide some insight into which
+non-constructive assumptions are powerful enough (and sometimes necessary) to
+interrelate the variant conditions.
+
+Strengths
+\\
+* The idea to formalize these bits of well-known theory from the ground up may
+  seem like it is not very novel, but the authors show that the discipline
+  enforced by a proof assistant can help to refine these well-known theorems,
+  and expose a rich network of interconnected properties, with interesting
+  insights relating to constructivity. For that reason, I think the insights
+  communicated here could be of value to the programming language community.
+
+Weaknesses
+\\
+* I would have liked to gain some better insight into the results, with
+  hand-written proofs that, at the very least, communicate the important ideas.
+  Right now, the paper refers to the supplementary Agda code, but denying those
+  insights to people without an Agda environment seems like a bad idea.
+
+* Further to the previous point, because I as a reader did not get a lot of
+  opportunity to engage with the formal notions by reading proofs, it felt like
+  I was somewhat removed from the contents. At times, the document felt more
+  like a README of a code repository than an article, communicating scientific
+  insights in a didactic manner. Put briefly, I would have liked to see more
+  "why" and "how" in addition to the "what" and "where" of it all. Given that,
+  at 16 pages, the manuscript is well below the page limit for PLDI, this feels
+  like somewhat of a missed opportunity - I think I would have really liked to
+  get a more keen insight into rewriting theory by exploring these details.
+
+Detailed comments for authors
+\\
+* L8: "eliminate where possible" kind of undersells the paper - this could be
+  read as "eliminate where we were able to", but actually the paper takes real
+  steps to argue that classical reasoning is *necessary* in some cases.
+
+* L30: I guess I understand what you are trying to say here in terms of
+  constructivity, but I am not entirely sure about this claim. In the proof
+  assistants I know, it is at least possible to assert the existence of
+  something inside a prop, and then prove this existence claim, without
+  exposing the way this object was constructed to the outside.
+
+* L45: I like this example, but it does drop the reader into a setting where
+  prior knowledge about notions like CR and SN is assumed. This is not
+  necessarily bad, but perhaps it is nice to make those assumptions explicit.
+
+* L43-71: Some gesturing in the direction of type theory happens here, but a
+  reader less familiar with the more intricate details is less likely to
+  understand what is being said here. I recommend fleshing this part out.
+
+* L188: Postponing the definition of strongly normalizing to Section 5 seems
+  very strange to me. The definition is not that long, why not just put it
+  here? If you do not want to refer back to it later, you can remind your
+  reader at that point as well.
+
+* L207, L210: The symbol $\equiv$ on this line is undefined. At first, I guessed
+  that the intended meaning of a $\equiv$ b was "a and b have the same normal
+  form", but given that it is only used contexts where a and b are already in
+  normal form, I am no longer sure.
+
+* L215: The name "Terese" occurs for the first time here, and without
+  consulting [6], I am still not sure what exactly it refers to. In fact, more
+  broadly it feels like a lot of the paper cannot be understood in full detail
+  unless the reader is also familiar with [6].
+
+* L242: It is not clear to me why the sequence s needs to be $R^r$-increasing
+  for x to have the cofinality property. The intuition that every reduct of
+  x needs to reduce to some point in the sequence feels orthogonal to that.
+
+* L256-266: This early diversion to discuss the property Inc from [6] felt like
+  somewhat of a distraction from the surrounding material. Perhaps it can be
+  merged with the discussion in Section 3.1 later on.
+
+* L309-311: This subsection discussing what is not going to be discussed
+  feels rather strange - why bring these propositions up at all?
+
+* L334: Given that a more general (and perhaps novel?) property is proved here,
+  it feels appropriate to isolate that into a theorem of its own.
+
+* L350: What exactly is meant by "inherently classical"? Does admitting this
+  property give you some kind of constructive taboo as in Section 5.3?
+
+* L427: What does it mean for a counterexample to "assume WCR"?
+
+* L437: Since the non-bold properties apply to individual elements, I am not
+  sure what is meant by "if a relation possesses the property $NF^\rightarrow$".
+
+* L449-450: It is not clear to me whether *any* of WCR, SN -> WN or SM -> WM
+  is sufficient to conclude CR in the cases marked with $\dagger$, or whether
+  the property used by the cases marked such may vary.
+
+* L476-477: There is another cell in the table where a consequence is only
+  achieved when the premises are global: SM, WN and $UN^\rightarrow$ only imply
+  SN globally, but not locally (if I read the table correctly).
+
+* L682-685: I am a bit confused by this paragraph. Apparently the defect shared
+  by WFmin, WFminDNE and WFcor does not prevent them from being in the diagram.
+
+* L717-718: I am unsure what this paragraph achieves, given that what is being
+  said here appears to have already been concluded on L703.
+
+
+ More minor remarks
+
+* L5: The abstract talks about "Abstract Reduction Systems", but the
+  introduction mentions "Abstract Rewriting Systems". Are these the same?
+
+* L6: I recommend against citations in the abstract, mostly because they will
+  be shown in contexts where the bibliography is not readily available, i.e.,
+  in summarization services or on the download page of the article.
+
+* L7: "their relationships between each other" reads awkwardly as a phrase.
+
+* L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to
+  refer to the book by name like this. Since the reference is so foundational
+  to the work, perhaps you can expand it to say "as presented in the book by
+  Bezem, Klop and De Vrijer" or something to that effect.
+
+* L20: I am not sure why it is even necessary to name-drop the university as
+  the site of the development of this library.
+
+* L38: I recommend preceding \cite with ~ to prevent a citation from appearing
+  as the very first thing on a new line.
+
+* L93: Maybe this paragraph, being just one sentence, can be merged with the
+  one that precedes it.
+
+* L111: Another term that is used for "strongly normalizing" for relations in
+  mathematics more broadly, and one that I am fond of, is "Noetherian".
+
+* L114: The abbreviations "SN" and "WN" are not defined at this point.
+
+* L151: The term "completeness" is not defined.
+
+* L237, L239: Why are the parentheses dropped in "sk"? I guess this is meant to
+  read as "s applied to k", but elsewhere the parentheses do appear.
+
+* L281: I am still a bit surprised to see that, in this Agda formalization of
+  FB, the relation R seems to work "the other way around" -- i.e., I would
+  have expected "R a b" rather than "R b a".
+
+* L355: "... and further discussion of [\texttt{isWFseq-}] are provided ..."
+
+* L361: The text spills into the margin here.
+
+* L372: "minimalizing" is an awkward term; how about "minimizing"?
+
+* L449-450: These footnotes seem to apply to Table 1 already, why not specify
+  them there?
+
+* L454: The "counterexamples" subsection is somewhat odd. Why would you put
+  its contents in a separate subsection if there is no accompanying prose?
+
+* L515: There is quite a soup of symbols on this line. Why not explain what
+  is going on in prose?
+
+* L519: The wording "the reader should think of the converse relation" is a bit
+  vague; perhaps this sentence can be clarified a bit.
+
+* L660: I am not sure how to interpret this piece of Agda code.
+
+* L674: Not sure why there is a hard line break before.
+
+Questions for author response
+\\
+* The counterexamples given are, more properly, relations, rather than the
+  relations that arise from a given set of rewriting rules. Sure enough, for
+  the finite counterexamples one can just take the "states" as symbols and the
+  "transitions" as rewrite rules, but for the infinite ones I wonder: do you
+  have actual rewriting systems with finitely many rules that give rise to
+  these relations?
+
+* The desire is voiced to leverage the Curry-Howard isomorphism to "execute"
+  proofs of (e.g.) confluence that arise from the theorems. I understand that
+  this should be possible in theory with Agda, but have you actually tested
+  this for your development? It could be a nice way to close the loop.
+
+\end{document}
