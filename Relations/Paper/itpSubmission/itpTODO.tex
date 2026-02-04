@@ -35,6 +35,23 @@
      \item Does EM imply all of our classical hypothesis? 
      \item The question of whether SN implies WN  in a first order TRS relates to the question of whether we can show isMinDec holds. If isMinDec holds then SN implies WN.
      \item We should try and find an ARS example where generalized NL holds but not the standard definition. This will help illustrate why it is useful! 
+     \item * L5: The abstract talks about "Abstract Reduction Systems", but the introduction mentions "Abstract Rewriting Systems". Make it consistent through the paper!
+     \item  I recommend against citations in the abstract, mostly because they will be shown in contexts where the bibliography is not readily available, i.e., in summarization services or on the download page of the article. (Need to remove the abstract citations)
+     \item * L7: "their relationships between each other" reads awkwardly as a phrase. (rewrite)
+     \item * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. (I think just a consistent way of referring to the book throughout is needed.)
+     \item * L38: I recommend preceding \cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
+     \item * L93: Maybe this paragraph, being just one sentence, can be merged with the one that precedes it. (Sentence/para starting "As long as the code does not use")
+     \item WN and SN are introduced as abbreviations before the terms are defined.  
+     \item "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."
+     \item * L237, L239: Why are the parentheses dropped in "sk"? I guess this is meant to read as "s applied to k", but elsewhere the parentheses do appear. 
+     \item * L281: I am still a bit surprised to see that, in this Agda formalization of FB, the relation R seems to work "the other way around" -- i.e., I would have expected "R a b" rather than "R b a". (We should make a clarifying Agda remark at this point?)
+     \item "... and further discussion of [\texttt{isWFseq-}] are provided ..." (Fix this?)
+     \item * L361: The text spills into the margin here. (We should go through the whole paper to ensure this doesn't occur elsewhere too)
+     \item * L372: "minimalizing" is an awkward term; how about "minimizing"? (Do we want to make this change through the paper?)
+     \item * L449-450: These footnotes seem to apply to Table 1 already, why not specify them there? (This worked better when the tables were on one page together. If we can't get them to fit on a table together it does make sense to replicate the footnotes.)
+     \item * L454: The "counterexamples" subsection is somewhat odd. Why would you put its contents in a separate subsection if there is no accompanying prose? (I think this is a good point but I also think it is useful to highlight the CE section. Solutions: We could make a sub sub section? Or write an explanatory paragraph/caption)
+     \item Reviewer has highlighted that this is a symbol soup that could probably be expressed in prose: "(There is no loss of generality in this; any global well-foundedness property...)" (end of this line is the particular culprit)
+
      
 \end{todolist}
 
