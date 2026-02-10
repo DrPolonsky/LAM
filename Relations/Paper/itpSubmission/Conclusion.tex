@@ -1,0 +1,56 @@
+\section{Conclusion and Further Work}
+\label{sec:Conclusion}
+
+In conclusion, we have formalized the basic results of ARS theory as
+presented in \cite{Terese}.  Our investigations show that much of this
+theory can be made effective for most languages one typically encounters
+in programming language theory.
+Throughout this effort, we found that the classical theorems often assume
+  more than is necessary.
+  % , and these distinctions become especially pronounced
+  % in the context of constructive logic.
+  Seeking to optimize hypotheses in every proof, we obtain marginal improvements of the standard
+termination and confluence criteria.
+We also identified several new ARS properties
+and established their relationship with the standard notions.
+This provided us with a
+clearer structural understanding of how different properties interact
+with one another, contributing to a more refined %and expressive
+formulation of ARS theory.
+
+We also analyzed the subtleties in formulating the concept of a well-founded relation
+precisely in a constructive metatheory.  We identified several classical principles
+that are needed to relate these different variations of the concept.
+
+Our work lays the ground for further extensions.  It makes standard ARS results
+ready for immediate use in formalizations of term rewriting systems and typed
+lambda calculi.  A potential avenue for further work would be developing a tool for 
+importing termination certificates from external provers into Agda. 
+For example, implementing a translation from the format used by 
+the Annual International Termination Competition \cite{AITC}
+would enable the use of state-of-the-art automated termination provers in future developments.
+
+% In the future, we would like to formalize more advanced ARS results.
+% We would
+
+
+% Recap the main takeaways from each piece.
+% \begin{itemize}
+%   \item ARS results are effective for finitely branching and decidable relations
+%   --- covers first-order TRSs and the lambda calculus.
+%   \item Identification of ``sufficiency frontier'' for completeness (termination and confluence).
+%   It also collapses many well-foundedness properties.
+%   \item Also discuss open problems, unprovable implications, etc.
+%   Maybe mention the Kleene tree idea, or at least include the reference to the Bezem--Coquand paper.
+%   \item Throughout this effort, we found that the classical theorems often assume
+%   more than is necessary, and these distinctions becomes especially pronounced
+%   in the context of constructive logic.
+%   \item \emph{Formalizing classical ARS theory in the Curry--Howard framework
+%   lead to improvements of classical ARS results.} In the process, new properties were identified,
+%    offering a clearer structural understanding of how different properties interact
+%     to establish completeness. These insights contribute to a more refined and
+%      expressive formulation of ARS theory.
+%   \item We believe the fact that $\isWFseq$ does not imply $\isWFacc$
+%   can be established by the methods of Bezem et al.
+%
+% \end{itemize}

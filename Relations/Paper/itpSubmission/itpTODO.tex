@@ -16,7 +16,7 @@
 \section*{February 2026}
 \subsection*{Research}
 \begin{todolist}
-    \item Complete the TRS formalization
+    \item [\done] Complete the TRS formalization
     \item Once TRS completed we should formalize some examples.
     \item Try to bind the formalization of the lambda calculus to the formalization of ARS. (Including the lambda calc in the LAM repo to the FPLA repo).
     \item Formalize undecidable lambda theories (at least one as an example).
@@ -27,7 +27,6 @@
     \item Go through the comments from PLDI and address those that need addressing.
     \item Add high priority items from the old todo to this.
     \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  Update the table too with R not empty?
-    \item Work on this todo using the message given in the chat:
     \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
     \apcomment{Note that the target sort of the finitely branching predicate FB is Set. The set “FB a” represents, according to the Curry-Howard isomorphism, the type of proofs that the element a is finitely branching. Such a proof is witnessed by a list of elements of A containing every R-successor of a.}
     \item Make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  Also make explicit the implication from wfmin to wfacc.
@@ -56,6 +55,7 @@
 \end{todolist}
 
 
+(note to self: What are the TRS examples that would be useful to formalize that would establish the things we want to (assuming the TRS formalization is successful) ). Also, ARS examples of stronger Newman's lemma. Let's see if we can find a TRS example of that. 
 
 
 \end{document}
