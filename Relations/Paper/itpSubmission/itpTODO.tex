@@ -26,7 +26,7 @@
     \item Complete seq minus
     \item Go through the comments from PLDI and address those that need addressing.
     \item Add high priority items from the old todo to this.
-    \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  Update the table too with R not empty?
+    \item [\done] (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  
     \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
     \apcomment{Note that the target sort of the finitely branching predicate FB is Set. The set “FB a” represents, according to the Curry-Howard isomorphism, the type of proofs that the element a is finitely branching. Such a proof is witnessed by a list of elements of A containing every R-successor of a.}
     \item Make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  Also make explicit the implication from wfmin to wfacc.
@@ -38,7 +38,7 @@
      \item [\done] I recommend against citations in the abstract, mostly because they will be shown in contexts where the bibliography is not readily available, i.e., in summarization services or on the download page of the article. (Need to remove the abstract citations) 
      \item [\done] * L7: "their relationships between each other" reads awkwardly as a phrase. (rewrite)
      \item [\done] * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. (I think just a consistent way of referring to the book throughout is needed.)
-     \item * L38: I recommend preceding~\cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
+     \item [\done] * L38: I recommend preceding~\cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
      \item * L93: Maybe this paragraph, being just one sentence, can be merged with the one that precedes it. (Sentence/para starting "As long as the code does not use")
      \item WN and SN are introduced as abbreviations before the terms are defined.  
      \item "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."

@@ -296,6 +296,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow] (WFCor) -- (WFminCor);
 
 % Additional labeled arrows
+\draw[arrow , bend left = 20] (WFmin) to node [above, text = red] {$\Rne$} (WFacc);
 \draw[arrow] (WFminDNEM) to node[above, text=red] {$\FB$} (WFaccM);
 \draw[arrow, bend right=35] (WFminCor) to node[above, text=red] {$\mpe$} (WFseqM);
 \draw[arrow, bend right=25] (WFCor) to node[above, text=red] {$\accCor$} (WFacc);
@@ -305,6 +306,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow, bend right = 45] (WFaccM) to node[right, text=red]{$\accDNE$} (WFacc);
 \draw[arrow] (WFacc) to node[below, text=red]{$\rdec$} (WFseq);
 \draw[arrow, bend left=25] (WFminCor) to node[below, text=red]{$\accCor$} (WFaccM);
+% \draw[arrow, bend left=25] (WFminCor) to node[below, text=red]{$\accCor$} (WFmin);
 
 \end{tikzpicture}
 \caption{The logical relationships between notions of well-foundedness}
@@ -330,6 +332,8 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \midrule
 $\rdec$   & $R$ is decidable
           & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
+$\Rne$    & $R$ in non-empty 
+          & $\exists$ \verb|{x} {y}| $\to$ \verb|R x y|\\
 $\FB$     & $R$ is finitely branching
           & $\mathtt{\forall (a : A) \to}\Sigma\mathtt{[ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
 $\mpe$    & Sequences are $\lnot\lnot$-closed
@@ -341,6 +345,7 @@ $\accDNE$ & Accessibility is $\lnot\lnot$-closed
           & $\lnot\lnot$\verb|Closed (R -accessible)| \\
 $\accCor$ & Accessibility is coreductive
           & \verb|R -coreductive (R -accessible)| \\
+
 \bottomrule
 \end{tabular}
 \centering
@@ -372,6 +377,7 @@ Other observations that can be gleaned from the figure include the following.
 \begin{enumerate}
   \item The implication from $\WFacc$ to $\WFseq$ requires the underlying relation to be decidable.
     This assumption is no longer necessary on the $\lnot\lnot$-translated side.
+  \item The implication from $\WFmin$ to $\WFacc$ requires the underlying relation to be non-empty. \sacomment{Do we want to say anything more here?}
   \item $\WFmin$ is a very strong assumption and implies $\WFseq$ unconditionally.
   The more reasonable $\WFminDNE$ requires the image of every sequence to be $\lnot\lnot$-closed
   to complete the implication.  This condition can be considered as a special case of Markov's Principle
