@@ -16,8 +16,8 @@
 %
 
 
-We present a formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in Term Rewriting Systems
- \cite{Terese}, using the Agda proof assistant.
+We present a formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in the book by Bezem, Klop and De Vrijer
+~\cite{Terese}, using the Agda proof assistant.
 This work is part of a larger effort to develop a library of formalized programming language theory (PL)
 at \inreview{Appalachian State} University.
 Since Term Rewriting Systems (TRS) play a foundational role in programming languages,
@@ -44,7 +44,7 @@ Staying within this paradigm requires the proofs to be constructive.
 Moreover, it requires us to avoid any axioms or postulates, such as function
 extensionality, uniqueness of identity proofs, univalence, etc.
 While most of ARS results are indeed constructive, standard presentations,
- including \cite{Terese}, make liberal use of classical logic.
+ including~\cite{Terese}, make liberal use of classical logic.
 Our paper can thus be read as a thoroughly constructive
 development of elementary ARS theory.
 
@@ -70,8 +70,8 @@ over a first-order signature $S$.
 The classical definition involves the quotient of the term algebra $S^*$ by
 the equivalence relation $\approx_T$ induced by $T$.
 Direct encoding of quotients is problematic in pure type theory.
-While there are a number of solutions, such as Higher Inductive Types \cite{HoTT},
-Quotient Inductive--Inductive Types \cite{QIIT}, Cubical Type Theory \cite{CTT}, etc.,
+While there are a number of solutions, such as Higher Inductive Types~\cite{HoTT},
+Quotient Inductive--Inductive Types~\cite{QIIT}, Cubical Type Theory~\cite{CTT}, etc.,
 they involve extending type theory with new language constructs,
 incurring additional costs in complexity.
 
@@ -148,7 +148,7 @@ In several places, we had to assume certain decidability hypotheses in order to 
 the proofs go through.  These were always flagged explicitly, and an effort was made to
 have as few of them as possible.
 
-Recall that a relation is strongly normalizing iff its converse is well-founded. \cite[Def.1.1.13]{Terese}.
+Recall that a relation is strongly normalizing iff its converse is well-founded.~\cite[Def.1.1.13]{Terese}.
 Since normalization is a central concept in ARS theory,
 we pay special attention to the concept of well-foundedness.
 The standard constructive definition does not even allow one to show that SN implies WN,
@@ -163,7 +163,7 @@ For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible l
 these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
 
 \subsection{Contributions and related works}
-Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle \cite{isabelleFormalization}, PVS \cite{trs}, and Rocq \cite{coqARS} as well as the Agda standard library \cite{AgdaLibraryRewriting}.
+Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle~\cite{isabelleFormalization}, PVS~\cite{trs}, and Rocq~\cite{coqARS} as well as the Agda standard library~\cite{AgdaLibraryRewriting}.
 The first three are quite mature large-scale projects for certifying termination of
 general rewrite systems.  Our work is more comparable in scale to the rewriting development in the
 Agda library, and is meant to serve as a starting point for a new library of formalized
@@ -173,7 +173,7 @@ are as follows.
 % Our contributions are as follows.
 \begin{itemize} \label{list:ourContributions}
   \item An original formalization of elementary ARS theory as presented in Terese
-  \cite{Terese}, including relevant background about relations and logic;
+ ~\cite{Terese}, including relevant background about relations and logic;
   % Chapter 1 of
   \item An ontology of termination and confluence properties, and a detailed analysis of logical relationships between them;
   \item Definitions of new ARS concepts that refine our understanding of these relationships;
@@ -198,6 +198,6 @@ The structure of the paper roughly corresponds with the progression of the Agda 
 % (with the exception of section \ref{sec:Well-foundedness}, which is put at the end)
 In the next section, we lay out the main properties of relations studied in ARS theory,
 setting the ground for what follows.  In Section \ref{sec:Formalization}, we
-outline our formalization of the ARS chapter from \cite{Terese}.
+outline our formalization of the ARS chapter from~\cite{Terese}.
 Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness.  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
 We conclude with a brief summary and suggestions for future work.
