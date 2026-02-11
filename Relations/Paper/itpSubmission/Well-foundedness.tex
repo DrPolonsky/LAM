@@ -296,17 +296,23 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow] (WFCor) -- (WFminCor);
 
 % Additional labeled arrows
-\draw[arrow , bend left = 20] (WFmin) to node [above, text = red] {$\Rne$} (WFacc);
-\draw[arrow] (WFminDNEM) to node[above, text=red] {$\FB$} (WFaccM);
+\draw[arrow , bend left = 20] (WFmin) to node [below, text = red] {$\Rne$} (WFacc);
+\draw[arrow] (WFminDNEM) to node[above=0.10cm, text=red] {$\FB \lor \accDNE$} (WFaccM);
 \draw[arrow, bend right=35] (WFminCor) to node[above, text=red] {$\mpe$} (WFseqM);
 \draw[arrow, bend right=25] (WFCor) to node[above, text=red] {$\accCor$} (WFacc);
-\draw[arrow] (WFminDNE) to node[below, text=red]{$\accDNE$} (WFacc);
+\draw[arrow] (WFminDNE) to node[below, text=red]{$\accDNE $} (WFacc);
 \draw[arrow, bend left = 25] (WFminDNE) to node[below, text=red]{$\mpe$} (WFseq);
 \draw[arrow, bend right = 45] (WFminCor) to node[right, text=red]{$\corDNE$} (WFCor);
 \draw[arrow, bend right = 45] (WFaccM) to node[right, text=red]{$\accDNE$} (WFacc);
 \draw[arrow] (WFacc) to node[below, text=red]{$\rdec$} (WFseq);
 \draw[arrow, bend left=25] (WFminCor) to node[below, text=red]{$\accCor$} (WFaccM);
-% \draw[arrow, bend left=25] (WFminCor) to node[below, text=red]{$\accCor$} (WFmin);
+% \draw[arrow, bend right=145] (WFminCor) to node[below, text=red]{$\accCor$} (WFmin);
+
+\draw[arrow]
+  (WFminCor.east)
+  -- ++(1.5cm,0)
+  |- ++(0,5.0cm)
+  -| node[above, text=red]{$\EM$} (WFmin.north);
 
 \end{tikzpicture}
 \caption{The logical relationships between notions of well-foundedness}
@@ -330,6 +336,8 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \toprule
 \textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
 \midrule
+$\EM$     & All predicates are decidable 
+          &  $\mathtt{\forall (P : \mathcal{P} A) \to P \lor \lnot P}$ \\
 $\rdec$   & $R$ is decidable
           & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
 $\Rne$    & $R$ in non-empty 
@@ -393,7 +401,7 @@ Other observations that can be gleaned from the figure include the following.
     % \apcomment{Remove?} (This is analogous to how $\isWFminDNE$ is a natural weakening of
     % $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
 
-  \item If the relation is finitely branching ($\FB$), then $\WFminDNEm$
+  \item If the relation is finitely branching ($\FB$) or accessibility is $\lnot\lnot$-closed ($\accDNE$) on the relation, then $\WFminDNEm$
     implies $\WFaccm$ directly.
 
     (It may be noted that $\FB$ implies $\accCor$ whenever the relation $R$ is decidable
