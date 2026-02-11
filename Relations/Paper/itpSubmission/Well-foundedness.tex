@@ -287,6 +287,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow, bend right=35] (WFminDNEM) to (WFminM);
 \draw[arrow, bend right=25] (WFminDNEM) to (WFseqM);
 \draw[arrow] (WFseqM) -- (WFminCor);
+\draw[arrow , bend left = 20] (WFmin) to (WFacc); % [below, text = red] {$\Rne$} (WFacc);
 
 % Inter-row arrows
 \draw[arrow] (WFmin) -- (WFminM);
@@ -296,7 +297,6 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow] (WFCor) -- (WFminCor);
 
 % Additional labeled arrows
-\draw[arrow , bend left = 20] (WFmin) to node [below, text = red] {$\Rne$} (WFacc);
 \draw[arrow] (WFminDNEM) to node[above=0.10cm, text=red] {$\FB \lor \accDNE$} (WFaccM);
 \draw[arrow, bend right=35] (WFminCor) to node[above, text=red] {$\mpe$} (WFseqM);
 \draw[arrow, bend right=25] (WFCor) to node[above, text=red] {$\accCor$} (WFacc);
@@ -336,12 +336,12 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \toprule
 \textbf{Property} & \textbf{Definition}  &\textbf{Agda Code}  \\
 \midrule
-$\EM$     & All predicates are decidable 
-          &  $\mathtt{\forall (P : \mathcal{P} A) \to P \lor \lnot P}$ \\
+$\EM$     & All propositions are decidable 
+          &  $\mathtt{\forall (P : Set) \to P \lor \lnot P}$ \\
 $\rdec$   & $R$ is decidable
           & $\forall$ \verb|{x} {y}| $\to$ \verb|EM (R x y)|\\
-$\Rne$    & $R$ in non-empty 
-          & $\exists$ \verb|{x} {y}| $\to$ \verb|R x y|\\
+% $\Rne$    & $R$ in non-empty 
+          % & $\exists$ \verb|{x} {y}| $\to$ \verb|R x y|\\
 $\FB$     & $R$ is finitely branching
           & $\mathtt{\forall (a : A) \to}\Sigma\mathtt{[ xs \in List A ] (\forall b \to R a b \to b \in{}List\, xs)}$ \\
 $\mpe$    & Sequences are $\lnot\lnot$-closed
@@ -385,7 +385,6 @@ Other observations that can be gleaned from the figure include the following.
 \begin{enumerate}
   \item The implication from $\WFacc$ to $\WFseq$ requires the underlying relation to be decidable.
     This assumption is no longer necessary on the $\lnot\lnot$-translated side.
-  \item The implication from $\WFmin$ to $\WFacc$ requires the underlying relation to be non-empty. \sacomment{Do we want to say anything more here?}
   \item $\WFmin$ is a very strong assumption and implies $\WFseq$ unconditionally.
   The more reasonable $\WFminDNE$ requires the image of every sequence to be $\lnot\lnot$-closed
   to complete the implication.  This condition can be considered as a special case of Markov's Principle
@@ -401,7 +400,7 @@ Other observations that can be gleaned from the figure include the following.
     % \apcomment{Remove?} (This is analogous to how $\isWFminDNE$ is a natural weakening of
     % $\isWFmin$ that is sufficient to recover $\isWFacc$ in the presence of {$\accDNE$}.)
 
-  \item If the relation is finitely branching ($\FB$) or accessibility is $\lnot\lnot$-closed ($\accDNE$) on the relation, then $\WFminDNEm$
+  \item If the relation is finitely branching ($\FB$) or $R$-accessibility is $\lnot\lnot$-closed ($\accDNE$), then $\WFminDNEm$
     implies $\WFaccm$ directly.
 
     (It may be noted that $\FB$ implies $\accCor$ whenever the relation $R$ is decidable
