@@ -112,8 +112,8 @@ The definitions in this subsection are key to formalizing Theorem 1.2.3 in \tere
 \begin{definition} \label{def:seq} \hfill
   \begin{description}
     \item \bq A \bemph{sequence} is a function $s$ from the natural numbers to $A$.
-    \item \bq A sequence $s : \nat \to A$ is \bemph{$R$-decreasing} if every element of the sequence is $R$-related to its preceding term: $\forall k. s(k+1) \rstep sk$.
-    \item \bq A sequence $s : \nat \to A$ is \bemph{$R$-increasing} if every element of the sequence is $R$-related to its succeeding term: $\forall k. sk \rstep s(k+1)$.
+    \item \bq A sequence $s : \nat \to A$ is \bemph{$R$-decreasing} if every element of the sequence is $R$-related to its preceding term: $\forall k. s(k+1) \rstep s(k)$.
+    \item \bq A sequence $s : \nat \to A$ is \bemph{$R$-increasing} if every element of the sequence is $R$-related to its succeeding term: $\forall k. s(k) \rstep s(k+1)$.
   \end{description}
 \end{definition}
 
@@ -186,6 +186,6 @@ Furthermore, it takes us outside of a purely relational theory. The weaker prope
 Our Agda formulation of the above definition makes use of the List type constructor, which we import from the Agda Standard Library~\cite{AgdaLibraryList}.
 
 
-\verb|FB a = Σ[ xs ∈ List A ] (∀ b → R b a → b ∈List xs)|
+\verb|FB a = Σ[ xs ∈ List A ] (∀ b → R a b → b ∈List xs)|
 
 $\FB$ plays an important role in our discussion of well-foundedness, see Section \ref{sec:Well-foundedness}.
