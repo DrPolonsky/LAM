@@ -45,8 +45,10 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
   \begin{description}
     \item[\bq \ule{${a \in \NF_R}$}] $a$ is a \bemph{normal form} if $(a,b) \notin R$ for any $b \in A$ .
     \item[\bq \ule{$a \in \WN_R$}] $a$ is \bemph{weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
+    \item[\bq \ule{${a \in accessible}$}] $a$ is \emph{accessible} if for all $b \in A$, $Rab$ implies $b$ is accessible.
+      This is an inductive definition, with the base case obtained at
+     those $a$ satisfying $\lnot Rab$ for all $b$.
     \item[\bq \ule{$a \in \SN_R$}] $a$ is \bemph{strongly normalizing} if $a$ is accessible with respect to the converse relation $\tilde{R} = \setof{(y,x) | (x,y) \in R}$.
-    See Section \ref{sec:Well-foundedness} for the notion of accessibility.
   \end{description}
 \end{definition}
 
