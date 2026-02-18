@@ -1,35 +1,19 @@
-\makeatletter
-\def\input@path{{./tex/acmart/}}
-\makeatother
- 
-
-\documentclass[
-  acmsmall,
-  screen,
-  review,      % remove this for camera-ready
-  anonymous,   % remove for camera-ready
-  nonacm       % PACMPL papers use PACMPL style but are technically non-ACM proceedings submissions
-]{acmart} 
+% Use the LIPIcs class for the conference submission
+\documentclass[a4paper,UKenglish,anonymous]{lipics-v2021}
 
 % --- metadata ---
 \title{A Formalization of Abstract Rewriting in Agda}
 
-\author{Samuel Arkle}
-\affiliation{
-  \institution{Appalachian State University}
-  \country{USA}
-}
-\email{arklesd@appstate.edu}
+\author{Samuel Arkle}{Appalachian State University, USA}{arklesd@appstate.edu}{}{}
+\author{Andrew Polonsky}{Appalachian State University, USA}{polonskya@appstate.edu}{}{}
 
-\author{Andrew Polonsky}
-\affiliation{
-  \institution{Appalachian State University}
-  \country{USA}
-}
-\email{polonskya@appstate.edu}
+\authorrunning{S. Arkle and A. Polonsky}
+\titlerunning{A Formalization of Abstract Rewriting in Agda}
+\Copyright{Samuel Arkle and Andrew Polonsky}
 
 % --- Keywords, CCS ---
 \keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma, Well-foundedness}
+\ccsdesc[300]{Theory of computation~Type theory}
 
 % \begin{CCSXML}
 % <ccs2012>
@@ -41,19 +25,18 @@
 % </ccs2012>
 % \end{CCSXML}
 
-\ccsdesc[300]{Theory of computation~Type theory}
+% (CCS descriptions handled differently; omit or add per submission requirements)
 
 % --- packages & macros ---
 \input{macros} 
 % \newtheorem{definition}{Definition}
 % \newtheorem{notation}{Notation}
-\newtheorem{remark}{Remark}
-\theoremstyle{acmdefinition}
+% \newtheorem{remark}{Remark}
+% Remark is already defined.
 \newtheorem{notation}{Notation} 
 % \newtheorem{notation}[theorem]{Notation} % Can't get this to work 
 % \usepackage{ulem}
 % \supplement{https://github.com/DrPolonsky/FPLA/tree/main} %TODO: Can't get this reference to the code to work.
-\usepackage{enumitem}
 % --- begin document ---
 \begin{document}
 
@@ -79,7 +62,8 @@ We illustrate general applicability of our ARS development with elementary examp
 \input{Well-foundedness.tex}
 \input{Conclusion.tex}
 
-\bibliographystyle{ACM-Reference-Format}
+% LIPIcs recommends `plainurl` (or the style provided with the template).
+\bibliographystyle{plainurl}
 \bibliography{references} % create references.bib instead of inline bib
 
 
