@@ -6,7 +6,7 @@
     \noindent \scriptsize\textbf{{\theCEcounter } }  #1\par
 }
 
-The developments of this section are formalized in the files 
+The developments of this section are formalized in
 \texttt{Properties.agda} and
 \texttt{Implications.agda} inside the \texttt{ARS} folder.
 
@@ -133,7 +133,7 @@ The first table explores where the properties hold locally, the second explores 
 first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
 
 \clearpage
-\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}} 
 \begin{table}[h!]
     \centering
     \renewcommand\arraystretch{1.2}
@@ -163,6 +163,7 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         \Xhline{1.5pt}
     \end{tabular}
     \caption{Local implications}
+    \label{tab:localImplications}
 \end{table}
 
 \vspace{-1cm}
@@ -195,15 +196,18 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
         \Xhline{1.5pt}
     \end{tabular}
     \caption{Global implications. \\$^*$~This implication also requires $\gWCR$. \\ $^\dagger$~This requires either $\gWCR$ or the classical implication $\SN \to \WN$ or $\SM \to \WM$.}
+    \label{tab:globalImplications}
+
 \end{table}
 % \footnotetext[1]{This implication also requires $\gWCR$.}
 % \footnotetext[2]{This implication also requires either $\gWCR$ or the classical property required to go from
 % $\SN \to \WN$ or $\SM \to \WM$.}
 \renewcommand*{\thefootnote}{\arabic{footnote}}
 
-The table should be interpreted as follows: for example, if a relation possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
+The table should be interpreted as follows: for example, if an element possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
 \subsection{Counterexamples}\label{subsec:counterexamples}
+The following counterexamples demonstrate how a given combination of properties are insufficient to provided either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
 % Setting up the ce counter
 \newcounter{CEcounter}
 \begin{figure}[htbp]

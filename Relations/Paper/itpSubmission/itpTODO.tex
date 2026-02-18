@@ -14,15 +14,19 @@
 \title{ITP ToDo}
 \maketitle
 \section*{February 2026}
+\subsection*{Must be done before submission}
+\begin{todolist}
+    \item Keep to the page count. Note in particular the table with counterexamples in the hierarchy section as we've had trouble with text overlapping there. Clearpage was the solution but currently this is leading to a lot of unused space.
+\end{todolist}
 \subsection*{Research}
 \begin{todolist}
     \item [\done] Complete the TRS formalization
     \item Once TRS completed we should formalize some examples.
     \item Try to bind the formalization of the lambda calculus to the formalization of ARS. (Including the lambda calc in the LAM repo to the FPLA repo).
-        \begin{itemize}
-          \item Prove FB and RDec, get SN to WN? 
-          \item 
-        \end{itemize}
+    \begin{itemize}
+        \item Prove FB and RDec, get SN to WN?
+        \item
+    \end{itemize}
     \item Formalize undecidable lambda theories (at least one as an example).
 \end{todolist}
 \subsection*{Writing}
@@ -30,36 +34,41 @@
     \item Complete seq minus
     \item Go through the comments from PLDI and address those that need addressing.
     \item Add high priority items from the old todo to this.
-    \item (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  \sacomment{Added to the diagram and R empty added to the table. Check definition and the text added to the paper.}
+    \item [\done] (high priority) Having shown that WFmin implies WFacc when R is non empty we need to update the paper. Specifically we should update the text in the WF section and the diagram to incorporate the new implication.  \sacomment{Added to the diagram and R empty added to the table. Check definition and the text added to the paper.}
     \item (Review 3) * From the formalization, the authors could explain some features and syntax of Agda for readers unfamiliar with this proof assistant. What were the main attributes of Agda that helped you in the formalization process? In line 204, the paper brings the definition of an element being finitely branching and states that the formulation of such a definition is given in line 206. FB a seems to be a set (in line 206), not a boolean. Also, in the formalization of FB a, the authors use R b a instead of R a b. What elements of Agda allow such specification capturing exactly Def. 12.
     \apcomment{Note that the target sort of the finitely branching predicate FB is Set. The set “FB a” represents, according to the Curry-Howard isomorphism, the type of proofs that the element a is finitely branching. Such a proof is witnessed by a list of elements of A containing every R-successor of a.}
-    \item Make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  Also make explicit the implication from wfmin to wfacc. \sacomment{Arrow added to diagram and EM added to the table. Check EM definition. I've not added anything to the main text as we already mention that classically the definitions are equivalent.}
-     \item We have shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this. \sacomment{Added to the graph and added to the remarks section. Q1: Is the `or' easy to understand on the arrow? Q2: Does it make sense to say accessibility is not not closed `on' the relation or should it be described differently? }
-     \item Does EM imply all of our classical hypothesis? (We've shown it does for some of them)
-     \item The question of whether SN implies WN  in a first order TRS relates to the question of whether we can show isMinDec holds. If isMinDec holds then SN implies WN. (we've shown this holds in implications.agda)
-     \item We should try and find an ARS example where generalized NL holds but not the standard definition. This will help illustrate why it is useful! \sacomment{CE:8 in our paper covers this (two objects with relations to one another). Is this too much of a toy example?}
-     \item * L5: The abstract talks about "Abstract Reduction Systems", but the introduction mentions "Abstract Rewriting Systems". Make it consistent through the paper! \sacomment{Any preference on which we use?} Yes: Rewriting
-     \item [\done] I recommend against citations in the abstract, mostly because they will be shown in contexts where the bibliography is not readily available, i.e., in summarization services or on the download page of the article. (Need to remove the abstract citations) 
-     \item [\done] * L7: "their relationships between each other" reads awkwardly as a phrase. (rewrite)
-     \item * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. (I think just a consistent way of referring to the book throughout is needed.)
-     \item [\done] * L38: I recommend preceding~\cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
-     \item * L93: Maybe this paragraph, being just one sentence, can be merged with the one that precedes it. (Sentence/para starting "As long as the code does not use")
-     \item WN and SN are introduced as abbreviations before the terms are defined.  
-     \item "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."
-     \item * L237, L239: Why are the parentheses dropped in "sk"? I guess this is meant to read as "s applied to k", but elsewhere the parentheses do appear. 
-     \item * L281: I am still a bit surprised to see that, in this Agda formalization of FB, the relation R seems to work "the other way around" -- i.e., I would have expected "R a b" rather than "R b a". (We should make a clarifying Agda remark at this point?)
-     \item "... and further discussion of [\texttt{isWFseq-}] are provided ..." (Fix this?)
-     \item * L361: The text spills into the margin here. (We should go through the whole paper to ensure this doesn't occur elsewhere too)
-     \item * L372: "minimalizing" is an awkward term; how about "minimizing"? (Do we want to make this change through the paper?)
-     \item * L449-450: These footnotes seem to apply to Table 1 already, why not specify them there? (This worked better when the tables were on one page together. If we can't get them to fit on a table together it does make sense to replicate the footnotes.)
-     \item * L454: The "counterexamples" subsection is somewhat odd. Why would you put its contents in a separate subsection if there is no accompanying prose? (I think this is a good point but I also think it is useful to highlight the CE section. Solutions: We could make a sub sub section? Or write an explanatory paragraph/caption)
-     \item Reviewer has highlighted that this is a symbol soup that could probably be expressed in prose: "(There is no loss of generality in this; any global well-foundedness property...)" (end of this line is the particular culprit)
+    \item [\done] Make explicit on our table in the paper that we can go from our weakest definition (wfcornotnot) to our strongest (wfmin) via classical assumptions (EM). We think we already mention that all the definitions are classically equivalent in the paper (do we?).  Also make explicit the implication from wfmin to wfacc. \sacomment{Arrow added to diagram and EM added to the table. Check EM definition. I've not added anything to the main text as we already mention that classically the definitions are equivalent.}
+    \item [\done] We have shown wfmindne not not implies wfacc not not with accDNE. Now need to update the paper/graph to reflect this. \sacomment{Added to the graph and added to the remarks section. Q1: Is the `or' easy to understand on the arrow? Q2: Does it make sense to say accessibility is not not closed `on' the relation or should it be described differently? }
+    \item Does EM imply all of our classical hypothesis? (We've shown it does for some of them)
+    \item The question of whether SN implies WN  in a first order TRS relates to the question of whether we can show isMinDec holds. If isMinDec holds then SN implies WN. (we've shown this holds in implications.agda)
+    \item We should try and find an ARS example where generalized NL holds but not the standard definition. This will help illustrate why it is useful! \sacomment{CE:8 in our paper covers this (two objects with relations to one another). Is this too much of a toy example?}
+    \item [\done] * L5: The abstract talks about "Abstract Reduction Systems", but the introduction mentions "Abstract Rewriting Systems". Make it consistent through the paper! We use rewriting.
+    \item [\done] I recommend against citations in the abstract, mostly because they will be shown in contexts where the bibliography is not readily available, i.e., in summarization services or on the download page of the article. (Need to remove the abstract citations)
+    \item [\done] * L7: "their relationships between each other" reads awkwardly as a phrase. (rewrite)
+    \item * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. \sacomment{I've changed that particular reference to reflect the reviewer's comments. Should we change all references to `Terese' in the same way?}
+    \item [\done] * L38: I recommend preceding~\cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
+    \item [\done] * L93: Maybe this paragraph, being just one sentence, can be merged with the one that precedes it. (Sentence/para starting "As long as the code does not use")
+    \item WN and SN are introduced as abbreviations before the terms are defined. \sacomment{I've changed from `SN' to `strong normalization' and same for wn while providing a definition of WN. If you're happy with that definition we can check this off.}
+    \item [\done] "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."\sacomment{A short defn of completeness is given in parentheses after being used now. }
+    \item [\done] * L237, L239: Why are the parentheses dropped in "sk"? I guess this is meant to read as "s applied to k", but elsewhere the parentheses do appear. \sacomment{Added the parens.}
+    \item * L281: I am still a bit surprised to see that, in this Agda formalization of FB, the relation R seems to work "the other way around" -- i.e., I would have expected "R a b" rather than "R b a". (We should make a clarifying Agda remark at this point?) \sacomment{Our definition in Agda for FB is R a b, I can't remember our motivation for writing R b a in the paper. Given our Agda definition is R a b I've changed it in the paper. Would you rather express it differently?}
+    \item "... and further discussion of [\texttt{isWFseq-}] are provided ..." \sacomment{is it just the use of `are' rather than `is' here that they're highlighting? If so, I've changed it.}
+    \item [\done] * L361: The text spills into the margin here. (We should go through the whole paper to ensure this doesn't occur elsewhere too)
+    \item * L372: "minimalizing" is an awkward term; how about "minimizing"? \sacomment{Shall we apply this change through the paper?}
+    \item * L449-450: These footnotes seem to apply to Table 1 already, why not specify them there? (This worked better when the tables were on one page together. If we can't get them to fit on a table together it does make sense to replicate the footnotes.)
+    \item [\done] * L454: The "counterexamples" subsection is somewhat odd. Why would you put its contents in a separate subsection if there is no accompanying prose? (I think this is a good point but I also think it is useful to highlight the CE section. Solutions: We could make a sub sub section? Or write an explanatory paragraph/caption)
+    \item Reviewer has highlighted that this is a symbol soup that could probably be expressed in prose: "(There is no loss of generality in this; any global well-foundedness property...)" (end of this line is the particular culprit) \sacomment{I'm not sure how to express this section in english rather than via the symbols. But I agree that it could be made clearer!}
+    \item We could address the why and how more. In explaining sec 5 we could see whether the bullet point list could be expanded into a theorem with a bunch of summaries of the results in the table. In the proof we can focus on the more interesting and `leave the more trivial to the agda code.'
+    \item I've added the definition of accessibility to the section where we define strongly normalizing as per a reviewer comment. I've reversed the relation in this context. Should we address the fact that the relation is in different directions in the two places we define accessibility?
+    \item * L207, L210: The symbol `tripe equals' on this line is undefined. We can make clear in the paper what we are referring to with `triple equals': The relation  in the
+    last two items refers to intensional equality defined inductively as the least reflexive relation, also known as the Martin-Löf identity type.
+    \item For the cofinality property we need to make clear why our definition matches the one in Terese. Ideally we show equivalence. 
+    \item [\done] remove the redundant discussion about the straightforward propositions.
+    \item We mention that theorem 1-2-3 ii is `inherently classical'. We should make clear why we think this by displaying a constructive taboo.
+    \item 
 
-     
+
 \end{todolist}
-
-
-(note to self: What are the TRS examples that would be useful to formalize that would establish the things we want to (assuming the TRS formalization is successful) ). Also, ARS examples of stronger Newman's lemma. Let's see if we can find a TRS example of that. 
 
 
 \end{document}
