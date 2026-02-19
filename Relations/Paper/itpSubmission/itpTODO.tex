@@ -75,6 +75,21 @@
     \item For readers who don't know Agda, we should provide some sort of explanation of the proofs for our new results (generalized newman's lemma, our constructive variations of existing proofs).
     \item Make the paper less of a readme of the code and go into the why and how of things more. In explaining sec 5 we could see whether the bullet point list could be expanded into a theorem with a bunch of summaries of the results in the table. In the proof we can focus on the more interesting and `leave the more trivial to the agda code.'
     \item  MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes.  \sacomment{I've made the change to the paper but haven't changed the agda code as I'm unable to get the type right. Should the remarks on the hierarchy table (remark 24) also make use of set notation rather than logic notation?}
+    
+\subsection*{Removed writing}
+I'm going to remove parts of the paper to make space for the new section. I'll leave them in the original place but commented out. Here I will list what was removed to hopefully give a quick overview of the changes
+\begin{enumerate}
+    \item (Sec:Definitions) ``The file \texttt{ClosureOperators.agda} verifies key properties of closure operators on relations, including their monotonicity, preservation of equivalence, and interactions such as inclusions and equivalences between different closures."
+    \item (Sec:Definitions) `` The definitions in this subsection are key to formalizing Theorem 1.2.3 in \terese.''
+    \item (Sec:Definitions) ``$\FB$ plays an important role in our discussion of well-foundedness, see Section \ref{sec:Well-foundedness}.''
+    \item (sec:hierarchies) ``Trivially, the following holds.''
+    \item (sec:WellFounded) ``(There is no loss of generality in this; any global well-foundedness property $gWF(A;R)$  restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = gWF(\Sigma y {:} A. R^* x y;R')$, where $R'((y,\rho),(z,\sigma)) = R(y,z)$; now $gWF(A;R) \leftrightarrow \forall x. WF_R(x)$.)``. (I think this is useful to add but not necessary) 
+    \item (sec:wellfounded) ``Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Definitions}:this is a function $s : \nat \to A$ satisfying $R(s(k+1))(s(k)) \in R$ for all $k \in \nat$.''
+    \item (seq:wellfounded) ``In terese, the $WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than $WFseqnn$, asserting that every sequence not-not contains a non-decreasing index.''
+    \item (sec:Wellfounded) ``We have also considered the statement that the complement of every coreductive predicate
+  has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
+  (see \texttt{WFCoreductiveImplications.agda}), so we have not included them in the figure. We also did not include $WFind$ from Definition \ref{def:WFproperties}. Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect: the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to  quantification over all predicates on $A$.  This defect is also present in $WFmin$, $WFminDNE$, and $WFcor$.''
+ \end{enumerate}
 
 
 \end{todolist}

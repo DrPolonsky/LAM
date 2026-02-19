@@ -15,10 +15,10 @@ An abstract reduction $\to_R$ is strongly normalizing
 if and only if the converse relation is well-founded.
 In this section, we will compare several definitions of well-foundedness.
 For ease of exposition, we will only consider global versions of these notions.
-(There is no loss of generality in this; any global well-foundedness property $\gWF(A;R)$ 
-restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y {:} A. R^* x y;R')$, 
-where $R'((y,\rho),(z,\sigma)) = R(y,z)$; now $\gWF(A;R) \leftrightarrow \forall x. WF_R(x)$.)
-%which depend on the basic notions given in Definition~\ref{def:WFnotions} below.
+% (There is no loss of generality in this; any global well-foundedness property $\gWF(A;R)$ 
+% restricts to a predicate $WF_R$ on $A$ via $WF_R(x) = \gWF(\Sigma y {:} A. R^* x y;R')$, 
+% where $R'((y,\rho),(z,\sigma)) = R(y,z)$; now $\gWF(A;R) \leftrightarrow \forall x. WF_R(x)$.)
+
 
 \subsection{Definitions of well-foundedness}
 
@@ -47,8 +47,8 @@ For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the comp
 \end{definition}
 
 The above notions give rise to several distinct definitions of well-foundedness, given below.
-Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Definitions}:
-this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k \in \nat$.
+% Recall the definition of an $R$-decreasing sequence from Section~\ref{sec:Definitions}:
+% this is a function $s : \nat \to A$ satisfying $R(s(k+1))(sk) \in R$ for all $k \in \nat$.
 
 \begin{definition} \label{def:WFproperties} \hfill
   \begin{itemize}
@@ -155,9 +155,9 @@ These weaker notions are formalized in the definition below, and in the correspo
 \end{itemize}
 \end{definition}
 
-In \terese, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
-$\WFseqnn$, asserting that every sequence not-not contains a
-non-decreasing index.
+% In \terese, the $\WFseqm$ definition is used, as in the classical mathematics textbooks. Constructively, this is not a useful definition, as it does not provide any positive computational content and requires an explicit sequence to be defined.  This definition appears to be strictly weaker than
+% $\WFseqnn$, asserting that every sequence not-not contains a
+% non-decreasing index.
 
 % \apcomment{Perhaps we should have a separate discussion between isWFseq- and isWFseq-not-not?}
 
@@ -428,15 +428,15 @@ Other observations that can be gleaned from the figure include the following.
   % so we have nothing else to say about it.
 \end{enumerate}
 
-We have also considered the statement that the complement of every coreductive predicate
-  has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
-  (see \texttt{WFCoreductiveImplications.agda}), so we have not included them in the figure.
+% We have also considered the statement that the complement of every coreductive predicate
+%   has a least element.  This statement and its $\lnot\lnot$-version are both equivalent to $\WFcorm$
+%   (see \texttt{WFCoreductiveImplications.agda}), so we have not included them in the figure.
 
-We also did not include $\WFind$ from Definition \ref{def:WFproperties}.
-Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect:
-  the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to
-  quantification over all predicates on $A$.  This defect is also present in $\WFmin$, $\WFminDNE$,
-  and $\WFcor$.
+% We also did not include $\WFind$ from Definition \ref{def:WFproperties}.
+% Logically, it is trivially equivalent to the accessible one, but its Agda formalization has a defect:
+%   the inductive well-foundedness property lands in the larger universe $\mathtt{Set}_1$, due to
+%   quantification over all predicates on $A$.  This defect is also present in $\WFmin$, $\WFminDNE$,
+%   and $\WFcor$.
 
 % \apcomment{Todo: 1. Filter through the rest, and see if there's anything we may still want to keep.\\
 %   2. Include a subsection, or a section, with examples.  Provide examples where some decidability

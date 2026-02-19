@@ -8,7 +8,7 @@
 
 The developments of this section are formalized in
 \texttt{Properties.agda} and
-\texttt{Implications.agda} inside the \texttt{ARS} folder.
+\texttt{Implications.agda}. % inside the \texttt{ARS} folder.
 
 This section examines the hierarchy of ARS properties.
 In programming language theory, $\gSN$ and $\gCR$ constitute the essential properties that
@@ -31,7 +31,7 @@ we came to the `minimal' family of properties below. These properties help to au
     \end{description}
 \end{definition}
 
-Trivially, the following holds.
+% Trivially, the following holds.
 \begin{proposition}\label{prop:nftomf}
     $\forall x.\, x\in \NF \implies x \in \MF$
 \end{proposition}
@@ -53,9 +53,10 @@ following proposition relates these new definitions with our previous $\RP$ defi
 
 % BP and RP imply SM. So BP and RP and WN classically implies SN.
 Proposition \ref{prop:nftomf} suggests that we consider $\MF$ as a termination property in its own right. This leads us to
-explore the following broader taxonomy of concepts relating to termination and confluence.
+explore the following broader taxonomy of concepts relating to completeness.
 
 \begin{center}
+    % \small
     \begin{tikzpicture}[auto,
       arrowstyle/.style={->, line width=1pt, >={Latex[length=3mm, width=2mm]}, shorten >=2pt}]
       % A box style
@@ -129,8 +130,8 @@ In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ 
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
 
-The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the
-first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
+The first table explores where the properties hold locally, the second explores where the properties hold globally. $\WCR$ holds for the counterexamples in the
+first table, $\gWCR$ holds for the counterexamples in the second table $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
 
 % \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}} 
@@ -207,7 +208,6 @@ first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder,
 The table should be interpreted as follows: for example, if an element possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
 \subsection{Counterexamples}\label{subsec:counterexamples}
-The following counterexamples demonstrate how a given combination of properties are insufficient to provided either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
 % Setting up the ce counter
 \newcounter{CEcounter}
 \begin{figure}[htbp]
@@ -358,6 +358,7 @@ The following counterexamples demonstrate how a given combination of properties 
 \label{fig:counterexamples}
 \end{figure}
 \FloatBarrier
+The counterexamples demonstrate how a given combination of properties are insufficient to provided either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
         \item The property $\gWCR$ can sometimes be a substitute for the classical
