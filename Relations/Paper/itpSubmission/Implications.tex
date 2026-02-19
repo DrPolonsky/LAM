@@ -114,8 +114,8 @@ The same property is similarly required in order to show that $\SM$ implies $\WM
 
 \begin{proposition}\label{prop:MFtoNF} \hfill
     \begin{enumerate}
-        \item $\forall x.\, x\in \MF \land x \in \WN \iff x \in \NF$
-        \item $\forall x.\, x\in \MF \land x \in \SN \iff x \in \NF$
+        \item $\forall x.\, x\in (\MF \cap \WN) \iff x \in \NF$
+        \item $\forall x.\, x\in (\MF \cap \SN) \iff x \in \NF$
     \end{enumerate}
 
 \end{proposition}
@@ -132,7 +132,7 @@ Having established the hierarchies of ARS properties, we now examine which prope
 The first table explores where the properties hold locally, the second explores where the properties hold globally. Counterexamples in the
 first table assume $\WCR$ and in the second table assume $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
 
-\clearpage
+% \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}} 
 \begin{table}[h!]
     \centering
@@ -357,7 +357,7 @@ The following counterexamples demonstrate how a given combination of properties 
 \caption{Counterexamples}
 \label{fig:counterexamples}
 \end{figure}
-
+\FloatBarrier
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
         \item The property $\gWCR$ can sometimes be a substitute for the classical

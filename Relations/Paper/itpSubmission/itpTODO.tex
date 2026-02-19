@@ -60,12 +60,21 @@
     \item Reviewer has highlighted that this is a symbol soup that could probably be expressed in prose: "(There is no loss of generality in this; any global well-foundedness property...)" (end of this line is the particular culprit) \sacomment{I'm not sure how to express this section in english rather than via the symbols. But I agree that it could be made clearer!}
     \item We could address the why and how more. In explaining sec 5 we could see whether the bullet point list could be expanded into a theorem with a bunch of summaries of the results in the table. In the proof we can focus on the more interesting and `leave the more trivial to the agda code.'
     \item I've added the definition of accessibility to the section where we define strongly normalizing as per a reviewer comment. I've reversed the relation in this context. Should we address the fact that the relation is in different directions in the two places we define accessibility?
-    \item * L207, L210: The symbol `tripe equals' on this line is undefined. We can make clear in the paper what we are referring to with `triple equals': The relation  in the
+    \item * L207, L210: The symbol `triple equals' on this line is undefined. We can make clear in the paper what we are referring to with `triple equals': The relation  in the
     last two items refers to intensional equality defined inductively as the least reflexive relation, also known as the Martin-Löf identity type.
     \item For the cofinality property we need to make clear why our definition matches the one in Terese. Ideally we show equivalence. 
     \item [\done] remove the redundant discussion about the straightforward propositions.
     \item We mention that theorem 1-2-3 ii is `inherently classical'. We should make clear why we think this by displaying a constructive taboo.
-    \item 
+    \item A number of reviewers are specifically interested in how our paper differs from the Color paper (trs formalized in coq/roq). From reading that paper some more I think we could characterise their focus as being on creating a formalization of certain key results in term rewriting so as to act as a form of verification of termination certificates. It does not do what our paper does: look into the taxonomy of the important properties of term rewriting and explore new relations between them. Maybe a lazy summary but: They make available known results of term rewriting through their formalization. We use our formalization to explore new results in rewriting. 
+    \item A few of the reviewer comments mentioned that we should focus more on decidable relations. We should either accept decidability or make clear why we don't want to assume decidability.
+    \item See the first reviewer comment about the two motivating examples we gave. For them, these examples were insufficient. We either need to better present them or change them.
+    \item We are asked what our well foundedness figure would look like if we assumed decidability of R and being a normal form is decidable. Do we want to address this?
+    \item We are asked by a reviewer whether our Agda formalization allows for extractable of executable algorithms. We need to make this clear, preferably through a simple example.
+    \item Reviewer comment: we state we avoid using axioms/postulates that are non constructive. They don't think they're used in the first place. Can we find examples where they are used?
+    \item We are asked by a reviewer to be explicit about whether we are formalizing anything that hasn't already been formalized.
+    \item For readers who don't know Agda, we should provide some sort of explanation of the proofs for our new results (generalized newman's lemma, our constructive variations of existing proofs).
+    \item Make the paper less of a readme of the code and go into the why and how of things more. In explaining sec 5 we could see whether the bullet point list could be expanded into a theorem with a bunch of summaries of the results in the table. In the proof we can focus on the more interesting and `leave the more trivial to the agda code.'
+    \item  MF and WN iff NF (see in hierarchy section) should be an intersection rather than logical and (change to be made in paper and agda code). Similarly it should be the double arrow iff. Check through paper for similar changes.  \sacomment{I've made the change to the paper but haven't changed the agda code as I'm unable to get the type right. Should the remarks on the hierarchy table (remark 24) also make use of set notation rather than logic notation?}
 
 
 \end{todolist}
