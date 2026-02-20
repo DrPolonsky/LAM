@@ -8,9 +8,7 @@
 
 The developments of this section are formalized in
 \texttt{Properties.agda} and
-\texttt{Implications.agda}. % inside the \texttt{ARS} folder.
-
-This section examines the hierarchy of ARS properties.
+\texttt{Implications.agda}. This section examines the hierarchy of ARS properties.
 In programming language theory, $\gSN$ and $\gCR$ constitute the essential properties that
 jointly establish completeness.
 Consequently, our analysis centers on two primary categories of properties: those associated
@@ -111,7 +109,7 @@ of being $R$-minimal, hence its formalization takes the form
 The necessity of assuming a classical axiom for this implication is discussed 
 in Subsection \ref{sec:SNtoWN} and
 Section \ref{sec:Well-foundedness}.
-The same property is similarly required in order to show that $\SM$ implies $\WM$.
+The same property is required to show that $\SM$ implies $\WM$.
 
 \begin{proposition}\label{prop:MFtoNF} \hfill
     \begin{enumerate}
@@ -130,7 +128,7 @@ In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ 
 \subsection{Conditions for completeness}\label{subsec:counterexamples}
 
 
-Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
+We now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
 
 The first table explores where the properties hold locally, the second explores where the properties hold globally. $\WCR$ holds for the counterexamples in the
 first table, $\gWCR$ holds for the counterexamples in the second table $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
@@ -359,7 +357,6 @@ The table should be interpreted as follows: for example, if an element possesses
 \label{fig:counterexamples}
 \end{figure}
 % \FloatBarrier
-The counterexamples demonstrate how a given combination of properties are insufficient to provide either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
         \item The property $\gWCR$ can sometimes be a substitute for the classical
@@ -382,8 +379,11 @@ One interesting outcome from investigating the normalization taxonomy was a gene
     See, \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|
 \end{proof}
 
-This proof follows the same steps as the second proof of Newman's Lemma found in \terese, but
-uses the weaker assumption $\SM$ in place of $\SN$.
+This proof follows the second proof of Newman's Lemma in \terese, but replaces
+$\SN$ with the weaker assumption $\SM$. To illustrate the gain, consider the TRS with rules
+$p(a) \to p(b)$, $p(b) \to p(a)$, $f(p(a),p(a)) \to k$, and $f(p(b),p(b)) \to k$.
+Because $p(a) \leftrightarrow p(b)$ yields an infinite reduction, $\gSN$ fails. Nevertheless,
+the system satisfies $\gWCR$ and $\SM$, so the proposition gives $\gCR$ even without $\gSN$.
 
 % The tables show a number of changes when moving from properties holding locally to globally.
 % Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds

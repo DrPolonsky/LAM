@@ -22,12 +22,8 @@ For ease of exposition, we will only consider global versions of these notions.
 
 \subsection{Definitions of well-foundedness}
 
-For the rest of this section, fix $R \subseteq A \times A$.  We write $Rxy$ for $(x,y) \in R$.
-
-In the context of ARS, the reader should think of the converse relation,
-interpreting $Rxy$ as denoting a reduction step $y \to_R x$.
-
-For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the complement of $P$.
+For the rest of this section, fix $R \subseteq A \times A$.  We write $Rxy$ for $(x,y) \in R$. In the context of ARS, the reader should think of the converse relation,
+interpreting $Rxy$ as denoting a reduction step $y \to_R x$. For $P \subseteq A$, let $\ol{P} = \{ x \in A \mid x \notin P\}$ denote the complement of $P$.
 \begin{definition}\label{def:WFnotions} \hfill
    \begin{enumerate}
     \item $x \in A$ is \emph{accessible} if for all $y \in A$, $Ryx$ implies $y$ is accessible.
@@ -57,20 +53,20 @@ The above notions give rise to several distinct definitions of well-foundedness,
         \forall x \in A.\; x \text{ is accessible}
       \]
     \item %\label{def:WFind}
-      $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate is universally true:
+      $R$ is \emph{inductively well-founded} ($\WFind$) if every inductive predicate holds:
       \[
         \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; x \in P
       \]
-    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive predicate is universally true:
+    \item $R$ is \emph{coreductively well-founded} ($\WFcor$) if every coreductive predicate holds:
       \[
         \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; x \in P
       \]
-    \item  $R$ is \emph{well-founded minimality-wise} ($\WFmin$) if every nonempty subset contains a minimal element:
+    \item $R$ is \emph{well-founded minimality-wise} ($\WFmin$) if nonempty subsets have minimal elements:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow
         \exists x \in A.\; \text{$x$ is $P$-minimal}
       \]
-    \item  $R$ is \emph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset contains a minimal element:
+    \item  $R$ is \emph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} ($\WFminDNE$) if every nonempty $\lnot \lnot$-closed subset has a minimal element:
       \[
         \forall P \subseteq A.\; P \neq \varnothing \Rightarrow \ol{\ol P} \subseteq P \Rightarrow
         \exists x \in A.\; \text{$x$ is $P$-minimal}
@@ -83,7 +79,7 @@ The above notions give rise to several distinct definitions of well-foundedness,
 \end{definition}
 We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}.
 
-Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent; the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
+Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent (and so we ignore $\WFind$ in what follows); the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
 Formalizing the remaining implications enabled us to identify where exactly classical logic
 is used, and how much of it is truly needed.
@@ -121,14 +117,14 @@ These weaker notions are formalized in the definition below, and in the correspo
 
 \begin{definition} \label{def:WFweakproperties} \hfill
   \begin{itemize}
-    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if accessibility holds for all elements up to double negation:
+    \item $R$ is \emph{weakly accessibly well-founded} ($\WFaccm$) if every element is $\lnot\lnot$-accessible: %accessibility holds for all elements up to double negation:
       \[
         \forall x \in A.\; \lnot \lnot  (x \text{ is accessible})
       \]
-    \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
-      \[
-        \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P)
-      \]
+    % \item $R$ is \emph{weakly inductively well-founded} ($\WFindm$) if every inductive predicate holds for all elements up to double negation:
+    %   \[
+    %     \forall P \subseteq A.\;\text{$P$ is inductive} \Rightarrow \forall x \in A.\; \lnot \lnot (x \in P)
+    %   \]
     \item $R$ is \emph{weakly coreductively well-founded} ($\WFcorm$) if every coreductive predicate holds for all elements up to double negation:
       \[
         \forall P \subseteq A.\;\text{$P$ is coreductive} \Rightarrow \forall x \in A.\; \lnot\lnot(x \in P)
@@ -488,8 +484,8 @@ If $n \rstep y$, then $\lnot(P_x(y))$.  But since reductions from $x$ are closed
 no such $y$ can exist, and hence $n$ is a normal form of $x$.
 This suggests that the non-provability of the implication $\WFacc \to \WFacc$ extends
 to strong and weak normalization.
-Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
-is shown to be equivalent to the principle of excluded middle.
+% Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
+% is shown to be equivalent to the principle of excluded middle.
 
 % \greyout{From the perspective of rewriting theory, it would seem wild indeed if
 % $\SN$ did not imply $\WN$.
