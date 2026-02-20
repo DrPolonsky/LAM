@@ -46,7 +46,7 @@ following proposition relates these new definitions with our previous $\RP$ defi
     See \texttt{Implications.agda},\\
     \verb|RP∧BP→SMseq    : R isRP → R isBP → ∀ {x : A} → SMseq R x| \\
     \verb|RisSMseq→RisRP : (∀ {x : A} → SMseq R x) → R isRP|\\
-    \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| \\
+    \verb|RisSMseq→RisBP : (∀ {x : A} → SMseq R x) → R isBP| 
 \end{proof}
 
 % BP and RP imply SM. So BP and RP and WN classically implies SN.
@@ -383,13 +383,13 @@ This proof follows the second proof of Newman's Lemma in \terese, but replaces
 $\SN$ with the weaker assumption $\SM$. To illustrate the gain, consider the TRS with rules
 $p(a) \to p(b)$, $p(b) \to p(a)$, $f(p(a),p(a)) \to k$, and $f(p(b),p(b)) \to k$.
 Because $p(a) \leftrightarrow p(b)$ yields an infinite reduction, $\gSN$ fails. Nevertheless,
-the system satisfies $\gWCR$ and $\SM$, so the proposition gives $\gCR$ even without $\gSN$.
+the system satisfies $\gWCR$ and $\gSM$, so the proposition gives $\gCR$ even without $\gSN$.
 
 % The tables show a number of changes when moving from properties holding locally to globally.
 % Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds
 % globally but not locally.
 \subsection{Relation between $\SM$, $\WN$, and $\SN$} \label{subsec:SMWNSN}
-One key takeaway from the tables is that we obtain completeness when we have the properties $\SM$, $\WN$, and $\NP$. We also
+One key takeaway from the tables is that we obtain strong termination and confluence when we have the properties $\SM$, $\WN$, and $\NP$. We also
 obtain completeness when we have $\gWN$ and $\gSM$.
 To show that $\gSM \land \gWN \implies \gSN$ we build on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds
 then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:

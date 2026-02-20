@@ -31,8 +31,8 @@ The following notations are standard.
 \end{notation}
 
 In the context of abstract rewriting, we will often write $a \rstep b$
-in place of $(a,b) \in R$.  We will also write $a \mstep b$ for $(a,b) \in R^*$, and
-$a \bstep b$ for $(b,a) \in R$.  When the relation $R$ is clear from the context,
+in place of $(a,b) \in R$.  We will also write $a \mstep b$ for $(a,b) \in R^*$,
+$a \bstep b$ for $(b,a) \in R$, and $a \nrstep b$ for $(a,b)\notin R$.  When the relation $R$ is clear from the context,
 we may drop the corresponding subscript.
 
 % The file \texttt{ClosureOperators.agda} verifies key properties of closure operators
@@ -69,7 +69,7 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
         \item[\bq \ule{$a \in \NPe_R$}] $a$ has the \bemph{conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
         \item[\bq \ule{$a \in \NP_R$}] $a$ has the \bemph{reduction normal form property} if for all $b \in \NF_R$,
         \[c \bmstep a \mstep b \implies c \mstep b\]
-        \item[\bq \ule{$a \in \UN_R$}] $a$ has the \bemph{conversion unique normal form property} if for all $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
+        \item[\bq \ule{$a \in \UN_R$}] $a$ has the \bemph{conversion unique normal form property} if for $a, b \in \NF_R$, \[a \estep b \implies a \equiv b\]
         \item[\bq \ule{$a \in \UNto_R$}] $a$ has the \bemph{reduction unique normal form property} if for all $b, c \in \NF_R$,
         \[c \bmstep a \mstep b  \implies b \equiv c\]
     \end{description}

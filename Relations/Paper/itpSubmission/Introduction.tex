@@ -131,7 +131,7 @@ principles during our development.
   \item No use of univalence, uniqueness of identity proofs, axiom K, or any other
   assumptions related to equality;
   \item Minimize the use of classical logic, and make decidability hypotheses explicit in every place where classical logic could not be avoided;
-  \item Stay fully faithful to the Curry--Howard paradigm, so that our proofs would compute
+  \item Stay faithful to the Curry--Howard paradigm, so that our proofs would compute
     explicit witnesses in every concrete instance.
 \end{itemize}
 
@@ -191,6 +191,7 @@ In the next section, we lay out the main properties of relations studied in ARS 
 setting the ground for what follows.  In Section \ref{sec:Formalization}, we
 outline our formalization of the ARS chapter from~\cite{Terese}.
 Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness (i.e., the property of being both strongly normalizing and Church-Rosser).  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
+In Section \ref{sec:Applications}, we illustrate how the library is used in the greater project by the case of untyped lambda calculus.
 We conclude with a brief summary and suggestions for future work.
 
 % \apcomment{Addressing a reviewer comment..}
