@@ -103,7 +103,7 @@ In \terese $\,\NF$ is used to denote the normal form property $\NPe$, whereas we
     \end{enumerate}
 \end{proposition}
   All of the proofs in this work have been fully formalized in Agda, and many of them require no further elaboration.  Throughout the paper, we refer to the relevant locations in the code base by giving the name of the Agda file, along with the names and types of the functions corresponding to each claim.
-
+\newpage
 The proof of the above proposition is formalized in \texttt{ARS/Implications.agda} as follows.
     \begin{enumerate}
         \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP|
@@ -137,7 +137,9 @@ The proof of the above proposition is formalized in \texttt{ARS/Implications.agd
         % reduct of $x$ reduces to some element of the sequence.
     \end{description}
 \end{definition}
-
+Note the use of reflexive closure $R^r$ in the definition above. This 
+allows the reduction sequence $s(i)$ to be empty from some point on, which is needed to make this formulation equivalent to the one in Terese.
+(In particular, normalizing $x$ have the cofinality property.)
 \begin{definition} \label{def:bound} \hfill
   \begin{itemize}
     \item [] \bq $a \in A$ is an \bemph{$s$-bound} if for all $i \in \nat$, $s (i) \mstep a$.
@@ -169,6 +171,7 @@ The property $\gBP$ is equivalent to the property called $\mathbf{Ind}$ in \tere
 Having a size function that maps all of $A$ to the natural numbers can be computationally taxing to satisfy.
 Furthermore, it takes us outside of a purely relational theory. The weaker property $\gRP$ defined above will substitute $\gInc$ in all places that require it. For further discussion, see Subsection~\ref{subsec:def}.
 
+\newpage
 \begin{proposition}\hfill
     \begin{enumerate}
         \item $\gInc \implies \gRP$
