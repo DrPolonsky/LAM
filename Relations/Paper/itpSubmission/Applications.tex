@@ -28,9 +28,7 @@ The advantages of this encoding include the following:
 \newcommand{\mcHo}{\mathcal{H\omega}}
 The current state of the library includes standard results about reduction (standardization and confluence), 
 definitions of undecidable lambda theories based on identifications of unsolvable terms ($\mcH$ and $\mcHo$), 
-and a formalization of an unpublished result on characterizing 2-cycles, based on earlier collaboration with Jan Willem Klop and Joerg Endrullis.
-
-As an example of how ARS library makes an appearence, some basic implications come completely for free: 
+and a formalization of an unpublished result on characterizing 2-cycles, based on earlier collaboration with Jan Willem Klop and Joerg Endrullis. As an example of how our ARS library makes an appearence, some basic implications come completely for free: 
 \begin{description}
   \item[$\SN \to \WN$:] Agda can effectively compute the normal form of any SN term.
   \item[$\CR \to \UN$:] Distinct normal forms are not beta convertible (equational consistency).
@@ -45,5 +43,5 @@ formalization of ARS. For example, the proof of decidability of normal forms is 
 decidable and finitely branching, concepts that are defined for a fixed domain $A$ --- even though a single lambda abstraction requires to consider 
 reduction between terms over a different set, instantiating ARS theory in a new domain. 
 This shows that Agda's module system indeed interacts very well with its type system. 
-It was surprise to see what first appears as namespace management system to be so useful in relating results with high level of generality.
+It was a surprise to see what first appears as a namespace management system to be so useful in relating results with a high level of generality.
 

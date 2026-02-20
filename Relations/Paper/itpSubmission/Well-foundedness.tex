@@ -252,7 +252,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[
-  scale=0.6,
+  scale=0.5,
   every node/.style={transform shape},
   node distance=1cm and .5cm,
   box/.style={draw, rectangle, rounded corners, minimum width=1cm, minimum height=1cm, align=center},
@@ -267,11 +267,11 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \node[box, right=2.9cm of WFseq] (WFCor) {$\WFcor$};
 
 % Row 2: Weak definitions
-\node[box, below=2cm of WFmin] (WFminM) {$\WFminm$};
-\node[box, below=2cm of WFminDNE] (WFminDNEM) {$\WFminDNEm$};
-\node[box, below=2cm of WFacc] (WFaccM) {$\WFaccm$};
-\node[box, below=2cm of WFseq] (WFseqM) {$\WFseqm$};
-\node[box, below=2cm of WFCor] (WFminCor) {$\WFcorm$};
+\node[box, below=1.5cm of WFmin] (WFminM) {$\WFminm$};
+\node[box, below=1.5cm of WFminDNE] (WFminDNEM) {$\WFminDNEm$};
+\node[box, below=1.5cm of WFacc] (WFaccM) {$\WFaccm$};
+\node[box, below=1.5cm of WFseq] (WFseqM) {$\WFseqm$};
+\node[box, below=1.5cm of WFCor] (WFminCor) {$\WFcorm$};
 
 % Arrows within rows
 \draw[arrow] (WFmin) -- (WFminDNE);
@@ -307,7 +307,7 @@ and $\accCor$ (which is related to the existence of an effective perpetual reduc
 \draw[arrow]
   (WFminCor.east)
   -- ++(1.5cm,0)
-  |- ++(0,5.0cm)
+  |- ++(0,4.75cm)
   -| node[above, text=red]{$\EM$} (WFmin.north);
 
 \end{tikzpicture}
