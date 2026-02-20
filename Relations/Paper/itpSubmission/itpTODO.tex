@@ -17,6 +17,12 @@
 \subsection*{Must be done before submission}
 \begin{todolist}
     \item Keep to the page count. Note in particular the table with counterexamples in the hierarchy section as we've had trouble with text overlapping there. Clearpage was the solution but currently this is leading to a lot of unused space.
+    \item Can we get rid of counterexample 9 ? This will clear a row in the counterexamples table and give us a few lines of space.
+    \item Clean the section added to address a reviewer comment in the introduction. Currently it has blue text accompanying it.
+    \item Get the code in a good state for submission.
+    \item Write a section on our new work.
+    \item Show why our cofinality defn matches the terese defn. 
+    \item Theorem 1.2.3 ii: we claim the original proof is inherently classical without backing it up. We should rewrite this remark. We should say what's in the apcomment there (but tidy it up). 
 \end{todolist}
 \subsection*{Research}
 \begin{todolist}
@@ -45,14 +51,14 @@
     \item [\done] * L5: The abstract talks about "Abstract Reduction Systems", but the introduction mentions "Abstract Rewriting Systems". Make it consistent through the paper! We use rewriting.
     \item [\done] I recommend against citations in the abstract, mostly because they will be shown in contexts where the bibliography is not readily available, i.e., in summarization services or on the download page of the article. (Need to remove the abstract citations)
     \item [\done] * L7: "their relationships between each other" reads awkwardly as a phrase. (rewrite)
-    \item * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. \sacomment{I've changed that particular reference to reflect the reviewer's comments. Should we change all references to `Terese' in the same way?}
+    \item [\done] * L18-18: "as presented in Term Rewriting Systems [6]" it seems a bit odd to refer to the book by name like this. Since the reference is so foundational to the work, perhaps you can expand it to say "as presented in the book by Bezem, Klop and De Vrijer" or something to that effect. 
     \item [\done] * L38: I recommend preceding~\cite with ~ to prevent a citation from appearing as the very first thing on a new line.  (should be applied throughout the paper)
     \item [\done] * L93: Maybe this paragraph, being just one sentence, can be merged with the one that precedes it. (Sentence/para starting "As long as the code does not use")
-    \item WN and SN are introduced as abbreviations before the terms are defined. \sacomment{I've changed from `SN' to `strong normalization' and same for wn while providing a definition of WN. If you're happy with that definition we can check this off.}
-    \item [\done] "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."\sacomment{A short defn of completeness is given in parentheses after being used now. }
+    \item [\done] WN and SN are introduced as abbreviations before the terms are defined. 
+    \item [\done] "Completeness" is introduced without definition: "   The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness."
     \item [\done] * L237, L239: Why are the parentheses dropped in "sk"? I guess this is meant to read as "s applied to k", but elsewhere the parentheses do appear. \sacomment{Added the parens.}
-    \item * L281: I am still a bit surprised to see that, in this Agda formalization of FB, the relation R seems to work "the other way around" -- i.e., I would have expected "R a b" rather than "R b a". (We should make a clarifying Agda remark at this point?) \sacomment{Our definition in Agda for FB is R a b, I can't remember our motivation for writing R b a in the paper. Given our Agda definition is R a b I've changed it in the paper. Would you rather express it differently?}
-    \item "... and further discussion of [\texttt{isWFseq-}] are provided ..." \sacomment{is it just the use of `are' rather than `is' here that they're highlighting? If so, I've changed it.}
+    \item [\done] * L281: I am still a bit surprised to see that, in this Agda formalization of FB, the relation R seems to work "the other way around" -- i.e., I would have expected "R a b" rather than "R b a". (We should make a clarifying Agda remark at this point?) 
+    \item [\done] "... and further discussion of [\texttt{isWFseq-}] are provided ..." \sacomment{is it just the use of `are' rather than `is' here that they're highlighting? If so, I've changed it.}
     \item [\done] * L361: The text spills into the margin here. (We should go through the whole paper to ensure this doesn't occur elsewhere too)
     \item * L372: "minimalizing" is an awkward term; how about "minimizing"? \sacomment{Shall we apply this change through the paper?}
     \item * L449-450: These footnotes seem to apply to Table 1 already, why not specify them there? (This worked better when the tables were on one page together. If we can't get them to fit on a table together it does make sense to replicate the footnotes.)

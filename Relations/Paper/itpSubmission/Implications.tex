@@ -115,8 +115,8 @@ The same property is similarly required in order to show that $\SM$ implies $\WM
 
 \begin{proposition}\label{prop:MFtoNF} \hfill
     \begin{enumerate}
-        \item $\forall x.\, x\in (\MF \cap \WN) \iff x \in \NF$
-        \item $\forall x.\, x\in (\MF \cap \SN) \iff x \in \NF$
+        \item $\forall x.\, x\in \MF \cap \WN \iff x \in \NF$
+        \item $\forall x.\, x\in \MF \cap \SN \iff x \in \NF$
     \end{enumerate}
 
 \end{proposition}
@@ -127,6 +127,8 @@ The same property is similarly required in order to show that $\SM$ implies $\WM
 \end{proof}
 
 In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ is strict: in Counterexample~\ref{CE:4}, $a \in \SM \cap \WN$, but $a \notin \SN$. In the tables below, we therefore include a separate column for the combination of $\SM$ and $\WN$.
+\subsection{Conditions for completeness}\label{subsec:counterexamples}
+
 
 Having established the hierarchies of ARS properties, we now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
 
@@ -207,7 +209,6 @@ first table, $\gWCR$ holds for the counterexamples in the second table $\gWCR$ (
 
 The table should be interpreted as follows: for example, if an element possesses the property $\NP$, then, according to the table, obtaining the property $\CR$ requires, at a minimum, the additional property $\WN$. Counterexample~\ref{CE:3} demonstrates that the combination of $\WM$ and $\NP$ is insufficient to guarantee $\CR$.
 
-\subsection{Counterexamples}\label{subsec:counterexamples}
 % Setting up the ce counter
 \newcounter{CEcounter}
 \begin{figure}[htbp]
@@ -327,21 +328,21 @@ The table should be interpreted as follows: for example, if an element possesses
     % New row
     % \\
     % \\
-    &
-    \begin{minipage}{0.3\textwidth}
-        \centering
-        \begin{counterexample}\label{CE:10}
-            \begin{tikzcd}[row sep=small, column sep=small]
-                c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r]
-                & d \arrow[r, bend left] & e \arrow[l, bend left]
-            \end{tikzcd} \\
-        \end{counterexample}
-    \end{minipage}
+    % &
+    % \begin{minipage}{0.3\textwidth}
+    %     \centering
+    %     \begin{counterexample}\label{CE:10}
+    %         \begin{tikzcd}[row sep=small, column sep=small]
+    %             c \arrow[r, bend left] & b \arrow[l, bend left]  & a \arrow[l] \arrow[r]
+    %             & d \arrow[r, bend left] & e \arrow[l, bend left]
+    %         \end{tikzcd} \\
+    %     \end{counterexample}
+    % \end{minipage}
     % &
     % &
       % New row
-    \\
-    \\
+    % \\
+    % \\
     &
     \begin{minipage}{0.3\textwidth}
         \centering
@@ -357,8 +358,8 @@ The table should be interpreted as follows: for example, if an element possesses
 \caption{Counterexamples}
 \label{fig:counterexamples}
 \end{figure}
-\FloatBarrier
-The counterexamples demonstrate how a given combination of properties are insufficient to provided either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
+% \FloatBarrier
+The counterexamples demonstrate how a given combination of properties are insufficient to provide either $\CR$ or $\SN$ in Table~\ref{tab:localImplications} and Table~\ref{tab:globalImplications}.
 \begin{remark} The following are the key takeaways from the implication tables. \hfill
     \begin{enumerate}
         \item The property $\gWCR$ can sometimes be a substitute for the classical
