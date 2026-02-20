@@ -131,7 +131,7 @@ principles during our development.
   \item No use of univalence, uniqueness of identity proofs, axiom K, or any other
   assumptions related to equality;
   \item Minimize the use of classical logic, and make decidability hypotheses explicit in every place where classical logic could not be avoided;
-  \item Stay as faithful as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that our proofs would compute
+  \item Stay fully faithful to the Curry--Howard paradigm, so that our proofs would compute
     explicit witnesses in every concrete instance.
 \end{itemize}
 
@@ -150,7 +150,6 @@ their classical counterparts all being logically equivalent. %This gave rise to 
 We have also identified classes of ARSs where the needed classical principles are simply valid.  In particular, for finitely branching relations, the implication SN to WN requires nothing else beyond plain decidability of the relation itself: $Rxy \lor \lnot Rxy$.  For example, an ARS induced by a first-order TRS with a finite set of rules is both finitely branching and decidable.
 
 The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi.
-
 For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible lambda theories), or coinductive rewriting ---
 these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
 
