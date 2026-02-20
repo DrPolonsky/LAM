@@ -16,8 +16,8 @@
 %
 
 
-We present a formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in the book by Bezem, Klop and De Vrijer
-~\cite{Terese}, using the Agda proof assistant.
+We present an Agda formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in the book by Bezem, Klop and De Vrijer,
+henceforth referred to as \terese. %using the Agda proof assistant.
 This work is part of a larger effort to develop a library of formalized programming language theory (PL)
 at \inreview{Appalachian State} University.
 Since Term Rewriting Systems (TRS) play a foundational role in programming languages,
@@ -126,13 +126,13 @@ With the explicit goal of having the results of basic abstract rewriting
 formalized in a canonical way, so that they can be used in building bigger
 libraries of formalized PL theory, we adopted the following
 principles during our development.
-
 \begin{itemize}
   \item No use of function extensionality;
   \item No use of univalence, uniqueness of identity proofs, axiom K, or any other
   assumptions related to equality;
   \item Minimize the use of classical logic, and make decidability hypotheses explicit in every place where classical logic could not be avoided;
-  \item Stay as faithful as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that in every concrete application, our proofs would compute.
+  \item Stay as faithful as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that our proofs would compute
+    explicit witnesses in every concrete instance.
 \end{itemize}
 
 \subsection{Decidability}
@@ -194,12 +194,11 @@ outline our formalization of the ARS chapter from~\cite{Terese}.
 Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness (i.e., the property of being both strongly normalizing and Church-Rosser).  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
 We conclude with a brief summary and suggestions for future work.
 
-\apcomment{Addressing a reviewer comment..}
-Before we begin, a few words about un/intentional omissions.
-The reader will not find complex arguments in this paper.
-Known results are stated with no proofs at all, save the reference to the Agda code.
-New but elementary propositions are usually stated either without proof,
-or given a one-sentence informal justification.
+% \apcomment{Addressing a reviewer comment..}
+% Before we begin, a few words about un/intentional omissions.
+% The reader will not find complex arguments in this paper.
+In this paper, known results are stated with no proofs at all, save the reference to the Agda code.
+New but elementary propositions are usually given a one-sentence informal justification.
 When our development does uncover new ideas or connections,
 these are usually discussed either in a dedicated remark or in ambient text.
 These choices reflect the nature of our contribution, and its aim of laying the

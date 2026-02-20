@@ -11,6 +11,8 @@ in our discussion. Each subsection specifies the Agda file(s) which contains for
 
 For the rest of this paper, let $A$ be a fixed set, $R$ be a relation on $A$.
 
+For $a,b \in A$,\ $a \equiv b$ denotes strict equality, encoded in Agda by the usual identity type.
+
 
 % \greyout{We denote by $\tilde R$ the relational converse of $R$ ($(x,y) \in \tilde R \iff (y,x) \in R$),
 % and by $R;R'$ the relational composition of $R$ and $R'$.}
@@ -43,12 +45,17 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
 % \subsection{Normalization (\texttt{Properties.agda})}
 \begin{definition} Let $a \in A$.
   \begin{description}
-    \item[\bq \ule{${a \in \NF_R}$}] $a$ is a \bemph{normal form} if $(a,b) \notin R$ for any $b \in A$ .
+    \item[\bq \ule{${a \in \NF_R}$}] $a$ is a \bemph{normal form} if $a \nrstep b$ for any $b \in A$ .
     \item[\bq \ule{$a \in \WN_R$}] $a$ is \bemph{weakly normalizing} if $a \mstep b$ for some $b \in \NF_R$.
-    \item[\bq \ule{${a \in accessible}$}] $a$ is \emph{accessible} if for all $b \in A$, $Rab$ implies $b$ is accessible.
-      This is an inductive definition, with the base case obtained at
-     those $a$ satisfying $\lnot Rab$ for all $b$.
-    \item[\bq \ule{$a \in \SN_R$}] $a$ is \bemph{strongly normalizing} if $a$ is accessible with respect to the converse relation $\tilde{R} = \setof{(y,x) | (x,y) \in R}$.
+    % \item[\bq \ule{${a \in accessible}$}] $a$ is \emph{accessible} if for all $b \in A$, $Rab$ implies $b$ is accessible.
+    %   This is an inductive definition, with the base case obtained at
+    %  those $a$ satisfying $\lnot Rab$ for all $b$.
+    \item[\bq \ule{$a \in \SN_R$}] $a$ is \bemph{strongly normalizing} if $a$ is accessible with respect to the converse 
+      of $R$, see section \ref{sec:Well-foundedness}.
+      That is, $a \in \SN_R$ if for each $b \in A$, $a \rstep b$ implies $b \in \SN_R$.
+        This is an inductive definition, with the base case obtained at
+     those $a$ satisfying $a \in \NF_R$.
+
   \end{description}
 \end{definition}
 

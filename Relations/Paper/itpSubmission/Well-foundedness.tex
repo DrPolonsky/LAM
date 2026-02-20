@@ -474,14 +474,11 @@ For example, recall that $x\in \SN_R$ iff $x$ is $\tilde{R}$-accessible, where $
 is the converse of $R$.  Thus, if $\tilde{R}$ is well-founded, $R \models \gSN$.
 Yet actually computing the normal form of a given $x$ requires a
 strong form of decidability of being $R$-minimal:
-\[
-  \tag{$\isMinDec$} \forall x. \left(\exists y. x \rstep y \right) \lor \left(\forall y. x \,\,\not \!\!\!\!\rstep y\right)
-\]
-Note that merely deciding whether $x$ is a normal form is the weaker statement
-% Note that deciding whether $x$ is a normal form constitutes the weaker disjunction
-$\lnot\lnot\left(\exists y. x \rstep y\right) \lor \left(\forall y. x \,\,\not \!\!\!\! \rstep y\right)$.
-Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
-is shown to be equivalent to the principle of excluded middle.
+$\forall x. \left(\exists y. x \rstep y \right) \lor \left(\forall y. x \nrstep y\right)$
+(Note that merely deciding whether $x$ is a normal form constitutes the weaker disjunction
+$\lnot\lnot\left(\exists y. x \rstep y\right) \lor \left(\forall y. x \nrstep y\right)$.)
+% The weaker statement 
+% asserts decidability of whether $x$ is a normal form. 
 
 On the other hand, $\WFmin$ trivially implies that each $x \in A$ is weakly normalizing.
 Indeed, given $x \in A$, consider the predicate $P_x(y) = x \mstep y$.
@@ -489,9 +486,10 @@ This predicate is non-empty, since the empty reduction yields a proof of $P_x(x)
 Let $n$ be a $P_x$-minimal element.  Then $x \mstep n$.  Moreover, for any $y$,
 If $n \rstep y$, then $\lnot(P_x(y))$.  But since reductions from $x$ are closed downward,
 no such $y$ can exist, and hence $n$ is a normal form of $x$.
-
-It follows that there can be no constructive proof of $\WFmin$ from $\WFacc$,
-as the axiom of excluded middle would be a consequence of such a proof.
+This suggests that the non-provability of the implication $\WFacc \to \WFacc$ extends
+to strong and weak normalization.
+Indeed, in the file \texttt{ARS/Examples.agda} the implication $\gSN \to \gWN$ for all relations $R$
+is shown to be equivalent to the principle of excluded middle.
 
 % \greyout{From the perspective of rewriting theory, it would seem wild indeed if
 % $\SN$ did not imply $\WN$.
