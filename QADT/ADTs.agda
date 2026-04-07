@@ -68,7 +68,7 @@ infix 50 _⁵
 ⟦ 𝟏 ⟧ e = ⊤
 ⟦ x × y ⟧ e = ⟦ x ⟧ e ∧ ⟦ y ⟧ e
 ⟦ x ⊔ y ⟧ e = ⟦ x ⟧ e ∨ ⟦ y ⟧ e
-⟦ μ x ⟧ e = LFP λ X → ⟦ x ⟧ (e ⅋o:= X)
+⟦ μ T ⟧ e = LFP λ X → ⟦ T ⟧ (e ⅋o:= X)
 
 
 -- Functoriality of ADTs

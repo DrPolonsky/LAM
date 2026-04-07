@@ -104,6 +104,11 @@ lazyProd [] ys = []
 lazyProd (x ∷ xs) (y ∷ ys) = (x , y) ∷ merge (lazyProd xs (y ∷ ys))
                   (List→ (λ z → (x , z)) ys)
 
+zip : ∀ {A B} → List A → List B → List (A × B)
+zip [] bs = []
+zip (x ∷ as) [] = []
+zip (a ∷ as) (b ∷ bs) = (a , b) ∷ zip as bs
+
 filter : ∀ {A} → (A → 𝔹) → List A → List A
 filter f [] = []
 filter f (x ∷ xs) = if f x then (filter f xs) else x ∷ (filter f xs)

@@ -39,8 +39,7 @@ data Iso {V} : ADT V → ADT V → Set where
   fix≃ : ∀ (e : ADT (↑ V)) → Iso (μ e) (subst e (μ e))
   subst≃ : ∀ {e1 e2 : ADT (↑ V)} {d1 d2 : ADT V} → Iso e1 e2 → Iso d1 d2 → Iso (subst e1 d1) (subst e2 d2)
 
-  -- subst : ∀ {V} (e : ADT (↑ V)) → (e' : ADT V) → ADT V
-  -- subst e e' = subst-level e e' (o)
+
 substIso : ∀ {V} → (e : ADT (↑ V)) → {a b : ADT V} → Iso a b → Iso (subst e a) (subst e b)
 substIso e j = subst≃ (refl≃ e ) j
 
@@ -181,6 +180,17 @@ _~t_ {V} {a} {b} {c} i1 i2 = t= (s= i1) i2
 
 
 -- Helpful lemmas
+{-
+liftfix≃ : (n : ℕ) → (a : ADT (↑ ⊥)) → Iso (Pow' (μ a) (succ n)) (subst a (Pow' (μ a) (succ n)))
+liftfix≃ zero a = fix≃ a
+liftfix≃ (succ n) (𝕍 o) = refl≃ (μ (𝕍 o) × Pow' (μ (𝕍 o)) (succ n))
+liftfix≃ (succ n) 𝟎 = =× (fix≃ 𝟎) =!= al
+liftfix≃ (succ n) 𝟏 = {!   !}
+liftfix≃ (succ n) (a × a₁) = {!   !}
+liftfix≃ (succ n) (a1 ⊔ a2) = {! ×=  !}
+liftfix≃ (succ n) (μ a) = {!   !}
+-}
+
 +1× : ∀ {V} {A B : ADT V} (c : ℕ)  → Iso ((Num c × A) ⊔ A) B → Iso (Num (succ c) × A) B
 +1× {V} {A} {B} c toB = tran≃ e1 toB where
   e1 = tran≃ distrR≃ (tran≃ (comm⊔≃ _ _ ) (∨≃ (refl≃ _) (symm≃ (id×≃ _ ) ) ) )
