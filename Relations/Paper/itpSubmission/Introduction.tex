@@ -1,6 +1,7 @@
 \section{Introduction}
 
-\newcommand{\inreview}[1]{[\textsc{university name}]}
+% \newcommand{\inreview}[1]{[\textsc{Appalachian State University}]}
+\newcommand{\inreview}[1]{#1}
 % \newcommand{\inreview}[1]{\sout{\phantom{#1}}}
 % \newcommand{\inreview}[1]{#1}
 
@@ -16,8 +17,8 @@
 %
 
 
-We present a formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in Term Rewriting Systems
- \cite{Terese}, using the Agda proof assistant.
+We present an Agda formalization of the basic Abstract Rewriting Systems (ARS) theory as presented in the book by Bezem, Klop and De Vrijer,
+henceforth referred to as \terese. %using the Agda proof assistant.
 This work is part of a larger effort to develop a library of formalized programming language theory (PL)
 at \inreview{Appalachian State} University.
 Since Term Rewriting Systems (TRS) play a foundational role in programming languages,
@@ -25,6 +26,7 @@ while ARS encompass the basic facts about rewriting relations in general,
 establishing these facts is part of the necessary infrastructure required to
 pursue the broader project.  The present contribution can therefore be seen as
 ``bootstrapping'' \inreview{Appalachian State}'s new formalized PL repository.
+\cite{FPLA}
 
 This broader goal also drives the main design choices in our approach.
 Since rewriting theory is concerned with a fine-grained analysis of computation,
@@ -34,9 +36,9 @@ are automatically effective, and implicitly carry the code that implements
 a transformation from the hypotheses to the conclusion of the claim.  For example,
 a type-checked proof that a given TRS is Church--Rosser automatically renders a function that
 computes a common reduct between any two convertible terms.
-Proofs in Agda are thus not mere verifications of validity, but are also implementations 
+Proofs in Agda are thus not mere verifications of validity, but are also implementations
 of conceptual algorithms implicit in constructive proofs.
-Being able to perform such computations as needed 
+Being able to perform such computations as needed
 facilitates the development of complex ontologies and theories.
 This makes Agda a particularly attractive vehicle for our bigger project.
 
@@ -44,7 +46,7 @@ Staying within this paradigm requires the proofs to be constructive.
 Moreover, it requires us to avoid any axioms or postulates, such as function
 extensionality, uniqueness of identity proofs, univalence, etc.
 While most of ARS results are indeed constructive, standard presentations,
- including \cite{Terese}, make liberal use of classical logic.
+ including~\cite{Terese}, make liberal use of classical logic.
 Our paper can thus be read as a thoroughly constructive
 development of elementary ARS theory.
 
@@ -70,8 +72,8 @@ over a first-order signature $S$.
 The classical definition involves the quotient of the term algebra $S^*$ by
 the equivalence relation $\approx_T$ induced by $T$.
 Direct encoding of quotients is problematic in pure type theory.
-While there are a number of solutions, such as Higher Inductive Types \cite{HoTT},
-Quotient Inductive--Inductive Types \cite{QIIT}, Cubical Type Theory \cite{CTT}, etc.,
+While there are a number of solutions, such as Higher Inductive Types~\cite{HoTT},
+Quotient Inductive--Inductive Types~\cite{QIIT}, Cubical Type Theory~\cite{CTT}, etc.,
 they involve extending type theory with new language constructs,
 incurring additional costs in complexity.
 
@@ -102,45 +104,37 @@ can be helpful in many settings arising in programming language theory.
 
 \subsection{Formalization principles}
 
-Agda is both a programming language and an interactive theorem prover. 
+Agda is both a programming language and an interactive theorem prover.
 As a programming language, it can be thought of as an extension of Haskell
-with dependent types, which enormously expands the expressivity of the type system, 
-allowing complex specifications to be embedded directly into the 
+with dependent types, which enormously expands the expressivity of the type system,
+allowing complex specifications to be embedded directly into the
 very types of the functions being written.
 As a theorem prover, Agda is an implementation of Martin-L\"of
 Intuitionistic Type Theory, which strictly adheres to the proofs-as-programs paradigm.
-As with other proof assistants in this family, its logic is based on encoding 
+As with other proof assistants in this family, its logic is based on encoding
 formulas as types in an extended typed lambda calculus, with the underlying terms
-playing the role of proofs of said formulas. Agda enjoys the usual metatheoretic characteristics 
+playing the role of proofs of said formulas. Agda enjoys the usual metatheoretic characteristics
 of typed lambda calculi, including subject reduction, strong normalization, and canonicity.
 
-In a quite literal sense, Agda proofs are dependently-typed functional programs. 
+In a quite literal sense, Agda proofs are dependently-typed functional programs.
 Proofs by structural induction over recursive types or derivation trees are represented by
 recursive functions defined by pattern-matching, so familiar to functional programmers.
-The dependent type system enables a unique interactive programming style, where 
-writing code is often reduced to constructing a value of a particular type in a given context.
-
-% Agda is especially suited for projects that combine elements of both 
-% --- programming transformations on abstract data types that involve 
-% complex logical dependencies,
-% and developing mathematical theories whose subject matter has inherent computational content. 
-% Both aspects are prominent in programming language theory. 
-
-As long as the code does not use classical logic (the principle of Excluded Middle) or 
-other axioms (such as Function Extensionality), the proofs, being programs, 
+The dependent type system enables a unique interactive programming style, where
+writing code is often reduced to constructing a value of a particular type in a given context. As long as the code does not use classical logic (the principle of Excluded Middle) or
+other axioms (such as Function Extensionality), the proofs, being programs,
 are guaranteed to compute. % Agda is therefore a \emph{total} language.
 
 With the explicit goal of having the results of basic abstract rewriting
 formalized in a canonical way, so that they can be used in building bigger
 libraries of formalized PL theory, we adopted the following
 principles during our development.
-
 \begin{itemize}
   \item No use of function extensionality;
   \item No use of univalence, uniqueness of identity proofs, axiom K, or any other
   assumptions related to equality;
   \item Minimize the use of classical logic, and make decidability hypotheses explicit in every place where classical logic could not be avoided;
-  \item Stay as faithful as possible to the spirit of type theory based on the Curry--Howard isomorphism, so that in every concrete application, our proofs would compute.
+  \item Stay faithful to the Curry--Howard paradigm, so that our proofs would compute
+    explicit witnesses in every concrete instance.
 \end{itemize}
 
 \subsection{Decidability}
@@ -148,22 +142,21 @@ In several places, we had to assume certain decidability hypotheses in order to 
 the proofs go through.  These were always flagged explicitly, and an effort was made to
 have as few of them as possible.
 
-Recall that a relation is strongly normalizing iff its converse is well-founded. \cite[Def.1.1.13]{Terese}.
+Recall that a relation is strongly normalizing iff its converse is well-founded.~\cite[Def.1.1.13]{Terese}.
 Since normalization is a central concept in ARS theory,
 we pay special attention to the concept of well-foundedness.
-The standard constructive definition does not even allow one to show that SN implies WN,
+The standard constructive definition does not even allow one to show that strong normalization implies weak normalization (i.e., that every object has at least one finite reduction to a normal form),
 as we discuss at the end of Section \ref{sec:Well-foundedness} and formalize in \texttt{ARS/Examples.agda}. We therefore looked at a number of variations of this notion in the constructive context,
 their classical counterparts all being logically equivalent. %This gave rise to a rich set of concepts, see Figure \ref{f:wf}.
 
 We have also identified classes of ARSs where the needed classical principles are simply valid.  In particular, for finitely branching relations, the implication SN to WN requires nothing else beyond plain decidability of the relation itself: $Rxy \lor \lnot Rxy$.  For example, an ARS induced by a first-order TRS with a finite set of rules is both finitely branching and decidable.
 
 The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi.
-
 For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible lambda theories), or coinductive rewriting ---
 these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
 
 \subsection{Contributions and related works}
-Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle \cite{isabelleFormalization}, PVS \cite{trs}, and Rocq \cite{coqARS} as well as the Agda standard library \cite{AgdaLibraryRewriting}.
+Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle~\cite{isabelleFormalization}, PVS~\cite{trs}, and Rocq~\cite{coqARS} as well as the Agda standard library~\cite{AgdaLibraryRewriting}.
 The first three are quite mature large-scale projects for certifying termination of
 general rewrite systems.  Our work is more comparable in scale to the rewriting development in the
 Agda library, and is meant to serve as a starting point for a new library of formalized
@@ -173,7 +166,7 @@ are as follows.
 % Our contributions are as follows.
 \begin{itemize} \label{list:ourContributions}
   \item An original formalization of elementary ARS theory as presented in Terese
-  \cite{Terese}, including relevant background about relations and logic;
+ ~\cite{Terese}, including relevant background about relations and logic;
   % Chapter 1 of
   \item An ontology of termination and confluence properties, and a detailed analysis of logical relationships between them;
   \item Definitions of new ARS concepts that refine our understanding of these relationships;
@@ -198,6 +191,17 @@ The structure of the paper roughly corresponds with the progression of the Agda 
 % (with the exception of section \ref{sec:Well-foundedness}, which is put at the end)
 In the next section, we lay out the main properties of relations studied in ARS theory,
 setting the ground for what follows.  In Section \ref{sec:Formalization}, we
-outline our formalization of the ARS chapter from \cite{Terese}.
-Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness.  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
+outline our formalization of the ARS chapter from~\cite{Terese}.
+Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness (i.e., the property of being both strongly normalizing and Church-Rosser).  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
+In Section \ref{sec:Applications}, we illustrate how the library is used in the greater project by the case of untyped lambda calculus.
 We conclude with a brief summary and suggestions for future work.
+
+% \apcomment{Addressing a reviewer comment..}
+% Before we begin, a few words about un/intentional omissions.
+% The reader will not find complex arguments in this paper.
+In this paper, known results are stated with no proofs at all, save the reference to the Agda code. \cite{FPLA}
+New but elementary propositions are usually given a one-sentence informal justification.
+When our development does uncover new ideas or connections,
+these are usually discussed either in a dedicated remark or in ambient text.
+These choices reflect the nature of our contribution, and its aim of laying the
+groundwork for bigger projects.
