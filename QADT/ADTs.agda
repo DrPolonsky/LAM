@@ -1,5 +1,5 @@
 -- {-# OPTIONS --type-in-type #-}
-{-# OPTIONS --allow-unsolved-meta #-}
+-- {-# OPTIONS --allow-unsolved-meta #-}
 
 module QADT.ADTs where
 
@@ -52,6 +52,11 @@ Pow' a (succ n) = a × Pow' a n
 Num : ∀ {V} → ℕ → ADT V
 Num zero = 𝟎
 Num (succ n) = 1+ (Num n)
+
+Num' : ∀ {V} → ℕ → ADT V
+Num' zero = 𝟎
+Num' (succ zero) = 𝟏
+Num' (succ n) = 1+ (Num' n)
 
 𝕧₀ : ∀ {V} → ADT (↑ V)
 𝕧₀ = 𝕍 (o)
