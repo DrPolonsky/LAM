@@ -98,4 +98,5 @@ Kⁿz=z {n} = a× ~!= =× KⁿzK=zK
 mz=z : {n j k : ℕ} → Iso ((Num' (succ n)) × (Pow' K j) × (Pow' L k) × z) z
 mz=z {n} {j} {k} = ×= (×= (Lⁿz=z {k}) =!= Kⁿz=z {j} ) =!= nz=z {n}
 
-diviso : Iso (Pow' K 4 × L ³ ⊔ K ³ × L ³ ⊔ (K × K ⊔ K ⊔ (Num' 2)) × (L ³ ⊔ L ³ ⊔ L ² ⊔ L ² ⊔ L ⊔ L) ⊔ (Num' 4 × L ²)) ((Num' 2 × K ² × L ²) ⊔ (Num' 2 × K ² × L) ⊔ K ² × L ³ × (K ² ⊔ K ⊔ (Num' 2)) ⊔ K × (L ³ ⊔ L ³ ⊔ L ² ⊔ L ² ⊔ L ⊔ L) ⊔ (Num' 4 × L ²))
+diviso : Iso (Pow' K 4 × L ³ ⊔ K ³ × L ³ ⊔ (K × K ⊔ K ⊔ (Num' 2)) × (L ³ ⊔ L ³ ⊔ L ² ⊔ L ² ⊔ L ⊔ L) ⊔ (Num' 4 × L ²)) ((Num' 2 × K ² × L ²) ⊔ (Num' 2 × K ² × L) ⊔ K ² × L ³ × (K ² ⊔ K ⊔ (Num' 2)) ⊔ K × (L ³ ⊔ L ³ ⊔ L ² ⊔ L ² ⊔ L ⊔ L) ⊔ (Num' 4 × L × (L ² ⊔ L ⊔ L ⊔ 𝟏)))
+diviso = {!   !}
