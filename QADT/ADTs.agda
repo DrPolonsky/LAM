@@ -58,6 +58,11 @@ Num' zero = 𝟎
 Num' (succ zero) = 𝟏
 Num' (succ n) = 1+ (Num' n)
 
+Num'' : ∀ {V} → ℕ → ADT V → ADT V
+Num'' zero a = 𝟎
+Num'' (succ zero) a = a
+Num'' (succ (succ n)) a = a ⊔ Num'' (succ n) a
+
 𝕧₀ : ∀ {V} → ADT (↑ V)
 𝕧₀ = 𝕍 (o)
 

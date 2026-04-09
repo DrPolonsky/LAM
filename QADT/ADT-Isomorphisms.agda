@@ -267,4 +267,9 @@ module IsoLemmas where
   Pow=Pow' a (succ zero) = i×r
   Pow=Pow' a (succ (succ n)) = ×= (Pow=Pow' a (succ n))
 
+  Num'=Num'' : ∀ {V} → (a : ADT V) → (n : ℕ) → Iso (Num' n × a) (Num'' n a)
+  Num'=Num'' a zero = al
+  Num'=Num'' a (succ zero) = i×l
+  Num'=Num'' a (succ (succ n)) = dr= (cong+ i×l (Num'=Num'' a (succ n)))
+
 open IsoLemmas public
