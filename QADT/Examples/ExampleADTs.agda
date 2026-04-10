@@ -495,6 +495,12 @@ testS = ⊤ where
     e9 = List→ (λ mm → mm ==𝕄²  S-alg (i (in2 mm))) e7
     e10 = List→ (λ mm → or (mm ==𝕄² S-alg (i (in2 mm))) (mm ==𝕄²  S-alg (i (in2 (S-alg (i (in2 mm))))))) e7
     e11 = List→ findCycle e71
+
+mapPP : ∀ {V : Set} → (a : ADT ⊥) → (⟦ a ⟧ Γ₀ → V) → {n : ℕ} → Prod (⟦ a ⟧ Γ₀) n → Prod V n
+mapPP a pp {zero} prod = tt
+mapPP a pp {succ zero} prod = pp prod
+mapPP a pp {succ (succ n)} (p1 , p2) = pp p1 , mapPP a pp p2
+
 {-
 e11 output:
 i (sp so) ∷
