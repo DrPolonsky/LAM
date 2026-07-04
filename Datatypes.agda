@@ -10,6 +10,10 @@ data ℕ : Set where
   succ : ℕ → ℕ
 {-# BUILTIN NATURAL ℕ #-}
 
+iterℕ : ∀ {A : Set} → A → (A → A) → ℕ → A 
+iterℕ a f zero = a 
+iterℕ a f (succ n) = f (iterℕ a f n)
+
 add : ℕ → ℕ → ℕ
 add zero y = y
 add (succ x) y = succ (add x y)

@@ -103,7 +103,8 @@ In \terese, $\NF$ is used to denote the normal form property $\NPe$, whereas we 
     \end{enumerate}
 \end{proposition}
   All of the proofs in this work have been fully formalized in Agda, and many of them require no further elaboration.  Throughout the paper, we refer to the relevant locations in the code base by giving the name of the Agda file, along with the names and types of the functions corresponding to each claim.
-\newpage
+% \newpage
+
 The proof of the above proposition is formalized in \texttt{ARS/Implications.agda} as follows.
     \begin{enumerate}
         \item \verb|NP₌↔NP : R isNP₌ ↔ R isNP|
@@ -171,7 +172,6 @@ The property $\gBP$ is equivalent to the property called $\mathbf{Ind}$ in \tere
 Having a size function that maps all of $A$ to the natural numbers can be computationally taxing to satisfy.
 Furthermore, it takes us outside of a purely relational theory. The weaker property $\gRP$ defined above will substitute $\gInc$ in all places that require it. For further discussion, see Subsection~\ref{subsec:def}.
 
-% \newpage
 \begin{proposition}\hfill
     \begin{enumerate}
         \item $\gInc \implies \gRP$

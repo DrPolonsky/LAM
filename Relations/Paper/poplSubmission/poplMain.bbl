@@ -1,0 +1,112 @@
+\begin{thebibliography}{10}
+
+\bibitem{HoTT}
+Peter Aczel et~al.
+\newblock {\em Homotopy type theory: univalent foundations of mathematics}.
+\newblock The Univalent Foundations Program Institute for Advanced Study, 2013.
+
+\bibitem{AgdaLibraryList}
+{Agda Development Team}.
+\newblock Agda standard library: List.
+\newblock \url{https://agda.github.io/agda-stdlib/v2.2/Agda.Builtin.List.html},
+  2025.
+\newblock Accessed: 8th July 2025.
+
+\bibitem{AgdaLibraryRewriting}
+{Agda Development Team}.
+\newblock Agda standard library: Rewriting.
+\newblock
+  \url{https://agda.github.io/agda-stdlib/v1.7.3/Relation.Binary.Rewriting.html},
+  2025.
+\newblock Accessed: 5th November 2025.
+
+\bibitem{QIIT}
+Thorsten Altenkirch, Paolo Capriotti, Gabe Dijkstra, Nicolai Kraus, and Fredrik
+  Nordvall~Forsberg.
+\newblock Quotient inductive-inductive types.
+\newblock In {\em International conference on foundations of software science
+  and computation structures}, pages 293--310. Springer International
+  Publishing Cham, 2018.
+
+\bibitem{AltenkirchReus}
+Thorsten Altenkirch and Bernhard Reus.
+\newblock Monadic presentations of lambda terms using generalized inductive
+  types.
+\newblock In {\em Computer Science Logic, 13th International Workshop (CSL
+  '99)}, volume 1683 of {\em Lecture Notes in Computer Science}, pages
+  453--468. Springer, 1999.
+\newblock \href {http://dx.doi.org/10.1007/3-540-48168-0_32}
+  {\path{doi:10.1007/3-540-48168-0_32}}.
+
+\bibitem{FPLA}
+Sam Arkle and Andrew Polonsky.
+\newblock Foundations of programming languages at {A}ppstate.
+\newblock \url{https://github.com/DrPolonsky/FPLA}, 2026.
+\newblock Accessed: 11th March 2026.
+
+\bibitem{Berardi}
+Stefano Berardi.
+\newblock {Classical and Intuitionistic Arithmetic with Higher Order
+  Comprehension Coincide on Inductive Well-Foundedness}.
+\newblock In Stephan Kreutzer, editor, {\em 24th EACSL Annual Conference on
+  Computer Science Logic (CSL 2015)}, volume~41 of {\em Leibniz International
+  Proceedings in Informatics (LIPIcs)}, pages 343--358, Dagstuhl, Germany,
+  2015. Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik.
+\newblock URL:
+  \url{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CSL.2015.343},
+  \href {http://dx.doi.org/10.4230/LIPIcs.CSL.2015.343}
+  {\path{doi:10.4230/LIPIcs.CSL.2015.343}}.
+
+\bibitem{Terese}
+Marc Bezem, Jan~Willem Klop, and Roel de~Vrijer.
+\newblock {\em Term Rewriting Systems}.
+\newblock Cambridge University Press, 2003.
+
+\bibitem{BirdPaterson}
+Richard~S. Bird and Ross Paterson.
+\newblock de {B}ruijn notation as a nested datatype.
+\newblock {\em Journal of Functional Programming}, 9(1):77--91, 1999.
+\newblock \href {http://dx.doi.org/10.1017/S0956796899003366}
+  {\path{doi:10.1017/S0956796899003366}}.
+
+\bibitem{coqARS}
+Fr{\'e}d{\'e}ric Blanqui and Adam Koprowski.
+\newblock Color: A coq library on well-founded rewrite relations and its
+  application to the automated verification of termination certificates.
+\newblock {\em Mathematical Structures in Computer Science}, 21(4):827--859,
+  2011.
+\newblock URL: \url{https://doi.org/10.1017/S0960129511000120}, \href
+  {http://dx.doi.org/10.1017/S0960129511000120}
+  {\path{doi:10.1017/S0960129511000120}}.
+
+\bibitem{AITC}
+Annual International~Termination Competition.
+\newblock \url{https://termination-portal.org/wiki/Termination_Competition}.
+\newblock Accessed: 13th November 2025.
+
+\bibitem{CTT}
+Thierry Coquand, Simon Huber, and Anders M{\"o}rtberg.
+\newblock On higher inductive types in cubical type theory.
+\newblock In {\em Proceedings of the 33rd Annual ACM/IEEE Symposium on Logic in
+  Computer Science}, pages 255--264, 2018.
+
+\bibitem{trs}
+André~L. Galdino and Mauricio Ayala-Rincón.
+\newblock A pvs theory for term rewriting systems.
+\newblock {\em Electronic Notes in Theoretical Computer Science}, 247:67--83,
+  2009.
+\newblock Proceedings of the Third Workshop on Logical and Semantic Frameworks
+  with Applications (LSFA 2008).
+\newblock URL:
+  \url{https://www.sciencedirect.com/science/article/pii/S1571066109002722},
+  \href {http://dx.doi.org/https://doi.org/10.1016/j.entcs.2009.07.049}
+  {\path{doi:https://doi.org/10.1016/j.entcs.2009.07.049}}.
+
+\bibitem{isabelleFormalization}
+Christian Sternagel and René Thiemann.
+\newblock Abstract rewriting.
+\newblock {\em Archive of Formal Proofs}, June 2010.
+\newblock \url{https://isa-afp.org/entries/Abstract-Rewriting.html}, Formal
+  proof development.
+
+\end{thebibliography}

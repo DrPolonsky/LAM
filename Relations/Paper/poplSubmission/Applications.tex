@@ -1,0 +1,50 @@
+\section{An application: properties of lambda terms} \label{sec:Applications}
+To illustrate the general applicability of our development, we show how it binds to another component of our greater project, the lambda calculus.
+
+Our formalization of the lambda calculus is based on the so-called \emph{nested types} encoding of lambda terms.
+\cite{BirdPaterson} \cite{AltenkirchReus}.
+(We learned of this encoding from H\aa{}kon Gylterud; it appears to be quite popular in the Haskell community.)
+The key to this representation is to think of lambda terms not as a set (type), but as a functor (a type-indexed family): 
+\newcommand{\Lam}{\Lambda}
+\newcommand{\tSet}{\mathtt{Set}}
+\newcommand{\mtt}[1]{\mathtt{#1}}
+\begin{align*}
+  \mtt{data}&\ \Lam\ (X : \tSet) : \tSet \ \ \mtt{where} \ \ \\ 
+  \mtt{var} &: X → \Lam X \\
+  \mtt{app} &: \Lam X → \Lam X → \Lam X \\
+  \mtt{abs} &: \Lam (\uparrow\! X) → \Lam X
+\end{align*}
+The $\uparrow$ type constructor represents the lifting monad $\uparrow X = X + 1$. 
+Its occurrence inside the argument to $\Lam$ in the $\mtt{abs}$ constructor renders the type non-homogeneous: the type of lambda terms over a set $A$ 
+depends on the type of terms over other sets.
+
+The advantages of this encoding include the following:
+\begin{itemize}
+  \item Lifting/dropping lemmas related to de Bruijn indices obtain natural categorical forms;
+  \item The encoding suggests a general higher-order induction combinator that suffices to derive all of the standard results like the substitution lemma;
+    % standard facts from the classical theory;
+  \item The framework is powerful enough to do formalization of classical lambda calculus theory.
+\end{itemize}
+\newcommand{\mcH}{\mathcal{H}}
+\newcommand{\mcHo}{\mathcal{H\omega}}
+The current state of the library includes standard results about reduction (standardization and confluence), 
+definitions of undecidable lambda theories based on identifying unsolvable terms ($\mcH$ and $\mcHo$), 
+and a formalization of an unpublished result on characterizing 2-cycles, based on earlier collaboration with Jan Willem Klop and Joerg Endrullis.
+
+As an example of how the ARS library helps this development, the following basic implications are obtained via the ARS theory:
+\begin{description}
+  \item[$\SN \to \WN$:] Agda can effectively compute the normal form of any SN term.
+  \item[$\CR \to \UN$:] Distinct normal forms are not beta convertible (equational consistency).
+  \item[$\mathtt{dec NF_\beta}$:] It is decidable whether a given term is a normal form.
+  \item[Well-foundedness:] Most properties displayed in Figure \ref{fig:WF} are equivalent for lambda terms.
+\end{description}
+While all these facts are easy and could have been proved directly, that they can be obtained as consequences of the general theory 
+illustrates the whole point: such facts shouldn't have to be proved at all, and now they don't have to be.
+
+An additional aspect of this application worth of note is that the heterogeneous nature of the $\Lam$ type family in no way interfered with the classical, Terese-style 
+formalization of ARS. For example, the proof of decidability of normal forms is derived from the fact that single-step beta reduction is 
+decidable and finitely branching, concepts that are defined for a fixed domain $A$ --- even though a single lambda abstraction requires to consider 
+reduction between terms over a different set, instantiating ARS theory in a new domain.
+This shows that Agda's module system indeed interacts very well with its type system. 
+It was a surprise to see a design feature for namespace management to be so useful in relating results with a high level of generality.
+
