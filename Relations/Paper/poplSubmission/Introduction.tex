@@ -1,9 +1,9 @@
 \section{Introduction}
 
 % \newcommand{\inreview}[1]{[\textsc{Appalachian State University}]}
-\newcommand{\inreview}[1]{#1}
-% \newcommand{\inreview}[1]{\sout{\phantom{#1}}}
 % \newcommand{\inreview}[1]{#1}
+% \newcommand{\inreview}[1]{\sout{\phantom{#1}}}
+\newcommand{\inreview}[1]{[\textsc{university name}]}
 
 \label{sec:Introduction}
 
@@ -26,7 +26,7 @@ while ARS encompass the basic facts about rewriting relations in general,
 establishing these facts is part of the necessary infrastructure required to
 pursue the broader project.  The present contribution can therefore be seen as
 ``bootstrapping'' \inreview{Appalachian State}'s new formalized PL repository.
-\cite{FPLA}
+% \cite{FPLA}
 
 This broader goal also drives the main design choices in our approach.
 Since rewriting theory is concerned with a fine-grained analysis of computation,
@@ -157,7 +157,10 @@ An ARS induced by a first-order TRS with a finite set of rules is both finitely 
 
 The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi.
 For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible lambda theories), or coinductive rewriting ---
-these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
+these decidability assumptions no longer hold,
+and the utility of the ARS framework diminishes somewhat.
+Nevertheless, we are still able to make use of the key results like Newman's lemma in developing undecidable theories.
+This is illustrated in our formalization of the lambda calculus discussed in Section  \ref{sec:Applications}.
 
 \subsection{Contributions and related works}
 Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle~\cite{isabelleFormalization}, PVS~\cite{trs}, and Rocq~\cite{coqARS} as well as the Agda standard library~\cite{AgdaLibraryRewriting}.
@@ -196,14 +199,14 @@ The structure of the paper roughly corresponds with the progression of the Agda 
 In the next section, we lay out the properties of relations studied in ARS theory,
 setting the ground for what follows.  In Section \ref{sec:Formalization}, we
 outline our formalization of the ARS chapter from~\cite{Terese}.
-Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness (i.e., the property of being both strongly normalizing and Church-Rosser).  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
+Here we also discuss how this effort suggested new ARS properties that helped us overcome some obstacles we encountered along the way.  These properties fit naturally within the rewriting paradigm.  Thus in Section \ref{sec:Hierarchy}, we dedicate some effort to investigating them further.  The result is a broader ontology of ARS concepts, revealing interrelationships between conditions for completeness (i.e., the property of being both strongly normalizing and Church--Rosser).  In Section \ref{sec:Well-foundedness} we focus on what it means for a relation to be well-founded, identifying the classical principles needed to transition between different formulations.
 In Section \ref{sec:Applications}, we illustrate how the library is used in the greater project by the case of untyped lambda calculus.
 We conclude with a brief summary and suggestions for future work.
 
 % \apcomment{Addressing a reviewer comment..}
 % Before we begin, a few words about un/intentional omissions.
 % The reader will not find complex arguments in this paper.
-In this paper, known results are stated with no proofs at all, save the reference to the Agda code. \cite{FPLA}
+In this paper, known results are stated with no proofs at all, save the reference to the Agda code. %\cite{FPLA}
 New but elementary propositions are usually given a one-sentence informal justification.
 When our development does uncover new ideas or connections,
 these are usually discussed either in a dedicated remark or in ambient text.

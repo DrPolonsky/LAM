@@ -49,8 +49,8 @@ The above notions give rise to several distinct definitions of well-foundedness,
 \begin{definition} \label{def:WFproperties} \hfill
   \begin{itemize}
     \item $R$ is \bemph{accessibly well-founded} if every element is accessible.
-    \item $R$ is \bemph{inductively well-founded} if every inductive predicate holds.
-    \item $R$ is \bemph{coreductively well-founded} if every coreductive predicate holds.
+    \item $R$ is \bemph{inductively well-founded} if every inductive predicate is universally true.
+    \item $R$ is \bemph{coreductively well-founded} if every coreductive predicate is universally true.
     \item $R$ is \bemph{well-founded minimality-wise} if nonempty subsets have minimal elements.
     \item $R$ is \bemph{well-founded minimality-wise for $\lnot \lnot$-closed predicates} if nonempty $\lnot \lnot$-closed subsets have minimal elements.
     \item $R$ is \bemph{sequentially well-founded} if every sequence contains an index at which it is not decreasing.
@@ -68,10 +68,12 @@ The above notions give rise to several distinct definitions of well-foundedness,
 \end{definition}
 We have formalized the above definitions of well-foundedness in \texttt{WFDefinitions.agda}.
 
-Classically, the above notions of well-foundedness are all equivalent.  Constructively, only the first two are equivalent (and so we ignore $\WFind$ in what follows); the remaining definitions are not. Moreover, even individual classical definitions can be given constructive
+Classically, the above notions of well-foundedness are all equivalent.  The first two 
+are also equivalent constructively. We therefore ignore $\WFind$ in what follows, since $\WFacc$ is more convenient to work with (and also has the advantage of landing in a lower universe).
+
+The remaining definitions are \emph{not} constructively equivalent. Moreover, even individual classical definitions can be given constructive
 interpretations in varying degrees of logical strength.
-Formalizing the remaining implications enabled us to identify where exactly classical logic
-is used, and how much of it is truly needed.
+Formalizing the remaining implications enabled us to identify where exactly classical logic is used, and how much of it is truly needed.
 
 For example, the implication from ``every non-empty subset has a minimal element'' to
 ``every element is accessible''  is a classical proof by contradiction.
@@ -81,13 +83,12 @@ every minimal element is accessible.)
 
 Constructively, this argument only goes so far as to show that, if every non-empty
 subset has a minimal element, then no element is inaccessible.
-That is, the universal statement being proved is that every $x \in A$
+That is, the universal statement that has been proved is that every $x \in A$
 is not-not-accessible. The final step needed to infer that $x$ is indeed accessible
-is not constructively provable in general, therefore it needs to be assumed as
-an additional hypothesis in order to recover the full implication.
+is not constructively provable in general, thus additional hypothesis appear to be necessary to recover the full implication. Yet, as the figure shows, the implication does actually hold constructively, but it requires a more refined argument to see this.
 
-On the other hand, assuming accessibility is $\lnot\lnot$-closed, the other
-hypothesis can now be weakened, to only require existence of minimal elements
+On the other hand, assuming accessibility is $\lnot\lnot$-closed, other
+hypothesis could be weakened, to only require existence of minimal elements
 for $\lnot\lnot$-closed subsets.  This is a significant restriction, which may
 be validated in certain cases.  In contrast, the original hypothesis
 (postulating minimal elements for ALL predicates)
@@ -96,6 +97,7 @@ The file \texttt{WFCounters.agda} shows that assuming the full minimality hypoth
 %(and is equivalent to)
 that each subset $P$ is \emph{weakly} decidable,
 satisfying $\lnot \lnot P(x) \lor \lnot P(X)$ for all $x$.
+%\apcomment{Is the last claim true? Check this.}
 
 One could also consider proving well-foundedness ``up to $\lnot\lnot$'',
 asserting that every element is $\lnot\lnot$-accessible,
@@ -330,11 +332,14 @@ $\accCor$ & Accessibility is coreductive
 \label{tab:cprop}
 \end{figure}
 }
+
+% \apcomment{Add that $\WFminDNE$ implies $\WFaccm$.}
+
 % \clearpage
 % The principles appearing in the labels of Figure \ref{fig:WF} are valid for many rewriting systems,
 % and are classically true.
 Figure \ref{fig:WF} illustrates that the network of logical relationships between
-constructive notions of well-foundedness is quite rich indeed.
+the various notions of well-foundedness is quite rich indeed.
 Taking the $\lnot\lnot$-closures of
 these notions cuts down some, but not all, of the complexity.
 For example, the two minimality principles become equivalent.
@@ -352,7 +357,7 @@ are constructively equivalent up to $\lnot\lnot$.
 
 Other observations that can be gleaned from the figure include the following.
 \begin{enumerate}
-  \item The implication from $\WFacc$ to $\WFseq$ requires the underlying relation to be decidable.
+  \item The implication from $\WFacc$ to $\WFseq$ requires the underlying relation to be decidable. %(The decidability of normal forms also suffices.}
     This assumption is no longer necessary on the $\lnot\lnot$-translated side.
   \item $\WFmin$ is a very strong assumption and implies $\WFseq$ unconditionally.
   The more reasonable $\WFminDNE$ requires the image of every sequence to be $\lnot\lnot$-closed

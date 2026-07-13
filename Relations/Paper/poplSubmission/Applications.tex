@@ -48,3 +48,16 @@ reduction between terms over a different set, instantiating ARS theory in a new 
 This shows that Agda's module system indeed interacts very well with its type system. 
 It was a surprise to see a design feature for namespace management to be so useful in relating results with a high level of generality.
 
+\subsection*{Omega reduction: a natural undecidable rewriting theory}
+\renewcommand{\mcH}{\mathcal{H}}
+\newcommand{\mcB}{\mathcal{B}}
+
+Classical lambda calculus not only studies beta conversion, but also eta conversion and even non-computable congruence relations between terms, such as the lambda theory $\mcH$ identifying all unsolvable terms, the lambda theory $\mcB$ of B\"ohm trees, and the maximal sensible theory $\mcH^*$ that is induced by Dana Scott's classical model. As the theories become more extensional and better able to reflect equality in the semantics, the logical complexity scales as well. Thus, beta and eta conversions are $\Sigma_1$ (r.e.), $\mcH$ equality is $\Sigma_2$, while $\mcB$ and $\mcH^*$ are $\Pi_2$.
+
+$\mcH$ occupies a somewhat unique position in that it is able to ``minimally'' characterize the equality of denotaional models (since it has a unique consistent completion, namely $\mcH^*$), yet it is still amenable to rewriting theory. Equality in $\mcH$ is captured by a rewriting notion 
+\[ \longrightarrow_\Omega: \qquad \qquad M \longrightarrow \Omega \quad \quad (M \text{ is unsolvable}) \]
+
+This reduction relation is not decidable --- and it could not be, for otherwise the theory would be r.e. --- yet it is nevertheless confluent and strongly normalizing.
+It therefore yields a natural example of an undecidable theory ``from the wild''.
+
+We formalized both $\Omega$-reduction as well as direct encoding of equivalence up to unsolvable terms.  It is curious that strong normalization is very easy to prove for this theory, but confluence requires quite a bit of work.  The easiest route is indeed via Neuman's lemma, for it enables to ``bootstrap'' confluence by closing all critical pairs. This is formalized in the file \verb|OmegaReduction.agda|.  See also \verb|Unsolvable.agda| and \verb|HeadReduction.agda|.

@@ -34,9 +34,9 @@ are automatically effective, and implicitly carry the code that implements
 a transformation from the hypotheses to the conclusion of the claim.  For example,
 a type-checked proof that a given TRS is Church--Rosser automatically renders a function that
 computes a common reduct between any two convertible terms.
-Proofs in Agda are thus not mere verifications of validity, but are also implementations 
+Proofs in Agda are thus not mere verifications of validity, but are also implementations
 of conceptual algorithms implicit in constructive proofs.
-Being able to perform such computations as needed 
+Being able to perform such computations as needed
 facilitates the development of complex ontologies and theories.
 This makes Agda a particularly attractive vehicle for our bigger project.
 
@@ -102,32 +102,32 @@ can be helpful in many settings arising in programming language theory.
 
 \subsection{Formalization principles}
 
-Agda is both a programming language and an interactive theorem prover. 
+Agda is both a programming language and an interactive theorem prover.
 As a programming language, it can be thought of as an extension of Haskell
-with dependent types, which enormously expands the expressivity of the type system, 
-allowing complex specifications to be embedded directly into the 
+with dependent types, which enormously expands the expressivity of the type system,
+allowing complex specifications to be embedded directly into the
 very types of the functions being written.
 As a theorem prover, Agda is an implementation of Martin-L\"of
 Intuitionistic Type Theory, which strictly adheres to the proofs-as-programs paradigm.
-As with other proof assistants in this family, its logic is based on encoding 
+As with other proof assistants in this family, its logic is based on encoding
 formulas as types in an extended typed lambda calculus, with the underlying terms
-playing the role of proofs of said formulas. Agda enjoys the usual metatheoretic characteristics 
+playing the role of proofs of said formulas. Agda enjoys the usual metatheoretic characteristics
 of typed lambda calculi, including subject reduction, strong normalization, and canonicity.
 
-In a quite literal sense, Agda proofs are dependently-typed functional programs. 
+In a quite literal sense, Agda proofs are dependently-typed functional programs.
 Proofs by structural induction over recursive types or derivation trees are represented by
 recursive functions defined by pattern-matching, so familiar to functional programmers.
-The dependent type system enables a unique interactive programming style, where 
+The dependent type system enables a unique interactive programming style, where
 writing code is often reduced to constructing a value of a particular type in a given context.
 
-% Agda is especially suited for projects that combine elements of both 
-% --- programming transformations on abstract data types that involve 
+% Agda is especially suited for projects that combine elements of both
+% --- programming transformations on abstract data types that involve
 % complex logical dependencies,
-% and developing mathematical theories whose subject matter has inherent computational content. 
-% Both aspects are prominent in programming language theory. 
+% and developing mathematical theories whose subject matter has inherent computational content.
+% Both aspects are prominent in programming language theory.
 
-As long as the code does not use classical logic (the principle of Excluded Middle) or 
-other axioms (such as Function Extensionality), the proofs, being programs, 
+As long as the code does not use classical logic (the principle of Excluded Middle) or
+other axioms (such as Function Extensionality), the proofs, being programs,
 are guaranteed to compute. % Agda is therefore a \emph{total} language.
 
 With the explicit goal of having the results of basic abstract rewriting
@@ -160,7 +160,9 @@ We have also identified classes of ARSs where the needed classical principles ar
 The main conclusion of our work is that most of the main ARS results can be made completely effective, at least for the practical examples encountered in first-order TRSs and lambda calculi.
 
 For more exotic rewrite systems --- like $\lambda \bot$ (underpinning sensible lambda theories), or coinductive rewriting ---
-these decidability assumptions no longer hold, and the utility of the ARS framework diminishes proportionally.
+these decidability assumptions no longer hold, and the utility of the ARS framework diminishes somewhat.
+Nevertheless, we are still able to make use of the key results like Newman's lemma in developing undecidable theories.
+This is illustrated in our formaliation of the lambda calculus.
 
 \subsection{Contributions and related works}
 Several formalizations of the concepts of elementary ARS theory exist, including projects in Isabelle \cite{isabelleFormalization}, PVS \cite{trs}, and Rocq \cite{coqARS} as well as the Agda standard library \cite{AgdaLibraryRewriting}.

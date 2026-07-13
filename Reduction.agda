@@ -68,6 +68,11 @@ data _⟶s_ {X} : Λ X → Λ X → Set where
 _≡!⟶s_ : ∀ {X} {r s t : Λ X} → (r ≡ s) → (s ⟶s t) → (r ⟶s t)
 refl ≡!⟶s st = st
 
+refl⟶s : ∀ {X} {t : Λ X} → t ⟶s t
+refl⟶s {X} {var x} = var⟶s
+refl⟶s {X} {app t t₁} = app⟶s refl⟶s refl⟶s
+refl⟶s {X} {abs t} = abs⟶s refl⟶s
+
 map⟶s : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶s t2 → Λ→ f t1 ⟶s Λ→ f t2
 map⟶s f (red⟶s W t12) = red⟶s (map⟶w f W ) (map⟶s f t12)
 map⟶s f var⟶s = var⟶s
@@ -87,10 +92,20 @@ bind⟶w : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶w t) �
 bind⟶w f (red⟶w rd) = red⟶w (bind⟶ₒ f rd)
 bind⟶w f (appL⟶w st) = appL⟶w (bind⟶w f st)
 
-bind⟶s : ∀ {X Y} → (f g : X → Λ Y) → (∀ x → f x ⟶s g x) → (∀ t → (t [ f ]) ⟶s (t [ g ]))
-bind⟶s f g f→g (var x) = f→g x
-bind⟶s f g f→g (app s t) = app⟶s (bind⟶s f g f→g s) (bind⟶s f g f→g t)
-bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f→g) t )
+bind⟶s : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶s t) → (s [ f ]) ⟶s (t [ f ])
+bind⟶s f (red⟶s w s→t) = red⟶s (bind⟶w f w) (bind⟶s f s→t)
+bind⟶s f var⟶s = refl⟶s
+bind⟶s f (app⟶s s→t1 s→t2) = app⟶s (bind⟶s f s→t1) (bind⟶s f s→t2)
+bind⟶s f (abs⟶s s→t) = abs⟶s (bind⟶s (lift f) s→t)
+
+sred-subst : ∀ {X Y} → (f g : X → Λ Y) → (∀ x → f x ⟶s g x) → (∀ t → (t [ f ]) ⟶s (t [ g ]))
+sred-subst f g f→g (var x) = f→g x
+sred-subst f g f→g (app s t) = app⟶s (sred-subst f g f→g s) (sred-subst f g f→g t)
+sred-subst f g f→g (abs t) = abs⟶s (sred-subst (lift f) (lift g) (lift⟶s f g f→g) t )
+
+bind⟶β⋆ : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶β⋆ t) → (s [ f ]) ⟶β⋆ (t [ f ])
+bind⟶β⋆ f ε⋆ = ε⋆
+bind⟶β⋆ f (R0 ,⋆ R+) = (R0 ⟶β[ f ]) ,⋆ bind⟶β⋆ f R+
 
 ⟶ₒ[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
              → ∀ {s t : Λ X} → s ⟶ₒ t →   (s [ f ])  ⟶s  (t [ g ])
@@ -99,12 +114,12 @@ bind⟶s f g f→g (abs t) = abs⟶s (bind⟶s (lift f) (lift g) (lift⟶s f g f
                    (io𝓟 _ (λ x → ~ (bind-lift2 (t [ f ]) (f x) ) ) refl ) s
   E2 = bind-assoc≅ (io𝓟 _ (λ x → refl) refl) s
   E = E1 ~! E2 -- E1 ! E2
-  R = bind⟶s f g f→g (s [ io var t ])
+  R = sred-subst f g f→g (s [ io var t ])
 
 ⟶w[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
              → ∀ {s t : Λ X} → s ⟶w t →   (s [ f ])  ⟶s  (t [ g ])
 ⟶w[⟶s] f g f→g (red⟶w Δ) = ⟶ₒ[⟶s] f g f→g Δ
-⟶w[⟶s] f g f→g (appL⟶w {r = r} s→t) = app⟶s (⟶w[⟶s] f g f→g s→t ) (bind⟶s f g f→g r )
+⟶w[⟶s] f g f→g (appL⟶w {r = r} s→t) = app⟶s (⟶w[⟶s] f g f→g s→t ) (sred-subst f g f→g r )
 
 ⟶s[⟶s] : ∀ {X Y} (f g : X → Λ Y) → (∀ x → f x ⟶s g x)
              → ∀ {s t : Λ X} → s ⟶s t →   (s [ f ])  ⟶s  (t [ g ])
@@ -179,11 +194,6 @@ data _⇉_ {X : Set} : Λ X → Λ X → Set where
 ⟶s!⟶β⋆ : ∀ {X} {r s t : Λ X} → r ⟶s s → s ⟶β⋆ t → r ⟶s t
 ⟶s!⟶β⋆ rs ε⋆ = rs
 ⟶s!⟶β⋆ rs (sy ,⋆ yt) = ⟶s!⟶β⋆ (⟶s!⟶β rs sy) yt
-
-refl⟶s : ∀ {X} {t : Λ X} → t ⟶s t
-refl⟶s {X} {var x} = var⟶s
-refl⟶s {X} {app t t₁} = app⟶s refl⟶s refl⟶s
-refl⟶s {X} {abs t} = abs⟶s refl⟶s
 
 -- Standardization theorem for beta reduction
 ⟶β⋆⊆⟶s : ∀ {X} {s t : Λ X} →  s ⟶β⋆ t → s ⟶s t
@@ -286,6 +296,13 @@ _⇉⋆[_] : ∀ {X Y : Set} {s t : Λ X} → s ⇉⋆ t → ∀ (σ : X → Λ 
 ... | (u ,, pr2 , st2) with ⟶s\⇉⋆ st2 pr1
 ... | (v ,, pr3 , st3) = v ,, (pr2 ,⋆ pr3) , st3
 
+_⟶w⋆_ : ∀ {X} → Λ X → Λ X → Set 
+_⟶w⋆_ = _⟶w_ ⋆
+
+appL⟶w⋆ : ∀ {X} {s1 s2 t : Λ X} → s1 ⟶w⋆ s2 → app s1 t ⟶w⋆ app s2 t
+appL⟶w⋆ ε⋆ = ε⋆
+appL⟶w⋆ (W0 ,⋆ W+) = appL⟶w W0 ,⋆ appL⟶w⋆ W+
+
 abs⟶β⋆ : ∀ {X} {r1 r2 : Λ (↑ X)} → r1 ⟶β⋆ r2 → abs r1 ⟶β⋆ abs r2
 abs⟶β⋆ ε⋆ = ε⋆
 abs⟶β⋆ (r0 ,⋆ r12) = abs⟶β r0 ,⋆ abs⟶β⋆ r12
@@ -305,11 +322,12 @@ appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
 ⟶s⊆⟶β⋆ (app s1 s2) (app t1 t2) (app⟶s s12 t12) =
   appL⟶β⋆ (⟶s⊆⟶β⋆ _ _ s12) s2 ⋆!⋆ appR⟶β⋆ (⟶s⊆⟶β⋆ _ _ t12) t1
 
-{-# TERMINATING #-}
 ⇉⊆⟶β⋆ : ∀ {X} {s t : Λ X} → s ⇉ t  →  s ⟶β⋆ t
-⇉⊆⟶β⋆ (red⇉ {s1} {s2} {t1} {t2} s12 t12 e) =
-  (red⟶β (redex refl ) ) ,⋆ ⇉⊆⟶β⋆ (transp (_⇉_ (s1 [ t1 ]ₒ)) e p )
-    where p = ⇉[⇉] (io var t1) (io var t2) (io𝓟 _ (λ _ → var⇉) t12 ) s12
+⇉⊆⟶β⋆ (red⇉ {s1} {s2} {t1} {t2} s12 t12 refl) = 
+  (red⟶β (redex refl ) ) ,⋆ (R1 ⋆!⋆ R3) where 
+    R1 = bind⟶β⋆ (io var t1) (⇉⊆⟶β⋆ s12)
+    R2 = io𝓟 _ (λ x → var⟶s) (⟶β⋆⊆⟶s (⇉⊆⟶β⋆ t12))
+    R3 = ⟶s⊆⟶β⋆ (s2 [ t1 ]ₒ) (s2 [ t2 ]ₒ) (sred-subst (io var t1) (io var t2) R2 s2) 
 ⇉⊆⟶β⋆ var⇉ = ε⋆
 ⇉⊆⟶β⋆ (app⇉ s12 t12) = (appL⟶β⋆ (⇉⊆⟶β⋆ s12) _ ) ⋆!⋆ appR⟶β⋆ (⇉⊆⟶β⋆ t12 ) _
 ⇉⊆⟶β⋆ (abs⇉ st) = abs⟶β⋆ (⇉⊆⟶β⋆ st)
@@ -318,7 +336,10 @@ appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
 ⇉⋆⊆⟶β⋆ ε⋆ = ε⋆
 ⇉⋆⊆⟶β⋆ (st ,⋆ tu) = ⇉⊆⟶β⋆ st ⋆!⋆ ⇉⋆⊆⟶β⋆ tu
 
-
+⟶s\⟶s : ∀ {X} {s t1 t2 : Λ X} → s ⟶s t1 → s ⟶s t2 → Σ[ u ∈ Λ X ] (t1 ⟶s u × t2 ⟶s u)
+⟶s\⟶s st1 st2 
+  with ⟶s\⇉⋆ st1 (⟶β⋆⊆⇉⋆ (⟶s⊆⟶β⋆ _ _ st2))
+... | (u ,, t1u , t2u)  = u ,, ⟶β⋆⊆⟶s (⇉⋆⊆⟶β⋆ t1u) , t2u
 
 NF : ∀ {X} → 𝓟 (Λ X)
 NF M = ∀ N → ¬ (M ⟶β N)
@@ -337,6 +358,9 @@ appNFinvL {t = t} st∈NF u s→u = st∈NF (app u t) (appL⟶β s→u )
 appNFinvR : ∀ {V} {s t : Λ V} → app s t ∈ NF → t ∈ NF
 appNFinvR {s = s} st∈NF u t→u = st∈NF (app s u) (appR⟶β t→u )
 
+var→w : ∀ {X} {s : Λ X} {x : X} → s ⟶s (var x) → (_⟶w_ ⋆) s (var x)
+var→w {X} {s} {x} (red⟶s w R) = w ,⋆ var→w R
+var→w {X} {s} {x} var⟶s = ε⋆
 
 {-
 

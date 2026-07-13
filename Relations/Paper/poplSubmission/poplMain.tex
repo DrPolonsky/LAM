@@ -1,19 +1,28 @@
-% Use the LIPIcs class for the conference submission
-\documentclass[a4paper,UKenglish]{lipics-v2021}
+\makeatletter
+\def\input@path{{./tex/acmart/}}
+\makeatother
+ 
+\documentclass[acmsmall,screen,review,anonymous,nonacm]{acmart}
 
 % --- metadata ---
 \title{A Formalization of Abstract Rewriting in Agda}
 
-\author{Samuel Arkle}{Appalachian State University, USA}{arklesd@appstate.edu}{}{}
-\author{Andrew Polonsky}{Appalachian State University, USA}{polonskya@appstate.edu}{}{}
+\author{Samuel Arkle}
+\affiliation{
+  \institution{Appalachian State University}
+  \country{USA}
+}
+\email{arklesd@appstate.edu}
 
-\authorrunning{S. Arkle and A. Polonsky}
-\titlerunning{A Formalization of Abstract Rewriting in Agda}
-\Copyright{Samuel Arkle and Andrew Polonsky}
+\author{Andrew Polonsky}
+\affiliation{
+  \institution{Appalachian State University}
+  \country{USA}
+}
+\email{polonskya@appstate.edu}
 
 % --- Keywords, CCS ---
 \keywords{Abstract rewriting, Formalization, Confluence, Strong normalization, Newman's Lemma, Well-foundedness}
-\ccsdesc[300]{Theory of computation~Type theory}
 
 % \begin{CCSXML}
 % <ccs2012>
@@ -25,25 +34,23 @@
 % </ccs2012>
 % \end{CCSXML}
 
-% (CCS descriptions handled differently; omit or add per submission requirements)
+\ccsdesc[300]{Theory of computation~Type theory}
 
 % --- packages & macros ---
 \input{macros} 
 % \newtheorem{definition}{Definition}
 % \newtheorem{notation}{Notation}
-% \newtheorem{remark}{Remark}
-% Remark is already defined.
+\newtheorem{remark}{Remark}
+\theoremstyle{acmdefinition}
 \newtheorem{notation}{Notation} 
-% \newtheorem{notation}[theorem]{Notation} % Can't get this to work 
+% \newtheorem{notation}[theorem]{Notation} % Can't get this to work
 % \usepackage{ulem}
 % \supplement{https://github.com/DrPolonsky/FPLA/tree/main} %TODO: Can't get this reference to the code to work.
+\usepackage{enumitem}
 % --- begin document ---
-
-\nolinenumbers 
 
 \begin{document}
 
-\maketitle
 \begin{abstract}
     We present a constructive formalization of Abstract Rewriting Systems (ARS)
     in the Agda proof assistant, focusing on standard results in term rewriting. We define a taxonomy of
@@ -57,6 +64,8 @@ arising from different formulations of the concept of a well-founded relation.
 We illustrate general applicability of our ARS development with an example formalization of the lambda calculus. 
 \end{abstract}
 
+\maketitle 
+
 \input{Introduction.tex}
 \input{Definitions.tex}
 \input{Formalization.tex} 
@@ -64,10 +73,8 @@ We illustrate general applicability of our ARS development with an example forma
 \input{Well-foundedness.tex}
 \input{Applications.tex}
 \input{Conclusion.tex}
-\newpage 
 
-% LIPIcs recommends `plainurl` (or the style provided with the template).
-\bibliographystyle{plainurl}
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{references} % create references.bib instead of inline bib
 
 

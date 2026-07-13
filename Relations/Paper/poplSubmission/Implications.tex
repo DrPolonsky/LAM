@@ -34,7 +34,7 @@ we came to the `minimal' family of properties below. These properties help to au
     $\forall x.\, x\in \NF \implies x \in \MF$
 \end{proposition}
 \begin{proof}
-    See, \verb|NF ⊆ MF : ∀x → NFx → MFx| in \texttt{Implications.agda}.
+    See \verb|NF⊆MF : ∀x → NF x → MF x|, defined in \texttt{Implications.agda}.
 \end{proof}
 
 $\SMseq$ is only classically equivalent to $\SM$. The
@@ -100,8 +100,8 @@ explore the following broader taxonomy of concepts relating to completeness.
 
 
 The implications in this diagram are formalized in \texttt{Implications.agda}.
-The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of terminating properties.
-The implication from $\SN$ to $\WN$ relies on the classical decidability of the property
+The confluence hierarchy requires no classical assumptions, however this is not the case for the hierarchy of termination properties.
+The implication from $\SN$ to $\WN$ requires decidability of the property
 of being $R$-minimal, hence its formalization takes the form
 
 \verb|SNdec→WN : (~R R) isMinDec → SN ⊆ WN|
@@ -128,11 +128,14 @@ In contrast to the above proposition, the inclusion $\SN \subset \SM \cap \WN $ 
 \subsection{Conditions for completeness}\label{subsec:counterexamples}
 
 
-We now examine which property combinations are sufficient to reverse these implications and achieve completeness. The following tables illustrate, for each property combination, whether confluence (left box) and strong normalization (right box) are obtained. Where these properties cannot be derived, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X.
+We now examine which property combinations are sufficient to reverse the hierarchy implications and achieve completeness. The following tables illustrate, for each combination, whether completeness can be inferred. Where this is not possible, we provide counterexamples demonstrating the necessity of additional conditions; these are labeled as CE-X, referring to diagram X in Figure \ref{fig:counterexamples}.
 
-The first table explores where the properties hold locally, the second explores where the properties hold globally. $\WCR$ holds for the counterexamples in the
-first table, $\gWCR$ holds for the counterexamples in the second table $\gWCR$ (as a reminder, bold text is used to indicate a property holds globally).
+The first table explores where the properties hold locally, the second explores where the properties hold globally. $\WCR$ moreover holds for all the counterexamples in the
+first table, and $\gWCR$ holds for the counterexamples in the second table. (Recall that bold text is used to indicate that a property holds globally.)
 
+For example, if $a \in \MP \cap \WM$, then reductions from $a$ are confluent: 
+the confluence property $\MP$ can be strengthened to $\CR$. 
+But the termination property $\WM$ cannot be strengthened to $\SN$, and this is illustrated by Counterexample \ref{CE:8}.
 % \clearpage
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}} 
 \begin{table}[h!]
@@ -365,7 +368,7 @@ The table should be interpreted as follows: for example, if an element possesses
          or $\gWCR$ for the implication to $\gCR$, unlike $\gSN \land \gUNto$.
         \item $\gWN \land \gUNto \implies \gCR$ only holds when the properties are global. Counterexample~\ref{CE:4} shows that $\WCR \land \WN \land \UNto \nRightarrow \CR$.
         \item Both $\SM$ and $\WN$ are required for $\SN$, see Subsection \ref{subsec:SMWNSN}.
-        \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$.
+        % \item We have a generalization of Newman's Lemma as $\SM \land \gWCR \implies \CR$.
     \end{enumerate}
 \end{remark}
 
@@ -376,14 +379,11 @@ One interesting outcome from investigating the normalization taxonomy was a gene
     $\gWCR \land \SM \implies \CR$
 \end{proposition}
 \begin{proof}
-    See, \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|
+    See \verb|LocalNewmansLemmaRecurrent : R isWCR → SM ⊆ CR|.
 \end{proof}
-
-This proof follows the second proof of Newman's Lemma in \terese, but replaces
-$\SN$ with the weaker assumption $\SM$. To illustrate the gain, consider the TRS with rules
-$p(a) \to p(b)$, $p(b) \to p(a)$, $f(p(a),p(a)) \to k$, and $f(p(b),p(b)) \to k$.
-Because $p(a) \leftrightarrow p(b)$ yields an infinite reduction, $\gSN$ fails. Nevertheless,
-the system satisfies $\gWCR$ and $\gSM$, so the proposition gives $\gCR$ even without $\gSN$.
+This proof proceeds similarly to that of Newman's Lemma, but replaces
+$\SN$ with the weaker assumption $\SM$. To illustrate the gain, consider the TRS with rules $a \to b$, $p(b) \to p(a)$, $f(x,x) \to c$. 
+Because $p(a) \leftrightarrow p(b)$ yields an infinite reduction, $\gSN$ fails. Nevertheless, the system satisfies $\gWCR$ and $\gSM$, so the proposition gives $\gCR$ even without $\gSN$.
 
 % The tables show a number of changes when moving from properties holding locally to globally.
 % Globally $\WN \land \UNto \implies \CR$ holds whereas it does not locally. Similarly, $\SM \land \WN \implies \SN$ holds
@@ -392,7 +392,7 @@ the system satisfies $\gWCR$ and $\gSM$, so the proposition gives $\gCR$ even wi
 One key takeaway from the tables is that we obtain strong termination and confluence when we have the properties $\SM$, $\WN$, and $\NP$. We also
 obtain completeness when we have $\gWN$ and $\gSM$.
 To show that $\gSM \land \gWN \implies \gSN$ we build on our proof that $\SM \land \WN \land \NP \implies \SN$. If $\gWN$ holds
-then our proof no longer requires the property $\NP$. This progression of proofs can be seen in the functions:
+then our proof no longer requires the property $\NP$. The exact progression of claims can be seen in the functions:
 
 \verb|WN∧NP∧SM→SN : ∀ {x} → WN x → NP x → SM x → SN x|
 

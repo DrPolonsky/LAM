@@ -62,8 +62,8 @@ We define rewriting-theoretic concepts such as confluence and normalization as p
 % \subsection{Confluence (\texttt{Properties.agda})}
 \begin{definition} Let $a \in A$.
     \begin{description}
-        \item[\bq \ule{$a \in \WCR_R$}] $a$ is \bemph{weakly Church-Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d.\, c \mstep d \bmstep b\]
-        \item[\bq \ule{$a \in \CR_R$}] $a$ is \bemph{Church-Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d.\, c \mstep d \bmstep b\]
+        \item[\bq \ule{$a \in \WCR_R$}] $a$ is \bemph{weakly Church--Rosser} (or \emph{weakly confluent}) if for all $b,c \in A$, \[c \bstep a \rstep b \implies \exists d.\, c \mstep d \bmstep b\]
+        \item[\bq \ule{$a \in \CR_R$}] $a$ is \bemph{Church--Rosser} (or \emph{confluent}) if for all $b,c \in A$, \[c \bmstep a \mstep b \implies \exists d.\, c \mstep d \bmstep b\]
         \item[\bq \ule{$a \in \CRs_R$}] $a$ is \bemph{subcommutative} if for all $b, c \in A$,
         \[c \bmstep a \mstep b \implies \exists d. \, c \rrstep d \brstep b\]
         \item[\bq \ule{$a \in \NPe_R$}] $a$ has the \bemph{conversion normal form property} if for all $b \in \NF_R$, \[ a \estep b \implies a\mstep b\]
