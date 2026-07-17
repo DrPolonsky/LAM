@@ -25,10 +25,18 @@ data _⟶β_ {X : Set} : Λ X → Λ X → Set where
   appR⟶β : ∀ {s t1 t2} → t1 ⟶β t2      → app s t1 ⟶β app s t2
   abs⟶β  : ∀ {r1 r2}   → r1 ⟶β r2      → abs r1   ⟶β abs r2
 
--- Weak head reduction is weaker than one-step reduction
+-- Weak head reduction is weaker: it's the closure of ⟶ₒ under applicative contexts only
 data _⟶w_ {X} : Λ X → Λ X → Set where
   red⟶w : ∀ {s t}     →  s ⟶ₒ t  →  s ⟶w t
   appL⟶w : ∀ {s t r}  →  s ⟶w t  →  app s r ⟶w app t r
+
+-- Standard reduction is the least congruence closed under weak head expansion
+-- (AKA "outside-in" reduction)
+data _⟶s_ {X} : Λ X → Λ X → Set where
+  red⟶s : ∀ {r s t}       → r ⟶w s   →  s ⟶s t   →  r ⟶s t
+  var⟶s : ∀ {x}           → var x ⟶s var x
+  app⟶s : ∀ {s1 s2 t1 t2} → s1 ⟶s s2 → t1 ⟶s t2 → app s1 t1 ⟶s app s2 t2
+  abs⟶s : ∀ {r1 r2}       → r1 ⟶s r2 → abs r1 ⟶s abs r2
 
 map⟶ₒ : ∀ {X Y} → (f : X → Y) → {t1 t2 : Λ X} → t1 ⟶ₒ t2 → Λ→ f t1 ⟶ₒ Λ→ f t2
 map⟶ₒ f (redex {_} {r} {t} refl) = redex (e1 ~! e2) where
@@ -55,15 +63,6 @@ abs⟶β st ⟶β[ f ] = abs⟶β (st ⟶β[ lift f ])
 -- Multistep reduction is the reflexive-transitive closure of one-step reduction
 _⟶β⋆_ : ∀ {X} → Λ X → Λ X → Set
 _⟶β⋆_ = (_⟶β_) ⋆
-
--- Standard reduction is the least congruence closed under
--- weak head expansion
--- AKA "outside-in" reduction strategy
-data _⟶s_ {X} : Λ X → Λ X → Set where
-  red⟶s : ∀ {r s t}       → r ⟶w s   →  s ⟶s t   →  r ⟶s t
-  var⟶s : ∀ {x}           → var x ⟶s var x
-  app⟶s : ∀ {s1 s2 t1 t2} → s1 ⟶s s2 → t1 ⟶s t2 → app s1 t1 ⟶s app s2 t2
-  abs⟶s : ∀ {r1 r2}       → r1 ⟶s r2 → abs r1 ⟶s abs r2
 
 _≡!⟶s_ : ∀ {X} {r s t : Λ X} → (r ≡ s) → (s ⟶s t) → (r ⟶s t)
 refl ≡!⟶s st = st
@@ -299,6 +298,14 @@ _⇉⋆[_] : ∀ {X Y : Set} {s t : Λ X} → s ⇉⋆ t → ∀ (σ : X → Λ 
 _⟶w⋆_ : ∀ {X} → Λ X → Λ X → Set 
 _⟶w⋆_ = _⟶w_ ⋆
 
+map⟶w⋆ : ∀ {X Y} (f : X → Y) → ∀ {s t : Λ X} → s ⟶w⋆ t → Λ→ f s ⟶w⋆ Λ→ f t  
+map⟶w⋆ f ε⋆ = ε⋆
+map⟶w⋆ f (R0 ,⋆ R+) = map⟶w f R0 ,⋆ map⟶w⋆ f R+
+
+bind⟶w⋆ : ∀ {X Y} → (f : X → Λ Y) → ∀ {s t : Λ X} → (s ⟶w⋆ t) → (s [ f ]) ⟶w⋆ (t [ f ])
+bind⟶w⋆ f ε⋆ = ε⋆
+bind⟶w⋆ f (R0 ,⋆ R+) = bind⟶w f R0 ,⋆ bind⟶w⋆ f R+
+
 appL⟶w⋆ : ∀ {X} {s1 s2 t : Λ X} → s1 ⟶w⋆ s2 → app s1 t ⟶w⋆ app s2 t
 appL⟶w⋆ ε⋆ = ε⋆
 appL⟶w⋆ (W0 ,⋆ W+) = appL⟶w W0 ,⋆ appL⟶w⋆ W+
@@ -314,6 +321,10 @@ appL⟶β⋆ (s0 ,⋆ s12) t = appL⟶β s0 ,⋆ appL⟶β⋆ s12 t
 appR⟶β⋆ : ∀ {X} {s1 s2 : Λ X} → s1 ⟶β⋆ s2 → ∀ t → app t s1 ⟶β⋆ app t s2
 appR⟶β⋆ ε⋆ t = ε⋆
 appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
+
+⟶w⋆!⟶s :  ∀ {X} {s t u : Λ X} → s ⟶w⋆ t → t ⟶s u → s ⟶s u 
+⟶w⋆!⟶s ε⋆ t→u = t→u
+⟶w⋆!⟶s (s0→s ,⋆ s→t) t→u = red⟶s s0→s (⟶w⋆!⟶s s→t t→u)
 
 ⟶s⊆⟶β⋆ : ∀ {X} → _⟶s_ {X} ⊆ _⟶β⋆_ {X}
 ⟶s⊆⟶β⋆ s t (red⟶s W st) = ⟶w⊆⟶β W ,⋆ ⟶s⊆⟶β⋆ _ _ st
@@ -362,8 +373,19 @@ var→w : ∀ {X} {s : Λ X} {x : X} → s ⟶s (var x) → (_⟶w_ ⋆) s (var 
 var→w {X} {s} {x} (red⟶s w R) = w ,⋆ var→w R
 var→w {X} {s} {x} var⟶s = ε⋆
 
-{-
+⟶sabs : ∀ {X} {s : Λ X} {r : Λ (↑ X)} → s ⟶s abs r → Σ[ t ∈ Λ (↑ X) ] (s ⟶w⋆ abs t × t ⟶s r)
+⟶sabs (red⟶s s→s' s'→λr) with ⟶sabs s'→λr 
+... | (t ,, s'→λt , t→r) = t ,, s→s' ,⋆ s'→λt , t→r 
+⟶sabs (abs⟶s {r1 = t} s→r) = t ,, ε⋆ , s→r
 
+⟶β⋆NF : ∀ {X} {s t : Λ X} → s ⟶β⋆ t → s ∈ NF → t ≡ s
+⟶β⋆NF ε⋆ s∈NF = refl
+⟶β⋆NF (s→s' ,⋆ s'→t) s∈NF = ∅ (s∈NF _ s→s')
+
+⟶sNF : ∀ {X} {s t : Λ X} → s ⟶s t → s ∈ NF → t ≡ s
+⟶sNF s→t s∈NF = ⟶β⋆NF (⟶s⊆⟶β⋆ _ _ s→t) s∈NF
+
+{-
 bindCong : ∀ (R : (∀ {X} → 𝓡Λ X)) → isCong R
              → ∀ {X Y : Set} → (f g : X → Λ Y) → (∀ x → R (f x) (g x))
              → ∀ t → R (bind f t) (bind g t)
