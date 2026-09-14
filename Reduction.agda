@@ -347,6 +347,10 @@ appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
 ⇉⋆⊆⟶β⋆ ε⋆ = ε⋆
 ⇉⋆⊆⟶β⋆ (st ,⋆ tu) = ⇉⊆⟶β⋆ st ⋆!⋆ ⇉⋆⊆⟶β⋆ tu
 
+⟶w⋆⊆⟶β⋆ : ∀ {X} {s t : Λ X} → s ⟶w⋆ t  →  s ⟶β⋆ t
+⟶w⋆⊆⟶β⋆ ε⋆ = ε⋆
+⟶w⋆⊆⟶β⋆ (st ,⋆ tu) = ⟶w⊆⟶β st ,⋆ ⟶w⋆⊆⟶β⋆ tu
+
 ⟶s\⟶s : ∀ {X} {s t1 t2 : Λ X} → s ⟶s t1 → s ⟶s t2 → Σ[ u ∈ Λ X ] (t1 ⟶s u × t2 ⟶s u)
 ⟶s\⟶s st1 st2 
   with ⟶s\⇉⋆ st1 (⟶β⋆⊆⇉⋆ (⟶s⊆⟶β⋆ _ _ st2))
@@ -354,6 +358,17 @@ appR⟶β⋆ (s0 ,⋆ s12) t = appR⟶β s0 ,⋆ appR⟶β⋆ s12 t
 
 NF : ∀ {X} → 𝓟 (Λ X)
 NF M = ∀ N → ¬ (M ⟶β N)
+
+var⊆NF : ∀ {X} {x : X} → var x ∈ NF 
+var⊆NF u (red⟶β ())
+
+unmap⟶w : ∀ {X Y} (f : X → Y) {s : Λ X} {t} → Λ→ f s ⟶w t → Σ[ t0 ∈ Λ X ] (s ⟶w t0 × t ≡ Λ→ f t0)
+unmap⟶w f {var x} (red⟶w ())
+unmap⟶w f {abs s} (red⟶w ())
+unmap⟶w f {app (abs s1) s2} (red⟶w (redex refl)) = s1 [ s2 ]ₒ ,, red⟶w (redex refl) , ~ (bind-map s1 s2 f) 
+unmap⟶w f {app s1 s2} (appL⟶w R) 
+  with unmap⟶w f R 
+... | t1 ,, s1→t1 , refl = app t1 s2 ,, appL⟶w s1→t1 , refl
 
 absInv : ∀ {V} {N1 N2 : Λ (↑ V)} → abs N1 ≡ abs N2 → N1 ≡ N2
 absInv refl = refl

@@ -16,7 +16,7 @@
 \EnableBpAbbreviations
 
 \title{Isomorphisms between algebraic datatypes}
-\author{Andrew Polonsky, Ben Lenox}
+\author{Ben Lenox\\ Andrew Polonsky}
 
 \newcommand{\cat}{\mathbb{C}}
 \newcommand{\op}{{op}}
@@ -45,6 +45,7 @@
 \newcommand{\intsE}{\mathbb{Z}[X]/E}
 \begin{document}
 
+\maketitle
 \tableofcontents
 
 \section{Definitions and Notations}
@@ -728,7 +729,7 @@ so it's not "innocuous" as removing acyclic variables.}
 \subsection{The variable graph and the cyclic variables}
 
 \begin{dfn}
-  We define the \emph{variable graph} of $E$ to be the directed graph $G$ with $X$ as its
+  We define the \emph{variable graph} of $E$ to be the directed graph $G = G(E)$ with $X$ as its
   set of vertices and an edge from $x$ to $y$ whenever $p_x$ contains $y$.
 \end{dfn}
 
@@ -999,8 +1000,9 @@ We will this mix these notations throughout as convenient.
 \begin{thm} \label{t:high}
   \begin{enumerate}
     \item \label{t:high1} A polynomial is high iff it contains a high monomial.
-    \item \label{t:high2} A monomial $m = \prod_{v \in V} v$ is high iff $V$ contains a basis of compactible elements.
-    \item \label{t:high3} If $\nat[X]/E$ contains high elements iff such a basis exists.
+    \item \label{t:high2} A monomial $m = \prod_{v \in V} v$ is high iff $V$ contains a set of compactible elements that is a basis for $G(E)$.
+     % $G_E$ contains a basis of compactible elements from $V$.
+    \item \label{t:high3} $\nat[X]/E$ contains high elements iff such a basis for $G(E)$ exists.
   \end{enumerate}
 \end{thm}
 
@@ -1088,12 +1090,6 @@ We will this mix these notations throughout as convenient.
   \end{enumerate}
 \end{proof}
 
-\begin{thm} \err{Should be a corollary, or delete}
-  Assume Assumptions \ref{asmn:null} and \ref{asmn:cyc}.
-
-  High elements exist in $\nat[X]/E$ exist iff $G$ contains a basis of compactible elements.
-\end{thm}
-
 \hired{From now on, we write $\highring$ for the high elements of the 
 semiring $\nat[X]/E$.}
 
@@ -1101,14 +1097,42 @@ semiring $\nat[X]/E$.}
 $\highring$ is a ring, and the inclusion $\highring \subseteq \nat[X]/E$ is a ring homomorphism.
 \end{prop}
 \begin{proof}
-That the inclusion is a ring homomorphism is immediate by the easy direction of Birkoff's HSP theorem. Thus, it suffices to show that $\highring$ is a ring.
+That the inclusion is a ring homomorphism is immediate if $\highring$ is a ring.
 
-This is a general fact: the high elements of any commutative semigroup form an abelian group, and if the semigroup is the additive part of the semiring, then the high elements form a ring.
+Fiore and Leinster noted that $\highring$ forms a ring for the case when $E$ and $X$ are singletons.
+The first author's master's thesis extends this to the multivariate case \cite[Thm.4.4.3]{Lenox2026}, 
+and the argument given there applies to the high elements of the additive semigroup of any 
+commutative semiring with 1 (multiplicative identity).
 
-\hired{This is observed in Fiore, proved in Ben's thesis, need to quote or summarize here}
+More general conditions are known in the folklore of semiring theory, where the high elements of a semigroup are 
+called its \emph{kernel}, usually defined as the intersection of all ideals (absorbing sets) of the semigroup.
+\hired{Add any conditions?, like $z^2 = z$ ? If the kernel is non-empty, then it has an identity element $z$, 
+and to form a sub-ring, this must satisfy $z^2 = z$...}
 \end{proof}
 
+Note that the zero element (additive identity) of the ring $\highring$ is \emph{not}, in general, the additive identity of the semiring $\nat[X]/E$.
+(Indeed, $0_{\nat[X]/E}$ is almost never high.)
 
+\begin{thm}
+  $\highring \simeq \ints[X]/E$
+\end{thm}
+\begin{proof}
+  Let $h : \highring \to \ints[X]/E$ be the composition of inclusions $\highring \subset \nat[X]/E$ 
+  and $\nat[X]/E \subset \ints[X]/E$. Then $h$ is a monomorphism. It remains to show that $h$ is onto.
+
+  Given $p \in \ints[X]/E$, write $p = p^+ - p^-$, where $p^+,p^- \in \nat[X]/E$.
+
+  Since $0_{\highring}$ is high, $p^+ + 0_{\highring}$ is high too.
+
+  So let $q \in \nat[X]/E$ be such that $q + p^- = p^+ + 0_{\highring}$. 
+
+  Then $q + 0_{\highring} \in \highring$ and $h(q + 0_{\highring}) = p$.
+
+  To complete the proof, note that any bijective rig homomorphism is a rig isomorphism, and 
+  any rig homomorphism between rings is a ring homomorphism.
+ \end{proof}
+
+\section{Strong Gr\"obner bases and divisibility in $\nat[X]/E$.}
 
 
 
@@ -1243,7 +1267,6 @@ From now on, assume $\bar x = \bar p (\bar x)$.
   \[  \semof{\bar p^n(\bar x)_i}_{\bar 0} = \bar p^n(\bar 0)_i = \semof{x_i}_{\bar 0} > 0 \]
   whence $i \notin E_0$.
 \end{description}
-
 \end{proof}
 
 From now on, fix $E = E^*$.

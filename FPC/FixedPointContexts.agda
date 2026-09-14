@@ -68,6 +68,12 @@ module WeakHeadReductions where
   ⟶w⋆-TP {u = u} (s→s' ,⋆ s'→t) (s→s'' ,⋆ s''→u) 
     = ⟶w⋆-TP s'→t (transp (λ x → x ⟶w⋆ u) (⟶w-unique-tgt s→s'' s→s') s''→u)
 
+  ⟶w⋆-WHNF : ∀ {X} {s t u : Λ X} → s ⟶w⋆ t → s ⟶w⋆ u → u ∈ WHNF → t ⟶w⋆ u 
+  ⟶w⋆-WHNF s→t s→u u∈W with ⟶w⋆-TP s→t s→u 
+  ... | in1 t→u = t→u
+  ... | in2 ε⋆ = ε⋆
+  ... | in2 (u→u' ,⋆ u'→t) = ∅ (u∈W _ u→u')
+
   open import ARS.Properties
   open import ARS.Implications
   open Hierarchy-Implications
@@ -76,6 +82,10 @@ module WeakHeadReductions where
   ⟶w-CR s s→t s→u with ⟶w⋆-TP s→t s→u
   ... | in1 b→c = _ ,, b→c , ε⋆
   ... | in2 c→b = _ ,, ε⋆ , c→b
+
+  WHNF⟶w⋆≡ : ∀ {X} {s t : Λ X} → (s ⟶w⋆ t) → s ∈ WHNF → s ≡ t 
+  WHNF⟶w⋆≡ ε⋆ s∈WHNF = refl
+  WHNF⟶w⋆≡ (W ,⋆ s→t) s∈WHNF = ∅ (s∈WHNF _ W)
 
   WHNF-unique : ∀ {X} {s t1 t2 : Λ X} → s ⟶w⋆ t1 → s ⟶w⋆ t2 → t1 ∈ WHNF → t2 ∈ WHNF → t1 ≡ t2 
   WHNF-unique {X} {s} {t1} {t2} s→t1 s→t2 t1∈W t2∈W
@@ -126,6 +136,14 @@ module WeakHeadReductions where
   SI∈NF N (abs⟶β (abs⟶β (appL⟶β (red⟶β ()))))
   SI∈NF N (abs⟶β (abs⟶β (appR⟶β (appL⟶β (red⟶β ())))))
   SI∈NF N (abs⟶β (abs⟶β (appR⟶β (appR⟶β (red⟶β ())))))
+
+  appSI : ∀ {X} {Y Z} {Y1 : Λ (↑ X)} → app Y SI ⟶s Z → Y ⟶w⋆ abs Y1 → 
+                Σ[ Z1 ∈ Λ X ] (Z ⟶w⋆ Z1 × (Y1 [ SI ]ₒ ⟶s Z1))
+  appSI Yδ→Z Y→λY1 = ⟶s\⟶w⋆ Yδ→Z (appL⟶w⋆ Y→λY1 ⋆!⋆ (red⟶w (redex refl) ,⋆ ε⋆) ) 
+
+  -- appSIx : ∀ {X} {Y Y0 Z0} {Y1 Z1 : Λ (↑ X)} →
+  --                app Y SI ⟶s Z0 → Y ⟶w⋆ abs Y0 → Y1 ⟶w⋆ app (var o) Y1
+  --                Σ[ Z1 ∈ Λ X ] (app (Λ→i Z) (var o) ⟶w⋆ Z1 × (app Y1 [ SI ]ₒ ⟶s Z1))
 
 
 open WeakHeadReductions
@@ -204,20 +222,6 @@ FPC-Case4-0 Y Y∈FPC YSI→Y
 ... | u ,, Z1→u , xZ2→u = Z2 ,, u∈FPCx , R
   where u∈FPCx = u ,, (⟶s⊆⟶β⋆ _ _ Z0→sxZ2 ⋆!⋆ ⊆⋆ (λ _ _ → ⟶w⊆⟶β) Z1 u Z1→u) , ⟶s⊆⟶β⋆ _ _ xZ2→u
 
-
-{-
-xY[SI]→Y : ∀ {X} (Y : Λ (↑ X)) → app (Λ→i (app (var o) Y [ SI ]ₒ)) (var o) ⟶s app (var o) Y 
-                               → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s Y 
-xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (red⟶s (red⟶w (redex refl)) R)) = {!   !}
-xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (red⟶s (appL⟶w (red⟶w ())) R))
-xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (app⟶s R (red⟶s (red⟶w ()) R₁)))
-xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (app⟶s (red⟶s (red⟶w ()) R) var⟶s))
-xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (appL⟶w (red⟶w ()))) R)
-xY[SI]→Y Y (app⟶s R (red⟶s (red⟶w ()) R₁))
-xY[SI]→Y Y (app⟶s (red⟶s (red⟶w (redex refl)) (red⟶s (red⟶w ()) R)) var⟶s)
-xY[SI]→Y Y (app⟶s (red⟶s (appL⟶w (red⟶w ())) R) var⟶s)
--}
-
 SI-wred-lemma : ∀ {X} (Y Z : Λ (↑ X)) → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s Y 
                              → Y ⟶w Z → app (Λ→i (Z [ SI ]ₒ)) (var o) ⟶s Z
 SI-wred-lemma Y Z R Y→Z 
@@ -232,6 +236,147 @@ SI-wred*-lemma : ∀ {X} (Y Z : Λ (↑ X)) → app (Λ→i (Y [ SI ]ₒ)) (var 
 SI-wred*-lemma {X} Y Z R ε⋆ = R
 SI-wred*-lemma {X} Y Z R (w ,⋆ W) = SI-wred*-lemma _ Z (SI-wred-lemma Y _ R w) W
 
+o∉Λ→i : ∀ {X} {s : Λ X} → Λ→i s ⟶s var o → ⊥ 
+o∉Λ→i {X} {var x} (red⟶s (red⟶w ()) R)
+o∉Λ→i {X} {abs s} (red⟶s (red⟶w ()) R)
+o∉Λ→i {X} {app s1 s2} (red⟶s W R) 
+  with unmap⟶w i W 
+... | (t0 ,, s1s2→t0 , refl) = o∉Λ→i R
+
+{-
+SI-FPCx-lemma : ∀ {X} {s1 t1 s2 t2 : Λ (↑ X)} {Y}
+                  → s1 ⟶s t1 → s2 ⟶s t2 → app s1 s2 [ SI ]ₒ ⟶w Y 
+                  → s1 ≡ var o ⊔ Σ[ t ∈ Λ (↑ X) ] (app s1 s2 ⟶w t × Y ≡ t [ SI ]ₒ)
+SI-FPCx-lemma = {!  !}
+
+SI-FPCx : ∀ {X} {Y Z : Λ (↑ X)} → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s app (var o) Z → (Y ⟶s Z) → ⊥ 
+SI-FPCx {X} {Y} {Z} (app⟶s R1 R2) Y→Z = o∉Λ→i R1
+SI-FPCx {X} {Y} {Z} (red⟶s W1 R) (red⟶s W2 Y→Z) 
+  rewrite ⟶w-unique-tgt W1 (appL⟶w (map⟶w i (bind⟶w (io var SI) W2)))
+  = SI-FPCx R Y→Z
+SI-FPCx {X} {Y} {Z} (red⟶s (appL⟶w (red⟶w ())) R) (var⟶s {x = i x})
+SI-FPCx {X} {Y} {Z} (red⟶s (red⟶w (redex refl)) (red⟶s (red⟶w ()) R)) (var⟶s {x = o})
+SI-FPCx {X} {Y} {Z} (red⟶s (appL⟶w (red⟶w ())) R) (var⟶s {x = o})
+SI-FPCx {X} {Y} {Z} (red⟶s (red⟶w (redex e)) R) (abs⟶s Y→Z) = {! !}
+SI-FPCx {X} {Y} {Z} (red⟶s (appL⟶w (red⟶w ())) R) (abs⟶s Y→Z)
+SI-FPCx {X} {Y} {app Z1 Z2} (red⟶s (appL⟶w {t = t} W) R) (app⟶s {s1 = s1} {t1 = t1} Y→Z1 Y→Z2) 
+  with unmap⟶w i W 
+... | Y1 ,, W1 , refl 
+  with SI-FPCx-lemma Y→Z1 Y→Z2 W1 
+... | in1 refl = {!  !}
+... | in2 (s3 ,, s1s2→s3 , refl) = SI-FPCx {Y = s3} R {! !}
+-}
+
+SI-FPCx : ∀ {X} {Y Z : Λ (↑ X)} → (Y ⟶s Z) → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s app (var o) Z → ⊥ 
+SI-FPCx {X} {var (i x)} {Z} (red⟶s (red⟶w ()) R2) _
+SI-FPCx {X} {var (i x)} {Z} var⟶s (red⟶s (appL⟶w (red⟶w ())) R1) 
+SI-FPCx {X} {var (i x)} {Z} var⟶s (app⟶s R1 (red⟶s (red⟶w ()) R2)) 
+SI-FPCx {X} {var o} {Z} (red⟶s (red⟶w ()) R2) _
+SI-FPCx {X} {var o} {Z} var⟶s (red⟶s (red⟶w (redex refl)) (red⟶s (red⟶w ()) R1)) 
+SI-FPCx {X} {var o} {Z} var⟶s (red⟶s (appL⟶w (red⟶w ())) R1) 
+SI-FPCx {X} {var o} {Z} var⟶s (app⟶s (red⟶s (red⟶w ()) R1) R2) 
+SI-FPCx {X} {abs Y} {Z} R2 (red⟶s x R1) = {! !}  -- doable 
+SI-FPCx {X} {abs Y} {Z} R2 (app⟶s R1 R3) = o∉Λ→i R1
+SI-FPCx {X} {app Y1 Y2} {Z} (red⟶s x R1) R2 = {! !}  -- doable 
+SI-FPCx {X} {app Y1 Y2} {Z} (app⟶s R1 R3) (app⟶s R2 (red⟶s (red⟶w ()) R4))
+SI-FPCx {X} {app Y1 Y2} {.(app Z1 Z2)} (app⟶s {s2 = Z1} {t2 = Z2} R1 R3) (red⟶s {s = Z} W R) = {! !}  -- wtf?
+
+{-
+SI-FPCx : ∀ {X} {Y0 Z0 : Λ (↑ X)} → 
+            Y0 ⟶s Z0 → 
+            Y0 ⟶s app (var o) Z0 → 
+            ⊥ 
+SI-FPCx Y0→Z0 (red⟶s x Y0→xZ0) R = {! !}
+
+SI-FPCx {X} {Y0} {Z0} (red⟶s W1 Y0→Z0) (app⟶s {s1 = X0} {t1 = Y1} (red⟶s {s = X1} X0→X1 Y0→xZ0) Y0→xZ1) R 
+  = {! SI-FPCx Y0→Z0 (app⟶s Y0→xZ0 Y0→xZ1)  !}
+SI-FPCx {X} {Y0} {Z0} (app⟶s Y0→Z0 Y0→Z1) (app⟶s {s1 = X0} {t1 = Y1} (red⟶s {s = X1} X0→X1 Y0→xZ0) Y0→xZ1) R 
+  = {! !}
+SI-FPCx {X} {Y0} {Z0} Y0→Z0 (app⟶s {s1 = X0} {t1 = Y1} var⟶s Y0→xZ1) R = {! !}
+
+SI-FPCx₀ : ∀ {X} {Y0 Y1 Z0 : Λ (↑ X)} → 
+            Y0 ⟶w⋆ app (var o) Y1 → 
+            Y0 ⟶s Z0 → 
+            Y1 ⟶s Z0 → 
+            app (Λ→i (Y1 [ SI ]ₒ)) (var o) ⟶s Z0 → 
+            ⊥ 
+-}
+
+{-
+SI-FPCx {X} {var x} {Y1} (W ,⋆ Y0→xY1) Y0→Z0 Y1→Z0 Y1[SI]x→Z0 = var⊆WHNF _ W
+SI-FPCx {X} {abs Y0} {Y1} (W ,⋆ Y0→xY1) Y0→Z0 Y1→Z0 Y1[SI]x→Z0 = abs⊆WHNF _ W 
+SI-FPCx {X} {app Y0 Y2} {Y1} {Z0} ε⋆ (red⟶s (appL⟶w W) Y0→Z0) Y1→Z0 Y1[SI]x→Z0 = var⊆WHNF _ W
+SI-FPCx {X} {app Y0 Y2} {Y1} {Z0} ε⋆ (app⟶s (red⟶s W Y0→Z0) Y0→Z1) Y1→Z0 Y1[SI]x→Z0 = var⊆WHNF _ W
+SI-FPCx {X} {app Y0 Y2} {Y1} {Z0} ε⋆ (app⟶s {t2 = Y3} var⟶s Y2→Y3) Y2→xY3 Y2[SI]x→xY3 
+  with ⟶s-WHNF Y2→xY3 (λ { u (appL⟶w W) → var⊆WHNF _ W})
+... | Y4 ,, Y2→Y4 , (Y4∈WHNF , red⟶s W! Y4→xY3) = Y4∈WHNF _ W!
+... | Y4 ,, Y2→Y4 , (Y4∈WHNF , app⟶s (red⟶s W! Y4→xY3) Y4→xY4) = Y4∈WHNF _ (appL⟶w W!)
+... | (app (var o) Y4) ,, Y2→xY4 , (Y4∈WHNF , app⟶s var⟶s Y4→xY4) 
+  with ⟶s\⟶w⋆ Y2[SI]x→xY3 (appL⟶w⋆ (map⟶w⋆ i (bind⟶w⋆ (io var SI) Y2→xY4))  ⋆!⋆ SI⟶w)
+... | (Z ,, xY3→Z , xY4[SI]x→Z)
+  with WHNF⟶w⋆≡ xY3→Z (λ { u (appL⟶w W) → var⊆WHNF _ W }) | xY4[SI]x→Z 
+... | refl | red⟶s (appL⟶w W) R = var⊆WHNF _ W
+... | refl | app⟶s _ R = SI-FPCx {Y0 = Y2} {Y4} {Y3} Y2→xY4 Y2→Y3 Y4→xY4 R
+SI-FPCx {X} {app Y0 Y2} {Y1} (_,⋆_ {y = Y0'} Y0→Y0' Y0'→xY1) Y0→Z0 Y1→Z0 Y1[SI]x→Z0 
+  -- = f p1p2p3 where 
+  --   f : Σ[ Z ∈ Λ (↑ X) ] ( (Y0' ⟶s Z) × ((Y1 ⟶s Z) × (app (Λ→i (Y1 [ SI ]ₒ)) (var o) ⟶s Z)) ) → ⊥
+  --   f (Z ,, (P1 , (P2 , P3))) = SI-FPCx Y0'→xY1 P1 P2 P3 
+  --   p1p2p3 = {!  !}
+  with ⟶s\⟶w Y0→Z0 Y0→Y0'
+... | Z1 ,, εʳ , Y0'→Z1 = SI-FPCx Y0'→xY1 Y0'→Z1 Y1→Z0 Y1[SI]x→Z0 
+... | Z1 ,, axʳ W , Y0'→Z1 = SI-FPCx Y0'→xY1 Y0'→Z1 (⟶s!⟶s Y1→Z0 (red⟶s W refl⟶s)) (⟶s!⟶s Y1[SI]x→Z0 (red⟶s W refl⟶s))
+-}
+
+{-
+SI-FPC : ∀ {X} (Y : Λ X) → Y ∈ FPC → Y =β app Y SI → ⊥ 
+SI-FPC Y Y∈FPC (Z ,, Y→Z , Yδ→Z) 
+  with FPC→FPCx₂ Y Y∈FPC 
+... | (Y0 ,, Y→λY0 , (Z0 ,, Y0→Z0 , Y0→xZ0))
+  with ⟶s-WHNF (⟶β⋆⊆⟶s Y0→xZ0) (λ {_ (appL⟶w (red⟶w ()))})
+... | Y1 ,, Y0→Y1 , (Y1∈WHNF , red⟶s Y1→Y1' Y1'→Z1) = Y1∈WHNF _ Y1→Y1'
+... | Y1 ,, Y0→Y1 , (Y1∈WHNF , app⟶s (red⟶s W Y1→Z1) Y1→Z0) = Y1∈WHNF _ (appL⟶w W)
+... | (app (var o) Y1) ,, Y0→Y1 , (Y1∈WHNF , app⟶s var⟶s Y1→Z2) 
+  with ⟶s\⟶w⋆ (⟶β⋆⊆⟶s Y→Z) Y→λY0 
+... | U ,, Z→U , red⟶s (red⟶w ()) λY0→U
+... | abs U ,, Z→λU , abs⟶s Y0→U0
+  with appSI (⟶β⋆⊆⟶s Yδ→Z) Y→λY0 
+... | (Z' ,, Z→Z' , Y0[SI]→Z') 
+  with ⟶w⋆-WHNF Z→Z' Z→λU abs⊆WHNF
+... | Z'→λU 
+  with appL⟶w⋆ Y→λY0 ⋆!⋆ (red⟶w (redex refl) ,⋆ bind⟶w⋆ (io var SI) Y0→Y1)
+... | YSI→SIY1[SI] 
+  with ⟶s\⟶w⋆ (⟶β⋆⊆⟶s (Yδ→Z ⋆!⋆ ⟶w⋆⊆⟶β⋆ (Z→Z' ⋆!⋆ Z'→λU))) YSI→SIY1[SI] 
+... | U0 ,, (W ,⋆ λU→U0) , SIY1[SI]→U = ∅ (abs⊆WHNF _ W)
+... | .(abs U) ,, ε⋆ , SIY1[SI]→U
+  with ⟶s\⟶s (⟶β⋆⊆⟶s Y0→xZ0) Y0→U0
+... | W ,, red⟶s (appL⟶w (red⟶w ())) xZ0→W , U→W
+... | W ,, app⟶s (red⟶s (red⟶w ()) xZ0→W) xZ0→W₁ , U→W
+... | app (var o) W ,, app⟶s var⟶s Z0→W , U→W
+  with ⟶s\⟶w⋆ (app⟶s (map⟶s i (⟶s!⟶s SIY1[SI]→U (abs⟶s U→W))) var⟶s) SI⟶w
+... | V ,, Ux→V , red⟶s (appL⟶w (red⟶w ())) xUx→V
+... | V ,, Ux→V , app⟶s (red⟶s (red⟶w ()) xUx→V) xUx→V₁
+... | V ,, (appL⟶w (red⟶w ()) ,⋆ Ux→V) , app⟶s var⟶s xUx→V₁
+... | .(app (var o) _) ,, (red⟶w (redex refl) ,⋆ (appL⟶w (red⟶w ()) ,⋆ Ux→V')) , app⟶s var⟶s Ux→V
+... | .(app (var o) (Λ→ (↑→ i) W [ io var (var o) ])) ,, (red⟶w (redex refl) ,⋆ ε⋆) , app⟶s var⟶s Ux→V 
+  = SI-FPCx₀ {Y0 = Y0} {Y1} {W} Y0→Y1 (⟶s!⟶s (⟶β⋆⊆⟶s Y0→Z0) Z0→W) (⟶s!⟶s Y1→Z2 Z0→W) 
+            (⟶s!⟶s Ux→V (e ≡!⟶s refl⟶s))
+            where e = bind-nat₁ (io𝓟 _ (λ x → refl) refl) W ~! bind-unit0 W
+-}
+
+{-
+xY[SI]→Y : ∀ {X} (Y : Λ (↑ X)) → app (Λ→i (app (var o) Y [ SI ]ₒ)) (var o) ⟶s app (var o) Y 
+                               → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s Y 
+xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (red⟶s (red⟶w (redex refl)) R)) = {!   !}
+xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (red⟶s (appL⟶w (red⟶w ())) R))
+xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (app⟶s R (red⟶s (red⟶w ()) R₁)))
+xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (red⟶w (redex refl))) (app⟶s (red⟶s (red⟶w ()) R) var⟶s))
+xY[SI]→Y Y (red⟶s {s = Z} (appL⟶w {t = t} (appL⟶w (red⟶w ()))) R)
+xY[SI]→Y Y (app⟶s R (red⟶s (red⟶w ()) R₁))
+xY[SI]→Y Y (app⟶s (red⟶s (red⟶w (redex refl)) (red⟶s (red⟶w ()) R)) var⟶s)
+xY[SI]→Y Y (app⟶s (red⟶s (appL⟶w (red⟶w ())) R) var⟶s)
+-}
+
+{-
 SI-sred-lemma : ∀ {X} (Y : Λ (↑ X)) → app (app SI (Λ→i (Y [ SI ]ₒ))) (var o) ⟶s app (var o) Y 
                                     → app (Λ→i (Y [ SI ]ₒ)) (var o) ⟶s Y 
 SI-sred-lemma {X} Y (red⟶s (appL⟶w (red⟶w (redex refl))) (red⟶s (red⟶w (redex refl)) (red⟶s (appL⟶w (red⟶w ())) R)))
@@ -316,6 +461,14 @@ SI-Lemma (app (abs Y1) Y2) (app (.abs Z1) Z2) (app⟶s (abs⟶s {r2 = Z1} Y1→Z
              (SI-wred-lemma (app (abs Y1) Y2) (Y1 [ io var Y2 ]) R (red⟶w (redex refl)))
   -- = ?
 
+FPC-Case4-0-Impossible : ∀ {X} (Y : Λ X) → Y ∈ FPC → app Y SI ⟶β⋆ Y → ⊥
+FPC-Case4-0-Impossible Y Y∈FPC R 
+  with FPC-Case4-0 Y Y∈FPC R
+... | (Z ,, Z∈WFPCx , Zδx→Z) 
+  with FPCx⊆FPCx₂ Z Z∈WFPCx 
+... | (Z' ,, Z→Z' , Z→xZ') = SI-Lemma Z Z' (⟶β⋆⊆⟶s Z→Z') (⟶β⋆⊆⟶s Z→xZ') Zδx→Z
+-}
+
 -- OLD ATTEMPT 
 --   with R 
 -- ... | red⟶s R1 R2 = RecCall where 
@@ -374,8 +527,6 @@ SI-Lemma0 (app Y1 Y2) (app Z1 Z2) (red⟶s {s = Y3} Y1Y2→Y3 Y3→xZ2) (app⟶s
 -- = SI-Lemma0 Y3 (app (var o) Z2) Y3→xZ2 {!  !} {!  !}
 -}
 
- 
-
 {-
 SI-Lemma0 Y Z Y→Z (red⟶s (appL⟶w (red⟶w ())) xY→Z) R
 SI-Lemma0 Y Z Y→Z (app⟶s (red⟶s (red⟶w ()) xY→Z) xY→Z₁) R
@@ -430,9 +581,3 @@ X0 →s x implies X0 →w x so R must start with X0 →w x, then delta reduces t
 -- ... | Y→sZ | xY→sZ = {!  !}
 -- ... | Y→sZ | xY→sZ = SI-Lemma1-aux Y Z Y→sZ xY→sZ (⟶s!⟶s R Y→sZ)
 
-FPC-Case4-0-Impossible : ∀ {X} (Y : Λ X) → Y ∈ FPC → app Y SI ⟶β⋆ Y → ⊥
-FPC-Case4-0-Impossible Y Y∈FPC R 
-  with FPC-Case4-0 Y Y∈FPC R
-... | (Z ,, Z∈WFPCx , Zδx→Z) 
-  with FPCx⊆FPCx₂ Z Z∈WFPCx 
-... | (Z' ,, Z→Z' , Z→xZ') = SI-Lemma Z Z' (⟶β⋆⊆⟶s Z→Z') (⟶β⋆⊆⟶s Z→xZ') Zδx→Z
