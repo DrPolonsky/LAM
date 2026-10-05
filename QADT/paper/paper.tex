@@ -48,7 +48,11 @@
 \maketitle
 \tableofcontents
 
-\section{Definitions and Notations}
+\section{Introduction}
+
+\section{Setup}
+
+\subsection{Definitions and Notations}
 
 Fix a finite set of variables $X$.  %We write $X = \setof{x_1,\dots,x_n}$.
 
@@ -78,8 +82,6 @@ For our purposes however, it is more convenient to consider each monomial as a p
      \item $\const{n} = \sum_{i = 1}^n \mone$ is the polynomial representing $n > 0$.
    \end{itemize}
  \end{notn}
-
-\section{Setup}
 
 \subsection{Equality modulo $E$}
 \hired{Need to reframe this discussion.
@@ -1086,40 +1088,65 @@ We will this mix these notations throughout as convenient.
     Hence such a basis exists.
 
     $(\LA)$. Assume such a basis exists, say, $B = \setof{v_1, \dots, v_n}$.
-    By part \ref{t:high2}, $\prod v_i$ is high.  Hence, high elements exist.    
+    By part \ref{t:high2}, $\prod v_i$ is high.  Hence, high elements exist.     \qedhere
   \end{enumerate}
 \end{proof}
 
-\hired{From now on, we write $\highring$ for the high elements of the 
-semiring $\nat[X]/E$.}
+\subsection{The ring of high polynomials}
+
+From now on, we assume that the set of high elements of $\nat[X]/E$ is non-empty and write $\highring$ for this set.
+
+We conclude this section with a proof that $\highring$ is actually the ring $\ints[X]/E$.
 
 \begin{prop}
-$\highring$ is a ring, and the inclusion $\highring \subseteq \nat[X]/E$ is a ring homomorphism.
+$\highring$ is a ring.
 \end{prop}
 \begin{proof}
-That the inclusion is a ring homomorphism is immediate if $\highring$ is a ring.
-
-Fiore and Leinster noted that $\highring$ forms a ring for the case when $E$ and $X$ are singletons.
-The first author's master's thesis extends this to the multivariate case \cite[Thm.4.4.3]{Lenox2026}, 
+Fiore and Leinster noted that $\highring$, if non-empty, forms a ring --- but their work only treated the case 
+where $X$ and $E$ are singletons. The first author's master's thesis extends these results to the multivariate 
+case \cite[Thm.4.4.3]{Lenox2026}, 
 and the argument given there applies to the high elements of the additive semigroup of any 
-commutative semiring with 1 (multiplicative identity).
-
-More general conditions are known in the folklore of semiring theory, where the high elements of a semigroup are 
-called its \emph{kernel}, usually defined as the intersection of all ideals (absorbing sets) of the semigroup.
-\hired{Add any conditions?, like $z^2 = z$ ? If the kernel is non-empty, then it has an identity element $z$, 
-and to form a sub-ring, this must satisfy $z^2 = z$...}
+commutative semiring with 1.
 \end{proof}
+
+\begin{rmk}
+More general conditions are known in the folklore of semiring theory. The high elements of a semigroup are 
+known as its \emph{kernel}, usually defined as the intersection of all ideals (absorbing sets) of the semigroup.
+When non-empty, the kernel forms a group, and thus contains an element $z$ which acts as an additive identity with 
+respect to those elements of the semiring that belong to the kernel. 
+Then a necessary and sufficient condition for this kernel to form a ring is that $z$ also satisfies $z \cdot z = z$.
+\end{rmk}
 
 Note that the zero element (additive identity) of the ring $\highring$ is \emph{not}, in general, the additive identity of the semiring $\nat[X]/E$.
 (Indeed, $0_{\nat[X]/E}$ is almost never high.)
 
 \newcommand{\highzero}{0_{\highring}}
 
-For all $p q \in \nat[X]/E$, $p = q$ in $\ints[X]/E$ iff $p + \highzero = q + \highzero$ in $\highring$.
+% For all $p, q \in \nat[X]/E$, $p = q$ in $\ints[X]/E$ iff $p + \highzero = q + \highzero$ in $\highring$.
 
-Lemma: $p = q in \nat[X]/E$ iff exist $h_0, h_1,\dots,h_n$ such that 
-$p = h_0 + \sum_{i=1}^n h_i \cdot l_i$, 
-$q = h_0 + \sum_{i=1}^n h_i \cdot r_i$.
+% Lemma: $p = q \in \nat[X]/E$ iff exist $h_0, h_1,\dots,h_n$ such that 
+% $p = h_0 + \sum_{i=1}^n h_i \cdot l_i$, 
+% $q = h_0 + \sum_{i=1}^n h_i \cdot r_i$.
+
+\begin{prop} Let $p,q \in \nat[X]$.
+  \label{p:highelts}
+  \begin{enumerate}
+    \item \label{p:highelts1} $p \in \highring \then p + q \in \highring$
+    \item \label{p:highelts2} $p + \highzero \in \highring$
+    \item \label{p:highelts3} $p \in \highring, p + q =_E q \then p =_E \highzero$ 
+  \end{enumerate}
+\end{prop}
+\begin{proof}
+  \begin{enumerate}
+    \item Given any $r \in \nat[X]$, there exists an $s$ such $r + s =_E p$. So $r + s + q = p + q$.
+
+      Thus, $p + q \ge r$ for all $r$ and $p + q \in \highring$.
+    \item By part \ref{p:highelts1}, since $\highzero \in \highring$.
+    \item By part \ref{p:highelts1}, $p + q \in \highring$. Hence $q \in \highring$. Adding the additive inverse of $q$ to both sides
+yields $p = \highzero$. \qedhere
+  \end{enumerate}
+\end{proof}
+
 
 \begin{thm}
   $\highring \simeq \ints[X]/E$
@@ -1133,52 +1160,49 @@ $q = h_0 + \sum_{i=1}^n h_i \cdot r_i$.
   \begin{description}
     \item[Injectivity]
       We will show that the kernel of $h$ is trivial. To that end, let $h(p) = 0$, we will show 
-      $[p]_E = [\highzero]_E$ in $\nat[X]$.
+      $p =_E \highzero$ in $\nat[X]$.
 
       From $p =_E 0$ in $\ints[X]$, let $g_1,\dots,g_n$ be such that 
       \[ p = \sum_{i = 1}^n g_i \cdot (l_i - r_i), \quad g_i \in \ints[X] \] 
-      where $E = \setof{l_1=r_1,\dots,l_n=r_n}$.
+      where $E = \setof{l_1=r_1,\dots,l_n=r_n}$.  
 
-      Write $g_i = g_i^+ - g_i^-$, then we obtain the following equality in $\ints[X]$:
+      Writing $g_i = g_i^+ - g_i^-$ yields the following equality in $\ints[X]$:
       \[ p = \sum_{i=1}^n (g_i^+-g_i^-)\cdot(l_i - r_i)\]
 
-      From here, we get the following equality in $\nat[X]$:
+      Rearranging, we get the following equality in $\nat[X]$:
       \begin{align*}
-      p + \sum g_i^+ \cdot r_i + g_i^- \cdot l_i  &= \sum g_i^+ \cdot l_i + g_i^- \cdot r_i
-      p + \sum g_i^+ \cdot r_i + g_i^- \cdot r_i &=_E \sum g_i^+ \cdot r_i + g_i^- \cdot r_i
+      p + \sum g_i^+ \cdot r_i + g_i^- \cdot l_i  
+      &=\ \sum g_i^+ \cdot l_i + g_i^- \cdot r_i \\
+      &=_E \sum g_i^+ \cdot r_i + g_i^- \cdot l_i
     \end{align*}
-    Letting $q = \sum g_i^+ \cdot r_i + g_i^- \cdot r_i$, we have 
+    Letting $q = \sum g_i^+ \cdot r_i + g_i^- \cdot l_i$, we have 
     $p + q =_E q$.
 
-    Since $p \in \highring$, $p + q \in \highring$, and now $q \in \highring$ as well.
-    \hired{Justify that highness is closed under $E$ ?}
-
-    Let $r$ be such that $q + r = \highzero$.  Now 
-
-    \[ p = p + \highzero = p + q + r = q + r = \highzero \]
-
+    By Proposition \ref{p:highelts}.\ref{p:highelts3}, we conclude that $p =_E \highzero$.
+%    Since $p \in \highring$, also $p + q \in \highring$, and now $q \in \highring$ as well.
+    %    Thus $p + q =_E q$ is an equation in the ring $\highring$; adding the additive inverse of $q$ yields $p =_E \highzero$.
     \item[Surjectivity]
-  First, notice that for ANY polynomial $p \in \nat[X]/E$, $p + \highzero \in \highring$,
-  so $p + \highzero \in \mathsf{dom}(h)$, and 
-  \[ h(p + \highzero) = p + \highzero =_E p \]
-
   Given $p \in \ints[X]/E$, write $p = p^+ - p^-$, where $p^+,p^- \in \nat[X]/E$.
 
-  Since $0_{\highring}$ is high, $p^+ + 0_{\highring}$ is high too.
+%  By Proposition \ref{p:highelts}.\ref{p:highelts2}, $p^+ + \highzero \in \mathsf{dom}(h)$, so  \[ h(p + \highzero) = p + \highzero =_E p \]
 
-So let $q \in \highring$ be such that $q + p^- + \highzero =_E p^+ + \highzero$. 
-  Now 
-  \[ h(q) + p^- = h(q) + h(p^-+\highzero) = h(q + p^- + \highzero) = h(p^+ + \highzero) = p^+ \]
+% Since $0_{\highring}$ is high, $p^+ + 0_{\highring}$ is high too.
+By Proposition \ref{p:highelts}.\ref{p:highelts2}, $p^+ + \highzero \in \highring$.
 
-  Hence $h(q) = p^+ - p^- = p$.
+Let $q \in \highring$ be such that $p^+ + \highzero =_E q + p^- + \highzero$.
+
+Since $E$-congruence in $\ints[X]$ includes that of $\nat[X]$, the following holds in $\ints[X]/E$.
+\[      h(q) + p^- 
+      = q + p^- + \highzero
+      = p^+ + \highzero 
+    = p^+ \]
+
+Now $h(q) = p^+ - p^- = p$.
 \end{description}
 To complete the proof, note that any bijective ring homomorphism is a ring isomorphism.
 \end{proof}
 
-\section{Strong Gr\"obner bases and divisibility in $\nat[X]/E$.}
-
-
-
+\section{Strong Gr\"obner bases and division in $\ints[X]$}
 
 
 
