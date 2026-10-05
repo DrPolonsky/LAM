@@ -1204,7 +1204,18 @@ To complete the proof, note that any bijective ring homomorphism is a ring isomo
 
 \section{Strong Gr\"obner bases and division in $\ints[X]$}
 
-
+\begin{enumerate}
+  \item Synopsis: polynomial division, multivariate division (Gr\"obner bases), division over rings.
+  \item Illustrative example of multivariate division 
+  \item Illustrate the saturation issue (why vanilla GB fails)
+  \item Define strong GB 
+  \item Explain and illustrate with example how they fix the saturation issue 
+  \item Strong GB exists for any polynomial ideal; Buchberger's algorithm can be refined in a straightforward manner.
+  \item The constructive process for generating Strong GB extends the given polynomials with their linear combinations 
+    --- ``$E$ can be updated to a finite SGB effectively''.
+  \item Full cycle: Given $E$, generate a SGB $G$, now equality $p =_E q$ 
+    can be computed by working in $\ints[X]/G$: $p = q$ in $\ints[X]/E$ iff $G$ divides $p-q$ with no remainder.
+\end{enumerate}
 
 
 
