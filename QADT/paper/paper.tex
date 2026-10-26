@@ -43,6 +43,7 @@
 
 \newcommand{\highring}{\mathcal{H}(E)}
 \newcommand{\intsE}{\mathbb{Z}[X]/E}
+\newcommand{\rats}{\mathbb{Q}}
 
 \begin{document}
 
@@ -1210,12 +1211,16 @@ To complete the proof, note that any bijective ring homomorphism is a ring isomo
 
 Having identified the ring of high elements of the semiring $\nat[X]/E$ as being 
 isomorphic to $\ints[X]/E$, we can now solve the word problem for this ring 
-using standard polynomial division techniques. This yields a constructive procedure 
-for determining equality between high elements of the $\nat[X]/E$.
+using standard polynomial division techniques. Combined with the previous results,
+this yields a constructive procedure 
+for determining equality between high elements of $\nat[X]/E$.
 \err{Which will lifts to construction of explicit isomorphisms between the recursive datatypes defined by $E$.}
 
-We now outline the full procedure, which involves expanding $E$ to make it into a so-called
+In this section, we will outline the full procedure, which involves expanding $E$ to make it into a so-called
 \emph{strong Gr\"obner basis}, and performing multivariate polynomial division with respect to that basis.
+First, we will summarize the basic theory of Gr\"obner bases, which solves the problem in the setting of multivariate 
+polynomials with rational coefficients.
+\hired{check}
 
 \subsection{Multivariate polynomial division over $\mathbb{Q}$ and Gr\"obner bases}
 
@@ -1224,10 +1229,29 @@ The extension of this algorithm to the multivariate case is a standard topic in
 computational commutative algebra. Here we will give a brief synopsis; additional details can 
 be found in the classic text of Dummit and Foote \cite[Ch.\ 9.6]{DF}.
 
-In abstract terms, the question is to decide whether a given element of the 
-polynomial ring $\ints[X]$ is in the given ideal. Constructively, a positive answer 
+In abstract terms, the question is to decide whether a given element $p$ of the 
+polynomial ring $\rats[X]$ is in a given ideal. Constructively, a positive answer 
 must compute, for a given generating set $E = \setof{g_1,\dots,g_k}$,
-a representation of $p$ as a linear combination of elements of $E$: $p = \sum c_i g_i$.
+a representation of $p$ as a linear combination of elements of $E$ --- that is, 
+find $q_i \in \rats[X]$ such that $p = \sum q_i g_i$.
+
+In what follows, we will need an ordering on monomials. The following suffices.
+\begin{dfn}
+  Fix an arbitrary linear ordering $<$ on $X$. WLOG, write $X = \setof{x_1,\dots,x_n}$ with 
+  $x_1 < x_2 < \cdots < x_n$.
+
+  For monomials $m_1$ and $m_2$, write $m_1 = x_1^{d_1}\cdots x_n^{d_n}$, $m_2 = x_1^{e_1} \cdots {x_n}^{e_n}$,
+  and put $m_1 \le m_2$ if $(d_1,\dots,d_n) \le (e_1,\dots,e_n)$ lexicographically.
+\end{dfn}
+
+\begin{dfn}
+  Let $p = c_1 m_1 + \cdots + c_n m_n$, where $m_i$ are distinct monomials (pure products of variables), 
+  and $c_i$ the corresponding coefficients.
+  \begin{enumerate}
+    \item The \emph{leading monomial of $p$} is the monomial $m_i$ such that $m_i \ge m_j$ for all $j$.
+    \item The \emph{leading term of $p$} is the term $c_i m_i$ where $m_i$ is the leading monomial of $p$.
+  \end{enumerate}
+\end{dfn}
 
 When $k=1$, this can be done by the usual division of $p$ by $g_1$.
 Extending this method to the general case requires certain conditions on $E$ 
@@ -1265,63 +1289,72 @@ Hence $p = 4y\cdot(x^2+2x) + 2\cdot(2xy+3) \in \seqof{E}$.
     continuing to do this until all elements in the ideal can be obtained by the division process.
     
     In this case, it suffices to expand $E$ to $E' = E \cup \setof{3x+6,12y-9}$. 
-
-    In the general case, \emph{Buchberger's algorithm} \cite[9.6]{DF} is a terminating procedure 
-    that computes such a completion of $E$ by adding a finite number of terms,
-    each of which is a linear combination of already existing generators. The condition ensuring 
-    that every element of the ideal can be cleanly divided by the resulting set 
-    leads to the definition of a Gr\"obner basis.
 \end{enumerate}
 \end{expl}
 
-\newcommand{\rats}{\mathbb{Q}}
-\begin{dfn}
-  A finite set of polynomials $E \subseteq \rats[X]$ is called a Gr\"obner basis if
+The general solution to the issue above is given by \emph{Buchberger's algorithm} \cite[9.6]{DF}.
+This is a terminating procedure that expands a given set of generators by adding a finite number of terms,
+    each of which is a linear combination of already existing generators. The condition ensuring 
+    that every element of the ideal can be cleanly divided by the resulting set 
+    leads to the definition of a Gr\"obner basis.
+
+\begin{dfn} 
+  A finite set of polynomials $E \subseteq \rats[X]$ is called a \emph{Gr\"obner basis} if
   for each $p \in \seqof{E}$, there exists $g \in E$ such that the leading monomial of $g$ 
   divides that of $p$.
+\item 
+
 \end{dfn}
 
 \subsection{Coefficients over $\ints$ and Strong Gr\"obner bases}
 
 Classical Gr\"obner basis theory works with polynomials over fields. 
 Generalizations to polynomials over rings are known. 
-In particular, an extension of Buchberger's algorithm to division of multivariate polynomials 
-integer coefficients has been developed. Our presentation is based on \cite[Ch.10]{GB}.
+In particular, extensions of Buchberger's algorithm to division of multivariate polynomials 
+in $\ints[X]$ have been developed. Our presentation is based on \cite[Ch.10]{GB}.
 
-\begin{expl}
-  \begin{enumerate}
-    \item Let $E = \seqof{2x+2}$.  Then $x+1$ belongs to $\seqof{E}$ \emph{when considered as 
-      an ideal over $\rats[X]$} --- but $x+1 \notin \seqof{E}$ when the latter is considered an ideal in $\ints[X]$.
-      One says that $\seqof{2x+2}$ fails to be \emph{saturated with respect to $\ints$}.
-    \item Even when $E$ is saturated, the definition of Gr\"obner basis and Buchberger's algorithm have to be 
-      refined to take into account the fact that coefficients are not multiplicatively invertible. 
-
-      Let $E = \seqof{4x + 2, 6x+3}$. Then $E$ is already a Gr\"obner basis: every $p \in \rats[X]$ that is 
+\begin{expl} Let $E = \setof{4x + 2, 6x+3}$. 
+  \begin{enumerate} 
+\item $E$ is already a Gr\"obner basis: every $p \in \rats[X]$ that is 
       an element of $\seqof{E}$ is expressible as $p = c \cdot (4x + 2)$ for some $c \in \rats$.
 
       $2x + 1$ also belongs to the ideal of $\ints[X]$ generated by $E$, but it cannot be obtained by 
       performing long division using only elements of $E$ as generators.
 
     \item The solution is to add $2x + 1$ to the set of generators $E$; putting $E' = E \cup \setof{2x + 1}$ 
-      yields $\seqof{E'} = \seqof{E}$, and every element of $\seqof{E'}$ in $\ints[X]$ can be expressed as 
+      yields $\seqof{E'} = \seqof{E}$, and every element of $\seqof{E}$ in $\ints[X]$ can be expressed as 
       $c \cdot (2x + 1)$ for some $c \in \ints[X]$.
-
-      In general, $E$ can be expanded to a so-called \emph{strong Gr\"obner} basis by a mild
-      modification of Buchberger's algorithm. \cite{GB} gives a thorough development.
   \end{enumerate}
 \end{expl}
 
-\begin{dfn}
+  In the general case, a mild modification of Buchberger's algorithm adds a finite number of generators to $E$,
+  each of which is a linear combination (over $\ints[X]$) of existing generators, such that every element of 
+  $\seqof{E}$ can be cleanly divided by the resulting set.  The latter condition leads to the 
+  notion of a \emph{strong Gr\"obner} basis. The following is essentially Definition 10.4 in \cite{GB},
+  see also Exercise 10.6 there. \hired{}
+  \begin{dfn}
   A finite set of polynomials $E \subseteq \ints[X]$ is called a \emph{strong Gr\"obner basis} if
-  for each $p \in \seqof{E}$, there exists $g \in E$ such that the leading term $t_0$ of $g$ 
-  divides the leading term $t_1$ of $p$. 
-%  That is, $t = c m$, $t' = c' m'$, $c, c' \in \ints$, $m, m'$ are 
-%  products of variables in $X$, $c$ divides $c'$, and $m$ divides $m'$.
-  That is, $t_i = c_i m_i$, $c_0$ divides $c_1$, and $m_0$ divides $m_1$, where 
-  $c_i \in \ints$, and $m_i$ are products of variables in $X$.
+  for each $p \in \seqof{E}$, there exists $g \in E$ such that the leading term of $g$ divides that of $p$. 
 \end{dfn}
 
-\subsection{Examples} 
+(Note that $c m$ divides $c' m'$, where $c$ and $c'$ are integers and $m$ and $m'$ are monomials, if $c$ 
+divides $c'$ and $m$ divides $m'$.)
+
+{\color{red}{
+\begin{rmk}
+Let $I = \seqof{x+1}$.
+Note that in $\rats[X]$, $I = \seqof{2x + 2}$.
+
+      However, considered as ideals in $\ints[X]$, $\seqof{x+1} \neq \seqof{2x + 2}$.
+
+      Let $E = \seqof{2x+2}$.  Then $x+1$ belongs to $\seqof{E}$ \emph{when considered as 
+      an ideal over $\rats[X]$} --- but $x+1 \notin \seqof{E}$ when the latter is considered an ideal of $\ints[X]$.
+      One says that $\seqof{2x+2}$ fails to be \emph{saturated with respect to $\ints$}.
+    \end{rmk}
+    \par
+} }
+
+\subsection{An outline of the full process/example}
 
 \begin{enumerate}
   \item Synopsis: polynomial division, multivariate division (Gr\"obner bases), division over rings.
